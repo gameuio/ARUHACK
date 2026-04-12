@@ -1,0 +1,647 @@
+-- Создаем объекты
+local screenGui = Instance.new("ScreenGui")
+local frame = Instance.new("Frame")
+local toggleButton = Instance.new("TextButton")
+local contentFrame = Instance.new("Frame")
+local titleLabel = Instance.new("TextLabel")
+local subtitleLabel = Instance.new("TextLabel")
+local blur = Instance.new("BlurEffect")
+local scanlineEffect = Instance.new("Frame")
+
+-- Переменные для управления
+local espEnabled = false
+local espColor = Color3.fromRGB(0, 255, 0)
+local colors = {
+    Color3.fromRGB(0, 255, 0),      -- Matrix Green
+    Color3.fromRGB(0, 255, 255),    -- Cyan
+    Color3.fromRGB(255, 0, 255),    -- Magenta
+    Color3.fromRGB(255, 255, 0),    -- Yellow
+    Color3.fromRGB(255, 0, 0),      -- Red
+    Color3.fromRGB(0, 200, 0)       -- Dark Green
+}
+local colorIndex = 1
+local flying = false
+local speed = 50
+local speedhackSpeed = 16
+local speedhackEnabled = false
+local flyConnection
+local bodyVelocity
+local bodyGyro
+local menuVisible = true
+
+-- Сервисы
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+-- Обновление меню после смерти
+local function restoreMenuOnDeath()
+    local player = Players.LocalPlayer
+    player.CharacterAdded:Connect(function(character)
+        wait(1)
+        screenGui.Parent = player:WaitForChild("PlayerGui")
+        if menuVisible then
+            frame.Visible = true
+            blur.Enabled = true
+        end
+    end)
+end
+
+-- Настройка ScreenGui
+screenGui.Name = "HackerMenuGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Эффект размытия
+blur.Size = 0
+blur.Parent = game.Lighting
+
+-- Главный фрейм
+frame.Name = "MainFrame"
+frame.Size = UDim2.new(0, 450, 0, 550)
+frame.Position = UDim2.new(0.5, -225, 0.5, -275)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BackgroundTransparency = 0.15
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = screenGui
+
+-- Закругление главного фрейма
+local frameCorner = Instance.new("UICorner")
+frameCorner.CornerRadius = UDim.new(0, 8)
+frameCorner.Parent = frame
+
+-- Двойная обводка для хакерского эффекта
+local frameStroke1 = Instance.new("UIStroke")
+frameStroke1.Color = Color3.fromRGB(0, 255, 0)
+frameStroke1.Thickness = 2
+frameStroke1.Transparency = 0
+frameStroke1.Parent = frame
+
+-- Внутренняя светящаяся обводка
+local innerGlow = Instance.new("Frame")
+innerGlow.Name = "InnerGlow"
+innerGlow.Size = UDim2.new(1, -4, 1, -4)
+innerGlow.Position = UDim2.new(0, 2, 0, 2)
+innerGlow.BackgroundTransparency = 1
+innerGlow.BorderSizePixel = 0
+innerGlow.Parent = frame
+
+local innerGlowCorner = Instance.new("UICorner")
+innerGlowCorner.CornerRadius = UDim.new(0, 6)
+innerGlowCorner.Parent = innerGlow
+
+local innerStroke = Instance.new("UIStroke")
+innerStroke.Color = Color3.fromRGB(0, 255, 0)
+innerStroke.Thickness = 1
+innerStroke.Transparency = 0.5
+innerStroke.Parent = innerGlow
+
+-- Эффект сканирующих линий (scanlines)
+scanlineEffect.Name = "Scanlines"
+scanlineEffect.Size = UDim2.new(1, 0, 1, 0)
+scanlineEffect.Position = UDim2.new(0, 0, 0, 0)
+scanlineEffect.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+scanlineEffect.BackgroundTransparency = 0.95
+scanlineEffect.BorderSizePixel = 0
+scanlineEffect.Parent = frame
+
+local scanlineCorner = Instance.new("UICorner")
+scanlineCorner.CornerRadius = UDim.new(0, 8)
+scanlineCorner.Parent = scanlineEffect
+
+-- Анимация сканирования
+local scanlineGradient = Instance.new("UIGradient")
+scanlineGradient.Transparency = NumberSequence.new{
+    NumberSequenceKeypoint.new(0, 1),
+    NumberSequenceKeypoint.new(0.3, 0.8),
+    NumberSequenceKeypoint.new(0.5, 0.5),
+    NumberSequenceKeypoint.new(0.7, 0.8),
+    NumberSequenceKeypoint.new(1, 1)
+}
+scanlineGradient.Rotation = 90
+scanlineGradient.Parent = scanlineEffect
+
+-- Анимация движения scanline
+spawn(function()
+    while true do
+        for i = 0, 360, 2 do
+            scanlineGradient.Rotation = i
+            wait(0.03)
+        end
+    end
+end)
+
+-- Заголовок
+titleLabel.Name = "Title"
+titleLabel.Size = UDim2.new(1, -40, 0, 50)
+titleLabel.Position = UDim2.new(0, 20, 0, 15)
+titleLabel.Text = "// ARUSCRIPT //"
+titleLabel.TextScaled = true
+titleLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+titleLabel.Font = Enum.Font.Code
+titleLabel.BackgroundTransparency = 1
+titleLabel.BorderSizePixel = 0
+titleLabel.ZIndex = 2
+titleLabel.Parent = frame
+
+-- Эффект мерцания текста заголовка
+local titleStroke = Instance.new("UIStroke")
+titleStroke.Color = Color3.fromRGB(0, 255, 0)
+titleStroke.Thickness = 1
+titleStroke.Parent = titleLabel
+
+-- Мерцающий эффект
+spawn(function()
+    while true do
+        TweenService:Create(titleStroke, TweenInfo.new(0.1), {Transparency = 0.3}):Play()
+        wait(0.1)
+        TweenService:Create(titleStroke, TweenInfo.new(0.1), {Transparency = 0}):Play()
+        wait(math.random(2, 5))
+    end
+end)
+
+-- Подзаголовок
+subtitleLabel.Name = "Subtitle"
+subtitleLabel.Size = UDim2.new(1, -40, 0, 20)
+subtitleLabel.Position = UDim2.new(0, 20, 0, 65)
+subtitleLabel.Text = "> SYSTEM ACCESS GRANTED_"
+subtitleLabel.TextSize = 14
+subtitleLabel.TextColor3 = Color3.fromRGB(0, 200, 0)
+subtitleLabel.Font = Enum.Font.Code
+subtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+subtitleLabel.BackgroundTransparency = 1
+subtitleLabel.BorderSizePixel = 0
+subtitleLabel.ZIndex = 2
+subtitleLabel.Parent = frame
+
+-- Эффект печатающегося текста
+spawn(function()
+    local texts = {
+        "> SYSTEM ACCESS GRANTED_",
+        "> INJECTING PAYLOAD..._",
+        "> CONNECTION SECURE_",
+        "> ROOT ACCESS ENABLED_"
+    }
+    local index = 1
+    while true do
+        subtitleLabel.Text = texts[index]
+        index = index + 1
+        if index > #texts then index = 1 end
+        wait(3)
+    end
+end)
+
+-- Разделительная линия
+local divider = Instance.new("Frame")
+divider.Name = "Divider"
+divider.Size = UDim2.new(1, -40, 0, 2)
+divider.Position = UDim2.new(0, 20, 0, 95)
+divider.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+divider.BackgroundTransparency = 0.3
+divider.BorderSizePixel = 0
+divider.ZIndex = 2
+divider.Parent = frame
+
+local dividerGradient = Instance.new("UIGradient")
+dividerGradient.Transparency = NumberSequence.new{
+    NumberSequenceKeypoint.new(0, 1),
+    NumberSequenceKeypoint.new(0.1, 0),
+    NumberSequenceKeypoint.new(0.9, 0),
+    NumberSequenceKeypoint.new(1, 1)
+}
+dividerGradient.Parent = divider
+
+-- Контейнер для кнопок
+contentFrame.Name = "ContentFrame"
+contentFrame.Size = UDim2.new(1, -40, 1, -110)
+contentFrame.Position = UDim2.new(0, 20, 0, 105)
+contentFrame.BackgroundTransparency = 1
+contentFrame.BorderSizePixel = 0
+contentFrame.ZIndex = 2
+contentFrame.Parent = frame
+
+-- UIListLayout для автоматической расстановки
+local listLayout = Instance.new("UIListLayout")
+listLayout.Padding = UDim.new(0, 10)
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Parent = contentFrame
+
+-- Функция создания хакерской кнопки
+local function createHackerButton(name, text, layoutOrder)
+    local buttonContainer = Instance.new("Frame")
+    buttonContainer.Name = name .. "Container"
+    buttonContainer.Size = UDim2.new(1, 0, 0, 50)
+    buttonContainer.BackgroundTransparency = 1
+    buttonContainer.LayoutOrder = layoutOrder
+    buttonContainer.Parent = contentFrame
+    
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Size = UDim2.new(1, 0, 1, 0)
+    button.Text = "> " .. text .. " <"
+    button.TextScaled = true
+    button.TextColor3 = Color3.fromRGB(0, 255, 0)
+    button.Font = Enum.Font.Code
+    button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    button.BackgroundTransparency = 0.5
+    button.BorderSizePixel = 0
+    button.AutoButtonColor = false
+    button.Parent = buttonContainer
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = button
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(0, 255, 0)
+    stroke.Thickness = 1.5
+    stroke.Transparency = 0.3
+    stroke.Parent = button
+    
+    local padding = Instance.new("UIPadding")
+    padding.PaddingLeft = UDim.new(0, 15)
+    padding.PaddingRight = UDim.new(0, 15)
+    padding.Parent = button
+    
+    -- Hex паттерн на фоне кнопки
+    local hexPattern = Instance.new("TextLabel")
+    hexPattern.Size = UDim2.new(1, 0, 1, 0)
+    hexPattern.Position = UDim2.new(0, 0, 0, 0)
+    hexPattern.Text = "0x1A2B3C"
+    hexPattern.TextSize = 10
+    hexPattern.TextColor3 = Color3.fromRGB(0, 100, 0)
+    hexPattern.Font = Enum.Font.Code
+    hexPattern.BackgroundTransparency = 1
+    hexPattern.TextTransparency = 0.8
+    hexPattern.ZIndex = 1
+    hexPattern.Parent = button
+    
+    -- Эффект глитча на hover
+    button.MouseEnter:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(0, 50, 0)}):Play()
+        TweenService:Create(stroke, TweenInfo.new(0.1), {Transparency = 0, Thickness = 2}):Play()
+        
+        -- Глитч эффект
+        for i = 1, 3 do
+            button.Position = UDim2.new(0, math.random(-2, 2), 0, 0)
+            wait(0.05)
+        end
+        button.Position = UDim2.new(0, 0, 0, 0)
+    end)
+    
+    button.MouseLeave:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 0, 0)}):Play()
+        TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0.3, Thickness = 1.5}):Play()
+    end)
+    
+    return button
+end
+
+-- Функция создания хакерского текстового поля
+local function createHackerTextBox(name, placeholderText, layoutOrder)
+    local textBoxContainer = Instance.new("Frame")
+    textBoxContainer.Name = name .. "Container"
+    textBoxContainer.Size = UDim2.new(1, 0, 0, 50)
+    textBoxContainer.BackgroundTransparency = 1
+    textBoxContainer.LayoutOrder = layoutOrder
+    textBoxContainer.Parent = contentFrame
+    
+    local textBox = Instance.new("TextBox")
+    textBox.Name = name
+    textBox.Size = UDim2.new(1, 0, 1, 0)
+    textBox.PlaceholderText = "// " .. placeholderText .. " //"
+    textBox.Text = ""
+    textBox.TextScaled = true
+    textBox.TextColor3 = Color3.fromRGB(0, 255, 0)
+    textBox.PlaceholderColor3 = Color3.fromRGB(0, 150, 0)
+    textBox.Font = Enum.Font.Code
+    textBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    textBox.BackgroundTransparency = 0.5
+    textBox.BorderSizePixel = 0
+    textBox.ClearTextOnFocus = false
+    textBox.Parent = textBoxContainer
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = textBox
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(0, 255, 0)
+    stroke.Thickness = 1.5
+    stroke.Transparency = 0.5
+    stroke.Parent = textBox
+    
+    local padding = Instance.new("UIPadding")
+    padding.PaddingLeft = UDim.new(0, 15)
+    padding.PaddingRight = UDim.new(0, 15)
+    padding.Parent = textBox
+    
+    -- Мигающий курсор эффект
+    local cursor = Instance.new("Frame")
+    cursor.Name = "Cursor"
+    cursor.Size = UDim2.new(0, 2, 0.6, 0)
+    cursor.Position = UDim2.new(0, 15, 0.2, 0)
+    cursor.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    cursor.BorderSizePixel = 0
+    cursor.Visible = false
+    cursor.Parent = textBox
+    
+    textBox.Focused:Connect(function()
+        cursor.Visible = true
+        TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0, Thickness = 2}):Play()
+        
+        -- Мигающий курсор
+        spawn(function()
+            while textBox:IsFocused() do
+                cursor.Visible = not cursor.Visible
+                wait(0.5)
+            end
+        end)
+    end)
+    
+    textBox.FocusLost:Connect(function()
+        cursor.Visible = false
+        TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0.5, Thickness = 1.5}):Play()
+    end)
+    
+    return textBox
+end
+
+-- Создаем элементы
+local espBtn = createHackerButton("ESPButton", "ENABLE ESP", 1)
+local colorBtn = createHackerButton("ColorButton", "CYCLE ESP COLOR", 2)
+local flyBtn = createHackerButton("FlyButton", "ACTIVATE FLY", 3)
+local speedBox = createHackerTextBox("SpeedInput", "SET FLY VELOCITY: 50", 4)
+local speedhackBox = createHackerTextBox("SpeedhackInput", "SET SPEED MULTIPLIER: 16", 5)
+local speedhackBtn = createHackerButton("SpeedhackButton", "INJECT SPEEDHACK", 6)
+
+-- Кнопка сворачивания (хакерская иконка)
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0, 70, 0, 70)
+toggleButton.Position = UDim2.new(0, 20, 0, 20)
+toggleButton.Text = "⦿"
+toggleButton.TextSize = 40
+toggleButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+toggleButton.Font = Enum.Font.Code
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+toggleButton.BackgroundTransparency = 0.3
+toggleButton.BorderSizePixel = 0
+toggleButton.AutoButtonColor = false
+toggleButton.Parent = screenGui
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(1, 0)
+toggleCorner.Parent = toggleButton
+
+local toggleStroke = Instance.new("UIStroke")
+toggleStroke.Color = Color3.fromRGB(0, 255, 0)
+toggleStroke.Thickness = 2
+toggleStroke.Transparency = 0
+toggleStroke.Parent = toggleButton
+
+-- Пульсирующий эффект
+spawn(function()
+    while true do
+        TweenService:Create(toggleStroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 4}):Play()
+        wait(1)
+        TweenService:Create(toggleStroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 2}):Play()
+        wait(1)
+    end
+end)
+
+toggleButton.MouseEnter:Connect(function()
+    TweenService:Create(toggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, 80, 0, 80), Rotation = 180}):Play()
+    toggleButton.Text = "◉"
+end)
+
+toggleButton.MouseLeave:Connect(function()
+    TweenService:Create(toggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, 70, 0, 70), Rotation = 0}):Play()
+    toggleButton.Text = "⦿"
+end)
+
+-- Функция плавного переключения меню с глитч-эффектом
+local function toggleMenu()
+    menuVisible = not menuVisible
+    
+    local targetPos = menuVisible and UDim2.new(0.5, -225, 0.5, -275) or UDim2.new(0.5, -225, 1.5, 0)
+    local targetBlur = menuVisible and 8 or 0
+    
+    -- Глитч эффект при закрытии/открытии
+    if menuVisible then
+        for i = 1, 5 do
+            frame.Position = UDim2.new(0.5, -225 + math.random(-10, 10), 0.5, -275 + math.random(-10, 10))
+            wait(0.02)
+        end
+    end
+    
+    TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = targetPos}):Play()
+    TweenService:Create(blur, TweenInfo.new(0.3), {Size = targetBlur}):Play()
+    
+    -- Мигание обводки
+    for i = 1, 3 do
+        frameStroke1.Transparency = 1
+        wait(0.05)
+        frameStroke1.Transparency = 0
+        wait(0.05)
+    end
+end
+
+-- Функция включения/выключения ESP
+local function toggleESP()
+    espEnabled = not espEnabled
+    espBtn.Text = espEnabled and "> DISABLE WALLHACK <" or "> ENABLE WALLHACK <"
+    
+    if espEnabled then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local espBox = Instance.new("BoxHandleAdornment")
+                espBox.Size = Vector3.new(4, 7, 1)
+                espBox.Adornee = player.Character:FindFirstChild("HumanoidRootPart")
+                espBox.Color3 = espColor
+                espBox.AlwaysOnTop = true
+                espBox.ZIndex = 10
+                espBox.Transparency = 0.5
+                espBox.Parent = player.Character
+            end
+        end
+    else
+        for _, player in pairs(Players:GetPlayers()) do
+            if player.Character then
+                for _, adornment in pairs(player.Character:GetChildren()) do
+                    if adornment:IsA("BoxHandleAdornment") then
+                        adornment:Destroy()
+                    end
+                end
+            end
+        end
+    end
+end
+
+-- Функция смены цвета ESP
+local function changeESPColor()
+    colorIndex = colorIndex + 1
+    if colorIndex > #colors then colorIndex = 1 end
+    espColor = colors[colorIndex]
+    
+    -- Изменение цвета всего UI
+    local tweenInfo = TweenInfo.new(0.3)
+    TweenService:Create(frameStroke1, tweenInfo, {Color = espColor}):Play()
+    TweenService:Create(innerStroke, tweenInfo, {Color = espColor}):Play()
+    TweenService:Create(titleLabel, tweenInfo, {TextColor3 = espColor}):Play()
+    TweenService:Create(titleStroke, tweenInfo, {Color = espColor}):Play()
+    TweenService:Create(toggleStroke, tweenInfo, {Color = espColor}):Play()
+    TweenService:Create(toggleButton, tweenInfo, {TextColor3 = espColor}):Play()
+    TweenService:Create(divider, tweenInfo, {BackgroundColor3 = espColor}):Play()
+    TweenService:Create(scanlineEffect, tweenInfo, {BackgroundColor3 = espColor}):Play()
+    
+    if espEnabled then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player.Character then
+                for _, adornment in pairs(player.Character:GetChildren()) do
+                    if adornment:IsA("BoxHandleAdornment") then
+                        adornment.Color3 = espColor
+                    end
+                end
+            end
+        end
+    end
+end
+
+-- Функция полета
+local function fly()
+    local player = Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    
+    bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+    bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    bodyVelocity.Parent = humanoidRootPart
+    
+    bodyGyro = Instance.new("BodyGyro")
+    bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+    bodyGyro.CFrame = humanoidRootPart.CFrame
+    bodyGyro.Parent = humanoidRootPart
+    
+    flyConnection = RunService.Heartbeat:Connect(function()
+        local camera = workspace.CurrentCamera
+        local moveDirection = Vector3.new(0, 0, 0)
+        
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+            moveDirection = moveDirection + (camera.CFrame.LookVector * speed)
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+            moveDirection = moveDirection - (camera.CFrame.LookVector * speed)
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+            moveDirection = moveDirection - (camera.CFrame.RightVector * speed)
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+            moveDirection = moveDirection + (camera.CFrame.RightVector * speed)
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+            moveDirection = moveDirection + Vector3.new(0, speed, 0)
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+            moveDirection = moveDirection - Vector3.new(0, speed, 0)
+        end
+        
+        bodyVelocity.Velocity = moveDirection
+        bodyGyro.CFrame = camera.CFrame
+    end)
+end
+
+-- Функция переключения полета
+local function toggleFly()
+    flying = not flying
+    flyBtn.Text = flying and "> DEACTIVATE NOCLIP <" or "> ACTIVATE NOCLIP <"
+    
+    if flying then
+        fly()
+    else
+        if flyConnection then flyConnection:Disconnect() end
+        if bodyVelocity then bodyVelocity:Destroy() end
+        if bodyGyro then bodyGyro:Destroy() end
+        local humanoidRootPart = Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+        humanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+    end
+end
+
+-- Обработка ввода скорости полета
+speedBox.FocusLost:Connect(function(enterPressed)
+    local newSpeed = tonumber(speedBox.Text)
+    if newSpeed then
+        speed = newSpeed
+        speedBox.Text = ""
+        speedBox.PlaceholderText = "// VELOCITY SET: " .. speed .. " //"
+    else
+        speedBox.Text = ""
+        speedBox.PlaceholderText = "// ERROR: INVALID INPUT //"
+        wait(2)
+        speedBox.PlaceholderText = "// SET FLY VELOCITY: 50 //"
+    end
+end)
+
+-- Обработка ввода скорости Speedhack
+speedhackBox.FocusLost:Connect(function(enterPressed)
+    local newSpeedhackSpeed = tonumber(speedhackBox.Text)
+    if newSpeedhackSpeed then
+        speedhackSpeed = newSpeedhackSpeed
+        if Players.LocalPlayer.Character and Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+            Players.LocalPlayer.Character.Humanoid.WalkSpeed = speedhackSpeed
+        end
+        speedhackBox.Text = ""
+        speedhackBox.PlaceholderText = "// MULTIPLIER: " .. speedhackSpeed .. " //"
+    else
+        speedhackBox.Text = ""
+        speedhackBox.PlaceholderText = "// ERROR: INVALID INPUT //"
+        wait(2)
+        speedhackBox.PlaceholderText = "// SET SPEED MULTIPLIER: 16 //"
+    end
+end)
+
+-- Функция переключения Speedhack
+local function toggleSpeedhack()
+    speedhackEnabled = not speedhackEnabled
+    speedhackBtn.Text = speedhackEnabled and "> REMOVE SPEEDHACK <" or "> INJECT SPEEDHACK <"
+    
+    if Players.LocalPlayer.Character and Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+        if speedhackEnabled then
+            Players.LocalPlayer.Character.Humanoid.WalkSpeed = speedhackSpeed
+        else
+            Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        end
+    end
+end
+
+-- Привязка функций к кнопкам
+espBtn.MouseButton1Click:Connect(toggleESP)
+colorBtn.MouseButton1Click:Connect(changeESPColor)
+flyBtn.MouseButton1Click:Connect(toggleFly)
+speedhackBtn.MouseButton1Click:Connect(toggleSpeedhack)
+toggleButton.MouseButton1Click:Connect(toggleMenu)
+
+-- Восстанавливаем меню после смерти
+restoreMenuOnDeath()
+
+-- Включаем размытие при старте
+blur.Enabled = true
+TweenService:Create(blur, TweenInfo.new(0.5), {Size = 8}):Play()
+
+-- Начальная анимация появления
+frame.Position = UDim2.new(0.5, -225, -1, 0)
+wait(0.5)
+TweenService:Create(frame, TweenInfo.new(0.8, Enum.EasingStyle.Bounce), {Position = UDim2.new(0.5, -225, 0.5, -275)}):Play()
+
+-- Звуковой эффект (опционально)
+local bootSound = Instance.new("Sound")
+bootSound.SoundId = "rbxassetid://6518811702" -- Хакерский звук загрузки
+bootSound.Volume = 0.3
+bootSound.Parent = screenGui
+bootSound:Play()
+
+print("// ARUSCRIPT INITIALIZED //")
+print("// SYSTEM STATUS: ONLINE //")
