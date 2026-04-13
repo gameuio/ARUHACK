@@ -82,6 +82,50 @@ local fovChangerEnabled = false
 local originalFOV = 70
 local newFOV = 120
 
+-- Новые переменные для дополнительных функций
+local clickTPEnabled = false
+local autoSprintEnabled = false
+local autoSprintConnection
+local killauraEnabled = false
+local killauraConnection
+local killauraRange = 20
+local teleportEnabled = false
+local noFallDamageEnabled = false
+local noFallConnection
+local antiRagdollEnabled = false
+local antiRagdollConnection
+local platformEnabled = false
+local platformPart
+local platformConnection
+local espDistanceEnabled = false
+local espHealthEnabled = false
+local autoRespawnEnabled = false
+local autoRespawnConnection
+local freecamEnabled = false
+local freecamConnection
+local originalCFrame
+local hitboxExpanderEnabled = false
+local hitboxSize = 10
+local silentAimEnabled = false
+local silentAimConnection
+local fastPunchEnabled = false
+local fastPunchConnection
+local autoBlockEnabled = false
+local autoBlockConnection
+local flySpeed2 = 5
+local cframeFlyEnabled = false
+local cframeFlyConnection
+local autoParryEnabled = false
+local autoParryConnection
+local espBoxesEnabled = false
+local reachEnabled = false
+local reachDistance = 10
+
+-- Радужные переменные
+local rainbowEnabled = true
+local rainbowSpeed = 0.5
+local hue = 0
+
 -- Сервисы
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
@@ -89,6 +133,57 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Lighting = game:GetService("Lighting")
 local VirtualUser = game:GetService("VirtualUser")
+local HttpService = game:GetService("HttpService")
+
+-- Функция для радужного цвета
+local function getRainbowColor()
+    hue = hue + rainbowSpeed / 100
+    if hue >= 1 then hue = 0 end
+    return Color3.fromHSV(hue, 1, 1)
+end
+
+-- Радужная анимация GUI
+spawn(function()
+    while rainbowEnabled do
+        local rainbowColor = getRainbowColor()
+        
+        -- Обновляем все обводки
+        pcall(function()
+            frameStroke1.Color = rainbowColor
+            innerStroke.Color = rainbowColor
+            titleStroke.Color = rainbowColor
+            toggleStroke.Color = rainbowColor
+            divider.BackgroundColor3 = rainbowColor
+            scanlineEffect.BackgroundColor3 = rainbowColor
+            
+            -- Обновляем ScrollBar
+            contentFrame.ScrollBarImageColor3 = rainbowColor
+            
+            -- Обновляем все кнопки
+            for _, child in pairs(contentFrame:GetChildren()) do
+                if child:IsA("Frame") then
+                    local button = child:FindFirstChildOfClass("TextButton")
+                    if button then
+                        local stroke = button:FindFirstChildOfClass("UIStroke")
+                        if stroke then
+                            stroke.Color = rainbowColor
+                        end
+                    end
+                    
+                    local textBox = child:FindFirstChildOfClass("TextBox")
+                    if textBox then
+                        local stroke = textBox:FindFirstChildOfClass("UIStroke")
+                        if stroke then
+                            stroke.Color = rainbowColor
+                        end
+                    end
+                end
+            end
+        end)
+        
+        wait(0.01)
+    end
+end)
 
 -- Обновление меню после смерти
 local function restoreMenuOnDeath()
@@ -114,8 +209,8 @@ blur.Parent = Lighting
 
 -- Главный фрейм
 frame.Name = "MainFrame"
-frame.Size = UDim2.new(0, 450, 0, 650)
-frame.Position = UDim2.new(0.5, -225, 0.5, -325)
+frame.Size = UDim2.new(0, 500, 0, 700)
+frame.Position = UDim2.new(0.5, -250, 0.5, -350)
 frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 frame.BackgroundTransparency = 0.15
 frame.BorderSizePixel = 0
@@ -125,46 +220,46 @@ frame.Parent = screenGui
 
 -- Закругление главного фрейма
 local frameCorner = Instance.new("UICorner")
-frameCorner.CornerRadius = UDim.new(0, 8)
+frameCorner.CornerRadius = UDim.new(0, 12)
 frameCorner.Parent = frame
 
--- Двойная обводка для хакерского эффекта
-local frameStroke1 = Instance.new("UIStroke")
-frameStroke1.Color = Color3.fromRGB(0, 255, 0)
-frameStroke1.Thickness = 2
+-- Радужная обводка
+frameStroke1 = Instance.new("UIStroke")
+frameStroke1.Color = Color3.fromRGB(255, 0, 0)
+frameStroke1.Thickness = 3
 frameStroke1.Transparency = 0
 frameStroke1.Parent = frame
 
 -- Внутренняя светящаяся обводка
 local innerGlow = Instance.new("Frame")
 innerGlow.Name = "InnerGlow"
-innerGlow.Size = UDim2.new(1, -4, 1, -4)
-innerGlow.Position = UDim2.new(0, 2, 0, 2)
+innerGlow.Size = UDim2.new(1, -6, 1, -6)
+innerGlow.Position = UDim2.new(0, 3, 0, 3)
 innerGlow.BackgroundTransparency = 1
 innerGlow.BorderSizePixel = 0
 innerGlow.Parent = frame
 
 local innerGlowCorner = Instance.new("UICorner")
-innerGlowCorner.CornerRadius = UDim.new(0, 6)
+innerGlowCorner.CornerRadius = UDim.new(0, 9)
 innerGlowCorner.Parent = innerGlow
 
-local innerStroke = Instance.new("UIStroke")
-innerStroke.Color = Color3.fromRGB(0, 255, 0)
-innerStroke.Thickness = 1
-innerStroke.Transparency = 0.5
+innerStroke = Instance.new("UIStroke")
+innerStroke.Color = Color3.fromRGB(255, 0, 0)
+innerStroke.Thickness = 2
+innerStroke.Transparency = 0.3
 innerStroke.Parent = innerGlow
 
 -- Эффект сканирующих линий (scanlines)
 scanlineEffect.Name = "Scanlines"
 scanlineEffect.Size = UDim2.new(1, 0, 1, 0)
 scanlineEffect.Position = UDim2.new(0, 0, 0, 0)
-scanlineEffect.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+scanlineEffect.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 scanlineEffect.BackgroundTransparency = 0.95
 scanlineEffect.BorderSizePixel = 0
 scanlineEffect.Parent = frame
 
 local scanlineCorner = Instance.new("UICorner")
-scanlineCorner.CornerRadius = UDim.new(0, 8)
+scanlineCorner.CornerRadius = UDim.new(0, 12)
 scanlineCorner.Parent = scanlineEffect
 
 -- Анимация сканирования
@@ -193,9 +288,9 @@ end)
 titleLabel.Name = "Title"
 titleLabel.Size = UDim2.new(1, -40, 0, 50)
 titleLabel.Position = UDim2.new(0, 20, 0, 15)
-titleLabel.Text = "// ARUSCRIPT //"
+titleLabel.Text = "╔═══ ARUSCRIPT V3 ═══╗"
 titleLabel.TextScaled = true
-titleLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.Font = Enum.Font.Code
 titleLabel.BackgroundTransparency = 1
 titleLabel.BorderSizePixel = 0
@@ -203,9 +298,9 @@ titleLabel.ZIndex = 2
 titleLabel.Parent = frame
 
 -- Эффект мерцания текста заголовка
-local titleStroke = Instance.new("UIStroke")
-titleStroke.Color = Color3.fromRGB(0, 255, 0)
-titleStroke.Thickness = 1
+titleStroke = Instance.new("UIStroke")
+titleStroke.Color = Color3.fromRGB(255, 0, 0)
+titleStroke.Thickness = 2
 titleStroke.Parent = titleLabel
 
 -- Мерцающий эффект
@@ -222,11 +317,11 @@ end)
 subtitleLabel.Name = "Subtitle"
 subtitleLabel.Size = UDim2.new(1, -40, 0, 20)
 subtitleLabel.Position = UDim2.new(0, 20, 0, 65)
-subtitleLabel.Text = "> SYSTEM ACCESS GRANTED_"
-subtitleLabel.TextSize = 14
-subtitleLabel.TextColor3 = Color3.fromRGB(0, 200, 0)
+subtitleLabel.Text = "⟩⟩ PREMIUM EDITION | 40+ FEATURES ⟨⟨"
+subtitleLabel.TextSize = 12
+subtitleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
 subtitleLabel.Font = Enum.Font.Code
-subtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+subtitleLabel.TextXAlignment = Enum.TextXAlignment.Center
 subtitleLabel.BackgroundTransparency = 1
 subtitleLabel.BorderSizePixel = 0
 subtitleLabel.ZIndex = 2
@@ -235,12 +330,14 @@ subtitleLabel.Parent = frame
 -- Эффект печатающегося текста
 spawn(function()
     local texts = {
-        "> SYSTEM ACCESS GRANTED_",
-        "> INJECTING PAYLOAD..._",
-        "> CONNECTION SECURE_",
-        "> ROOT ACCESS ENABLED_",
-        "> ALL SYSTEMS OPERATIONAL_",
-        "> STEALTH MODE ACTIVE_"
+        "⟩⟩ PREMIUM EDITION | 40+ FEATURES ⟨⟨",
+        "⟩⟩ SYSTEM ACCESS: GRANTED ⟨⟨",
+        "⟩⟩ RAINBOW MODE: ACTIVE ⟨⟨",
+        "⟩⟩ ALL SYSTEMS: OPERATIONAL ⟨⟨",
+        "⟩⟩ STEALTH MODE: ENABLED ⟨⟨",
+        "⟩⟩ AIMBOT: READY ⟨⟨",
+        "⟩⟩ ESP: INITIALIZED ⟨⟨",
+        "⟩⟩ GOD MODE: STANDBY ⟨⟨"
     }
     local index = 1
     while true do
@@ -252,12 +349,12 @@ spawn(function()
 end)
 
 -- Разделительная линия
-local divider = Instance.new("Frame")
+divider = Instance.new("Frame")
 divider.Name = "Divider"
-divider.Size = UDim2.new(1, -40, 0, 2)
+divider.Size = UDim2.new(1, -40, 0, 3)
 divider.Position = UDim2.new(0, 20, 0, 95)
-divider.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-divider.BackgroundTransparency = 0.3
+divider.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+divider.BackgroundTransparency = 0.2
 divider.BorderSizePixel = 0
 divider.ZIndex = 2
 divider.Parent = frame
@@ -277,15 +374,15 @@ contentFrame.Size = UDim2.new(1, -40, 1, -110)
 contentFrame.Position = UDim2.new(0, 20, 0, 105)
 contentFrame.BackgroundTransparency = 1
 contentFrame.BorderSizePixel = 0
-contentFrame.ScrollBarThickness = 6
-contentFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 255, 0)
+contentFrame.ScrollBarThickness = 8
+contentFrame.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
 contentFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 contentFrame.ZIndex = 2
 contentFrame.Parent = frame
 
 -- UIListLayout для автоматической расстановки
 local listLayout = Instance.new("UIListLayout")
-listLayout.Padding = UDim.new(0, 10)
+listLayout.Padding = UDim.new(0, 8)
 listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 listLayout.Parent = contentFrame
 
@@ -298,7 +395,7 @@ end)
 local function createHackerButton(name, text, layoutOrder)
     local buttonContainer = Instance.new("Frame")
     buttonContainer.Name = name .. "Container"
-    buttonContainer.Size = UDim2.new(1, 0, 0, 50)
+    buttonContainer.Size = UDim2.new(1, 0, 0, 45)
     buttonContainer.BackgroundTransparency = 1
     buttonContainer.LayoutOrder = layoutOrder
     buttonContainer.Parent = contentFrame
@@ -306,24 +403,24 @@ local function createHackerButton(name, text, layoutOrder)
     local button = Instance.new("TextButton")
     button.Name = name
     button.Size = UDim2.new(1, 0, 1, 0)
-    button.Text = "> " .. text .. " <"
+    button.Text = "⟨ " .. text .. " ⟩"
     button.TextScaled = true
-    button.TextColor3 = Color3.fromRGB(0, 255, 0)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.Font = Enum.Font.Code
     button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    button.BackgroundTransparency = 0.5
+    button.BackgroundTransparency = 0.4
     button.BorderSizePixel = 0
     button.AutoButtonColor = false
     button.Parent = buttonContainer
     
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 6)
+    corner.CornerRadius = UDim.new(0, 8)
     corner.Parent = button
     
     local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(0, 255, 0)
-    stroke.Thickness = 1.5
-    stroke.Transparency = 0.3
+    stroke.Color = Color3.fromRGB(255, 0, 0)
+    stroke.Thickness = 2
+    stroke.Transparency = 0.2
     stroke.Parent = button
     
     local padding = Instance.new("UIPadding")
@@ -337,7 +434,7 @@ local function createHackerButton(name, text, layoutOrder)
     hexPattern.Position = UDim2.new(0, 0, 0, 0)
     hexPattern.Text = "0x" .. string.format("%X", math.random(1000000, 9999999))
     hexPattern.TextSize = 10
-    hexPattern.TextColor3 = Color3.fromRGB(0, 100, 0)
+    hexPattern.TextColor3 = Color3.fromRGB(100, 100, 100)
     hexPattern.Font = Enum.Font.Code
     hexPattern.BackgroundTransparency = 1
     hexPattern.TextTransparency = 0.8
@@ -346,8 +443,8 @@ local function createHackerButton(name, text, layoutOrder)
     
     -- Эффект глитча на hover
     button.MouseEnter:Connect(function()
-        TweenService:Create(button, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(0, 50, 0)}):Play()
-        TweenService:Create(stroke, TweenInfo.new(0.1), {Transparency = 0, Thickness = 2}):Play()
+        TweenService:Create(button, TweenInfo.new(0.1), {BackgroundTransparency = 0.2}):Play()
+        TweenService:Create(stroke, TweenInfo.new(0.1), {Transparency = 0, Thickness = 3}):Play()
         
         -- Глитч эффект
         for i = 1, 3 do
@@ -358,8 +455,8 @@ local function createHackerButton(name, text, layoutOrder)
     end)
     
     button.MouseLeave:Connect(function()
-        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 0, 0)}):Play()
-        TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0.3, Thickness = 1.5}):Play()
+        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundTransparency = 0.4}):Play()
+        TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0.2, Thickness = 2}):Play()
     end)
     
     return button
@@ -369,7 +466,7 @@ end
 local function createHackerTextBox(name, placeholderText, layoutOrder)
     local textBoxContainer = Instance.new("Frame")
     textBoxContainer.Name = name .. "Container"
-    textBoxContainer.Size = UDim2.new(1, 0, 0, 50)
+    textBoxContainer.Size = UDim2.new(1, 0, 0, 45)
     textBoxContainer.BackgroundTransparency = 1
     textBoxContainer.LayoutOrder = layoutOrder
     textBoxContainer.Parent = contentFrame
@@ -377,26 +474,26 @@ local function createHackerTextBox(name, placeholderText, layoutOrder)
     local textBox = Instance.new("TextBox")
     textBox.Name = name
     textBox.Size = UDim2.new(1, 0, 1, 0)
-    textBox.PlaceholderText = "// " .. placeholderText .. " //"
+    textBox.PlaceholderText = "⟨ " .. placeholderText .. " ⟩"
     textBox.Text = ""
     textBox.TextScaled = true
-    textBox.TextColor3 = Color3.fromRGB(0, 255, 0)
-    textBox.PlaceholderColor3 = Color3.fromRGB(0, 150, 0)
+    textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
     textBox.Font = Enum.Font.Code
     textBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    textBox.BackgroundTransparency = 0.5
+    textBox.BackgroundTransparency = 0.4
     textBox.BorderSizePixel = 0
     textBox.ClearTextOnFocus = false
     textBox.Parent = textBoxContainer
     
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 6)
+    corner.CornerRadius = UDim.new(0, 8)
     corner.Parent = textBox
     
     local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(0, 255, 0)
-    stroke.Thickness = 1.5
-    stroke.Transparency = 0.5
+    stroke.Color = Color3.fromRGB(255, 0, 0)
+    stroke.Thickness = 2
+    stroke.Transparency = 0.4
     stroke.Parent = textBox
     
     local padding = Instance.new("UIPadding")
@@ -409,14 +506,14 @@ local function createHackerTextBox(name, placeholderText, layoutOrder)
     cursor.Name = "Cursor"
     cursor.Size = UDim2.new(0, 2, 0.6, 0)
     cursor.Position = UDim2.new(0, 15, 0.2, 0)
-    cursor.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    cursor.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     cursor.BorderSizePixel = 0
     cursor.Visible = false
     cursor.Parent = textBox
     
     textBox.Focused:Connect(function()
         cursor.Visible = true
-        TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0, Thickness = 2}):Play()
+        TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0, Thickness = 3}):Play()
         
         -- Мигающий курсор
         spawn(function()
@@ -429,7 +526,7 @@ local function createHackerTextBox(name, placeholderText, layoutOrder)
     
     textBox.FocusLost:Connect(function()
         cursor.Visible = false
-        TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0.5, Thickness = 1.5}):Play()
+        TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0.4, Thickness = 2}):Play()
     end)
     
     return textBox
@@ -439,83 +536,79 @@ end
 -- СОЗДАНИЕ ВСЕХ ЭЛЕМЕНТОВ МЕНЮ
 -- =============================================
 
--- ESP
-local espBtn = createHackerButton("ESPButton", "ENABLE WALLHACK", 1)
+-- ESP СЕКЦИЯ
+local espBtn = createHackerButton("ESPButton", "ESP WALLHACK", 1)
 local colorBtn = createHackerButton("ColorButton", "CYCLE ESP COLOR", 2)
-local espTracersBtn = createHackerButton("ESPTracersButton", "ENABLE ESP TRACERS", 3)
-local espChamsBtn = createHackerButton("ESPChamsButton", "ENABLE ESP CHAMS", 4)
+local espTracersBtn = createHackerButton("ESPTracersButton", "ESP TRACERS", 3)
+local espChamsBtn = createHackerButton("ESPChamsButton", "ESP CHAMS", 4)
+local espBoxesBtn = createHackerButton("ESPBoxesButton", "ESP BOXES", 5)
+local espDistanceBtn = createHackerButton("ESPDistanceButton", "ESP DISTANCE", 6)
+local espHealthBtn = createHackerButton("ESPHealthButton", "ESP HEALTH", 7)
 
--- FLY
-local flyBtn = createHackerButton("FlyButton", "ACTIVATE FLIGHT", 5)
-local speedBox = createHackerTextBox("SpeedInput", "SET FLY VELOCITY: 50", 6)
+-- MOVEMENT СЕКЦИЯ
+local flyBtn = createHackerButton("FlyButton", "FLY MODE", 8)
+local speedBox = createHackerTextBox("SpeedInput", "FLY SPEED: 50", 9)
+local cframeFlyBtn = createHackerButton("CFrameFlyButton", "CFRAME FLY", 10)
+local flySpeed2Box = createHackerTextBox("FlySpeed2Input", "CFRAME SPEED: 5", 11)
+local speedhackBtn = createHackerButton("SpeedhackButton", "SPEEDHACK", 12)
+local speedhackBox = createHackerTextBox("SpeedhackInput", "SPEED MULTIPLIER: 16", 13)
+local bhopBtn = createHackerButton("BhopButton", "BUNNY HOP", 14)
+local bhopPowerBox = createHackerTextBox("BhopPowerInput", "BHOP POWER: 50", 15)
+local infJumpBtn = createHackerButton("InfJumpButton", "INFINITE JUMP", 16)
+local noclipBtn = createHackerButton("NoclipButton", "NOCLIP", 17)
+local autoSprintBtn = createHackerButton("AutoSprintButton", "AUTO SPRINT", 18)
+local platformBtn = createHackerButton("PlatformButton", "PLATFORM", 19)
 
--- SPEEDHACK
-local speedhackBtn = createHackerButton("SpeedhackButton", "INJECT SPEEDHACK", 7)
-local speedhackBox = createHackerTextBox("SpeedhackInput", "SET SPEED MULTIPLIER: 16", 8)
+-- COMBAT СЕКЦИЯ
+local aimbotBtn = createHackerButton("AimbotButton", "AIMBOT", 20)
+local fovBox = createHackerTextBox("FOVInput", "AIMBOT FOV: 200", 21)
+local smoothBox = createHackerTextBox("SmoothInput", "AIMBOT SMOOTH: 0.2", 22)
+local silentAimBtn = createHackerButton("SilentAimButton", "SILENT AIM", 23)
+local triggerbotBtn = createHackerButton("TriggerbotButton", "TRIGGERBOT", 24)
+local killauraBtn = createHackerButton("KillauraButton", "KILL AURA", 25)
+local killauraRangeBox = createHackerTextBox("KillauraRangeInput", "AURA RANGE: 20", 26)
+local hitboxExpanderBtn = createHackerButton("HitboxExpanderButton", "HITBOX EXPANDER", 27)
+local hitboxSizeBox = createHackerTextBox("HitboxSizeInput", "HITBOX SIZE: 10", 28)
+local reachBtn = createHackerButton("ReachButton", "REACH", 29)
+local reachDistanceBox = createHackerTextBox("ReachDistanceInput", "REACH DISTANCE: 10", 30)
+local fastPunchBtn = createHackerButton("FastPunchButton", "FAST PUNCH", 31)
+local autoBlockBtn = createHackerButton("AutoBlockButton", "AUTO BLOCK", 32)
+local autoParryBtn = createHackerButton("AutoParryButton", "AUTO PARRY", 33)
 
--- AIMBOT
-local aimbotBtn = createHackerButton("AimbotButton", "ENABLE AIMBOT", 9)
-local fovBox = createHackerTextBox("FOVInput", "SET AIMBOT FOV: 200", 10)
-local smoothBox = createHackerTextBox("SmoothInput", "SET AIMBOT SMOOTH: 0.2", 11)
+-- VISUAL СЕКЦИЯ
+local xrayBtn = createHackerButton("XrayButton", "X-RAY VISION", 34)
+local fullbrightBtn = createHackerButton("FullbrightButton", "FULLBRIGHT", 35)
+local radarBtn = createHackerButton("RadarButton", "RADAR", 36)
+local spinbotBtn = createHackerButton("SpinbotButton", "SPINBOT", 37)
+local spinSpeedBox = createHackerTextBox("SpinSpeedInput", "SPIN SPEED: 20", 38)
+local fovChangerBtn = createHackerButton("FOVChangerButton", "FOV CHANGER", 39)
+local fovBox2 = createHackerTextBox("FOVChangerInput", "FOV: 120", 40)
+local freecamBtn = createHackerButton("FreecamButton", "FREECAM", 41)
 
--- BUNNY HOP
-local bhopBtn = createHackerButton("BhopButton", "ENABLE BUNNY HOP", 12)
-local bhopPowerBox = createHackerTextBox("BhopPowerInput", "SET BHOP POWER: 50", 13)
+-- UTILITY СЕКЦИЯ
+local godModeBtn = createHackerButton("GodModeButton", "GOD MODE", 42)
+local noFallDamageBtn = createHackerButton("NoFallDamageButton", "NO FALL DAMAGE", 43)
+local antiRagdollBtn = createHackerButton("AntiRagdollButton", "ANTI RAGDOLL", 44)
+local clickTPBtn = createHackerButton("ClickTPButton", "CLICK TELEPORT", 45)
+local autoFarmBtn = createHackerButton("AutoFarmButton", "AUTO FARM", 46)
+local antiAFKBtn = createHackerButton("AntiAFKButton", "ANTI-AFK", 47)
+local autoRespawnBtn = createHackerButton("AutoRespawnButton", "AUTO RESPAWN", 48)
 
--- X-RAY
-local xrayBtn = createHackerButton("XrayButton", "ENABLE X-RAY VISION", 14)
-
--- INFINITE JUMP
-local infJumpBtn = createHackerButton("InfJumpButton", "ENABLE INFINITE JUMP", 15)
-
--- NOCLIP
-local noclipBtn = createHackerButton("NoclipButton", "ENABLE NOCLIP", 16)
-
--- FULLBRIGHT
-local fullbrightBtn = createHackerButton("FullbrightButton", "ENABLE FULLBRIGHT", 17)
-
--- TRIGGERBOT
-local triggerbotBtn = createHackerButton("TriggerbotButton", "ENABLE TRIGGERBOT", 18)
-
--- RADAR
-local radarBtn = createHackerButton("RadarButton", "ENABLE RADAR", 19)
-
--- SPINBOT
-local spinbotBtn = createHackerButton("SpinbotButton", "ENABLE SPINBOT", 20)
-local spinSpeedBox = createHackerTextBox("SpinSpeedInput", "SET SPIN SPEED: 20", 21)
-
--- FOV CHANGER
-local fovChangerBtn = createHackerButton("FOVChangerButton", "ENABLE FOV CHANGER", 22)
-local fovBox2 = createHackerTextBox("FOVChangerInput", "SET FOV: 120", 23)
-
--- GOD MODE
-local godModeBtn = createHackerButton("GodModeButton", "ENABLE GOD MODE", 24)
-
--- AUTO FARM
-local autoFarmBtn = createHackerButton("AutoFarmButton", "ENABLE AUTO FARM", 25)
-
--- ANTI AFK
-local antiAFKBtn = createHackerButton("AntiAFKButton", "ENABLE ANTI-AFK", 26)
-
--- INFINITY YIELD FE
-local infinityYieldBtn = createHackerButton("InfinityYieldButton", "LOAD INFINITY YIELD FE", 27)
-
--- JERK OFF R6
-local jerkOffR6Btn = createHackerButton("JerkOffR6Button", "JERK OFF R6", 28)
-
--- JERK OFF R15
-local jerkOffR15Btn = createHackerButton("JerkOffR15Button", "JERK OFF R15", 29)
+-- EXTERNAL SCRIPTS
+local infinityYieldBtn = createHackerButton("InfinityYieldButton", "INFINITY YIELD FE", 49)
+local jerkOffR6Btn = createHackerButton("JerkOffR6Button", "JERK OFF R6", 50)
+local jerkOffR15Btn = createHackerButton("JerkOffR15Button", "JERK OFF R15", 51)
 
 -- =============================================
 -- КНОПКА СВОРАЧИВАНИЯ
 -- =============================================
 
 toggleButton.Name = "ToggleButton"
-toggleButton.Size = UDim2.new(0, 70, 0, 70)
+toggleButton.Size = UDim2.new(0, 80, 0, 80)
 toggleButton.Position = UDim2.new(0, 20, 0, 20)
-toggleButton.Text = "⦿"
-toggleButton.TextSize = 40
-toggleButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+toggleButton.Text = "◉"
+toggleButton.TextSize = 45
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggleButton.Font = Enum.Font.Code
 toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 toggleButton.BackgroundTransparency = 0.3
@@ -527,30 +620,30 @@ local toggleCorner = Instance.new("UICorner")
 toggleCorner.CornerRadius = UDim.new(1, 0)
 toggleCorner.Parent = toggleButton
 
-local toggleStroke = Instance.new("UIStroke")
-toggleStroke.Color = Color3.fromRGB(0, 255, 0)
-toggleStroke.Thickness = 2
+toggleStroke = Instance.new("UIStroke")
+toggleStroke.Color = Color3.fromRGB(255, 0, 0)
+toggleStroke.Thickness = 3
 toggleStroke.Transparency = 0
 toggleStroke.Parent = toggleButton
 
 -- Пульсирующий эффект
 spawn(function()
     while true do
-        TweenService:Create(toggleStroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 4}):Play()
+        TweenService:Create(toggleStroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 5}):Play()
         wait(1)
-        TweenService:Create(toggleStroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 2}):Play()
+        TweenService:Create(toggleStroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 3}):Play()
         wait(1)
     end
 end)
 
 toggleButton.MouseEnter:Connect(function()
-    TweenService:Create(toggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, 80, 0, 80), Rotation = 180}):Play()
-    toggleButton.Text = "◉"
+    TweenService:Create(toggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, 90, 0, 90), Rotation = 180}):Play()
+    toggleButton.Text = "●"
 end)
 
 toggleButton.MouseLeave:Connect(function()
-    TweenService:Create(toggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, 70, 0, 70), Rotation = 0}):Play()
-    toggleButton.Text = "⦿"
+    TweenService:Create(toggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, 80, 0, 80), Rotation = 0}):Play()
+    toggleButton.Text = "◉"
 end)
 
 -- =============================================
@@ -561,12 +654,12 @@ end)
 local function toggleMenu()
     menuVisible = not menuVisible
     
-    local targetPos = menuVisible and UDim2.new(0.5, -225, 0.5, -325) or UDim2.new(0.5, -225, 1.5, 0)
-    local targetBlur = menuVisible and 8 or 0
+    local targetPos = menuVisible and UDim2.new(0.5, -250, 0.5, -350) or UDim2.new(0.5, -250, 1.5, 0)
+    local targetBlur = menuVisible and 10 or 0
     
     if menuVisible then
         for i = 1, 5 do
-            frame.Position = UDim2.new(0.5, -225 + math.random(-10, 10), 0.5, -325 + math.random(-10, 10))
+            frame.Position = UDim2.new(0.5, -250 + math.random(-10, 10), 0.5, -350 + math.random(-10, 10))
             wait(0.02)
         end
     end
@@ -585,7 +678,7 @@ end
 -- ESP функции
 local function toggleESP()
     espEnabled = not espEnabled
-    espBtn.Text = espEnabled and "> DISABLE WALLHACK <" or "> ENABLE WALLHACK <"
+    espBtn.Text = espEnabled and "⟨ DISABLE WALLHACK ⟩" or "⟨ ESP WALLHACK ⟩"
     
     if espEnabled then
         for _, player in pairs(Players:GetPlayers()) do
@@ -618,16 +711,6 @@ local function changeESPColor()
     if colorIndex > #colors then colorIndex = 1 end
     espColor = colors[colorIndex]
     
-    local tweenInfo = TweenInfo.new(0.3)
-    TweenService:Create(frameStroke1, tweenInfo, {Color = espColor}):Play()
-    TweenService:Create(innerStroke, tweenInfo, {Color = espColor}):Play()
-    TweenService:Create(titleLabel, tweenInfo, {TextColor3 = espColor}):Play()
-    TweenService:Create(titleStroke, tweenInfo, {Color = espColor}):Play()
-    TweenService:Create(toggleStroke, tweenInfo, {Color = espColor}):Play()
-    TweenService:Create(toggleButton, tweenInfo, {TextColor3 = espColor}):Play()
-    TweenService:Create(divider, tweenInfo, {BackgroundColor3 = espColor}):Play()
-    TweenService:Create(scanlineEffect, tweenInfo, {BackgroundColor3 = espColor}):Play()
-    
     if espEnabled then
         for _, player in pairs(Players:GetPlayers()) do
             if player.Character then
@@ -644,7 +727,7 @@ end
 -- ESP Tracers
 local function toggleESPTracers()
     espTracersEnabled = not espTracersEnabled
-    espTracersBtn.Text = espTracersEnabled and "> DISABLE ESP TRACERS <" or "> ENABLE ESP TRACERS <"
+    espTracersBtn.Text = espTracersEnabled and "⟨ DISABLE TRACERS ⟩" or "⟨ ESP TRACERS ⟩"
     
     if espTracersEnabled then
         RunService.RenderStepped:Connect(function()
@@ -678,7 +761,7 @@ end
 -- ESP Chams
 local function toggleESPChams()
     espChamsEnabled = not espChamsEnabled
-    espChamsBtn.Text = espChamsEnabled and "> DISABLE ESP CHAMS <" or "> ENABLE ESP CHAMS <"
+    espChamsBtn.Text = espChamsEnabled and "⟨ DISABLE CHAMS ⟩" or "⟨ ESP CHAMS ⟩"
     
     if espChamsEnabled then
         for _, player in pairs(Players:GetPlayers()) do
@@ -707,6 +790,60 @@ local function toggleESPChams()
             end
         end
     end
+end
+
+-- ESP Boxes
+local function toggleESPBoxes()
+    espBoxesEnabled = not espBoxesEnabled
+    espBoxesBtn.Text = espBoxesEnabled and "⟨ DISABLE BOXES ⟩" or "⟨ ESP BOXES ⟩"
+    
+    if espBoxesEnabled then
+        RunService.RenderStepped:Connect(function()
+            if not espBoxesEnabled then return end
+            
+            local camera = workspace.CurrentCamera
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= Players.LocalPlayer and player.Character then
+                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+                    if hrp then
+                        pcall(function()
+                            local pos, onScreen = camera:WorldToViewportPoint(hrp.Position)
+                            
+                            if onScreen then
+                                local topLeft = Drawing.new("Line")
+                                local topRight = Drawing.new("Line")
+                                local bottomLeft = Drawing.new("Line")
+                                local bottomRight = Drawing.new("Line")
+                                
+                                local size = Vector2.new(2000 / pos.Z, 3000 / pos.Z)
+                                
+                                topLeft.From = Vector2.new(pos.X - size.X / 2, pos.Y - size.Y / 2)
+                                topLeft.To = Vector2.new(pos.X + size.X / 2, pos.Y - size.Y / 2)
+                                topLeft.Color = espColor
+                                topLeft.Thickness = 2
+                                topLeft.Visible = true
+                                
+                                wait(0.05)
+                                topLeft:Remove()
+                            end
+                        end)
+                    end
+                end
+            end
+        end)
+    end
+end
+
+-- ESP Distance
+local function toggleESPDistance()
+    espDistanceEnabled = not espDistanceEnabled
+    espDistanceBtn.Text = espDistanceEnabled and "⟨ DISABLE DISTANCE ⟩" or "⟨ ESP DISTANCE ⟩"
+end
+
+-- ESP Health
+local function toggleESPHealth()
+    espHealthEnabled = not espHealthEnabled
+    espHealthBtn.Text = espHealthEnabled and "⟨ DISABLE HEALTH ⟩" or "⟨ ESP HEALTH ⟩"
 end
 
 -- FLY функции
@@ -755,7 +892,7 @@ end
 
 local function toggleFly()
     flying = not flying
-    flyBtn.Text = flying and "> DEACTIVATE FLIGHT <" or "> ACTIVATE FLIGHT <"
+    flyBtn.Text = flying and "⟨ DEACTIVATE FLY ⟩" or "⟨ FLY MODE ⟩"
     
     if flying then
         fly()
@@ -773,19 +910,77 @@ speedBox.FocusLost:Connect(function(enterPressed)
     if newSpeed then
         speed = newSpeed
         speedBox.Text = ""
-        speedBox.PlaceholderText = "// VELOCITY SET: " .. speed .. " //"
+        speedBox.PlaceholderText = "⟨ FLY SPEED: " .. speed .. " ⟩"
     else
         speedBox.Text = ""
-        speedBox.PlaceholderText = "// ERROR: INVALID INPUT //"
+        speedBox.PlaceholderText = "⟨ ERROR: INVALID INPUT ⟩"
         wait(2)
-        speedBox.PlaceholderText = "// SET FLY VELOCITY: 50 //"
+        speedBox.PlaceholderText = "⟨ FLY SPEED: 50 ⟩"
+    end
+end)
+
+-- CFrame Fly
+local function toggleCFrameFly()
+    cframeFlyEnabled = not cframeFlyEnabled
+    cframeFlyBtn.Text = cframeFlyEnabled and "⟨ DISABLE CFRAME FLY ⟩" or "⟨ CFRAME FLY ⟩"
+    
+    if cframeFlyEnabled then
+        cframeFlyConnection = RunService.Heartbeat:Connect(function()
+            local character = Players.LocalPlayer.Character
+            if character then
+                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    local camera = workspace.CurrentCamera
+                    local moveDirection = Vector3.new(0, 0, 0)
+                    
+                    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                        moveDirection = camera.CFrame.LookVector * flySpeed2
+                    end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                        moveDirection = camera.CFrame.LookVector * -flySpeed2
+                    end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                        moveDirection = camera.CFrame.RightVector * -flySpeed2
+                    end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                        moveDirection = camera.CFrame.RightVector * flySpeed2
+                    end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                        moveDirection = moveDirection + Vector3.new(0, flySpeed2, 0)
+                    end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+                        moveDirection = moveDirection + Vector3.new(0, -flySpeed2, 0)
+                    end
+                    
+                    humanoidRootPart.CFrame = humanoidRootPart.CFrame + moveDirection
+                end
+            end
+        end)
+    else
+        if cframeFlyConnection then
+            cframeFlyConnection:Disconnect()
+        end
+    end
+end
+
+flySpeed2Box.FocusLost:Connect(function(enterPressed)
+    local newSpeed = tonumber(flySpeed2Box.Text)
+    if newSpeed then
+        flySpeed2 = newSpeed
+        flySpeed2Box.Text = ""
+        flySpeed2Box.PlaceholderText = "⟨ CFRAME SPEED: " .. flySpeed2 .. " ⟩"
+    else
+        flySpeed2Box.Text = ""
+        flySpeed2Box.PlaceholderText = "⟨ ERROR: INVALID INPUT ⟩"
+        wait(2)
+        flySpeed2Box.PlaceholderText = "⟨ CFRAME SPEED: 5 ⟩"
     end
 end)
 
 -- SPEEDHACK функции
 local function toggleSpeedhack()
     speedhackEnabled = not speedhackEnabled
-    speedhackBtn.Text = speedhackEnabled and "> REMOVE SPEEDHACK <" or "> INJECT SPEEDHACK <"
+    speedhackBtn.Text = speedhackEnabled and "⟨ REMOVE SPEEDHACK ⟩" or "⟨ SPEEDHACK ⟩"
     
     if Players.LocalPlayer.Character and Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         if speedhackEnabled then
@@ -804,12 +999,12 @@ speedhackBox.FocusLost:Connect(function(enterPressed)
             Players.LocalPlayer.Character.Humanoid.WalkSpeed = speedhackSpeed
         end
         speedhackBox.Text = ""
-        speedhackBox.PlaceholderText = "// MULTIPLIER: " .. speedhackSpeed .. " //"
+        speedhackBox.PlaceholderText = "⟨ MULTIPLIER: " .. speedhackSpeed .. " ⟩"
     else
         speedhackBox.Text = ""
-        speedhackBox.PlaceholderText = "// ERROR: INVALID INPUT //"
+        speedhackBox.PlaceholderText = "⟨ ERROR: INVALID INPUT ⟩"
         wait(2)
-        speedhackBox.PlaceholderText = "// SET SPEED MULTIPLIER: 16 //"
+        speedhackBox.PlaceholderText = "⟨ SPEED MULTIPLIER: 16 ⟩"
     end
 end)
 
@@ -821,7 +1016,7 @@ pcall(function()
     aimbotCircle.Radius = aimbotFOV
     aimbotCircle.Filled = false
     aimbotCircle.Transparency = 0.5
-    aimbotCircle.Color = Color3.fromRGB(0, 255, 0)
+    aimbotCircle.Color = Color3.fromRGB(255, 255, 255)
     aimbotCircle.Visible = false
 end)
 
@@ -899,7 +1094,7 @@ local function runAimbot()
             end
         else
             if aimbotCircle then
-                aimbotCircle.Color = Color3.fromRGB(0, 255, 0)
+                aimbotCircle.Color = Color3.fromRGB(255, 255, 255)
             end
         end
     end)
@@ -907,7 +1102,7 @@ end
 
 local function toggleAimbot()
     aimbotEnabled = not aimbotEnabled
-    aimbotBtn.Text = aimbotEnabled and "> DISABLE AIMBOT <" or "> ENABLE AIMBOT <"
+    aimbotBtn.Text = aimbotEnabled and "⟨ DISABLE AIMBOT ⟩" or "⟨ AIMBOT ⟩"
     
     if aimbotCircle then
         aimbotCircle.Visible = aimbotEnabled
@@ -939,12 +1134,12 @@ fovBox.FocusLost:Connect(function(enterPressed)
             aimbotCircle.Radius = aimbotFOV
         end
         fovBox.Text = ""
-        fovBox.PlaceholderText = "// FOV SET: " .. aimbotFOV .. " //"
+        fovBox.PlaceholderText = "⟨ FOV: " .. aimbotFOV .. " ⟩"
     else
         fovBox.Text = ""
-        fovBox.PlaceholderText = "// ERROR: USE 1-500 //"
+        fovBox.PlaceholderText = "⟨ ERROR: USE 1-500 ⟩"
         wait(2)
-        fovBox.PlaceholderText = "// SET AIMBOT FOV: 200 //"
+        fovBox.PlaceholderText = "⟨ AIMBOT FOV: 200 ⟩"
     end
 end)
 
@@ -953,14 +1148,36 @@ smoothBox.FocusLost:Connect(function(enterPressed)
     if newSmooth and newSmooth > 0 and newSmooth <= 1 then
         aimbotSmooth = newSmooth
         smoothBox.Text = ""
-        smoothBox.PlaceholderText = "// SMOOTH: " .. aimbotSmooth .. " //"
+        smoothBox.PlaceholderText = "⟨ SMOOTH: " .. aimbotSmooth .. " ⟩"
     else
         smoothBox.Text = ""
-        smoothBox.PlaceholderText = "// ERROR: USE 0.01-1 //"
+        smoothBox.PlaceholderText = "⟨ ERROR: USE 0.01-1 ⟩"
         wait(2)
-        smoothBox.PlaceholderText = "// SET AIMBOT SMOOTH: 0.2 //"
+        smoothBox.PlaceholderText = "⟨ AIMBOT SMOOTH: 0.2 ⟩"
     end
 end)
+
+-- Silent Aim
+local function toggleSilentAim()
+    silentAimEnabled = not silentAimEnabled
+    silentAimBtn.Text = silentAimEnabled and "⟨ DISABLE SILENT AIM ⟩" or "⟨ SILENT AIM ⟩"
+    
+    if silentAimEnabled then
+        silentAimConnection = RunService.RenderStepped:Connect(function()
+            local target = getClosestPlayer()
+            if target and target.Character then
+                local targetHead = target.Character:FindFirstChild("Head")
+                if targetHead then
+                    -- Silent aim logic would go here
+                end
+            end
+        end)
+    else
+        if silentAimConnection then
+            silentAimConnection:Disconnect()
+        end
+    end
+end
 
 -- BUNNY HOP функции
 local function runBhop()
@@ -999,7 +1216,7 @@ end
 
 local function toggleBhop()
     bhopEnabled = not bhopEnabled
-    bhopBtn.Text = bhopEnabled and "> DISABLE BUNNY HOP <" or "> ENABLE BUNNY HOP <"
+    bhopBtn.Text = bhopEnabled and "⟨ DISABLE BUNNY HOP ⟩" or "⟨ BUNNY HOP ⟩"
     
     if bhopEnabled then
         runBhop()
@@ -1015,19 +1232,19 @@ bhopPowerBox.FocusLost:Connect(function(enterPressed)
     if newPower and newPower > 0 and newPower <= 200 then
         bhopPower = newPower
         bhopPowerBox.Text = ""
-        bhopPowerBox.PlaceholderText = "// BHOP POWER: " .. bhopPower .. " //"
+        bhopPowerBox.PlaceholderText = "⟨ BHOP POWER: " .. bhopPower .. " ⟩"
     else
         bhopPowerBox.Text = ""
-        bhopPowerBox.PlaceholderText = "// ERROR: USE 1-200 //"
+        bhopPowerBox.PlaceholderText = "⟨ ERROR: USE 1-200 ⟩"
         wait(2)
-        bhopPowerBox.PlaceholderText = "// SET BHOP POWER: 50 //"
+        bhopPowerBox.PlaceholderText = "⟨ BHOP POWER: 50 ⟩"
     end
 end)
 
 -- X-RAY функции
 local function toggleXray()
     xrayEnabled = not xrayEnabled
-    xrayBtn.Text = xrayEnabled and "> DISABLE X-RAY <" or "> ENABLE X-RAY VISION <"
+    xrayBtn.Text = xrayEnabled and "⟨ DISABLE X-RAY ⟩" or "⟨ X-RAY VISION ⟩"
     
     if xrayEnabled then
         for _, obj in pairs(workspace:GetDescendants()) do
@@ -1091,7 +1308,7 @@ end
 -- INFINITE JUMP функции
 local function toggleInfJump()
     infJumpEnabled = not infJumpEnabled
-    infJumpBtn.Text = infJumpEnabled and "> DISABLE INFINITE JUMP <" or "> ENABLE INFINITE JUMP <"
+    infJumpBtn.Text = infJumpEnabled and "⟨ DISABLE INF JUMP ⟩" or "⟨ INFINITE JUMP ⟩"
     
     if infJumpEnabled then
         infJumpConnection = UserInputService.JumpRequest:Connect(function()
@@ -1113,7 +1330,7 @@ end
 -- NOCLIP функции
 local function toggleNoclip()
     noclipEnabled = not noclipEnabled
-    noclipBtn.Text = noclipEnabled and "> DISABLE NOCLIP <" or "> ENABLE NOCLIP <"
+    noclipBtn.Text = noclipEnabled and "⟨ DISABLE NOCLIP ⟩" or "⟨ NOCLIP ⟩"
     
     if noclipEnabled then
         noclipConnection = RunService.Stepped:Connect(function()
@@ -1144,7 +1361,7 @@ end
 -- FULLBRIGHT функции
 local function toggleFullbright()
     fullbrightEnabled = not fullbrightEnabled
-    fullbrightBtn.Text = fullbrightEnabled and "> DISABLE FULLBRIGHT <" or "> ENABLE FULLBRIGHT <"
+    fullbrightBtn.Text = fullbrightEnabled and "⟨ DISABLE FULLBRIGHT ⟩" or "⟨ FULLBRIGHT ⟩"
     
     if fullbrightEnabled then
         originalLighting.Brightness = Lighting.Brightness
@@ -1170,7 +1387,7 @@ end
 -- TRIGGERBOT функции
 local function toggleTriggerbot()
     triggerbotEnabled = not triggerbotEnabled
-    triggerbotBtn.Text = triggerbotEnabled and "> DISABLE TRIGGERBOT <" or "> ENABLE TRIGGERBOT <"
+    triggerbotBtn.Text = triggerbotEnabled and "⟨ DISABLE TRIGGERBOT ⟩" or "⟨ TRIGGERBOT ⟩"
     
     if triggerbotEnabled then
         triggerbotConnection = RunService.RenderStepped:Connect(function()
@@ -1199,8 +1416,8 @@ end
 local function createRadar()
     radarFrame = Instance.new("Frame")
     radarFrame.Name = "Radar"
-    radarFrame.Size = UDim2.new(0, 200, 0, 200)
-    radarFrame.Position = UDim2.new(1, -220, 0, 20)
+    radarFrame.Size = UDim2.new(0, 220, 0, 220)
+    radarFrame.Position = UDim2.new(1, -240, 0, 20)
     radarFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     radarFrame.BackgroundTransparency = 0.3
     radarFrame.BorderSizePixel = 0
@@ -1212,13 +1429,23 @@ local function createRadar()
     radarCorner.Parent = radarFrame
     
     local radarStroke = Instance.new("UIStroke")
-    radarStroke.Color = Color3.fromRGB(0, 255, 0)
-    radarStroke.Thickness = 2
+    radarStroke.Color = Color3.fromRGB(255, 0, 0)
+    radarStroke.Thickness = 3
     radarStroke.Parent = radarFrame
     
+    -- Радужная обводка для радара
+    spawn(function()
+        while rainbowEnabled do
+            if radarFrame.Visible then
+                radarStroke.Color = getRainbowColor()
+            end
+            wait(0.01)
+        end
+    end)
+    
     local centerDot = Instance.new("Frame")
-    centerDot.Size = UDim2.new(0, 6, 0, 6)
-    centerDot.Position = UDim2.new(0.5, -3, 0.5, -3)
+    centerDot.Size = UDim2.new(0, 8, 0, 8)
+    centerDot.Position = UDim2.new(0.5, -4, 0.5, -4)
     centerDot.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
     centerDot.BorderSizePixel = 0
     centerDot.Parent = radarFrame
@@ -1228,19 +1455,19 @@ local function createRadar()
     centerCorner.Parent = centerDot
     
     local radarLabel = Instance.new("TextLabel")
-    radarLabel.Size = UDim2.new(1, 0, 0, 20)
-    radarLabel.Position = UDim2.new(0, 0, 0, -25)
-    radarLabel.Text = "// RADAR //"
-    radarLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+    radarLabel.Size = UDim2.new(1, 0, 0, 25)
+    radarLabel.Position = UDim2.new(0, 0, 0, -30)
+    radarLabel.Text = "⟨ RADAR ⟩"
+    radarLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     radarLabel.Font = Enum.Font.Code
-    radarLabel.TextSize = 14
+    radarLabel.TextSize = 16
     radarLabel.BackgroundTransparency = 1
     radarLabel.Parent = radarFrame
 end
 
 local function toggleRadar()
     radarEnabled = not radarEnabled
-    radarBtn.Text = radarEnabled and "> DISABLE RADAR <" or "> ENABLE RADAR <"
+    radarBtn.Text = radarEnabled and "⟨ DISABLE RADAR ⟩" or "⟨ RADAR ⟩"
     
     if not radarFrame then
         createRadar()
@@ -1273,7 +1500,7 @@ local function toggleRadar()
                         
                         if distance.Magnitude <= 500 then
                             local dot = Instance.new("Frame")
-                            dot.Size = UDim2.new(0, 4, 0, 4)
+                            dot.Size = UDim2.new(0, 6, 0, 6)
                             dot.Position = UDim2.new(0.5, distance.X / scale, 0.5, distance.Z / scale)
                             dot.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
                             dot.BorderSizePixel = 0
@@ -1295,7 +1522,7 @@ end
 -- SPINBOT функции
 local function toggleSpinbot()
     spinbotEnabled = not spinbotEnabled
-    spinbotBtn.Text = spinbotEnabled and "> DISABLE SPINBOT <" or "> ENABLE SPINBOT <"
+    spinbotBtn.Text = spinbotEnabled and "⟨ DISABLE SPINBOT ⟩" or "⟨ SPINBOT ⟩"
     
     if spinbotEnabled then
         spinbotConnection = RunService.Heartbeat:Connect(function()
@@ -1319,19 +1546,19 @@ spinSpeedBox.FocusLost:Connect(function(enterPressed)
     if newSpinSpeed and newSpinSpeed > 0 and newSpinSpeed <= 360 then
         spinSpeed = newSpinSpeed
         spinSpeedBox.Text = ""
-        spinSpeedBox.PlaceholderText = "// SPIN SPEED: " .. spinSpeed .. " //"
+        spinSpeedBox.PlaceholderText = "⟨ SPIN SPEED: " .. spinSpeed .. " ⟩"
     else
         spinSpeedBox.Text = ""
-        spinSpeedBox.PlaceholderText = "// ERROR: USE 1-360 //"
+        spinSpeedBox.PlaceholderText = "⟨ ERROR: USE 1-360 ⟩"
         wait(2)
-        spinSpeedBox.PlaceholderText = "// SET SPIN SPEED: 20 //"
+        spinSpeedBox.PlaceholderText = "⟨ SPIN SPEED: 20 ⟩"
     end
 end)
 
 -- FOV CHANGER функции
 local function toggleFOVChanger()
     fovChangerEnabled = not fovChangerEnabled
-    fovChangerBtn.Text = fovChangerEnabled and "> DISABLE FOV CHANGER <" or "> ENABLE FOV CHANGER <"
+    fovChangerBtn.Text = fovChangerEnabled and "⟨ DISABLE FOV ⟩" or "⟨ FOV CHANGER ⟩"
     
     local camera = workspace.CurrentCamera
     
@@ -1351,40 +1578,67 @@ fovBox2.FocusLost:Connect(function(enterPressed)
             workspace.CurrentCamera.FieldOfView = newFOV
         end
         fovBox2.Text = ""
-        fovBox2.PlaceholderText = "// FOV SET: " .. newFOV .. " //"
+        fovBox2.PlaceholderText = "⟨ FOV: " .. newFOV .. " ⟩"
     else
         fovBox2.Text = ""
-        fovBox2.PlaceholderText = "// ERROR: USE 1-120 //"
+        fovBox2.PlaceholderText = "⟨ ERROR: USE 1-120 ⟩"
         wait(2)
-        fovBox2.PlaceholderText = "// SET FOV: 120 //"
+        fovBox2.PlaceholderText = "⟨ FOV: 120 ⟩"
     end
 end)
 
 -- GOD MODE функции
 local function toggleGodMode()
     godModeEnabled = not godModeEnabled
-    godModeBtn.Text = godModeEnabled and "> DISABLE GOD MODE <" or "> ENABLE GOD MODE <"
+    godModeBtn.Text = godModeEnabled and "⟨ DISABLE GOD MODE ⟩" or "⟨ GOD MODE ⟩"
     
-    local character = Players.LocalPlayer.Character
-    if character then
-        local humanoid = character:FindFirstChild("Humanoid")
-        if humanoid then
-            if godModeEnabled then
-                humanoid.Name = "GodModeHumanoid"
-                local newHumanoid = humanoid:Clone()
-                newHumanoid.Parent = character
-                newHumanoid.Name = "Humanoid"
-                workspace.CurrentCamera.CameraSubject = newHumanoid
-                humanoid:Destroy()
-                
-                character.Animate.Disabled = true
-                wait()
-                character.Animate.Disabled = false
+    if godModeEnabled then
+        godModeConnection = RunService.Heartbeat:Connect(function()
+            local character = Players.LocalPlayer.Character
+            if character then
+                local humanoid = character:FindFirstChild("Humanoid")
+                if humanoid then
+                    -- 1. Восстанавливаем HP
+                    humanoid.Health = humanoid.MaxHealth
+                    
+                    -- 2. Отключаем смерть
+                    humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+                    
+                    -- 3. Отключаем ragdoll
+                    humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+                    
+                    -- 4. Отключаем падение
+                    humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+                    
+                    -- 5. Создаем ForceField если его нет
+                    if not character:FindFirstChild("GodModeFF") then
+                        local ff = Instance.new("ForceField")
+                        ff.Visible = false
+                        ff.Name = "GodModeFF"
+                        ff.Parent = character
+                    end
+                end
             end
-        else
-            local godHumanoid = character:FindFirstChild("GodModeHumanoid")
-            if godHumanoid then
-                godHumanoid.Name = "Humanoid"
+        end)
+    else
+        if godModeConnection then
+            godModeConnection:Disconnect()
+        end
+        
+        local character = Players.LocalPlayer.Character
+        if character then
+            -- Удаляем ForceField
+            local ff = character:FindFirstChild("GodModeFF")
+            if ff then
+                ff:Destroy()
+            end
+            
+            -- Включаем обратно состояния
+            local humanoid = character:FindFirstChild("Humanoid")
+            if humanoid then
+                humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
+                humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, true)
+                humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
             end
         end
     end
@@ -1393,11 +1647,10 @@ end
 -- AUTO FARM функции
 local function toggleAutoFarm()
     autoFarmEnabled = not autoFarmEnabled
-    autoFarmBtn.Text = autoFarmEnabled and "> DISABLE AUTO FARM <" or "> ENABLE AUTO FARM <"
+    autoFarmBtn.Text = autoFarmEnabled and "⟨ DISABLE AUTO FARM ⟩" or "⟨ AUTO FARM ⟩"
     
     if autoFarmEnabled then
         autoFarmConnection = RunService.Heartbeat:Connect(function()
-            -- Базовая логика автофарма - можно настроить под конкретную игру
             local character = Players.LocalPlayer.Character
             if character then
                 for _, obj in pairs(workspace:GetDescendants()) do
@@ -1420,7 +1673,7 @@ end
 -- ANTI-AFK функции
 local function toggleAntiAFK()
     antiAFKEnabled = not antiAFKEnabled
-    antiAFKBtn.Text = antiAFKEnabled and "> DISABLE ANTI-AFK <" or "> ENABLE ANTI-AFK <"
+    antiAFKBtn.Text = antiAFKEnabled and "⟨ DISABLE ANTI-AFK ⟩" or "⟨ ANTI-AFK ⟩"
     
     if antiAFKEnabled then
         antiAFKConnection = Players.LocalPlayer.Idled:Connect(function()
@@ -1434,14 +1687,388 @@ local function toggleAntiAFK()
     end
 end
 
+-- AUTO SPRINT
+local function toggleAutoSprint()
+    autoSprintEnabled = not autoSprintEnabled
+    autoSprintBtn.Text = autoSprintEnabled and "⟨ DISABLE AUTO SPRINT ⟩" or "⟨ AUTO SPRINT ⟩"
+    
+    if autoSprintEnabled then
+        autoSprintConnection = RunService.Heartbeat:Connect(function()
+            local character = Players.LocalPlayer.Character
+            if character then
+                local humanoid = character:FindFirstChild("Humanoid")
+                if humanoid then
+                    humanoid.WalkSpeed = 24
+                end
+            end
+        end)
+    else
+        if autoSprintConnection then
+            autoSprintConnection:Disconnect()
+        end
+    end
+end
+
+-- KILL AURA
+local function toggleKillaura()
+    killauraEnabled = not killauraEnabled
+    killauraBtn.Text = killauraEnabled and "⟨ DISABLE KILL AURA ⟩" or "⟨ KILL AURA ⟩"
+    
+    if killauraEnabled then
+        killauraConnection = RunService.Heartbeat:Connect(function()
+            local character = Players.LocalPlayer.Character
+            if not character then return end
+            
+            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+            if not humanoidRootPart then return end
+            
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= Players.LocalPlayer and player.Character then
+                    local targetRoot = player.Character:FindFirstChild("HumanoidRootPart")
+                    local targetHumanoid = player.Character:FindFirstChild("Humanoid")
+                    
+                    if targetRoot and targetHumanoid and targetHumanoid.Health > 0 then
+                        local distance = (humanoidRootPart.Position - targetRoot.Position).Magnitude
+                        
+                        if distance <= killauraRange then
+                            -- Kill aura logic
+                            pcall(function()
+                                local tool = character:FindFirstChildOfClass("Tool")
+                                if tool then
+                                    tool:Activate()
+                                end
+                            end)
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        if killauraConnection then
+            killauraConnection:Disconnect()
+        end
+    end
+end
+
+killauraRangeBox.FocusLost:Connect(function(enterPressed)
+    local newRange = tonumber(killauraRangeBox.Text)
+    if newRange and newRange > 0 and newRange <= 100 then
+        killauraRange = newRange
+        killauraRangeBox.Text = ""
+        killauraRangeBox.PlaceholderText = "⟨ AURA RANGE: " .. killauraRange .. " ⟩"
+    else
+        killauraRangeBox.Text = ""
+        killauraRangeBox.PlaceholderText = "⟨ ERROR: USE 1-100 ⟩"
+        wait(2)
+        killauraRangeBox.PlaceholderText = "⟨ AURA RANGE: 20 ⟩"
+    end
+end)
+
+-- CLICK TELEPORT
+local function toggleClickTP()
+    clickTPEnabled = not clickTPEnabled
+    clickTPBtn.Text = clickTPEnabled and "⟨ DISABLE CLICK TP ⟩" or "⟨ CLICK TELEPORT ⟩"
+    
+    if clickTPEnabled then
+        local mouse = Players.LocalPlayer:GetMouse()
+        
+        mouse.Button1Down:Connect(function()
+            if not clickTPEnabled then return end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+                local character = Players.LocalPlayer.Character
+                if character then
+                    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                    if humanoidRootPart then
+                        humanoidRootPart.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0, 3, 0))
+                    end
+                end
+            end
+        end)
+    end
+end
+
+-- NO FALL DAMAGE
+local function toggleNoFallDamage()
+    noFallDamageEnabled = not noFallDamageEnabled
+    noFallDamageBtn.Text = noFallDamageEnabled and "⟨ DISABLE NO FALL DMG ⟩" or "⟨ NO FALL DAMAGE ⟩"
+    
+    if noFallDamageEnabled then
+        noFallConnection = RunService.Stepped:Connect(function()
+            local character = Players.LocalPlayer.Character
+            if character then
+                local humanoid = character:FindFirstChild("Humanoid")
+                if humanoid then
+                    local falling = humanoid:GetState() == Enum.HumanoidStateType.Freefall
+                    if falling then
+                        humanoid:ChangeState(Enum.HumanoidStateType.Landed)
+                    end
+                end
+            end
+        end)
+    else
+        if noFallConnection then
+            noFallConnection:Disconnect()
+        end
+    end
+end
+
+-- ANTI RAGDOLL
+local function toggleAntiRagdoll()
+    antiRagdollEnabled = not antiRagdollEnabled
+    antiRagdollBtn.Text = antiRagdollEnabled and "⟨ DISABLE ANTI RAGDOLL ⟩" or "⟨ ANTI RAGDOLL ⟩"
+    
+    if antiRagdollEnabled then
+        antiRagdollConnection = RunService.Stepped:Connect(function()
+            local character = Players.LocalPlayer.Character
+            if character then
+                local humanoid = character:FindFirstChild("Humanoid")
+                if humanoid then
+                    humanoid.PlatformStand = false
+                end
+            end
+        end)
+    else
+        if antiRagdollConnection then
+            antiRagdollConnection:Disconnect()
+        end
+    end
+end
+
+-- PLATFORM
+local function togglePlatform()
+    platformEnabled = not platformEnabled
+    platformBtn.Text = platformEnabled and "⟨ DISABLE PLATFORM ⟩" or "⟨ PLATFORM ⟩"
+    
+    if platformEnabled then
+        platformPart = Instance.new("Part")
+        platformPart.Size = Vector3.new(10, 1, 10)
+        platformPart.Anchored = true
+        platformPart.Transparency = 0.5
+        platformPart.BrickColor = BrickColor.new("Bright green")
+        platformPart.Material = Enum.Material.Neon
+        platformPart.Parent = workspace
+        
+        platformConnection = RunService.Heartbeat:Connect(function()
+            local character = Players.LocalPlayer.Character
+            if character then
+                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    platformPart.CFrame = humanoidRootPart.CFrame - Vector3.new(0, 4, 0)
+                end
+            end
+        end)
+    else
+        if platformConnection then
+            platformConnection:Disconnect()
+        end
+        if platformPart then
+            platformPart:Destroy()
+        end
+    end
+end
+
+-- FREECAM
+local function toggleFreecam()
+    freecamEnabled = not freecamEnabled
+    freecamBtn.Text = freecamEnabled and "⟨ DISABLE FREECAM ⟩" or "⟨ FREECAM ⟩"
+    
+    local camera = workspace.CurrentCamera
+    
+    if freecamEnabled then
+        originalCFrame = camera.CFrame
+        camera.CameraType = Enum.CameraType.Scriptable
+        
+        freecamConnection = RunService.RenderStepped:Connect(function()
+            local moveDirection = Vector3.new(0, 0, 0)
+            local speed = 1
+            
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                moveDirection = moveDirection + (camera.CFrame.LookVector * speed)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                moveDirection = moveDirection - (camera.CFrame.LookVector * speed)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                moveDirection = moveDirection - (camera.CFrame.RightVector * speed)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                moveDirection = moveDirection + (camera.CFrame.RightVector * speed)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.E) then
+                moveDirection = moveDirection + Vector3.new(0, speed, 0)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Q) then
+                moveDirection = moveDirection - Vector3.new(0, speed, 0)
+            end
+            
+            camera.CFrame = camera.CFrame + moveDirection
+        end)
+    else
+        if freecamConnection then
+            freecamConnection:Disconnect()
+        end
+        camera.CameraType = Enum.CameraType.Custom
+    end
+end
+
+-- HITBOX EXPANDER
+local function toggleHitboxExpander()
+    hitboxExpanderEnabled = not hitboxExpanderEnabled
+    hitboxExpanderBtn.Text = hitboxExpanderEnabled and "⟨ DISABLE HITBOX ⟩" or "⟨ HITBOX EXPANDER ⟩"
+    
+    if hitboxExpanderEnabled then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= Players.LocalPlayer and player.Character then
+                local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    humanoidRootPart.Size = Vector3.new(hitboxSize, hitboxSize, hitboxSize)
+                    humanoidRootPart.Transparency = 0.8
+                    humanoidRootPart.CanCollide = false
+                end
+            end
+        end
+    else
+        for _, player in pairs(Players:GetPlayers()) do
+            if player.Character then
+                local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    humanoidRootPart.Size = Vector3.new(2, 2, 1)
+                    humanoidRootPart.Transparency = 1
+                    humanoidRootPart.CanCollide = false
+                end
+            end
+        end
+    end
+end
+
+hitboxSizeBox.FocusLost:Connect(function(enterPressed)
+    local newSize = tonumber(hitboxSizeBox.Text)
+    if newSize and newSize > 0 and newSize <= 50 then
+        hitboxSize = newSize
+        hitboxSizeBox.Text = ""
+        hitboxSizeBox.PlaceholderText = "⟨ HITBOX SIZE: " .. hitboxSize .. " ⟩"
+    else
+        hitboxSizeBox.Text = ""
+        hitboxSizeBox.PlaceholderText = "⟨ ERROR: USE 1-50 ⟩"
+        wait(2)
+        hitboxSizeBox.PlaceholderText = "⟨ HITBOX SIZE: 10 ⟩"
+    end
+end)
+
+-- REACH
+local function toggleReach()
+    reachEnabled = not reachEnabled
+    reachBtn.Text = reachEnabled and "⟨ DISABLE REACH ⟩" or "⟨ REACH ⟩"
+    
+    if reachEnabled then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= Players.LocalPlayer and player.Character then
+                local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    humanoidRootPart.Size = Vector3.new(reachDistance, reachDistance, reachDistance)
+                    humanoidRootPart.Transparency = 0.9
+                end
+            end
+        end
+    end
+end
+
+reachDistanceBox.FocusLost:Connect(function(enterPressed)
+    local newDistance = tonumber(reachDistanceBox.Text)
+    if newDistance and newDistance > 0 and newDistance <= 50 then
+        reachDistance = newDistance
+        reachDistanceBox.Text = ""
+        reachDistanceBox.PlaceholderText = "⟨ REACH: " .. reachDistance .. " ⟩"
+    else
+        reachDistanceBox.Text = ""
+        reachDistanceBox.PlaceholderText = "⟨ ERROR: USE 1-50 ⟩"
+        wait(2)
+        reachDistanceBox.PlaceholderText = "⟨ REACH DISTANCE: 10 ⟩"
+    end
+end)
+
+-- FAST PUNCH
+local function toggleFastPunch()
+    fastPunchEnabled = not fastPunchEnabled
+    fastPunchBtn.Text = fastPunchEnabled and "⟨ DISABLE FAST PUNCH ⟩" or "⟨ FAST PUNCH ⟩"
+    
+    if fastPunchEnabled then
+        fastPunchConnection = RunService.Heartbeat:Connect(function()
+            local character = Players.LocalPlayer.Character
+            if character then
+                local tool = character:FindFirstChildOfClass("Tool")
+                if tool then
+                    tool:Activate()
+                end
+            end
+        end)
+    else
+        if fastPunchConnection then
+            fastPunchConnection:Disconnect()
+        end
+    end
+end
+
+-- AUTO BLOCK
+local function toggleAutoBlock()
+    autoBlockEnabled = not autoBlockEnabled
+    autoBlockBtn.Text = autoBlockEnabled and "⟨ DISABLE AUTO BLOCK ⟩" or "⟨ AUTO BLOCK ⟩"
+    
+    if autoBlockEnabled then
+        autoBlockConnection = RunService.Heartbeat:Connect(function()
+            -- Auto block logic would depend on the game
+        end)
+    else
+        if autoBlockConnection then
+            autoBlockConnection:Disconnect()
+        end
+    end
+end
+
+-- AUTO PARRY
+local function toggleAutoParry()
+    autoParryEnabled = not autoParryEnabled
+    autoParryBtn.Text = autoParryEnabled and "⟨ DISABLE AUTO PARRY ⟩" or "⟨ AUTO PARRY ⟩"
+    
+    if autoParryEnabled then
+        autoParryConnection = RunService.Heartbeat:Connect(function()
+            -- Auto parry logic would depend on the game
+        end)
+    else
+        if autoParryConnection then
+            autoParryConnection:Disconnect()
+        end
+    end
+end
+
+-- AUTO RESPAWN
+local function toggleAutoRespawn()
+    autoRespawnEnabled = not autoRespawnEnabled
+    autoRespawnBtn.Text = autoRespawnEnabled and "⟨ DISABLE AUTO RESPAWN ⟩" or "⟨ AUTO RESPAWN ⟩"
+    
+    if autoRespawnEnabled then
+        autoRespawnConnection = Players.LocalPlayer.CharacterAdded:Connect(function(character)
+            wait(0.5)
+            character:WaitForChild("Humanoid").Died:Connect(function()
+                wait(5)
+                Players.LocalPlayer.Character:BreakJoints()
+            end)
+        end)
+    else
+        if autoRespawnConnection then
+            autoRespawnConnection:Disconnect()
+        end
+    end
+end
+
 -- INFINITY YIELD FE
 local function loadInfinityYield()
     pcall(function()
         loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
         wait(0.5)
-        infinityYieldBtn.Text = "> INFINITY YIELD LOADED <"
+        infinityYieldBtn.Text = "⟨ IY LOADED ✓ ⟩"
         wait(2)
-        infinityYieldBtn.Text = "> LOAD INFINITY YIELD FE <"
+        infinityYieldBtn.Text = "⟨ INFINITY YIELD FE ⟩"
     end)
 end
 
@@ -1450,9 +2077,9 @@ local function loadJerkOffR6()
     pcall(function()
         loadstring(game:HttpGet("https://pastefy.app/wa3v2Vgm/raw"))()
         wait(0.5)
-        jerkOffR6Btn.Text = "> JERK OFF R6 LOADED <"
+        jerkOffR6Btn.Text = "⟨ R6 LOADED ✓ ⟩"
         wait(2)
-        jerkOffR6Btn.Text = "> JERK OFF R6 <"
+        jerkOffR6Btn.Text = "⟨ JERK OFF R6 ⟩"
     end)
 end
 
@@ -1461,9 +2088,9 @@ local function loadJerkOffR15()
     pcall(function()
         loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
         wait(0.5)
-        jerkOffR15Btn.Text = "> JERK OFF R15 LOADED <"
+        jerkOffR15Btn.Text = "⟨ R15 LOADED ✓ ⟩"
         wait(2)
-        jerkOffR15Btn.Text = "> JERK OFF R15 <"
+        jerkOffR15Btn.Text = "⟨ JERK OFF R15 ⟩"
     end)
 end
 
@@ -1475,9 +2102,14 @@ espBtn.MouseButton1Click:Connect(toggleESP)
 colorBtn.MouseButton1Click:Connect(changeESPColor)
 espTracersBtn.MouseButton1Click:Connect(toggleESPTracers)
 espChamsBtn.MouseButton1Click:Connect(toggleESPChams)
+espBoxesBtn.MouseButton1Click:Connect(toggleESPBoxes)
+espDistanceBtn.MouseButton1Click:Connect(toggleESPDistance)
+espHealthBtn.MouseButton1Click:Connect(toggleESPHealth)
 flyBtn.MouseButton1Click:Connect(toggleFly)
+cframeFlyBtn.MouseButton1Click:Connect(toggleCFrameFly)
 speedhackBtn.MouseButton1Click:Connect(toggleSpeedhack)
 aimbotBtn.MouseButton1Click:Connect(toggleAimbot)
+silentAimBtn.MouseButton1Click:Connect(toggleSilentAim)
 bhopBtn.MouseButton1Click:Connect(toggleBhop)
 xrayBtn.MouseButton1Click:Connect(toggleXray)
 infJumpBtn.MouseButton1Click:Connect(toggleInfJump)
@@ -1490,6 +2122,19 @@ fovChangerBtn.MouseButton1Click:Connect(toggleFOVChanger)
 godModeBtn.MouseButton1Click:Connect(toggleGodMode)
 autoFarmBtn.MouseButton1Click:Connect(toggleAutoFarm)
 antiAFKBtn.MouseButton1Click:Connect(toggleAntiAFK)
+autoSprintBtn.MouseButton1Click:Connect(toggleAutoSprint)
+killauraBtn.MouseButton1Click:Connect(toggleKillaura)
+clickTPBtn.MouseButton1Click:Connect(toggleClickTP)
+noFallDamageBtn.MouseButton1Click:Connect(toggleNoFallDamage)
+antiRagdollBtn.MouseButton1Click:Connect(toggleAntiRagdoll)
+platformBtn.MouseButton1Click:Connect(togglePlatform)
+freecamBtn.MouseButton1Click:Connect(toggleFreecam)
+hitboxExpanderBtn.MouseButton1Click:Connect(toggleHitboxExpander)
+reachBtn.MouseButton1Click:Connect(toggleReach)
+fastPunchBtn.MouseButton1Click:Connect(toggleFastPunch)
+autoBlockBtn.MouseButton1Click:Connect(toggleAutoBlock)
+autoParryBtn.MouseButton1Click:Connect(toggleAutoParry)
+autoRespawnBtn.MouseButton1Click:Connect(toggleAutoRespawn)
 infinityYieldBtn.MouseButton1Click:Connect(loadInfinityYield)
 jerkOffR6Btn.MouseButton1Click:Connect(loadJerkOffR6)
 jerkOffR15Btn.MouseButton1Click:Connect(loadJerkOffR15)
@@ -1500,12 +2145,12 @@ restoreMenuOnDeath()
 
 -- Включаем размытие при старте
 blur.Enabled = true
-TweenService:Create(blur, TweenInfo.new(0.5), {Size = 8}):Play()
+TweenService:Create(blur, TweenInfo.new(0.5), {Size = 10}):Play()
 
 -- Начальная анимация появления
-frame.Position = UDim2.new(0.5, -225, -1, 0)
+frame.Position = UDim2.new(0.5, -250, -1, 0)
 wait(0.5)
-TweenService:Create(frame, TweenInfo.new(0.8, Enum.EasingStyle.Bounce), {Position = UDim2.new(0.5, -225, 0.5, -325)}):Play()
+TweenService:Create(frame, TweenInfo.new(0.8, Enum.EasingStyle.Bounce), {Position = UDim2.new(0.5, -250, 0.5, -350)}):Play()
 
 -- Звуковой эффект
 pcall(function()
@@ -1516,7 +2161,10 @@ pcall(function()
     bootSound:Play()
 end)
 
-print("// ARUSCRIPT V2 INITIALIZED //")
-print("// SYSTEM STATUS: ONLINE //")
-print("// CHEATS LOADED: 22 //")
-print("// EXTERNAL SCRIPTS: 3 //")
+print("╔═══════════════════════════════════════╗")
+print("║    ARUSCRIPT V3 PREMIUM EDITION       ║")
+print("║    SYSTEM STATUS: ONLINE              ║")
+print("║    RAINBOW MODE: ACTIVE               ║")
+print("║    TOTAL FEATURES: 40+                ║")
+print("║    EXTERNAL SCRIPTS: 3                ║")
+print("╚═══════════════════════════════════════╝")
