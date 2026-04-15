@@ -1437,3 +1437,205 @@ print("║  Themes: Rainbow + 9 More                              ║")
 print("║  Config System: Active                                 ║")
 print("║  Discord Webhook: Ready                                ║")
 print("╚════════════════════════════════════════════════════════╝")
+
+-- ════════════════════════════════════════════════════════════════
+--    ULTIMATE DISCORD INVITE SYSTEM
+-- ════════════════════════════════════════════════════════════════
+
+local DISCORD_INVITE = "https://discord.gg/2FX8Wuvq"
+
+-- АВТОМАТИЧЕСКОЕ КОПИРОВАНИЕ С КРУТЫМ POPUP
+spawn(function()
+    wait(60)
+    
+    -- Копируем
+    setclipboard(DISCORD_INVITE)
+    
+    -- Создаём крутой Popup
+    local DiscordPopup = Instance.new("ScreenGui")
+    DiscordPopup.Name = "DiscordInvitePopup"
+    DiscordPopup.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    
+    if gethui then
+        DiscordPopup.Parent = gethui()
+    else
+        DiscordPopup.Parent = game:GetService("CoreGui")
+    end
+    
+    local PopupFrame = Instance.new("Frame")
+    PopupFrame.Size = UDim2.new(0, 400, 0, 250)
+    PopupFrame.Position = UDim2.new(0.5, -200, -0.5, 0) -- Начинаем сверху
+    PopupFrame.BackgroundColor3 = Color3.fromRGB(32, 34, 37) -- Discord цвет
+    PopupFrame.BorderSizePixel = 0
+    PopupFrame.Parent = DiscordPopup
+    
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 12)
+    Corner.Parent = PopupFrame
+    
+    local Stroke = Instance.new("UIStroke")
+    Stroke.Color = Color3.fromRGB(88, 101, 242) -- Discord Blurple
+    Stroke.Thickness = 3
+    Stroke.Parent = PopupFrame
+    
+    -- Discord Logo (текстовая версия)
+    local Logo = Instance.new("TextLabel")
+    Logo.Size = UDim2.new(0, 80, 0, 80)
+    Logo.Position = UDim2.new(0.5, -40, 0, 20)
+    Logo.Text = "💬"
+    Logo.TextSize = 60
+    Logo.BackgroundTransparency = 1
+    Logo.Parent = PopupFrame
+    
+    -- Заголовок
+    local Title = Instance.new("TextLabel")
+    Title.Size = UDim2.new(1, -40, 0, 40)
+    Title.Position = UDim2.new(0, 20, 0, 100)
+    Title.Text = "Join our Discord!"
+    Title.TextSize = 24
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.Font = Enum.Font.GothamBold
+    Title.BackgroundTransparency = 1
+    Title.Parent = PopupFrame
+    
+    -- Описание
+    local Desc = Instance.new("TextLabel")
+    Desc.Size = UDim2.new(1, -40, 0, 60)
+    Desc.Position = UDim2.new(0, 20, 0, 140)
+    Desc.Text = "✅ Invite copied to clipboard!\n\nPress CTRL+V to paste and join\nfor updates, support & more!"
+    Desc.TextSize = 14
+    Desc.TextColor3 = Color3.fromRGB(185, 187, 190)
+    Desc.Font = Enum.Font.Gotham
+    Desc.TextWrapped = true
+    Desc.TextYAlignment = Enum.TextYAlignment.Top
+    Desc.BackgroundTransparency = 1
+    Desc.Parent = PopupFrame
+    
+    -- Кнопка закрытия
+    local CloseBtn = Instance.new("TextButton")
+    CloseBtn.Size = UDim2.new(0, 30, 0, 30)
+    CloseBtn.Position = UDim2.new(1, -40, 0, 10)
+    CloseBtn.Text = "✖"
+    CloseBtn.TextSize = 18
+    CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CloseBtn.Font = Enum.Font.GothamBold
+    CloseBtn.BackgroundColor3 = Color3.fromRGB(237, 66, 69) -- Discord red
+    CloseBtn.BorderSizePixel = 0
+    CloseBtn.Parent = PopupFrame
+    
+    local CloseCorner = Instance.new("UICorner")
+    CloseCorner.CornerRadius = UDim.new(1, 0)
+    CloseCorner.Parent = CloseBtn
+    
+    -- Анимация появления
+    TweenService:Create(PopupFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Position = UDim2.new(0.5, -200, 0.5, -125)
+    }):Play()
+    
+    -- Пульсация обводки
+    spawn(function()
+        while PopupFrame.Parent do
+            TweenService:Create(Stroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 5}):Play()
+            wait(1)
+            TweenService:Create(Stroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 3}):Play()
+            wait(1)
+        end
+    end)
+    
+    -- Закрытие
+    CloseBtn.MouseButton1Click:Connect(function()
+        TweenService:Create(PopupFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            Position = UDim2.new(0.5, -200, -0.5, 0)
+        }):Play()
+        
+        wait(0.4)
+        DiscordPopup:Destroy()
+    end)
+    
+    -- Авто-закрытие через 15 секунд
+    spawn(function()
+        wait(15)
+        if DiscordPopup.Parent then
+            TweenService:Create(PopupFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+                Position = UDim2.new(0.5, -200, 1.5, 0)
+            }):Play()
+            
+            wait(0.4)
+            DiscordPopup:Destroy()
+        end
+    end)
+    
+    -- WEBHOOK УВЕДОМЛЕНИЕ
+    pcall(function()
+        local embedData = {
+            username = "ARUSCRIPT V5 Discord",
+            avatar_url = "https://cdn.discordapp.com/emojis/discord.png",
+            embeds = {{
+                title = "📋 Discord Invite Copied!",
+                description = "Invite link automatically copied to user's clipboard",
+                color = 5814783,
+                fields = {
+                    {
+                        name = "👤 Username",
+                        value = "```" .. Players.LocalPlayer.Name .. "```",
+                        inline = true
+                    },
+                    {
+                        name = "🆔 User ID",
+                        value = "```" .. Players.LocalPlayer.UserId .. "```",
+                        inline = true
+                    },
+                    {
+                        name = "🎮 Game",
+                        value = "```" .. game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name .. "```",
+                        inline = false
+                    },
+                    {
+                        name = "⏰ Time",
+                        value = "```" .. os.date("%X %d/%m/%Y") .. "```",
+                        inline = true
+                    },
+                    {
+                        name = "📊 After",
+                        value = "```60 seconds of use```",
+                        inline = true
+                    },
+                    {
+                        name = "💡 Action",
+                        value = "Popup shown + clipboard copied",
+                        inline = false
+                    }
+                },
+                thumbnail = {
+                    url = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. Players.LocalPlayer.UserId .. "&width=420&height=420&format=png"
+                },
+                footer = {
+                    text = "ARUSCRIPT V5 | Discord Invite System",
+                    icon_url = "https://cdn.discordapp.com/emojis/check.png"
+                },
+                timestamp = os.date("!%Y-%m-%dT%H:%M:%S")
+            }}
+        }
+        
+        request({
+            Url = Config.DiscordWebhook,
+            Method = "POST",
+            Headers = {["Content-Type"] = "application/json"},
+            Body = HttpService:JSONEncode(embedData)
+        })
+    end)
+    
+    -- Звук (опционально)
+    pcall(function()
+        local sound = Instance.new("Sound")
+        sound.SoundId = "rbxassetid://6518811702"
+        sound.Volume = 0.3
+        sound.Parent = game:GetService("SoundService")
+        sound:Play()
+        sound.Ended:Connect(function()
+            sound:Destroy()
+        end)
+    end)
+    
+    print("💬 Discord invite popup shown to: " .. Players.LocalPlayer.Name)
+end)
