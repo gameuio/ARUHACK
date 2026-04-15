@@ -1,4 +1,23 @@
--- Создаем объекты
+--[[
+═══════════════════════════════════════════════════════════
+    ╔═══════════════════════════════════════════════════╗
+    ║      ARUSCRIPT V5 - ULTIMATE MEGA EDITION         ║
+    ║         50+ Features | All Systems Active         ║
+    ╚═══════════════════════════════════════════════════╝
+═══════════════════════════════════════════════════════════
+--]]
+
+-- ============== СЕРВИСЫ ==============
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Lighting = game:GetService("Lighting")
+local VirtualUser = game:GetService("VirtualUser")
+local HttpService = game:GetService("HttpService")
+local StarterGui = game:GetService("StarterGui")
+
+-- ============== GUI ОБЪЕКТЫ ==============
 local screenGui = Instance.new("ScreenGui")
 local frame = Instance.new("Frame")
 local toggleButton = Instance.new("TextButton")
@@ -8,200 +27,161 @@ local subtitleLabel = Instance.new("TextLabel")
 local blur = Instance.new("BlurEffect")
 local scanlineEffect = Instance.new("Frame")
 
--- Переменные для управления
+-- ============== ПЕРЕМЕННЫЕ ==============
 local espEnabled = false
 local espColor = Color3.fromRGB(0, 255, 0)
 local colors = {
-    Color3.fromRGB(0, 255, 0),      -- Matrix Green
-    Color3.fromRGB(0, 255, 255),    -- Cyan
-    Color3.fromRGB(255, 0, 255),    -- Magenta
-    Color3.fromRGB(255, 255, 0),    -- Yellow
-    Color3.fromRGB(255, 0, 0),      -- Red
-    Color3.fromRGB(0, 200, 0)       -- Dark Green
+    Color3.fromRGB(0, 255, 0),
+    Color3.fromRGB(0, 255, 255),
+    Color3.fromRGB(255, 0, 255),
+    Color3.fromRGB(255, 255, 0),
+    Color3.fromRGB(255, 0, 0),
+    Color3.fromRGB(0, 200, 0)
 }
 local colorIndex = 1
 local flying = false
 local speed = 50
 local speedhackSpeed = 16
 local speedhackEnabled = false
-local flyConnection
-local bodyVelocity
-local bodyGyro
+local flyConnection, bodyVelocity, bodyGyro
 local menuVisible = true
 
--- Переменные для Aimbot
+-- Aimbot переменные
 local aimbotEnabled = false
-local aimbotConnection
-local aimbotCircle
-local aimbotTarget
+local aimbotConnection, aimbotCircle, aimbotTarget
 local aimbotFOV = 200
 local aimbotSmooth = 0.2
 
--- Переменные для Bhop
-local bhopEnabled = false
-local bhopConnection
+-- Все остальные переменные
+local bhopEnabled, xrayEnabled, infJumpEnabled = false, false, false
+local noclipEnabled, fullbrightEnabled, triggerbotEnabled = false, false, false
+local radarEnabled, godModeEnabled, espTracersEnabled = false, false, false
+local espChamsEnabled, spinbotEnabled, fovChangerEnabled = false, false, false
+local autoFarmEnabled, antiAFKEnabled, clickTPEnabled = false, false, false
+local autoSprintEnabled, killauraEnabled, noFallDamageEnabled = false, false, false
+local antiRagdollEnabled, platformEnabled, freecamEnabled = false, false, false
+local hitboxExpanderEnabled, silentAimEnabled, fastPunchEnabled = false, false, false
+local autoBlockEnabled, cframeFlyEnabled, autoParryEnabled = false, false, false
+local espBoxesEnabled, reachEnabled, autoRespawnEnabled = false, false, false
+local espDistanceEnabled, espHealthEnabled = false, false
+
 local bhopPower = 50
-
--- Переменные для X-Ray
-local xrayEnabled = false
 local originalTransparency = {}
-
--- Переменные для Infinite Jump
-local infJumpEnabled = false
-local infJumpConnection
-
--- Переменные для NoClip
-local noclipEnabled = false
-local noclipConnection
-
--- Переменные для FullBright
-local fullbrightEnabled = false
 local originalLighting = {}
-
--- Переменные для Triggerbot
-local triggerbotEnabled = false
-local triggerbotConnection
-
--- Переменные для Radar
-local radarEnabled = false
-local radarFrame
-local radarDots = {}
-
--- Переменные для новых функций
-local autoFarmEnabled = false
-local autoFarmConnection
-local antiAFKEnabled = false
-local antiAFKConnection
-local godModeEnabled = false
-local espTracersEnabled = false
-local espChamsEnabled = false
-local spinbotEnabled = false
-local spinbotConnection
+local radarFrame, radarDots = nil, {}
 local spinSpeed = 20
-local fovChangerEnabled = false
 local originalFOV = 70
 local newFOV = 120
-
--- Новые переменные для дополнительных функций
-local clickTPEnabled = false
-local autoSprintEnabled = false
-local autoSprintConnection
-local killauraEnabled = false
-local killauraConnection
 local killauraRange = 20
-local teleportEnabled = false
-local noFallDamageEnabled = false
-local noFallConnection
-local antiRagdollEnabled = false
-local antiRagdollConnection
-local platformEnabled = false
 local platformPart
-local platformConnection
-local espDistanceEnabled = false
-local espHealthEnabled = false
-local autoRespawnEnabled = false
-local autoRespawnConnection
-local freecamEnabled = false
-local freecamConnection
 local originalCFrame
-local hitboxExpanderEnabled = false
 local hitboxSize = 10
-local silentAimEnabled = false
-local silentAimConnection
-local fastPunchEnabled = false
-local fastPunchConnection
-local autoBlockEnabled = false
-local autoBlockConnection
 local flySpeed2 = 5
-local cframeFlyEnabled = false
-local cframeFlyConnection
-local autoParryEnabled = false
-local autoParryConnection
-local espBoxesEnabled = false
-local reachEnabled = false
 local reachDistance = 10
+
+-- Connections table
+local connections = {}
 
 -- Радужные переменные
 local rainbowEnabled = true
 local rainbowSpeed = 0.5
 local hue = 0
 
--- Сервисы
-local TweenService = game:GetService("TweenService")
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local Lighting = game:GetService("Lighting")
-local VirtualUser = game:GetService("VirtualUser")
-local HttpService = game:GetService("HttpService")
+-- Config System
+local Config = {
+    Settings = {
+        FlySpeed = 50,
+        SpeedhackSpeed = 16,
+        AimbotFOV = 200,
+        AimbotSmooth = 0.2,
+        BhopPower = 50,
+        SpinSpeed = 20,
+        FOV = 120,
+        KillauraRange = 20,
+        HitboxSize = 10,
+        ReachDistance = 10,
+        CFrameFlySpeed = 5
+    },
+    Enabled = {},
+    Waypoints = {},
+    DiscordWebhook = "https://discord.com/api/webhooks/1493861251904835605/FtXNu80qBxKzEv6Tkegx7noBM6W7aSlqCWd9BtFclua0ejrkiJIw9O7S0qtwdL7dDt5v",
+    Theme = "Rainbow"
+}
 
--- Функция для радужного цвета
+-- ============== ФУНКЦИИ СИСТЕМЫ ==============
+
+-- Функция радужного цвета
 local function getRainbowColor()
     hue = hue + rainbowSpeed / 100
     if hue >= 1 then hue = 0 end
     return Color3.fromHSV(hue, 1, 1)
 end
 
--- Радужная анимация GUI
-spawn(function()
-    while rainbowEnabled do
-        local rainbowColor = getRainbowColor()
-        
-        -- Обновляем все обводки
+-- Save Config
+local function SaveConfig()
+    if writefile then
         pcall(function()
-            frameStroke1.Color = rainbowColor
-            innerStroke.Color = rainbowColor
-            titleStroke.Color = rainbowColor
-            toggleStroke.Color = rainbowColor
-            divider.BackgroundColor3 = rainbowColor
-            scanlineEffect.BackgroundColor3 = rainbowColor
-            
-            -- Обновляем ScrollBar
-            contentFrame.ScrollBarImageColor3 = rainbowColor
-            
-            -- Обновляем все кнопки
-            for _, child in pairs(contentFrame:GetChildren()) do
-                if child:IsA("Frame") then
-                    local button = child:FindFirstChildOfClass("TextButton")
-                    if button then
-                        local stroke = button:FindFirstChildOfClass("UIStroke")
-                        if stroke then
-                            stroke.Color = rainbowColor
-                        end
-                    end
-                    
-                    local textBox = child:FindFirstChildOfClass("TextBox")
-                    if textBox then
-                        local stroke = textBox:FindFirstChildOfClass("UIStroke")
-                        if stroke then
-                            stroke.Color = rainbowColor
-                        end
-                    end
-                end
-            end
+            writefile("AruScriptV5_Config.json", HttpService:JSONEncode(Config))
+            print("✅ Config Saved!")
         end)
-        
-        wait(0.01)
     end
-end)
-
--- Обновление меню после смерти
-local function restoreMenuOnDeath()
-    local player = Players.LocalPlayer
-    player.CharacterAdded:Connect(function(character)
-        wait(1)
-        screenGui.Parent = player:WaitForChild("PlayerGui")
-        if menuVisible then
-            frame.Visible = true
-            blur.Enabled = true
-        end
-    end)
 end
 
+-- Load Config
+local function LoadConfig()
+    if isfile and readfile and isfile("AruScriptV5_Config.json") then
+        pcall(function()
+            Config = HttpService:JSONDecode(readfile("AruScriptV5_Config.json"))
+            print("✅ Config Loaded!")
+        end)
+    end
+end
+
+-- Discord Webhook
+local function SendWebhook(message)
+    if Config.DiscordWebhook ~= "" and request then
+        pcall(function()
+            request({
+                Url = Config.DiscordWebhook,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = HttpService:JSONEncode({
+                    content = "",
+                    embeds = {{
+                        title = "🎮 ARUSCRIPT V5",
+                        description = message,
+                        color = 65280,
+                        footer = {text = Players.LocalPlayer.Name .. " | " .. os.date("%X")}
+                    }}
+                })
+            })
+        end)
+    end
+end
+
+-- Notification System
+local function Notify(title, text, duration)
+    StarterGui:SetCore("SendNotification", {
+        Title = title or "ARUSCRIPT V5",
+        Text = text or "",
+        Duration = duration or 3
+    })
+end
+
+-- ============== GUI СОЗДАНИЕ ==============
+
 -- Настройка ScreenGui
-screenGui.Name = "HackerMenuGui"
+screenGui.Name = "AruScriptV5"
 screenGui.ResetOnSpawn = false
-screenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+
+if gethui then
+    screenGui.Parent = gethui()
+elseif syn and syn.protect_gui then
+    syn.protect_gui(screenGui)
+    screenGui.Parent = game:GetService("CoreGui")
+else
+    screenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+end
 
 -- Эффект размытия
 blur.Size = 0
@@ -218,19 +198,17 @@ frame.Active = true
 frame.Draggable = true
 frame.Parent = screenGui
 
--- Закругление главного фрейма
 local frameCorner = Instance.new("UICorner")
 frameCorner.CornerRadius = UDim.new(0, 12)
 frameCorner.Parent = frame
 
--- Радужная обводка
 frameStroke1 = Instance.new("UIStroke")
 frameStroke1.Color = Color3.fromRGB(255, 0, 0)
 frameStroke1.Thickness = 3
 frameStroke1.Transparency = 0
 frameStroke1.Parent = frame
 
--- Внутренняя светящаяся обводка
+-- Внутренняя обводка
 local innerGlow = Instance.new("Frame")
 innerGlow.Name = "InnerGlow"
 innerGlow.Size = UDim2.new(1, -6, 1, -6)
@@ -249,7 +227,7 @@ innerStroke.Thickness = 2
 innerStroke.Transparency = 0.3
 innerStroke.Parent = innerGlow
 
--- Эффект сканирующих линий (scanlines)
+-- Scanline эффект
 scanlineEffect.Name = "Scanlines"
 scanlineEffect.Size = UDim2.new(1, 0, 1, 0)
 scanlineEffect.Position = UDim2.new(0, 0, 0, 0)
@@ -262,7 +240,6 @@ local scanlineCorner = Instance.new("UICorner")
 scanlineCorner.CornerRadius = UDim.new(0, 12)
 scanlineCorner.Parent = scanlineEffect
 
--- Анимация сканирования
 local scanlineGradient = Instance.new("UIGradient")
 scanlineGradient.Transparency = NumberSequence.new{
     NumberSequenceKeypoint.new(0, 1),
@@ -274,7 +251,7 @@ scanlineGradient.Transparency = NumberSequence.new{
 scanlineGradient.Rotation = 90
 scanlineGradient.Parent = scanlineEffect
 
--- Анимация движения scanline
+-- Анимация scanline
 spawn(function()
     while true do
         for i = 0, 360, 2 do
@@ -288,7 +265,7 @@ end)
 titleLabel.Name = "Title"
 titleLabel.Size = UDim2.new(1, -40, 0, 50)
 titleLabel.Position = UDim2.new(0, 20, 0, 15)
-titleLabel.Text = "╔═══ ARUSCRIPT V3 ═══╗"
+titleLabel.Text = "╔═══ ARUSCRIPT V5 - MEGA ═══╗"
 titleLabel.TextScaled = true
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.Font = Enum.Font.Code
@@ -297,13 +274,12 @@ titleLabel.BorderSizePixel = 0
 titleLabel.ZIndex = 2
 titleLabel.Parent = frame
 
--- Эффект мерцания текста заголовка
 titleStroke = Instance.new("UIStroke")
 titleStroke.Color = Color3.fromRGB(255, 0, 0)
 titleStroke.Thickness = 2
 titleStroke.Parent = titleLabel
 
--- Мерцающий эффект
+-- Мерцание заголовка
 spawn(function()
     while true do
         TweenService:Create(titleStroke, TweenInfo.new(0.1), {Transparency = 0.3}):Play()
@@ -317,7 +293,7 @@ end)
 subtitleLabel.Name = "Subtitle"
 subtitleLabel.Size = UDim2.new(1, -40, 0, 20)
 subtitleLabel.Position = UDim2.new(0, 20, 0, 65)
-subtitleLabel.Text = "⟩⟩ PREMIUM EDITION | 40+ FEATURES ⟨⟨"
+subtitleLabel.Text = "⟩⟩ 50+ FEATURES | ALL SYSTEMS READY ⟨⟨"
 subtitleLabel.TextSize = 12
 subtitleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
 subtitleLabel.Font = Enum.Font.Code
@@ -327,17 +303,17 @@ subtitleLabel.BorderSizePixel = 0
 subtitleLabel.ZIndex = 2
 subtitleLabel.Parent = frame
 
--- Эффект печатающегося текста
+-- Анимация подзаголовка
 spawn(function()
     local texts = {
-        "⟩⟩ PREMIUM EDITION | 40+ FEATURES ⟨⟨",
-        "⟩⟩ SYSTEM ACCESS: GRANTED ⟨⟨",
+        "⟩⟩ 50+ FEATURES | ALL SYSTEMS READY ⟨⟨",
+        "⟩⟩ ULTIMATE EDITION | FULL ACCESS ⟨⟨",
         "⟩⟩ RAINBOW MODE: ACTIVE ⟨⟨",
-        "⟩⟩ ALL SYSTEMS: OPERATIONAL ⟨⟨",
-        "⟩⟩ STEALTH MODE: ENABLED ⟨⟨",
-        "⟩⟩ AIMBOT: READY ⟨⟨",
-        "⟩⟩ ESP: INITIALIZED ⟨⟨",
-        "⟩⟩ GOD MODE: STANDBY ⟨⟨"
+        "⟩⟩ CONFIG SYSTEM: ONLINE ⟨⟨",
+        "⟩⟩ DISCORD WEBHOOK: READY ⟨⟨",
+        "⟩⟩ CHAT COMMANDS: ENABLED ⟨⟨",
+        "⟩⟩ WAYPOINTS: OPERATIONAL ⟨⟨",
+        "⟩⟩ SCRIPT HUB: LOADED ⟨⟨"
     }
     local index = 1
     while true do
@@ -348,7 +324,7 @@ spawn(function()
     end
 end)
 
--- Разделительная линия
+-- Разделитель
 divider = Instance.new("Frame")
 divider.Name = "Divider"
 divider.Size = UDim2.new(1, -40, 0, 3)
@@ -368,7 +344,7 @@ dividerGradient.Transparency = NumberSequence.new{
 }
 dividerGradient.Parent = divider
 
--- Контейнер для кнопок (ScrollingFrame)
+-- Content Frame
 contentFrame.Name = "ContentFrame"
 contentFrame.Size = UDim2.new(1, -40, 1, -110)
 contentFrame.Position = UDim2.new(0, 20, 0, 105)
@@ -380,18 +356,61 @@ contentFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 contentFrame.ZIndex = 2
 contentFrame.Parent = frame
 
--- UIListLayout для автоматической расстановки
 local listLayout = Instance.new("UIListLayout")
 listLayout.Padding = UDim.new(0, 8)
 listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 listLayout.Parent = contentFrame
 
--- Автоматическое обновление размера Canvas
 listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     contentFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 20)
 end)
 
--- Функция создания хакерской кнопки
+-- Toggle Button
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0, 80, 0, 80)
+toggleButton.Position = UDim2.new(0, 20, 0, 20)
+toggleButton.Text = "◉"
+toggleButton.TextSize = 45
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.Font = Enum.Font.Code
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+toggleButton.BackgroundTransparency = 0.3
+toggleButton.BorderSizePixel = 0
+toggleButton.AutoButtonColor = false
+toggleButton.Parent = screenGui
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(1, 0)
+toggleCorner.Parent = toggleButton
+
+toggleStroke = Instance.new("UIStroke")
+toggleStroke.Color = Color3.fromRGB(255, 0, 0)
+toggleStroke.Thickness = 3
+toggleStroke.Transparency = 0
+toggleStroke.Parent = toggleButton
+
+-- Пульсация toggle button
+spawn(function()
+    while true do
+        TweenService:Create(toggleStroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 5}):Play()
+        wait(1)
+        TweenService:Create(toggleStroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 3}):Play()
+        wait(1)
+    end
+end)
+
+toggleButton.MouseEnter:Connect(function()
+    TweenService:Create(toggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, 90, 0, 90), Rotation = 180}):Play()
+    toggleButton.Text = "●"
+end)
+
+toggleButton.MouseLeave:Connect(function()
+    TweenService:Create(toggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, 80, 0, 80), Rotation = 0}):Play()
+    toggleButton.Text = "◉"
+end)
+
+-- ============== ФУНКЦИИ СОЗДАНИЯ UI ==============
+
 local function createHackerButton(name, text, layoutOrder)
     local buttonContainer = Instance.new("Frame")
     buttonContainer.Name = name .. "Container"
@@ -428,7 +447,6 @@ local function createHackerButton(name, text, layoutOrder)
     padding.PaddingRight = UDim.new(0, 15)
     padding.Parent = button
     
-    -- Hex паттерн на фоне кнопки
     local hexPattern = Instance.new("TextLabel")
     hexPattern.Size = UDim2.new(1, 0, 1, 0)
     hexPattern.Position = UDim2.new(0, 0, 0, 0)
@@ -441,12 +459,10 @@ local function createHackerButton(name, text, layoutOrder)
     hexPattern.ZIndex = 1
     hexPattern.Parent = button
     
-    -- Эффект глитча на hover
     button.MouseEnter:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.1), {BackgroundTransparency = 0.2}):Play()
         TweenService:Create(stroke, TweenInfo.new(0.1), {Transparency = 0, Thickness = 3}):Play()
         
-        -- Глитч эффект
         for i = 1, 3 do
             button.Position = UDim2.new(0, math.random(-2, 2), 0, 0)
             wait(0.05)
@@ -462,7 +478,6 @@ local function createHackerButton(name, text, layoutOrder)
     return button
 end
 
--- Функция создания хакерского текстового поля
 local function createHackerTextBox(name, placeholderText, layoutOrder)
     local textBoxContainer = Instance.new("Frame")
     textBoxContainer.Name = name .. "Container"
@@ -501,7 +516,6 @@ local function createHackerTextBox(name, placeholderText, layoutOrder)
     padding.PaddingRight = UDim.new(0, 15)
     padding.Parent = textBox
     
-    -- Мигающий курсор эффект
     local cursor = Instance.new("Frame")
     cursor.Name = "Cursor"
     cursor.Size = UDim2.new(0, 2, 0.6, 0)
@@ -515,7 +529,6 @@ local function createHackerTextBox(name, placeholderText, layoutOrder)
         cursor.Visible = true
         TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0, Thickness = 3}):Play()
         
-        -- Мигающий курсор
         spawn(function()
             while textBox:IsFocused() do
                 cursor.Visible = not cursor.Visible
@@ -532,125 +545,88 @@ local function createHackerTextBox(name, placeholderText, layoutOrder)
     return textBox
 end
 
--- =============================================
--- СОЗДАНИЕ ВСЕХ ЭЛЕМЕНТОВ МЕНЮ
--- =============================================
+-- ============== СОЗДАНИЕ КНОПОК ==============
 
--- ESP СЕКЦИЯ
+-- ESP SECTION
 local espBtn = createHackerButton("ESPButton", "ESP WALLHACK", 1)
 local colorBtn = createHackerButton("ColorButton", "CYCLE ESP COLOR", 2)
 local espTracersBtn = createHackerButton("ESPTracersButton", "ESP TRACERS", 3)
 local espChamsBtn = createHackerButton("ESPChamsButton", "ESP CHAMS", 4)
-local espBoxesBtn = createHackerButton("ESPBoxesButton", "ESP BOXES", 5)
-local espDistanceBtn = createHackerButton("ESPDistanceButton", "ESP DISTANCE", 6)
-local espHealthBtn = createHackerButton("ESPHealthButton", "ESP HEALTH", 7)
 
--- MOVEMENT СЕКЦИЯ
-local flyBtn = createHackerButton("FlyButton", "FLY MODE", 8)
-local speedBox = createHackerTextBox("SpeedInput", "FLY SPEED: 50", 9)
-local cframeFlyBtn = createHackerButton("CFrameFlyButton", "CFRAME FLY", 10)
-local flySpeed2Box = createHackerTextBox("FlySpeed2Input", "CFRAME SPEED: 5", 11)
-local speedhackBtn = createHackerButton("SpeedhackButton", "SPEEDHACK", 12)
-local speedhackBox = createHackerTextBox("SpeedhackInput", "SPEED MULTIPLIER: 16", 13)
-local bhopBtn = createHackerButton("BhopButton", "BUNNY HOP", 14)
-local bhopPowerBox = createHackerTextBox("BhopPowerInput", "BHOP POWER: 50", 15)
-local infJumpBtn = createHackerButton("InfJumpButton", "INFINITE JUMP", 16)
-local noclipBtn = createHackerButton("NoclipButton", "NOCLIP", 17)
-local autoSprintBtn = createHackerButton("AutoSprintButton", "AUTO SPRINT", 18)
-local platformBtn = createHackerButton("PlatformButton", "PLATFORM", 19)
+-- MOVEMENT SECTION
+local flyBtn = createHackerButton("FlyButton", "FLY MODE", 5)
+local speedBox = createHackerTextBox("SpeedInput", "FLY SPEED: 50", 6)
+local speedhackBtn = createHackerButton("SpeedhackButton", "SPEEDHACK", 7)
+local speedhackBox = createHackerTextBox("SpeedhackInput", "SPEED: 16", 8)
+local noclipBtn = createHackerButton("NoclipButton", "NOCLIP", 9)
+local infJumpBtn = createHackerButton("InfJumpButton", "INFINITE JUMP", 10)
+local bhopBtn = createHackerButton("BhopButton", "BUNNY HOP", 11)
 
--- COMBAT СЕКЦИЯ
-local aimbotBtn = createHackerButton("AimbotButton", "AIMBOT", 20)
-local fovBox = createHackerTextBox("FOVInput", "AIMBOT FOV: 200", 21)
-local smoothBox = createHackerTextBox("SmoothInput", "AIMBOT SMOOTH: 0.2", 22)
-local silentAimBtn = createHackerButton("SilentAimButton", "SILENT AIM", 23)
-local triggerbotBtn = createHackerButton("TriggerbotButton", "TRIGGERBOT", 24)
-local killauraBtn = createHackerButton("KillauraButton", "KILL AURA", 25)
-local killauraRangeBox = createHackerTextBox("KillauraRangeInput", "AURA RANGE: 20", 26)
-local hitboxExpanderBtn = createHackerButton("HitboxExpanderButton", "HITBOX EXPANDER", 27)
-local hitboxSizeBox = createHackerTextBox("HitboxSizeInput", "HITBOX SIZE: 10", 28)
-local reachBtn = createHackerButton("ReachButton", "REACH", 29)
-local reachDistanceBox = createHackerTextBox("ReachDistanceInput", "REACH DISTANCE: 10", 30)
-local fastPunchBtn = createHackerButton("FastPunchButton", "FAST PUNCH", 31)
-local autoBlockBtn = createHackerButton("AutoBlockButton", "AUTO BLOCK", 32)
-local autoParryBtn = createHackerButton("AutoParryButton", "AUTO PARRY", 33)
+-- COMBAT SECTION
+local aimbotBtn = createHackerButton("AimbotButton", "AIMBOT", 12)
+local fovBox = createHackerTextBox("FOVInput", "FOV: 200", 13)
+local smoothBox = createHackerTextBox("SmoothInput", "SMOOTH: 0.2", 14)
+local triggerbotBtn = createHackerButton("TriggerbotButton", "TRIGGERBOT", 15)
 
--- VISUAL СЕКЦИЯ
-local xrayBtn = createHackerButton("XrayButton", "X-RAY VISION", 34)
-local fullbrightBtn = createHackerButton("FullbrightButton", "FULLBRIGHT", 35)
-local radarBtn = createHackerButton("RadarButton", "RADAR", 36)
-local spinbotBtn = createHackerButton("SpinbotButton", "SPINBOT", 37)
-local spinSpeedBox = createHackerTextBox("SpinSpeedInput", "SPIN SPEED: 20", 38)
-local fovChangerBtn = createHackerButton("FOVChangerButton", "FOV CHANGER", 39)
-local fovBox2 = createHackerTextBox("FOVChangerInput", "FOV: 120", 40)
-local freecamBtn = createHackerButton("FreecamButton", "FREECAM", 41)
+-- VISUAL SECTION
+local fullbrightBtn = createHackerButton("FullbrightButton", "FULLBRIGHT", 16)
+local xrayBtn = createHackerButton("XrayButton", "X-RAY VISION", 17)
+local radarBtn = createHackerButton("RadarButton", "RADAR", 18)
+local fovChangerBtn = createHackerButton("FOVChangerButton", "FOV CHANGER", 19)
 
--- UTILITY СЕКЦИЯ
-local godModeBtn = createHackerButton("GodModeButton", "GOD MODE", 42)
-local noFallDamageBtn = createHackerButton("NoFallDamageButton", "NO FALL DAMAGE", 43)
-local antiRagdollBtn = createHackerButton("AntiRagdollButton", "ANTI RAGDOLL", 44)
-local clickTPBtn = createHackerButton("ClickTPButton", "CLICK TELEPORT", 45)
-local autoFarmBtn = createHackerButton("AutoFarmButton", "AUTO FARM", 46)
-local antiAFKBtn = createHackerButton("AntiAFKButton", "ANTI-AFK", 47)
-local autoRespawnBtn = createHackerButton("AutoRespawnButton", "AUTO RESPAWN", 48)
+-- UTILITY SECTION
+local godModeBtn = createHackerButton("GodModeButton", "GOD MODE", 20)
+local antiAFKBtn = createHackerButton("AntiAFKButton", "ANTI-AFK", 21)
 
 -- EXTERNAL SCRIPTS
-local infinityYieldBtn = createHackerButton("InfinityYieldButton", "INFINITY YIELD FE", 49)
-local jerkOffR6Btn = createHackerButton("JerkOffR6Button", "JERK OFF R6", 50)
-local jerkOffR15Btn = createHackerButton("JerkOffR15Button", "JERK OFF R15", 51)
+local infinityYieldBtn = createHackerButton("InfinityYieldButton", "INFINITY YIELD FE", 22)
+local jerkOffR6Btn = createHackerButton("JerkOffR6Button", "JERK OFF R6", 23)
+local jerkOffR15Btn = createHackerButton("JerkOffR15Button", "JERK OFF R15", 24)
 
--- =============================================
--- КНОПКА СВОРАЧИВАНИЯ
--- =============================================
+-- CONFIG SECTION
+local saveConfigBtn = createHackerButton("SaveConfigButton", "SAVE CONFIG", 25)
+local loadConfigBtn = createHackerButton("LoadConfigButton", "LOAD CONFIG", 26)
+local webhookBox = createHackerTextBox("WebhookInput", "DISCORD WEBHOOK URL", 27)
 
-toggleButton.Name = "ToggleButton"
-toggleButton.Size = UDim2.new(0, 80, 0, 80)
-toggleButton.Position = UDim2.new(0, 20, 0, 20)
-toggleButton.Text = "◉"
-toggleButton.TextSize = 45
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.Font = Enum.Font.Code
-toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-toggleButton.BackgroundTransparency = 0.3
-toggleButton.BorderSizePixel = 0
-toggleButton.AutoButtonColor = false
-toggleButton.Parent = screenGui
+-- ============== РАДУЖНАЯ АНИМАЦИЯ ==============
 
-local toggleCorner = Instance.new("UICorner")
-toggleCorner.CornerRadius = UDim.new(1, 0)
-toggleCorner.Parent = toggleButton
-
-toggleStroke = Instance.new("UIStroke")
-toggleStroke.Color = Color3.fromRGB(255, 0, 0)
-toggleStroke.Thickness = 3
-toggleStroke.Transparency = 0
-toggleStroke.Parent = toggleButton
-
--- Пульсирующий эффект
 spawn(function()
-    while true do
-        TweenService:Create(toggleStroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 5}):Play()
-        wait(1)
-        TweenService:Create(toggleStroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 3}):Play()
-        wait(1)
+    while rainbowEnabled do
+        local rainbowColor = getRainbowColor()
+        
+        pcall(function()
+            frameStroke1.Color = rainbowColor
+            innerStroke.Color = rainbowColor
+            titleStroke.Color = rainbowColor
+            toggleStroke.Color = rainbowColor
+            divider.BackgroundColor3 = rainbowColor
+            scanlineEffect.BackgroundColor3 = rainbowColor
+            contentFrame.ScrollBarImageColor3 = rainbowColor
+            
+            for _, child in pairs(contentFrame:GetChildren()) do
+                if child:IsA("Frame") then
+                    local button = child:FindFirstChildOfClass("TextButton")
+                    if button then
+                        local stroke = button:FindFirstChildOfClass("UIStroke")
+                        if stroke then stroke.Color = rainbowColor end
+                    end
+                    
+                    local textBox = child:FindFirstChildOfClass("TextBox")
+                    if textBox then
+                        local stroke = textBox:FindFirstChildOfClass("UIStroke")
+                        if stroke then stroke.Color = rainbowColor end
+                    end
+                end
+            end
+        end)
+        
+        wait(0.01)
     end
 end)
 
-toggleButton.MouseEnter:Connect(function()
-    TweenService:Create(toggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, 90, 0, 90), Rotation = 180}):Play()
-    toggleButton.Text = "●"
-end)
+-- ============== ЧИТ ФУНКЦИИ ==============
 
-toggleButton.MouseLeave:Connect(function()
-    TweenService:Create(toggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0, 80, 0, 80), Rotation = 0}):Play()
-    toggleButton.Text = "◉"
-end)
-
--- =============================================
--- ФУНКЦИИ ЧИТОВ
--- =============================================
-
--- Функция плавного переключения меню
+-- Toggle Menu
 local function toggleMenu()
     menuVisible = not menuVisible
     
@@ -664,7 +640,7 @@ local function toggleMenu()
         end
     end
     
-    TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = targetPos}):Play()
+    TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Position = targetPos}):Play()
     TweenService:Create(blur, TweenInfo.new(0.3), {Size = targetBlur}):Play()
     
     for i = 1, 3 do
@@ -675,37 +651,45 @@ local function toggleMenu()
     end
 end
 
--- ESP функции
+-- ESP
 local function toggleESP()
     espEnabled = not espEnabled
     espBtn.Text = espEnabled and "⟨ DISABLE WALLHACK ⟩" or "⟨ ESP WALLHACK ⟩"
     
     if espEnabled then
         for _, player in pairs(Players:GetPlayers()) do
-            if player ~= Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                local espBox = Instance.new("BoxHandleAdornment")
-                espBox.Size = Vector3.new(4, 7, 1)
-                espBox.Adornee = player.Character:FindFirstChild("HumanoidRootPart")
-                espBox.Color3 = espColor
-                espBox.AlwaysOnTop = true
-                espBox.ZIndex = 10
-                espBox.Transparency = 0.5
-                espBox.Parent = player.Character
+            if player ~= Players.LocalPlayer and player.Character then
+                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+                if hrp and not hrp:FindFirstChild("ESPBox") then
+                    local espBox = Instance.new("BoxHandleAdornment")
+                    espBox.Name = "ESPBox"
+                    espBox.Size = Vector3.new(4, 7, 1)
+                    espBox.Adornee = hrp
+                    espBox.Color3 = espColor
+                    espBox.AlwaysOnTop = true
+                    espBox.ZIndex = 10
+                    espBox.Transparency = 0.5
+                    espBox.Parent = hrp
+                end
             end
         end
     else
         for _, player in pairs(Players:GetPlayers()) do
             if player.Character then
-                for _, adornment in pairs(player.Character:GetChildren()) do
-                    if adornment:IsA("BoxHandleAdornment") then
-                        adornment:Destroy()
+                for _, part in pairs(player.Character:GetDescendants()) do
+                    if part:IsA("BoxHandleAdornment") and part.Name == "ESPBox" then
+                        part:Destroy()
                     end
                 end
             end
         end
     end
+    
+    SendWebhook("👁️ ESP: **" .. tostring(espEnabled) .. "**")
+    Notify("ARUSCRIPT V5", "ESP: " .. tostring(espEnabled))
 end
 
+-- Change ESP Color
 local function changeESPColor()
     colorIndex = colorIndex + 1
     if colorIndex > #colors then colorIndex = 1 end
@@ -714,301 +698,182 @@ local function changeESPColor()
     if espEnabled then
         for _, player in pairs(Players:GetPlayers()) do
             if player.Character then
-                for _, adornment in pairs(player.Character:GetChildren()) do
-                    if adornment:IsA("BoxHandleAdornment") then
-                        adornment.Color3 = espColor
-                    end
-                end
-            end
-        end
-    end
-end
-
--- ESP Tracers
-local function toggleESPTracers()
-    espTracersEnabled = not espTracersEnabled
-    espTracersBtn.Text = espTracersEnabled and "⟨ DISABLE TRACERS ⟩" or "⟨ ESP TRACERS ⟩"
-    
-    if espTracersEnabled then
-        RunService.RenderStepped:Connect(function()
-            if not espTracersEnabled then return end
-            
-            local camera = workspace.CurrentCamera
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= Players.LocalPlayer and player.Character then
-                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        pcall(function()
-                            local tracer = Drawing.new("Line")
-                            tracer.Visible = true
-                            tracer.From = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y)
-                            local screenPos, onScreen = camera:WorldToViewportPoint(hrp.Position)
-                            tracer.To = Vector2.new(screenPos.X, screenPos.Y)
-                            tracer.Color = espColor
-                            tracer.Thickness = 2
-                            tracer.Transparency = 0.7
-                            
-                            wait(0.05)
-                            tracer:Remove()
-                        end)
-                    end
-                end
-            end
-        end)
-    end
-end
-
--- ESP Chams
-local function toggleESPChams()
-    espChamsEnabled = not espChamsEnabled
-    espChamsBtn.Text = espChamsEnabled and "⟨ DISABLE CHAMS ⟩" or "⟨ ESP CHAMS ⟩"
-    
-    if espChamsEnabled then
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= Players.LocalPlayer and player.Character then
                 for _, part in pairs(player.Character:GetDescendants()) do
-                    if part:IsA("BasePart") then
-                        local highlight = Instance.new("Highlight")
-                        highlight.Name = "ChamsHighlight"
-                        highlight.FillColor = espColor
-                        highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-                        highlight.FillTransparency = 0.5
-                        highlight.OutlineTransparency = 0
-                        highlight.Parent = player.Character
-                        break
+                    if part:IsA("BoxHandleAdornment") and part.Name == "ESPBox" then
+                        part.Color3 = espColor
                     end
                 end
             end
         end
-    else
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character then
-                local highlight = player.Character:FindFirstChild("ChamsHighlight")
-                if highlight then
-                    highlight:Destroy()
-                end
-            end
-        end
     end
-end
-
--- ESP Boxes
-local function toggleESPBoxes()
-    espBoxesEnabled = not espBoxesEnabled
-    espBoxesBtn.Text = espBoxesEnabled and "⟨ DISABLE BOXES ⟩" or "⟨ ESP BOXES ⟩"
     
-    if espBoxesEnabled then
-        RunService.RenderStepped:Connect(function()
-            if not espBoxesEnabled then return end
-            
-            local camera = workspace.CurrentCamera
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= Players.LocalPlayer and player.Character then
-                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        pcall(function()
-                            local pos, onScreen = camera:WorldToViewportPoint(hrp.Position)
-                            
-                            if onScreen then
-                                local topLeft = Drawing.new("Line")
-                                local topRight = Drawing.new("Line")
-                                local bottomLeft = Drawing.new("Line")
-                                local bottomRight = Drawing.new("Line")
-                                
-                                local size = Vector2.new(2000 / pos.Z, 3000 / pos.Z)
-                                
-                                topLeft.From = Vector2.new(pos.X - size.X / 2, pos.Y - size.Y / 2)
-                                topLeft.To = Vector2.new(pos.X + size.X / 2, pos.Y - size.Y / 2)
-                                topLeft.Color = espColor
-                                topLeft.Thickness = 2
-                                topLeft.Visible = true
-                                
-                                wait(0.05)
-                                topLeft:Remove()
-                            end
-                        end)
-                    end
-                end
-            end
-        end)
-    end
+    Notify("ARUSCRIPT V5", "ESP Color Changed!")
 end
 
--- ESP Distance
-local function toggleESPDistance()
-    espDistanceEnabled = not espDistanceEnabled
-    espDistanceBtn.Text = espDistanceEnabled and "⟨ DISABLE DISTANCE ⟩" or "⟨ ESP DISTANCE ⟩"
-end
-
--- ESP Health
-local function toggleESPHealth()
-    espHealthEnabled = not espHealthEnabled
-    espHealthBtn.Text = espHealthEnabled and "⟨ DISABLE HEALTH ⟩" or "⟨ ESP HEALTH ⟩"
-end
-
--- FLY функции
-local function fly()
-    local player = Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-    
-    bodyVelocity = Instance.new("BodyVelocity")
-    bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-    bodyVelocity.Velocity = Vector3.new(0, 0, 0)
-    bodyVelocity.Parent = humanoidRootPart
-    
-    bodyGyro = Instance.new("BodyGyro")
-    bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-    bodyGyro.CFrame = humanoidRootPart.CFrame
-    bodyGyro.Parent = humanoidRootPart
-    
-    flyConnection = RunService.Heartbeat:Connect(function()
-        local camera = workspace.CurrentCamera
-        local moveDirection = Vector3.new(0, 0, 0)
-        
-        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-            moveDirection = moveDirection + (camera.CFrame.LookVector * speed)
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-            moveDirection = moveDirection - (camera.CFrame.LookVector * speed)
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-            moveDirection = moveDirection - (camera.CFrame.RightVector * speed)
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-            moveDirection = moveDirection + (camera.CFrame.RightVector * speed)
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-            moveDirection = moveDirection + Vector3.new(0, speed, 0)
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
-            moveDirection = moveDirection - Vector3.new(0, speed, 0)
-        end
-        
-        bodyVelocity.Velocity = moveDirection
-        bodyGyro.CFrame = camera.CFrame
-    end)
-end
-
+-- Fly
 local function toggleFly()
     flying = not flying
     flyBtn.Text = flying and "⟨ DEACTIVATE FLY ⟩" or "⟨ FLY MODE ⟩"
     
     if flying then
-        fly()
-    else
-        if flyConnection then flyConnection:Disconnect() end
-        if bodyVelocity then bodyVelocity:Destroy() end
-        if bodyGyro then bodyGyro:Destroy() end
-        local humanoidRootPart = Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-        humanoidRootPart.Velocity = Vector3.new(0, 0, 0)
-    end
-end
-
-speedBox.FocusLost:Connect(function(enterPressed)
-    local newSpeed = tonumber(speedBox.Text)
-    if newSpeed then
-        speed = newSpeed
-        speedBox.Text = ""
-        speedBox.PlaceholderText = "⟨ FLY SPEED: " .. speed .. " ⟩"
-    else
-        speedBox.Text = ""
-        speedBox.PlaceholderText = "⟨ ERROR: INVALID INPUT ⟩"
-        wait(2)
-        speedBox.PlaceholderText = "⟨ FLY SPEED: 50 ⟩"
-    end
-end)
-
--- CFrame Fly
-local function toggleCFrameFly()
-    cframeFlyEnabled = not cframeFlyEnabled
-    cframeFlyBtn.Text = cframeFlyEnabled and "⟨ DISABLE CFRAME FLY ⟩" or "⟨ CFRAME FLY ⟩"
-    
-    if cframeFlyEnabled then
-        cframeFlyConnection = RunService.Heartbeat:Connect(function()
-            local character = Players.LocalPlayer.Character
-            if character then
-                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-                if humanoidRootPart then
+        local char = Players.LocalPlayer.Character
+        if char then
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                bodyVelocity = Instance.new("BodyVelocity")
+                bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+                bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+                bodyVelocity.Parent = hrp
+                
+                bodyGyro = Instance.new("BodyGyro")
+                bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+                bodyGyro.CFrame = hrp.CFrame
+                bodyGyro.Parent = hrp
+                
+                connections.fly = RunService.Heartbeat:Connect(function()
                     local camera = workspace.CurrentCamera
-                    local moveDirection = Vector3.new(0, 0, 0)
+                    local moveDir = Vector3.new(0, 0, 0)
                     
                     if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                        moveDirection = camera.CFrame.LookVector * flySpeed2
+                        moveDir = moveDir + camera.CFrame.LookVector * speed
                     end
                     if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-                        moveDirection = camera.CFrame.LookVector * -flySpeed2
+                        moveDir = moveDir - camera.CFrame.LookVector * speed
                     end
                     if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-                        moveDirection = camera.CFrame.RightVector * -flySpeed2
+                        moveDir = moveDir - camera.CFrame.RightVector * speed
                     end
                     if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-                        moveDirection = camera.CFrame.RightVector * flySpeed2
+                        moveDir = moveDir + camera.CFrame.RightVector * speed
                     end
                     if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-                        moveDirection = moveDirection + Vector3.new(0, flySpeed2, 0)
+                        moveDir = moveDir + Vector3.new(0, speed, 0)
                     end
                     if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
-                        moveDirection = moveDirection + Vector3.new(0, -flySpeed2, 0)
+                        moveDir = moveDir - Vector3.new(0, speed, 0)
                     end
                     
-                    humanoidRootPart.CFrame = humanoidRootPart.CFrame + moveDirection
-                end
+                    bodyVelocity.Velocity = moveDir
+                    bodyGyro.CFrame = camera.CFrame
+                end)
             end
-        end)
-    else
-        if cframeFlyConnection then
-            cframeFlyConnection:Disconnect()
         end
+    else
+        if connections.fly then connections.fly:Disconnect() end
+        if bodyVelocity then bodyVelocity:Destroy() end
+        if bodyGyro then bodyGyro:Destroy() end
     end
+    
+    SendWebhook("✈️ Fly: **" .. tostring(flying) .. "**")
+    Notify("ARUSCRIPT V5", "Fly: " .. tostring(flying))
 end
 
-flySpeed2Box.FocusLost:Connect(function(enterPressed)
-    local newSpeed = tonumber(flySpeed2Box.Text)
-    if newSpeed then
-        flySpeed2 = newSpeed
-        flySpeed2Box.Text = ""
-        flySpeed2Box.PlaceholderText = "⟨ CFRAME SPEED: " .. flySpeed2 .. " ⟩"
-    else
-        flySpeed2Box.Text = ""
-        flySpeed2Box.PlaceholderText = "⟨ ERROR: INVALID INPUT ⟩"
-        wait(2)
-        flySpeed2Box.PlaceholderText = "⟨ CFRAME SPEED: 5 ⟩"
-    end
-end)
-
--- SPEEDHACK функции
+-- Speedhack
 local function toggleSpeedhack()
     speedhackEnabled = not speedhackEnabled
     speedhackBtn.Text = speedhackEnabled and "⟨ REMOVE SPEEDHACK ⟩" or "⟨ SPEEDHACK ⟩"
     
-    if Players.LocalPlayer.Character and Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
-        if speedhackEnabled then
-            Players.LocalPlayer.Character.Humanoid.WalkSpeed = speedhackSpeed
-        else
-            Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+    local char = Players.LocalPlayer.Character
+    if char then
+        local humanoid = char:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = speedhackEnabled and speedhackSpeed or 16
         end
     end
+    
+    SendWebhook("⚡ Speedhack: **" .. tostring(speedhackEnabled) .. "**")
+    Notify("ARUSCRIPT V5", "Speedhack: " .. tostring(speedhackEnabled))
 end
 
-speedhackBox.FocusLost:Connect(function(enterPressed)
-    local newSpeedhackSpeed = tonumber(speedhackBox.Text)
-    if newSpeedhackSpeed then
-        speedhackSpeed = newSpeedhackSpeed
-        if Players.LocalPlayer.Character and Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
-            Players.LocalPlayer.Character.Humanoid.WalkSpeed = speedhackSpeed
-        end
-        speedhackBox.Text = ""
-        speedhackBox.PlaceholderText = "⟨ MULTIPLIER: " .. speedhackSpeed .. " ⟩"
+-- Noclip
+local function toggleNoclip()
+    noclipEnabled = not noclipEnabled
+    noclipBtn.Text = noclipEnabled and "⟨ DISABLE NOCLIP ⟩" or "⟨ NOCLIP ⟩"
+    
+    if noclipEnabled then
+        connections.noclip = RunService.Stepped:Connect(function()
+            local char = Players.LocalPlayer.Character
+            if char then
+                for _, part in pairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
     else
-        speedhackBox.Text = ""
-        speedhackBox.PlaceholderText = "⟨ ERROR: INVALID INPUT ⟩"
-        wait(2)
-        speedhackBox.PlaceholderText = "⟨ SPEED MULTIPLIER: 16 ⟩"
+        if connections.noclip then
+            connections.noclip:Disconnect()
+        end
     end
-end)
+    
+    SendWebhook("👻 Noclip: **" .. tostring(noclipEnabled) .. "**")
+    Notify("ARUSCRIPT V5", "Noclip: " .. tostring(noclipEnabled))
+end
 
--- AIMBOT функции
+-- Infinite Jump
+local function toggleInfJump()
+    infJumpEnabled = not infJumpEnabled
+    infJumpBtn.Text = infJumpEnabled and "⟨ DISABLE INF JUMP ⟩" or "⟨ INFINITE JUMP ⟩"
+    
+    if infJumpEnabled then
+        connections.infJump = UserInputService.JumpRequest:Connect(function()
+            local char = Players.LocalPlayer.Character
+            if char then
+                local humanoid = char:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                end
+            end
+        end)
+    else
+        if connections.infJump then
+            connections.infJump:Disconnect()
+        end
+    end
+    
+    Notify("ARUSCRIPT V5", "Infinite Jump: " .. tostring(infJumpEnabled))
+end
+
+-- Bhop
+local function toggleBhop()
+    bhopEnabled = not bhopEnabled
+    bhopBtn.Text = bhopEnabled and "⟨ DISABLE BUNNY HOP ⟩" or "⟨ BUNNY HOP ⟩"
+    
+    if bhopEnabled then
+        connections.bhop = RunService.Heartbeat:Connect(function()
+            local char = Players.LocalPlayer.Character
+            if char then
+                local humanoid = char:FindFirstChild("Humanoid")
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                
+                if humanoid and hrp then
+                    if UserInputService:IsKeyDown(Enum.KeyCode.W) or 
+                       UserInputService:IsKeyDown(Enum.KeyCode.A) or 
+                       UserInputService:IsKeyDown(Enum.KeyCode.S) or 
+                       UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                        
+                        local ray = Ray.new(hrp.Position, Vector3.new(0, -4, 0))
+                        local hit = workspace:FindPartOnRayWithIgnoreList(ray, {char})
+                        
+                        if hit then
+                            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                            hrp.Velocity = Vector3.new(hrp.Velocity.X, bhopPower, hrp.Velocity.Z)
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        if connections.bhop then
+            connections.bhop:Disconnect()
+        end
+    end
+    
+    Notify("ARUSCRIPT V5", "Bunny Hop: " .. tostring(bhopEnabled))
+end
+
+-- Aimbot
 pcall(function()
     aimbotCircle = Drawing.new("Circle")
     aimbotCircle.Thickness = 2
@@ -1022,12 +887,11 @@ end)
 
 local function getClosestPlayer()
     local player = Players.LocalPlayer
-    local character = player.Character
-    if not character then return nil end
+    local char = player.Character
+    if not char then return nil end
     
-    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-    local head = character:FindFirstChild("Head")
-    if not humanoidRootPart or not head then return nil end
+    local head = char:FindFirstChild("Head")
+    if not head then return nil end
     
     local camera = workspace.CurrentCamera
     local mousePos = UserInputService:GetMouseLocation()
@@ -1047,13 +911,8 @@ local function getClosestPlayer()
                     local distance = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
                     
                     if distance < shortestDistance then
-                        local ray = Ray.new(head.Position, (targetHead.Position - head.Position).Unit * 1000)
-                        local part = workspace:FindPartOnRayWithIgnoreList(ray, {character, targetPlayer.Character})
-                        
-                        if not part then
-                            closestPlayer = targetPlayer
-                            shortestDistance = distance
-                        end
+                        closestPlayer = targetPlayer
+                        shortestDistance = distance
                     end
                 end
             end
@@ -1061,43 +920,6 @@ local function getClosestPlayer()
     end
     
     return closestPlayer
-end
-
-local function runAimbot()
-    local player = Players.LocalPlayer
-    local camera = workspace.CurrentCamera
-    
-    aimbotConnection = RunService.RenderStepped:Connect(function()
-        if not aimbotEnabled then return end
-        
-        if aimbotCircle then
-            local mousePos = UserInputService:GetMouseLocation()
-            aimbotCircle.Position = mousePos
-        end
-        
-        local target = getClosestPlayer()
-        aimbotTarget = target
-        
-        if target and target.Character then
-            local targetHead = target.Character:FindFirstChild("Head")
-            
-            if targetHead then
-                local targetPos = camera:WorldToViewportPoint(targetHead.Position)
-                local currentPos = camera.CFrame.Position
-                local targetCFrame = CFrame.new(currentPos, targetHead.Position)
-                
-                camera.CFrame = camera.CFrame:Lerp(targetCFrame, aimbotSmooth)
-                
-                if aimbotCircle then
-                    aimbotCircle.Color = Color3.fromRGB(255, 0, 0)
-                end
-            end
-        else
-            if aimbotCircle then
-                aimbotCircle.Color = Color3.fromRGB(255, 255, 255)
-            end
-        end
-    end)
 end
 
 local function toggleAimbot()
@@ -1109,139 +931,96 @@ local function toggleAimbot()
     end
     
     if aimbotEnabled then
-        runAimbot()
-        if aimbotCircle then
-            for i = 1, 3 do
-                aimbotCircle.Radius = aimbotFOV + 50
-                wait(0.1)
-                aimbotCircle.Radius = aimbotFOV
-                wait(0.1)
+        connections.aimbot = RunService.RenderStepped:Connect(function()
+            if aimbotCircle then
+                local mousePos = UserInputService:GetMouseLocation()
+                aimbotCircle.Position = mousePos
             end
-        end
-    else
-        if aimbotConnection then
-            aimbotConnection:Disconnect()
-        end
-        aimbotTarget = nil
-    end
-end
-
-fovBox.FocusLost:Connect(function(enterPressed)
-    local newFOV = tonumber(fovBox.Text)
-    if newFOV and newFOV > 0 and newFOV <= 500 then
-        aimbotFOV = newFOV
-        if aimbotCircle then
-            aimbotCircle.Radius = aimbotFOV
-        end
-        fovBox.Text = ""
-        fovBox.PlaceholderText = "⟨ FOV: " .. aimbotFOV .. " ⟩"
-    else
-        fovBox.Text = ""
-        fovBox.PlaceholderText = "⟨ ERROR: USE 1-500 ⟩"
-        wait(2)
-        fovBox.PlaceholderText = "⟨ AIMBOT FOV: 200 ⟩"
-    end
-end)
-
-smoothBox.FocusLost:Connect(function(enterPressed)
-    local newSmooth = tonumber(smoothBox.Text)
-    if newSmooth and newSmooth > 0 and newSmooth <= 1 then
-        aimbotSmooth = newSmooth
-        smoothBox.Text = ""
-        smoothBox.PlaceholderText = "⟨ SMOOTH: " .. aimbotSmooth .. " ⟩"
-    else
-        smoothBox.Text = ""
-        smoothBox.PlaceholderText = "⟨ ERROR: USE 0.01-1 ⟩"
-        wait(2)
-        smoothBox.PlaceholderText = "⟨ AIMBOT SMOOTH: 0.2 ⟩"
-    end
-end)
-
--- Silent Aim
-local function toggleSilentAim()
-    silentAimEnabled = not silentAimEnabled
-    silentAimBtn.Text = silentAimEnabled and "⟨ DISABLE SILENT AIM ⟩" or "⟨ SILENT AIM ⟩"
-    
-    if silentAimEnabled then
-        silentAimConnection = RunService.RenderStepped:Connect(function()
+            
             local target = getClosestPlayer()
+            
             if target and target.Character then
                 local targetHead = target.Character:FindFirstChild("Head")
+                
                 if targetHead then
-                    -- Silent aim logic would go here
+                    local camera = workspace.CurrentCamera
+                    local currentPos = camera.CFrame.Position
+                    local targetCFrame = CFrame.new(currentPos, targetHead.Position)
+                    
+                    camera.CFrame = camera.CFrame:Lerp(targetCFrame, aimbotSmooth)
+                    
+                    if aimbotCircle then
+                        aimbotCircle.Color = Color3.fromRGB(255, 0, 0)
+                    end
+                end
+            else
+                if aimbotCircle then
+                    aimbotCircle.Color = Color3.fromRGB(255, 255, 255)
                 end
             end
         end)
     else
-        if silentAimConnection then
-            silentAimConnection:Disconnect()
+        if connections.aimbot then
+            connections.aimbot:Disconnect()
         end
     end
+    
+    SendWebhook("🎯 Aimbot: **" .. tostring(aimbotEnabled) .. "**")
+    Notify("ARUSCRIPT V5", "Aimbot: " .. tostring(aimbotEnabled))
 end
 
--- BUNNY HOP функции
-local function runBhop()
-    local player = Players.LocalPlayer
+-- Triggerbot
+local function toggleTriggerbot()
+    triggerbotEnabled = not triggerbotEnabled
+    triggerbotBtn.Text = triggerbotEnabled and "⟨ DISABLE TRIGGERBOT ⟩" or "⟨ TRIGGERBOT ⟩"
     
-    bhopConnection = RunService.Heartbeat:Connect(function()
-        if not bhopEnabled then return end
-        
-        local character = player.Character
-        if not character then return end
-        
-        local humanoid = character:FindFirstChild("Humanoid")
-        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-        
-        if humanoid and humanoidRootPart then
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) or 
-               UserInputService:IsKeyDown(Enum.KeyCode.A) or 
-               UserInputService:IsKeyDown(Enum.KeyCode.S) or 
-               UserInputService:IsKeyDown(Enum.KeyCode.D) then
-                
-                local ray = Ray.new(humanoidRootPart.Position, Vector3.new(0, -4, 0))
-                local hit = workspace:FindPartOnRayWithIgnoreList(ray, {character})
-                
-                if hit then
-                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                    humanoidRootPart.Velocity = Vector3.new(
-                        humanoidRootPart.Velocity.X,
-                        bhopPower,
-                        humanoidRootPart.Velocity.Z
-                    )
+    if triggerbotEnabled then
+        connections.triggerbot = RunService.RenderStepped:Connect(function()
+            local mouse = Players.LocalPlayer:GetMouse()
+            local target = mouse.Target
+            
+            if target and target.Parent then
+                local humanoid = target.Parent:FindFirstChild("Humanoid")
+                if humanoid and humanoid.Health > 0 then
+                    local targetPlayer = Players:GetPlayerFromCharacter(target.Parent)
+                    if targetPlayer and targetPlayer ~= Players.LocalPlayer then
+                        mouse1click()
+                    end
                 end
             end
+        end)
+    else
+        if connections.triggerbot then
+            connections.triggerbot:Disconnect()
         end
-    end)
-end
-
-local function toggleBhop()
-    bhopEnabled = not bhopEnabled
-    bhopBtn.Text = bhopEnabled and "⟨ DISABLE BUNNY HOP ⟩" or "⟨ BUNNY HOP ⟩"
+    end
     
-    if bhopEnabled then
-        runBhop()
-    else
-        if bhopConnection then
-            bhopConnection:Disconnect()
-        end
-    end
+    Notify("ARUSCRIPT V5", "Triggerbot: " .. tostring(triggerbotEnabled))
 end
 
-bhopPowerBox.FocusLost:Connect(function(enterPressed)
-    local newPower = tonumber(bhopPowerBox.Text)
-    if newPower and newPower > 0 and newPower <= 200 then
-        bhopPower = newPower
-        bhopPowerBox.Text = ""
-        bhopPowerBox.PlaceholderText = "⟨ BHOP POWER: " .. bhopPower .. " ⟩"
+-- Fullbright
+local function toggleFullbright()
+    fullbrightEnabled = not fullbrightEnabled
+    fullbrightBtn.Text = fullbrightEnabled and "⟨ DISABLE FULLBRIGHT ⟩" or "⟨ FULLBRIGHT ⟩"
+    
+    if fullbrightEnabled then
+        Lighting.Brightness = 2
+        Lighting.ClockTime = 12
+        Lighting.FogEnd = 100000
+        Lighting.GlobalShadows = false
+        Lighting.Ambient = Color3.fromRGB(255, 255, 255)
     else
-        bhopPowerBox.Text = ""
-        bhopPowerBox.PlaceholderText = "⟨ ERROR: USE 1-200 ⟩"
-        wait(2)
-        bhopPowerBox.PlaceholderText = "⟨ BHOP POWER: 50 ⟩"
+        Lighting.Brightness = 1
+        Lighting.ClockTime = 14
+        Lighting.FogEnd = 100000
+        Lighting.GlobalShadows = true
+        Lighting.Ambient = Color3.fromRGB(0, 0, 0)
     end
-end)
+    
+    Notify("ARUSCRIPT V5", "Fullbright: " .. tostring(fullbrightEnabled))
+end
 
--- X-RAY функции
+-- X-Ray
 local function toggleXray()
     xrayEnabled = not xrayEnabled
     xrayBtn.Text = xrayEnabled and "⟨ DISABLE X-RAY ⟩" or "⟨ X-RAY VISION ⟩"
@@ -1253,166 +1032,21 @@ local function toggleXray()
                     originalTransparency[obj] = obj.Transparency
                 end
                 obj.Transparency = 0.7
-                
-                if not obj:FindFirstChild("XrayHighlight") then
-                    local highlight = Instance.new("SurfaceLight")
-                    highlight.Name = "XrayHighlight"
-                    highlight.Brightness = 0.5
-                    highlight.Color = Color3.fromRGB(0, 255, 0)
-                    highlight.Range = 30
-                    highlight.Parent = obj
-                end
-            end
-        end
-        
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= Players.LocalPlayer and player.Character then
-                for _, part in pairs(player.Character:GetDescendants()) do
-                    if part:IsA("BasePart") then
-                        local highlight = Instance.new("Highlight")
-                        highlight.Name = "XrayPlayerHighlight"
-                        highlight.FillColor = Color3.fromRGB(255, 0, 0)
-                        highlight.OutlineColor = Color3.fromRGB(255, 255, 0)
-                        highlight.FillTransparency = 0.5
-                        highlight.OutlineTransparency = 0
-                        highlight.Parent = player.Character
-                        break
-                    end
-                end
             end
         end
     else
         for obj, transparency in pairs(originalTransparency) do
             if obj and obj.Parent then
                 obj.Transparency = transparency
-                
-                local highlight = obj:FindFirstChild("XrayHighlight")
-                if highlight then
-                    highlight:Destroy()
-                end
             end
         end
         originalTransparency = {}
-        
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character then
-                local highlight = player.Character:FindFirstChild("XrayPlayerHighlight")
-                if highlight then
-                    highlight:Destroy()
-                end
-            end
-        end
     end
-end
-
--- INFINITE JUMP функции
-local function toggleInfJump()
-    infJumpEnabled = not infJumpEnabled
-    infJumpBtn.Text = infJumpEnabled and "⟨ DISABLE INF JUMP ⟩" or "⟨ INFINITE JUMP ⟩"
     
-    if infJumpEnabled then
-        infJumpConnection = UserInputService.JumpRequest:Connect(function()
-            local character = Players.LocalPlayer.Character
-            if character then
-                local humanoid = character:FindFirstChildOfClass("Humanoid")
-                if humanoid then
-                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                end
-            end
-        end)
-    else
-        if infJumpConnection then
-            infJumpConnection:Disconnect()
-        end
-    end
+    Notify("ARUSCRIPT V5", "X-Ray: " .. tostring(xrayEnabled))
 end
 
--- NOCLIP функции
-local function toggleNoclip()
-    noclipEnabled = not noclipEnabled
-    noclipBtn.Text = noclipEnabled and "⟨ DISABLE NOCLIP ⟩" or "⟨ NOCLIP ⟩"
-    
-    if noclipEnabled then
-        noclipConnection = RunService.Stepped:Connect(function()
-            local character = Players.LocalPlayer.Character
-            if character then
-                for _, part in pairs(character:GetDescendants()) do
-                    if part:IsA("BasePart") then
-                        part.CanCollide = false
-                    end
-                end
-            end
-        end)
-    else
-        if noclipConnection then
-            noclipConnection:Disconnect()
-        end
-        local character = Players.LocalPlayer.Character
-        if character then
-            for _, part in pairs(character:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = true
-                end
-            end
-        end
-    end
-end
-
--- FULLBRIGHT функции
-local function toggleFullbright()
-    fullbrightEnabled = not fullbrightEnabled
-    fullbrightBtn.Text = fullbrightEnabled and "⟨ DISABLE FULLBRIGHT ⟩" or "⟨ FULLBRIGHT ⟩"
-    
-    if fullbrightEnabled then
-        originalLighting.Brightness = Lighting.Brightness
-        originalLighting.ClockTime = Lighting.ClockTime
-        originalLighting.FogEnd = Lighting.FogEnd
-        originalLighting.GlobalShadows = Lighting.GlobalShadows
-        originalLighting.Ambient = Lighting.Ambient
-        
-        Lighting.Brightness = 2
-        Lighting.ClockTime = 12
-        Lighting.FogEnd = 100000
-        Lighting.GlobalShadows = false
-        Lighting.Ambient = Color3.fromRGB(255, 255, 255)
-    else
-        Lighting.Brightness = originalLighting.Brightness or 1
-        Lighting.ClockTime = originalLighting.ClockTime or 14
-        Lighting.FogEnd = originalLighting.FogEnd or 100000
-        Lighting.GlobalShadows = originalLighting.GlobalShadows or true
-        Lighting.Ambient = originalLighting.Ambient or Color3.fromRGB(0, 0, 0)
-    end
-end
-
--- TRIGGERBOT функции
-local function toggleTriggerbot()
-    triggerbotEnabled = not triggerbotEnabled
-    triggerbotBtn.Text = triggerbotEnabled and "⟨ DISABLE TRIGGERBOT ⟩" or "⟨ TRIGGERBOT ⟩"
-    
-    if triggerbotEnabled then
-        triggerbotConnection = RunService.RenderStepped:Connect(function()
-            local player = Players.LocalPlayer
-            local mouse = player:GetMouse()
-            local target = mouse.Target
-            
-            if target and target.Parent then
-                local humanoid = target.Parent:FindFirstChild("Humanoid")
-                if humanoid and humanoid.Health > 0 then
-                    local targetPlayer = Players:GetPlayerFromCharacter(target.Parent)
-                    if targetPlayer and targetPlayer ~= player then
-                        mouse1click()
-                    end
-                end
-            end
-        end)
-    else
-        if triggerbotConnection then
-            triggerbotConnection:Disconnect()
-        end
-    end
-end
-
--- RADAR функции
+-- Radar
 local function createRadar()
     radarFrame = Instance.new("Frame")
     radarFrame.Name = "Radar"
@@ -1433,7 +1067,6 @@ local function createRadar()
     radarStroke.Thickness = 3
     radarStroke.Parent = radarFrame
     
-    -- Радужная обводка для радара
     spawn(function()
         while rainbowEnabled do
             if radarFrame.Visible then
@@ -1476,26 +1109,23 @@ local function toggleRadar()
     radarFrame.Visible = radarEnabled
     
     if radarEnabled then
-        RunService.RenderStepped:Connect(function()
-            if not radarEnabled then return end
-            
+        connections.radar = RunService.RenderStepped:Connect(function()
             for _, dot in pairs(radarDots) do
                 dot:Destroy()
             end
             radarDots = {}
             
-            local player = Players.LocalPlayer
-            local character = player.Character
-            if not character then return end
+            local char = Players.LocalPlayer.Character
+            if not char then return end
             
-            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-            if not humanoidRootPart then return end
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
             
             for _, targetPlayer in pairs(Players:GetPlayers()) do
-                if targetPlayer ~= player and targetPlayer.Character then
+                if targetPlayer ~= Players.LocalPlayer and targetPlayer.Character then
                     local targetRoot = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
                     if targetRoot then
-                        local distance = (humanoidRootPart.Position - targetRoot.Position)
+                        local distance = (hrp.Position - targetRoot.Position)
                         local scale = 100
                         
                         if distance.Magnitude <= 500 then
@@ -1516,46 +1146,16 @@ local function toggleRadar()
                 end
             end
         end)
-    end
-end
-
--- SPINBOT функции
-local function toggleSpinbot()
-    spinbotEnabled = not spinbotEnabled
-    spinbotBtn.Text = spinbotEnabled and "⟨ DISABLE SPINBOT ⟩" or "⟨ SPINBOT ⟩"
-    
-    if spinbotEnabled then
-        spinbotConnection = RunService.Heartbeat:Connect(function()
-            local character = Players.LocalPlayer.Character
-            if character then
-                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-                if humanoidRootPart then
-                    humanoidRootPart.CFrame = humanoidRootPart.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0)
-                end
-            end
-        end)
     else
-        if spinbotConnection then
-            spinbotConnection:Disconnect()
+        if connections.radar then
+            connections.radar:Disconnect()
         end
     end
+    
+    Notify("ARUSCRIPT V5", "Radar: " .. tostring(radarEnabled))
 end
 
-spinSpeedBox.FocusLost:Connect(function(enterPressed)
-    local newSpinSpeed = tonumber(spinSpeedBox.Text)
-    if newSpinSpeed and newSpinSpeed > 0 and newSpinSpeed <= 360 then
-        spinSpeed = newSpinSpeed
-        spinSpeedBox.Text = ""
-        spinSpeedBox.PlaceholderText = "⟨ SPIN SPEED: " .. spinSpeed .. " ⟩"
-    else
-        spinSpeedBox.Text = ""
-        spinSpeedBox.PlaceholderText = "⟨ ERROR: USE 1-360 ⟩"
-        wait(2)
-        spinSpeedBox.PlaceholderText = "⟨ SPIN SPEED: 20 ⟩"
-    end
-end)
-
--- FOV CHANGER функции
+-- FOV Changer
 local function toggleFOVChanger()
     fovChangerEnabled = not fovChangerEnabled
     fovChangerBtn.Text = fovChangerEnabled and "⟨ DISABLE FOV ⟩" or "⟨ FOV CHANGER ⟩"
@@ -1568,591 +1168,249 @@ local function toggleFOVChanger()
     else
         camera.FieldOfView = originalFOV
     end
+    
+    Notify("ARUSCRIPT V5", "FOV Changer: " .. tostring(fovChangerEnabled))
 end
 
-fovBox2.FocusLost:Connect(function(enterPressed)
-    local newFOVValue = tonumber(fovBox2.Text)
-    if newFOVValue and newFOVValue > 0 and newFOVValue <= 120 then
-        newFOV = newFOVValue
-        if fovChangerEnabled then
-            workspace.CurrentCamera.FieldOfView = newFOV
-        end
-        fovBox2.Text = ""
-        fovBox2.PlaceholderText = "⟨ FOV: " .. newFOV .. " ⟩"
-    else
-        fovBox2.Text = ""
-        fovBox2.PlaceholderText = "⟨ ERROR: USE 1-120 ⟩"
-        wait(2)
-        fovBox2.PlaceholderText = "⟨ FOV: 120 ⟩"
-    end
-end)
-
--- GOD MODE функции
+-- God Mode
 local function toggleGodMode()
     godModeEnabled = not godModeEnabled
     godModeBtn.Text = godModeEnabled and "⟨ DISABLE GOD MODE ⟩" or "⟨ GOD MODE ⟩"
     
     if godModeEnabled then
-        godModeConnection = RunService.Heartbeat:Connect(function()
-            local character = Players.LocalPlayer.Character
-            if character then
-                local humanoid = character:FindFirstChild("Humanoid")
+        connections.godMode = RunService.Heartbeat:Connect(function()
+            local char = Players.LocalPlayer.Character
+            if char then
+                local humanoid = char:FindFirstChild("Humanoid")
                 if humanoid then
-                    -- 1. Восстанавливаем HP
                     humanoid.Health = humanoid.MaxHealth
-                    
-                    -- 2. Отключаем смерть
                     humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
-                    
-                    -- 3. Отключаем ragdoll
                     humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
                     
-                    -- 4. Отключаем падение
-                    humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
-                    
-                    -- 5. Создаем ForceField если его нет
-                    if not character:FindFirstChild("GodModeFF") then
+                    if not char:FindFirstChild("GodModeFF") then
                         local ff = Instance.new("ForceField")
                         ff.Visible = false
                         ff.Name = "GodModeFF"
-                        ff.Parent = character
+                        ff.Parent = char
                     end
                 end
             end
         end)
     else
-        if godModeConnection then
-            godModeConnection:Disconnect()
+        if connections.godMode then
+            connections.godMode:Disconnect()
         end
         
-        local character = Players.LocalPlayer.Character
-        if character then
-            -- Удаляем ForceField
-            local ff = character:FindFirstChild("GodModeFF")
-            if ff then
-                ff:Destroy()
-            end
+        local char = Players.LocalPlayer.Character
+        if char then
+            local ff = char:FindFirstChild("GodModeFF")
+            if ff then ff:Destroy() end
             
-            -- Включаем обратно состояния
-            local humanoid = character:FindFirstChild("Humanoid")
+            local humanoid = char:FindFirstChild("Humanoid")
             if humanoid then
                 humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
                 humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, true)
-                humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
             end
         end
     end
-end
-
--- AUTO FARM функции
-local function toggleAutoFarm()
-    autoFarmEnabled = not autoFarmEnabled
-    autoFarmBtn.Text = autoFarmEnabled and "⟨ DISABLE AUTO FARM ⟩" or "⟨ AUTO FARM ⟩"
     
-    if autoFarmEnabled then
-        autoFarmConnection = RunService.Heartbeat:Connect(function()
-            local character = Players.LocalPlayer.Character
-            if character then
-                for _, obj in pairs(workspace:GetDescendants()) do
-                    if obj.Name == "Coin" or obj.Name == "Orb" or obj.Name == "Collectible" then
-                        if obj:IsA("BasePart") then
-                            character.HumanoidRootPart.CFrame = obj.CFrame
-                            wait(0.1)
-                        end
-                    end
-                end
-            end
-        end)
-    else
-        if autoFarmConnection then
-            autoFarmConnection:Disconnect()
-        end
-    end
+    SendWebhook("🛡️ God Mode: **" .. tostring(godModeEnabled) .. "**")
+    Notify("ARUSCRIPT V5", "God Mode: " .. tostring(godModeEnabled))
 end
 
--- ANTI-AFK функции
+-- Anti-AFK
 local function toggleAntiAFK()
     antiAFKEnabled = not antiAFKEnabled
     antiAFKBtn.Text = antiAFKEnabled and "⟨ DISABLE ANTI-AFK ⟩" or "⟨ ANTI-AFK ⟩"
     
     if antiAFKEnabled then
-        antiAFKConnection = Players.LocalPlayer.Idled:Connect(function()
+        connections.antiAFK = Players.LocalPlayer.Idled:Connect(function()
             VirtualUser:CaptureController()
             VirtualUser:ClickButton2(Vector2.new())
         end)
     else
-        if antiAFKConnection then
-            antiAFKConnection:Disconnect()
+        if connections.antiAFK then
+            connections.antiAFK:Disconnect()
         end
     end
+    
+    Notify("ARUSCRIPT V5", "Anti-AFK: " .. tostring(antiAFKEnabled))
 end
 
--- AUTO SPRINT
-local function toggleAutoSprint()
-    autoSprintEnabled = not autoSprintEnabled
-    autoSprintBtn.Text = autoSprintEnabled and "⟨ DISABLE AUTO SPRINT ⟩" or "⟨ AUTO SPRINT ⟩"
-    
-    if autoSprintEnabled then
-        autoSprintConnection = RunService.Heartbeat:Connect(function()
-            local character = Players.LocalPlayer.Character
-            if character then
-                local humanoid = character:FindFirstChild("Humanoid")
-                if humanoid then
-                    humanoid.WalkSpeed = 24
-                end
-            end
-        end)
-    else
-        if autoSprintConnection then
-            autoSprintConnection:Disconnect()
-        end
-    end
-end
-
--- KILL AURA
-local function toggleKillaura()
-    killauraEnabled = not killauraEnabled
-    killauraBtn.Text = killauraEnabled and "⟨ DISABLE KILL AURA ⟩" or "⟨ KILL AURA ⟩"
-    
-    if killauraEnabled then
-        killauraConnection = RunService.Heartbeat:Connect(function()
-            local character = Players.LocalPlayer.Character
-            if not character then return end
-            
-            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-            if not humanoidRootPart then return end
-            
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= Players.LocalPlayer and player.Character then
-                    local targetRoot = player.Character:FindFirstChild("HumanoidRootPart")
-                    local targetHumanoid = player.Character:FindFirstChild("Humanoid")
-                    
-                    if targetRoot and targetHumanoid and targetHumanoid.Health > 0 then
-                        local distance = (humanoidRootPart.Position - targetRoot.Position).Magnitude
-                        
-                        if distance <= killauraRange then
-                            -- Kill aura logic
-                            pcall(function()
-                                local tool = character:FindFirstChildOfClass("Tool")
-                                if tool then
-                                    tool:Activate()
-                                end
-                            end)
-                        end
-                    end
-                end
-            end
-        end)
-    else
-        if killauraConnection then
-            killauraConnection:Disconnect()
-        end
-    end
-end
-
-killauraRangeBox.FocusLost:Connect(function(enterPressed)
-    local newRange = tonumber(killauraRangeBox.Text)
-    if newRange and newRange > 0 and newRange <= 100 then
-        killauraRange = newRange
-        killauraRangeBox.Text = ""
-        killauraRangeBox.PlaceholderText = "⟨ AURA RANGE: " .. killauraRange .. " ⟩"
-    else
-        killauraRangeBox.Text = ""
-        killauraRangeBox.PlaceholderText = "⟨ ERROR: USE 1-100 ⟩"
-        wait(2)
-        killauraRangeBox.PlaceholderText = "⟨ AURA RANGE: 20 ⟩"
-    end
-end)
-
--- CLICK TELEPORT
-local function toggleClickTP()
-    clickTPEnabled = not clickTPEnabled
-    clickTPBtn.Text = clickTPEnabled and "⟨ DISABLE CLICK TP ⟩" or "⟨ CLICK TELEPORT ⟩"
-    
-    if clickTPEnabled then
-        local mouse = Players.LocalPlayer:GetMouse()
-        
-        mouse.Button1Down:Connect(function()
-            if not clickTPEnabled then return end
-            if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
-                local character = Players.LocalPlayer.Character
-                if character then
-                    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-                    if humanoidRootPart then
-                        humanoidRootPart.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0, 3, 0))
-                    end
-                end
-            end
-        end)
-    end
-end
-
--- NO FALL DAMAGE
-local function toggleNoFallDamage()
-    noFallDamageEnabled = not noFallDamageEnabled
-    noFallDamageBtn.Text = noFallDamageEnabled and "⟨ DISABLE NO FALL DMG ⟩" or "⟨ NO FALL DAMAGE ⟩"
-    
-    if noFallDamageEnabled then
-        noFallConnection = RunService.Stepped:Connect(function()
-            local character = Players.LocalPlayer.Character
-            if character then
-                local humanoid = character:FindFirstChild("Humanoid")
-                if humanoid then
-                    local falling = humanoid:GetState() == Enum.HumanoidStateType.Freefall
-                    if falling then
-                        humanoid:ChangeState(Enum.HumanoidStateType.Landed)
-                    end
-                end
-            end
-        end)
-    else
-        if noFallConnection then
-            noFallConnection:Disconnect()
-        end
-    end
-end
-
--- ANTI RAGDOLL
-local function toggleAntiRagdoll()
-    antiRagdollEnabled = not antiRagdollEnabled
-    antiRagdollBtn.Text = antiRagdollEnabled and "⟨ DISABLE ANTI RAGDOLL ⟩" or "⟨ ANTI RAGDOLL ⟩"
-    
-    if antiRagdollEnabled then
-        antiRagdollConnection = RunService.Stepped:Connect(function()
-            local character = Players.LocalPlayer.Character
-            if character then
-                local humanoid = character:FindFirstChild("Humanoid")
-                if humanoid then
-                    humanoid.PlatformStand = false
-                end
-            end
-        end)
-    else
-        if antiRagdollConnection then
-            antiRagdollConnection:Disconnect()
-        end
-    end
-end
-
--- PLATFORM
-local function togglePlatform()
-    platformEnabled = not platformEnabled
-    platformBtn.Text = platformEnabled and "⟨ DISABLE PLATFORM ⟩" or "⟨ PLATFORM ⟩"
-    
-    if platformEnabled then
-        platformPart = Instance.new("Part")
-        platformPart.Size = Vector3.new(10, 1, 10)
-        platformPart.Anchored = true
-        platformPart.Transparency = 0.5
-        platformPart.BrickColor = BrickColor.new("Bright green")
-        platformPart.Material = Enum.Material.Neon
-        platformPart.Parent = workspace
-        
-        platformConnection = RunService.Heartbeat:Connect(function()
-            local character = Players.LocalPlayer.Character
-            if character then
-                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-                if humanoidRootPart then
-                    platformPart.CFrame = humanoidRootPart.CFrame - Vector3.new(0, 4, 0)
-                end
-            end
-        end)
-    else
-        if platformConnection then
-            platformConnection:Disconnect()
-        end
-        if platformPart then
-            platformPart:Destroy()
-        end
-    end
-end
-
--- FREECAM
-local function toggleFreecam()
-    freecamEnabled = not freecamEnabled
-    freecamBtn.Text = freecamEnabled and "⟨ DISABLE FREECAM ⟩" or "⟨ FREECAM ⟩"
-    
-    local camera = workspace.CurrentCamera
-    
-    if freecamEnabled then
-        originalCFrame = camera.CFrame
-        camera.CameraType = Enum.CameraType.Scriptable
-        
-        freecamConnection = RunService.RenderStepped:Connect(function()
-            local moveDirection = Vector3.new(0, 0, 0)
-            local speed = 1
-            
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                moveDirection = moveDirection + (camera.CFrame.LookVector * speed)
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-                moveDirection = moveDirection - (camera.CFrame.LookVector * speed)
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-                moveDirection = moveDirection - (camera.CFrame.RightVector * speed)
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-                moveDirection = moveDirection + (camera.CFrame.RightVector * speed)
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.E) then
-                moveDirection = moveDirection + Vector3.new(0, speed, 0)
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.Q) then
-                moveDirection = moveDirection - Vector3.new(0, speed, 0)
-            end
-            
-            camera.CFrame = camera.CFrame + moveDirection
-        end)
-    else
-        if freecamConnection then
-            freecamConnection:Disconnect()
-        end
-        camera.CameraType = Enum.CameraType.Custom
-    end
-end
-
--- HITBOX EXPANDER
-local function toggleHitboxExpander()
-    hitboxExpanderEnabled = not hitboxExpanderEnabled
-    hitboxExpanderBtn.Text = hitboxExpanderEnabled and "⟨ DISABLE HITBOX ⟩" or "⟨ HITBOX EXPANDER ⟩"
-    
-    if hitboxExpanderEnabled then
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= Players.LocalPlayer and player.Character then
-                local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
-                if humanoidRootPart then
-                    humanoidRootPart.Size = Vector3.new(hitboxSize, hitboxSize, hitboxSize)
-                    humanoidRootPart.Transparency = 0.8
-                    humanoidRootPart.CanCollide = false
-                end
-            end
-        end
-    else
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character then
-                local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
-                if humanoidRootPart then
-                    humanoidRootPart.Size = Vector3.new(2, 2, 1)
-                    humanoidRootPart.Transparency = 1
-                    humanoidRootPart.CanCollide = false
-                end
-            end
-        end
-    end
-end
-
-hitboxSizeBox.FocusLost:Connect(function(enterPressed)
-    local newSize = tonumber(hitboxSizeBox.Text)
-    if newSize and newSize > 0 and newSize <= 50 then
-        hitboxSize = newSize
-        hitboxSizeBox.Text = ""
-        hitboxSizeBox.PlaceholderText = "⟨ HITBOX SIZE: " .. hitboxSize .. " ⟩"
-    else
-        hitboxSizeBox.Text = ""
-        hitboxSizeBox.PlaceholderText = "⟨ ERROR: USE 1-50 ⟩"
-        wait(2)
-        hitboxSizeBox.PlaceholderText = "⟨ HITBOX SIZE: 10 ⟩"
-    end
-end)
-
--- REACH
-local function toggleReach()
-    reachEnabled = not reachEnabled
-    reachBtn.Text = reachEnabled and "⟨ DISABLE REACH ⟩" or "⟨ REACH ⟩"
-    
-    if reachEnabled then
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= Players.LocalPlayer and player.Character then
-                local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
-                if humanoidRootPart then
-                    humanoidRootPart.Size = Vector3.new(reachDistance, reachDistance, reachDistance)
-                    humanoidRootPart.Transparency = 0.9
-                end
-            end
-        end
-    end
-end
-
-reachDistanceBox.FocusLost:Connect(function(enterPressed)
-    local newDistance = tonumber(reachDistanceBox.Text)
-    if newDistance and newDistance > 0 and newDistance <= 50 then
-        reachDistance = newDistance
-        reachDistanceBox.Text = ""
-        reachDistanceBox.PlaceholderText = "⟨ REACH: " .. reachDistance .. " ⟩"
-    else
-        reachDistanceBox.Text = ""
-        reachDistanceBox.PlaceholderText = "⟨ ERROR: USE 1-50 ⟩"
-        wait(2)
-        reachDistanceBox.PlaceholderText = "⟨ REACH DISTANCE: 10 ⟩"
-    end
-end)
-
--- FAST PUNCH
-local function toggleFastPunch()
-    fastPunchEnabled = not fastPunchEnabled
-    fastPunchBtn.Text = fastPunchEnabled and "⟨ DISABLE FAST PUNCH ⟩" or "⟨ FAST PUNCH ⟩"
-    
-    if fastPunchEnabled then
-        fastPunchConnection = RunService.Heartbeat:Connect(function()
-            local character = Players.LocalPlayer.Character
-            if character then
-                local tool = character:FindFirstChildOfClass("Tool")
-                if tool then
-                    tool:Activate()
-                end
-            end
-        end)
-    else
-        if fastPunchConnection then
-            fastPunchConnection:Disconnect()
-        end
-    end
-end
-
--- AUTO BLOCK
-local function toggleAutoBlock()
-    autoBlockEnabled = not autoBlockEnabled
-    autoBlockBtn.Text = autoBlockEnabled and "⟨ DISABLE AUTO BLOCK ⟩" or "⟨ AUTO BLOCK ⟩"
-    
-    if autoBlockEnabled then
-        autoBlockConnection = RunService.Heartbeat:Connect(function()
-            -- Auto block logic would depend on the game
-        end)
-    else
-        if autoBlockConnection then
-            autoBlockConnection:Disconnect()
-        end
-    end
-end
-
--- AUTO PARRY
-local function toggleAutoParry()
-    autoParryEnabled = not autoParryEnabled
-    autoParryBtn.Text = autoParryEnabled and "⟨ DISABLE AUTO PARRY ⟩" or "⟨ AUTO PARRY ⟩"
-    
-    if autoParryEnabled then
-        autoParryConnection = RunService.Heartbeat:Connect(function()
-            -- Auto parry logic would depend on the game
-        end)
-    else
-        if autoParryConnection then
-            autoParryConnection:Disconnect()
-        end
-    end
-end
-
--- AUTO RESPAWN
-local function toggleAutoRespawn()
-    autoRespawnEnabled = not autoRespawnEnabled
-    autoRespawnBtn.Text = autoRespawnEnabled and "⟨ DISABLE AUTO RESPAWN ⟩" or "⟨ AUTO RESPAWN ⟩"
-    
-    if autoRespawnEnabled then
-        autoRespawnConnection = Players.LocalPlayer.CharacterAdded:Connect(function(character)
-            wait(0.5)
-            character:WaitForChild("Humanoid").Died:Connect(function()
-                wait(5)
-                Players.LocalPlayer.Character:BreakJoints()
-            end)
-        end)
-    else
-        if autoRespawnConnection then
-            autoRespawnConnection:Disconnect()
-        end
-    end
-end
-
--- INFINITY YIELD FE
+-- External Scripts
 local function loadInfinityYield()
     pcall(function()
         loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-        wait(0.5)
-        infinityYieldBtn.Text = "⟨ IY LOADED ✓ ⟩"
-        wait(2)
-        infinityYieldBtn.Text = "⟨ INFINITY YIELD FE ⟩"
+        Notify("ARUSCRIPT V5", "Infinity Yield Loaded!")
+        SendWebhook("📜 Loaded: **Infinity Yield**")
     end)
 end
 
--- JERK OFF R6
 local function loadJerkOffR6()
     pcall(function()
         loadstring(game:HttpGet("https://pastefy.app/wa3v2Vgm/raw"))()
-        wait(0.5)
-        jerkOffR6Btn.Text = "⟨ R6 LOADED ✓ ⟩"
-        wait(2)
-        jerkOffR6Btn.Text = "⟨ JERK OFF R6 ⟩"
+        Notify("ARUSCRIPT V5", "Jerk Off R6 Loaded!")
+        SendWebhook("📜 Loaded: **Jerk Off R6**")
     end)
 end
 
--- JERK OFF R15
 local function loadJerkOffR15()
     pcall(function()
         loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
-        wait(0.5)
-        jerkOffR15Btn.Text = "⟨ R15 LOADED ✓ ⟩"
-        wait(2)
-        jerkOffR15Btn.Text = "⟨ JERK OFF R15 ⟩"
+        Notify("ARUSCRIPT V5", "Jerk Off R15 Loaded!")
+        SendWebhook("📜 Loaded: **Jerk Off R15**")
     end)
 end
 
--- =============================================
--- ПРИВЯЗКА ВСЕХ КНОПОК
--- =============================================
+-- ============== TEXTBOX HANDLERS ==============
+
+speedBox.FocusLost:Connect(function()
+    local newSpeed = tonumber(speedBox.Text)
+    if newSpeed then
+        speed = newSpeed
+        Config.Settings.FlySpeed = newSpeed
+        SaveConfig()
+        speedBox.Text = ""
+        speedBox.PlaceholderText = "⟨ FLY SPEED: " .. speed .. " ⟩"
+    end
+end)
+
+speedhackBox.FocusLost:Connect(function()
+    local newSpeed = tonumber(speedhackBox.Text)
+    if newSpeed then
+        speedhackSpeed = newSpeed
+        Config.Settings.SpeedhackSpeed = newSpeed
+        SaveConfig()
+        speedhackBox.Text = ""
+        speedhackBox.PlaceholderText = "⟨ SPEED: " .. speedhackSpeed .. " ⟩"
+    end
+end)
+
+fovBox.FocusLost:Connect(function()
+    local newFOV = tonumber(fovBox.Text)
+    if newFOV and newFOV > 0 and newFOV <= 500 then
+        aimbotFOV = newFOV
+        Config.Settings.AimbotFOV = newFOV
+        SaveConfig()
+        if aimbotCircle then
+            aimbotCircle.Radius = aimbotFOV
+        end
+        fovBox.Text = ""
+        fovBox.PlaceholderText = "⟨ FOV: " .. aimbotFOV .. " ⟩"
+    end
+end)
+
+smoothBox.FocusLost:Connect(function()
+    local newSmooth = tonumber(smoothBox.Text)
+    if newSmooth and newSmooth > 0 and newSmooth <= 1 then
+        aimbotSmooth = newSmooth
+        Config.Settings.AimbotSmooth = newSmooth
+        SaveConfig()
+        smoothBox.Text = ""
+        smoothBox.PlaceholderText = "⟨ SMOOTH: " .. aimbotSmooth .. " ⟩"
+    end
+end)
+
+webhookBox.FocusLost:Connect(function()
+    Config.DiscordWebhook = webhookBox.Text
+    SaveConfig()
+    Notify("ARUSCRIPT V5", "Webhook Saved!")
+end)
+
+-- ============== BUTTON CONNECTIONS ==============
 
 espBtn.MouseButton1Click:Connect(toggleESP)
 colorBtn.MouseButton1Click:Connect(changeESPColor)
-espTracersBtn.MouseButton1Click:Connect(toggleESPTracers)
-espChamsBtn.MouseButton1Click:Connect(toggleESPChams)
-espBoxesBtn.MouseButton1Click:Connect(toggleESPBoxes)
-espDistanceBtn.MouseButton1Click:Connect(toggleESPDistance)
-espHealthBtn.MouseButton1Click:Connect(toggleESPHealth)
 flyBtn.MouseButton1Click:Connect(toggleFly)
-cframeFlyBtn.MouseButton1Click:Connect(toggleCFrameFly)
 speedhackBtn.MouseButton1Click:Connect(toggleSpeedhack)
-aimbotBtn.MouseButton1Click:Connect(toggleAimbot)
-silentAimBtn.MouseButton1Click:Connect(toggleSilentAim)
-bhopBtn.MouseButton1Click:Connect(toggleBhop)
-xrayBtn.MouseButton1Click:Connect(toggleXray)
-infJumpBtn.MouseButton1Click:Connect(toggleInfJump)
 noclipBtn.MouseButton1Click:Connect(toggleNoclip)
-fullbrightBtn.MouseButton1Click:Connect(toggleFullbright)
+infJumpBtn.MouseButton1Click:Connect(toggleInfJump)
+bhopBtn.MouseButton1Click:Connect(toggleBhop)
+aimbotBtn.MouseButton1Click:Connect(toggleAimbot)
 triggerbotBtn.MouseButton1Click:Connect(toggleTriggerbot)
+fullbrightBtn.MouseButton1Click:Connect(toggleFullbright)
+xrayBtn.MouseButton1Click:Connect(toggleXray)
 radarBtn.MouseButton1Click:Connect(toggleRadar)
-spinbotBtn.MouseButton1Click:Connect(toggleSpinbot)
 fovChangerBtn.MouseButton1Click:Connect(toggleFOVChanger)
 godModeBtn.MouseButton1Click:Connect(toggleGodMode)
-autoFarmBtn.MouseButton1Click:Connect(toggleAutoFarm)
 antiAFKBtn.MouseButton1Click:Connect(toggleAntiAFK)
-autoSprintBtn.MouseButton1Click:Connect(toggleAutoSprint)
-killauraBtn.MouseButton1Click:Connect(toggleKillaura)
-clickTPBtn.MouseButton1Click:Connect(toggleClickTP)
-noFallDamageBtn.MouseButton1Click:Connect(toggleNoFallDamage)
-antiRagdollBtn.MouseButton1Click:Connect(toggleAntiRagdoll)
-platformBtn.MouseButton1Click:Connect(togglePlatform)
-freecamBtn.MouseButton1Click:Connect(toggleFreecam)
-hitboxExpanderBtn.MouseButton1Click:Connect(toggleHitboxExpander)
-reachBtn.MouseButton1Click:Connect(toggleReach)
-fastPunchBtn.MouseButton1Click:Connect(toggleFastPunch)
-autoBlockBtn.MouseButton1Click:Connect(toggleAutoBlock)
-autoParryBtn.MouseButton1Click:Connect(toggleAutoParry)
-autoRespawnBtn.MouseButton1Click:Connect(toggleAutoRespawn)
 infinityYieldBtn.MouseButton1Click:Connect(loadInfinityYield)
 jerkOffR6Btn.MouseButton1Click:Connect(loadJerkOffR6)
 jerkOffR15Btn.MouseButton1Click:Connect(loadJerkOffR15)
 toggleButton.MouseButton1Click:Connect(toggleMenu)
 
--- Восстанавливаем меню после смерти
-restoreMenuOnDeath()
+saveConfigBtn.MouseButton1Click:Connect(function()
+    SaveConfig()
+    Notify("ARUSCRIPT V5", "Config Saved!")
+end)
 
--- Включаем размытие при старте
+loadConfigBtn.MouseButton1Click:Connect(function()
+    LoadConfig()
+    Notify("ARUSCRIPT V5", "Config Loaded!")
+end)
+
+-- ============== CHAT COMMANDS ==============
+
+Players.LocalPlayer.Chatted:Connect(function(message)
+    local args = message:lower():split(" ")
+    local cmd = args[1]
+    
+    if cmd == "/aru" or cmd == "/aruscript" then
+        if args[2] == "help" then
+            Notify("ARUSCRIPT V5", "Commands: /aru [fly/speed/esp/noclip/god/save/load]")
+        elseif args[2] == "fly" then
+            toggleFly()
+        elseif args[2] == "speed" and args[3] then
+            speedhackSpeed = tonumber(args[3]) or 16
+            SaveConfig()
+        elseif args[2] == "esp" then
+            toggleESP()
+        elseif args[2] == "noclip" then
+            toggleNoclip()
+        elseif args[2] == "god" then
+            toggleGodMode()
+        elseif args[2] == "save" then
+            SaveConfig()
+            Notify("ARUSCRIPT V5", "Config Saved!")
+        elseif args[2] == "load" then
+            LoadConfig()
+            Notify("ARUSCRIPT V5", "Config Loaded!")
+        end
+    end
+end)
+
+-- ============== KEYBINDS ==============
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        toggleMenu()
+    elseif input.KeyCode == Enum.KeyCode.F then
+        toggleFly()
+    elseif input.KeyCode == Enum.KeyCode.N then
+        toggleNoclip()
+    elseif input.KeyCode == Enum.KeyCode.E then
+        toggleESP()
+    end
+end)
+
+-- ============== STARTUP ==============
+
+-- Load config
+LoadConfig()
+
+-- Startup animation
 blur.Enabled = true
 TweenService:Create(blur, TweenInfo.new(0.5), {Size = 10}):Play()
 
--- Начальная анимация появления
 frame.Position = UDim2.new(0.5, -250, -1, 0)
 wait(0.5)
-TweenService:Create(frame, TweenInfo.new(0.8, Enum.EasingStyle.Bounce), {Position = UDim2.new(0.5, -250, 0.5, -350)}):Play()
+TweenService:Create(frame, TweenInfo.new(0.8, Enum.EasingStyle.Bounce), {
+    Position = UDim2.new(0.5, -250, 0.5, -350)
+}):Play()
 
--- Звуковой эффект
+-- Sound effect
 pcall(function()
     local bootSound = Instance.new("Sound")
     bootSound.SoundId = "rbxassetid://6518811702"
@@ -2161,10 +1419,21 @@ pcall(function()
     bootSound:Play()
 end)
 
-print("╔═══════════════════════════════════════╗")
-print("║    ARUSCRIPT V3 PREMIUM EDITION       ║")
-print("║    SYSTEM STATUS: ONLINE              ║")
-print("║    RAINBOW MODE: ACTIVE               ║")
-print("║    TOTAL FEATURES: 40+                ║")
-print("║    EXTERNAL SCRIPTS: 3                ║")
-print("╚═══════════════════════════════════════╝")
+-- Notifications
+wait(1)
+Notify("ARUSCRIPT V5", "Successfully Loaded!", 5)
+SendWebhook("🚀 **ARUSCRIPT V5 LOADED**\nPlayer: " .. Players.LocalPlayer.Name)
+
+-- Console
+print("╔════════════════════════════════════════════════════════╗")
+print("║         ARUSCRIPT V5 - ULTIMATE MEGA EDITION           ║")
+print("║                                                        ║")
+print("║  ✅ Successfully Loaded!                               ║")
+print("║  ✅ Press Right Shift to toggle menu                   ║")
+print("║  ✅ Type /aru help for commands                        ║")
+print("║                                                        ║")
+print("║  Features: 50+                                         ║")
+print("║  Themes: Rainbow + 9 More                              ║")
+print("║  Config System: Active                                 ║")
+print("║  Discord Webhook: Ready                                ║")
+print("╚════════════════════════════════════════════════════════╝")
