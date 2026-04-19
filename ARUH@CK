@@ -1,9 +1,9 @@
 --[[
 ═══════════════════════════════════════════════════════════
-╔═══════════════════════════════════════════════════════╗
-║           ARUSCRIPT V5 - ULTIMATE MEGA EDITION        ║
-║          100+ Features | All Systems Active           ║
-╚═══════════════════════════════════════════════════════╝
+    ╔═══════════════════════════════════════════════════╗
+    ║      ARUSCRIPT V5 - ULTIMATE MEGA EDITION         ║
+    ║         50+ Features | All Systems Active         ║
+    ╚═══════════════════════════════════════════════════╝
 ═══════════════════════════════════════════════════════════
 --]]
 
@@ -16,15 +16,6 @@ local Lighting = game:GetService("Lighting")
 local VirtualUser = game:GetService("VirtualUser")
 local HttpService = game:GetService("HttpService")
 local StarterGui = game:GetService("StarterGui")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TeleportService = game:GetService("TeleportService")
-local MarketplaceService = game:GetService("MarketplaceService")
-local VirtualInputManager = game:GetService("VirtualInputManager")
-local Stats = game:GetService("Stats")
-
-local LocalPlayer = Players.LocalPlayer
-local Mouse = LocalPlayer:GetMouse()
-local Camera = workspace.CurrentCamera
 
 -- ============== GUI ОБЪЕКТЫ ==============
 local screenGui = Instance.new("ScreenGui")
@@ -37,136 +28,64 @@ local blur = Instance.new("BlurEffect")
 local scanlineEffect = Instance.new("Frame")
 
 -- ============== ПЕРЕМЕННЫЕ ==============
-
--- ESP системы
 local espEnabled = false
 local espColor = Color3.fromRGB(0, 255, 0)
-local espTracersEnabled = false
-local espChamsEnabled = false
-local espBoxesEnabled = false
-local espDistanceEnabled = false
-local espHealthEnabled = false
-local espNamesEnabled = false
-local espSkeletonsEnabled = false
-local espHeadDotsEnabled = false
-
--- Цветовая система
 local colors = {
     Color3.fromRGB(0, 255, 0),
     Color3.fromRGB(0, 255, 255),
     Color3.fromRGB(255, 0, 255),
     Color3.fromRGB(255, 255, 0),
     Color3.fromRGB(255, 0, 0),
-    Color3.fromRGB(0, 200, 0),
-    Color3.fromRGB(255, 165, 0),
-    Color3.fromRGB(138, 43, 226)
+    Color3.fromRGB(0, 200, 0)
 }
 local colorIndex = 1
-
--- Движение
 local flying = false
 local speed = 50
 local speedhackSpeed = 16
 local speedhackEnabled = false
 local flyConnection, bodyVelocity, bodyGyro
-local noclipEnabled = false
-local infJumpEnabled = false
-local bhopEnabled = false
-local bhopPower = 50
-local walkSpeedEnabled = false
-local jumpPowerEnabled = false
-local gravityEnabled = false
-local customWalkSpeed = 16
-local customJumpPower = 50
-local customGravity = 196.2
-local autoSprintEnabled = false
-local cframeFlyEnabled = false
-local flySpeed2 = 5
-local swimSpeedEnabled = false
-local customSwimSpeed = 16
-local climbSpeedEnabled = false
-local customClimbSpeed = 12
+local menuVisible = true
 
--- Combat
+-- Aimbot переменные
 local aimbotEnabled = false
 local aimbotConnection, aimbotCircle, aimbotTarget
 local aimbotFOV = 200
 local aimbotSmooth = 0.2
-local aimbotTargetPart = "Head"
-local triggerbotEnabled = false
-local godModeEnabled = false
-local killauraEnabled = false
-local killauraRange = 20
-local hitboxExpanderEnabled = false
-local hitboxSize = 10
-local silentAimEnabled = false
-local fastPunchEnabled = false
-local autoBlockEnabled = false
-local autoParryEnabled = false
-local reachEnabled = false
-local reachDistance = 10
-local antiKnockbackEnabled = false
-local criticalHitsEnabled = false
-local autoHealEnabled = false
-local rapidFireEnabled = false
-local noRecoilEnabled = false
-local noSpreadEnabled = false
-local wallbangEnabled = false
 
--- Визуальные эффекты
-local xrayEnabled = false
-local fullbrightEnabled = false
-local radarEnabled = false
+-- Все остальные переменные
+local bhopEnabled, xrayEnabled, infJumpEnabled = false, false, false
+local noclipEnabled, fullbrightEnabled, triggerbotEnabled = false, false, false
+local radarEnabled, godModeEnabled, espTracersEnabled = false, false, false
+local espChamsEnabled, spinbotEnabled, fovChangerEnabled = false, false, false
+local autoFarmEnabled, antiAFKEnabled, clickTPEnabled = false, false, false
+local autoSprintEnabled, killauraEnabled, noFallDamageEnabled = false, false, false
+local antiRagdollEnabled, platformEnabled, freecamEnabled = false, false, false
+local hitboxExpanderEnabled, silentAimEnabled, fastPunchEnabled = false, false, false
+local autoBlockEnabled, cframeFlyEnabled, autoParryEnabled = false, false, false
+local espBoxesEnabled, reachEnabled, autoRespawnEnabled = false, false, false
+local espDistanceEnabled, espHealthEnabled = false, false
+
+local bhopPower = 50
+local originalTransparency = {}
+local originalLighting = {}
 local radarFrame, radarDots = nil, {}
-local spinbotEnabled = false
 local spinSpeed = 20
-local fovChangerEnabled = false
 local originalFOV = 70
 local newFOV = 120
-local thirdPersonEnabled = false
-local thirdPersonDistance = 15
-local noFogEnabled = false
-local rainbowSkyEnabled = false
-local tracersEnabled = false
-
--- Утилиты
-local antiAFKEnabled = false
-local clickTPEnabled = false
-local platformEnabled = false
+local killauraRange = 20
 local platformPart
-local freecamEnabled = false
 local originalCFrame
-local autoRespawnEnabled = false
-local autoFarmEnabled = false
-local autoCollectEnabled = false
-local flyThroughWallsEnabled = false
-local infjumpConnection
-
--- Телепортация
-local waypointsList = {}
-local selectedWaypoint = nil
-
--- Музыка
-local musicEnabled = false
-local currentSong = nil
-local musicVolume = 0.5
-local fadeConnection = nil
-local musicTrackId = "rbxassetid://1848354536"
-local musicLooped = true
-
--- UI состояния
-local menuVisible = true
-local rainbowEnabled = true
-local rainbowSpeed = 0.5
-local hue = 0
+local hitboxSize = 10
+local flySpeed2 = 5
+local reachDistance = 10
 
 -- Connections table
 local connections = {}
 
--- Сохранённые значения
-local originalTransparency = {}
-local originalLighting = {}
-local originalCharacterValues = {}
+-- Радужные переменные
+local rainbowEnabled = true
+local rainbowSpeed = 0.5
+local hue = 0
 
 -- Config System
 local Config = {
@@ -175,23 +94,13 @@ local Config = {
         SpeedhackSpeed = 16,
         AimbotFOV = 200,
         AimbotSmooth = 0.2,
-        AimbotTargetPart = "Head",
         BhopPower = 50,
         SpinSpeed = 20,
         FOV = 120,
         KillauraRange = 20,
         HitboxSize = 10,
         ReachDistance = 10,
-        CFrameFlySpeed = 5,
-        WalkSpeed = 16,
-        JumpPower = 50,
-        Gravity = 196.2,
-        MusicVolume = 0.5,
-        MusicTrackId = "rbxassetid://99612100069480",
-        ThirdPersonDistance = 15,
-        SwimSpeed = 16,
-        ClimbSpeed = 12,
-        ESPColor = Color3.fromRGB(0, 255, 0)
+        CFrameFlySpeed = 5
     },
     Enabled = {},
     Waypoints = {},
@@ -199,25 +108,7 @@ local Config = {
     Theme = "Rainbow"
 }
 
--- FPS Counter
-local fpsLabel = nil
-local fpsConnection = nil
-
--- Статистика
-local statistics = {
-    kills = 0,
-    deaths = 0,
-    teleports = 0,
-    itemsCollected = 0,
-    playTime = 0
-}
-
-print("╔════════════════════════════════════════════════════════╗")
-print("║        ARUSCRIPT V5 - ЧАСТЬ 1 ЗАГРУЖЕНА               ║")
-print("║        Сервисы и переменные инициализированы           ║")
-print("╚════════════════════════════════════════════════════════╝")
-
--- ============== СИСТЕМНЫЕ ФУНКЦИИ ==============
+-- ============== ФУНКЦИИ СИСТЕМЫ ==============
 
 -- Функция радужного цвета
 local function getRainbowColor()
@@ -230,13 +121,9 @@ end
 local function SaveConfig()
     if writefile then
         pcall(function()
-            Config.Settings.ESPColor = espColor
             writefile("AruScriptV5_Config.json", HttpService:JSONEncode(Config))
-            Notify("Config System", "✅ Configuration Saved Successfully!")
-            consoleLog("Config saved to file", Color3.fromRGB(0, 255, 0))
+            print("✅ Config Saved!")
         end)
-    else
-        Notify("Config System", "❌ Executor doesn't support writefile")
     end
 end
 
@@ -244,36 +131,9 @@ end
 local function LoadConfig()
     if isfile and readfile and isfile("AruScriptV5_Config.json") then
         pcall(function()
-            local decoded = HttpService:JSONDecode(readfile("AruScriptV5_Config.json"))
-            
-            -- Загрузка настроек
-            for key, value in pairs(decoded.Settings) do
-                if Config.Settings[key] ~= nil then
-                    Config.Settings[key] = value
-                end
-            end
-            
-            -- Применение загруженных настроек
-            speed = Config.Settings.FlySpeed
-            speedhackSpeed = Config.Settings.SpeedhackSpeed
-            aimbotFOV = Config.Settings.AimbotFOV
-            aimbotSmooth = Config.Settings.AimbotSmooth
-            bhopPower = Config.Settings.BhopPower
-            customWalkSpeed = Config.Settings.WalkSpeed
-            customJumpPower = Config.Settings.JumpPower
-            customGravity = Config.Settings.Gravity
-            musicVolume = Config.Settings.MusicVolume
-            musicTrackId = Config.Settings.MusicTrackId
-            
-            if decoded.Waypoints then
-                waypointsList = decoded.Waypoints
-            end
-            
-            Notify("Config System", "✅ Configuration Loaded Successfully!")
-            consoleLog("Config loaded from file", Color3.fromRGB(0, 255, 0))
+            Config = HttpService:JSONDecode(readfile("AruScriptV5_Config.json"))
+            print("✅ Config Loaded!")
         end)
-    else
-        consoleLog("No config file found, using defaults", Color3.fromRGB(255, 255, 0))
     end
 end
 
@@ -288,16 +148,10 @@ local function SendWebhook(message)
                 Body = HttpService:JSONEncode({
                     content = "",
                     embeds = {{
-                        title = "🎮 ARUSCRIPT V5 - LOG",
+                        title = "🎮 ARUSCRIPT V5",
                         description = message,
                         color = 65280,
-                        fields = {
-                            {name = "Player", value = LocalPlayer.Name, inline = true},
-                            {name = "User ID", value = tostring(LocalPlayer.UserId), inline = true},
-                            {name = "Game", value = MarketplaceService:GetProductInfo(game.PlaceId).Name, inline = false}
-                        },
-                        footer = {text = "ARUSCRIPT V5 | " .. os.date("%X")},
-                        timestamp = os.date("!%Y-%m-%dT%H:%M:%S")
+                        footer = {text = Players.LocalPlayer.Name .. " | " .. os.date("%X")}
                     }}
                 })
             })
@@ -310,101 +164,15 @@ local function Notify(title, text, duration)
     StarterGui:SetCore("SendNotification", {
         Title = title or "ARUSCRIPT V5",
         Text = text or "",
-        Duration = duration or 3,
-        Icon = "rbxassetid://7733658504"
+        Duration = duration or 3
     })
 end
-
--- Get Character
-local function GetCharacter()
-    return LocalPlayer.Character
-end
-
--- Get Humanoid
-local function GetHumanoid()
-    local char = GetCharacter()
-    return char and char:FindFirstChildOfClass("Humanoid")
-end
-
--- Get Root Part
-local function GetRootPart()
-    local char = GetCharacter()
-    return char and (char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso"))
-end
-
--- Check if Alive
-local function IsAlive()
-    local humanoid = GetHumanoid()
-    return humanoid and humanoid.Health > 0
-end
-
--- Safe Teleport
-local function SafeTeleport(position)
-    local root = GetRootPart()
-    if root then
-        root.CFrame = CFrame.new(position)
-        statistics.teleports = statistics.teleports + 1
-        return true
-    end
-    return false
-end
-
--- Get Nearest Player
-local function GetNearestPlayer(maxDistance)
-    local nearestPlayer = nil
-    local shortestDistance = maxDistance or math.huge
-    local myRoot = GetRootPart()
-    
-    if not myRoot then return nil end
-    
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character then
-            local theirRoot = player.Character:FindFirstChild("HumanoidRootPart")
-            local theirHumanoid = player.Character:FindFirstChildOfClass("Humanoid")
-            
-            if theirRoot and theirHumanoid and theirHumanoid.Health > 0 then
-                local distance = (myRoot.Position - theirRoot.Position).Magnitude
-                
-                if distance < shortestDistance then
-                    nearestPlayer = player
-                    shortestDistance = distance
-                end
-            end
-        end
-    end
-    
-    return nearestPlayer, shortestDistance
-end
-
--- Format Time
-local function FormatTime(seconds)
-    local hours = math.floor(seconds / 3600)
-    local minutes = math.floor((seconds % 3600) / 60)
-    local secs = math.floor(seconds % 60)
-    return string.format("%02d:%02d:%02d", hours, minutes, secs)
-end
-
--- Get FPS
-local function GetFPS()
-    return math.floor(1 / Stats.RenderStepped:GetValue())
-end
-
--- Get Ping
-local function GetPing()
-    return math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
-end
-
-print("╔════════════════════════════════════════════════════════╗")
-print("║        ARUSCRIPT V5 - ЧАСТЬ 2 ЗАГРУЖЕНА               ║")
-print("║        Системные функции готовы                        ║")
-print("╚════════════════════════════════════════════════════════╝")
 
 -- ============== GUI СОЗДАНИЕ ==============
 
 -- Настройка ScreenGui
 screenGui.Name = "AruScriptV5"
 screenGui.ResetOnSpawn = false
-screenGui.IgnoreGuiInset = true
 
 if gethui then
     screenGui.Parent = gethui()
@@ -412,7 +180,7 @@ elseif syn and syn.protect_gui then
     syn.protect_gui(screenGui)
     screenGui.Parent = game:GetService("CoreGui")
 else
-    screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    screenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
 end
 
 -- Эффект размытия
@@ -421,8 +189,8 @@ blur.Parent = Lighting
 
 -- Главный фрейм
 frame.Name = "MainFrame"
-frame.Size = UDim2.new(0, 650, 0, 800)
-frame.Position = UDim2.new(0.5, -325, 0.5, -400)
+frame.Size = UDim2.new(0, 500, 0, 700)
+frame.Position = UDim2.new(0.5, -250, 0.5, -350)
 frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 frame.BackgroundTransparency = 0.15
 frame.BorderSizePixel = 0
@@ -434,7 +202,7 @@ local frameCorner = Instance.new("UICorner")
 frameCorner.CornerRadius = UDim.new(0, 12)
 frameCorner.Parent = frame
 
-local frameStroke1 = Instance.new("UIStroke")
+frameStroke1 = Instance.new("UIStroke")
 frameStroke1.Color = Color3.fromRGB(255, 0, 0)
 frameStroke1.Thickness = 3
 frameStroke1.Transparency = 0
@@ -453,7 +221,7 @@ local innerGlowCorner = Instance.new("UICorner")
 innerGlowCorner.CornerRadius = UDim.new(0, 9)
 innerGlowCorner.Parent = innerGlow
 
-local innerStroke = Instance.new("UIStroke")
+innerStroke = Instance.new("UIStroke")
 innerStroke.Color = Color3.fromRGB(255, 0, 0)
 innerStroke.Thickness = 2
 innerStroke.Transparency = 0.3
@@ -485,10 +253,11 @@ scanlineGradient.Parent = scanlineEffect
 
 -- Анимация scanline
 spawn(function()
-    while wait(0.03) do
-        pcall(function()
-            scanlineGradient.Rotation = (scanlineGradient.Rotation + 2) % 360
-        end)
+    while true do
+        for i = 0, 360, 2 do
+            scanlineGradient.Rotation = i
+            wait(0.03)
+        end
     end
 end)
 
@@ -496,7 +265,7 @@ end)
 titleLabel.Name = "Title"
 titleLabel.Size = UDim2.new(1, -40, 0, 50)
 titleLabel.Position = UDim2.new(0, 20, 0, 15)
-titleLabel.Text = "╔═══ ARUSCRIPT V5 - ULTIMATE ═══╗"
+titleLabel.Text = "╔═══ ARUSCRIPT V5 - MEGA ═══╗"
 titleLabel.TextScaled = true
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.Font = Enum.Font.Code
@@ -505,19 +274,18 @@ titleLabel.BorderSizePixel = 0
 titleLabel.ZIndex = 2
 titleLabel.Parent = frame
 
-local titleStroke = Instance.new("UIStroke")
+titleStroke = Instance.new("UIStroke")
 titleStroke.Color = Color3.fromRGB(255, 0, 0)
 titleStroke.Thickness = 2
 titleStroke.Parent = titleLabel
 
 -- Мерцание заголовка
 spawn(function()
-    while wait(math.random(2, 5)) do
-        pcall(function()
-            TweenService:Create(titleStroke, TweenInfo.new(0.1), {Transparency = 0.3}):Play()
-            wait(0.1)
-            TweenService:Create(titleStroke, TweenInfo.new(0.1), {Transparency = 0}):Play()
-        end)
+    while true do
+        TweenService:Create(titleStroke, TweenInfo.new(0.1), {Transparency = 0.3}):Play()
+        wait(0.1)
+        TweenService:Create(titleStroke, TweenInfo.new(0.1), {Transparency = 0}):Play()
+        wait(math.random(2, 5))
     end
 end)
 
@@ -525,7 +293,7 @@ end)
 subtitleLabel.Name = "Subtitle"
 subtitleLabel.Size = UDim2.new(1, -40, 0, 20)
 subtitleLabel.Position = UDim2.new(0, 20, 0, 65)
-subtitleLabel.Text = "⟩⟩ 100+ FEATURES | ALL SYSTEMS READY ⟨⟨"
+subtitleLabel.Text = "⟩⟩ 50+ FEATURES | ALL SYSTEMS READY ⟨⟨"
 subtitleLabel.TextSize = 12
 subtitleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
 subtitleLabel.Font = Enum.Font.Code
@@ -538,28 +306,26 @@ subtitleLabel.Parent = frame
 -- Анимация подзаголовка
 spawn(function()
     local texts = {
-        "⟩⟩ 100+ FEATURES | ALL SYSTEMS READY ⟨⟨",
+        "⟩⟩ 50+ FEATURES | ALL SYSTEMS READY ⟨⟨",
         "⟩⟩ ULTIMATE EDITION | FULL ACCESS ⟨⟨",
         "⟩⟩ RAINBOW MODE: ACTIVE ⟨⟨",
         "⟩⟩ CONFIG SYSTEM: ONLINE ⟨⟨",
         "⟩⟩ DISCORD WEBHOOK: READY ⟨⟨",
-        "⟩⟩ MUSIC PLAYER: ACTIVE ⟨⟨",
-        "⟩⟩ COMMAND CONSOLE: READY ⟨⟨",
-        "⟩⟩ FPS: " .. GetFPS() .. " | PING: " .. GetPing() .. "ms ⟨⟨"
+        "⟩⟩ CHAT COMMANDS: ENABLED ⟨⟨",
+        "⟩⟩ WAYPOINTS: OPERATIONAL ⟨⟨",
+        "⟩⟩ SCRIPT HUB: LOADED ⟨⟨"
     }
     local index = 1
-    while wait(3) do
-        pcall(function()
-            texts[8] = "⟩⟩ FPS: " .. GetFPS() .. " | PING: " .. GetPing() .. "ms ⟨⟨"
-            subtitleLabel.Text = texts[index]
-            index = index + 1
-            if index > #texts then index = 1 end
-        end)
+    while true do
+        subtitleLabel.Text = texts[index]
+        index = index + 1
+        if index > #texts then index = 1 end
+        wait(3)
     end
 end)
 
 -- Разделитель
-local divider = Instance.new("Frame")
+divider = Instance.new("Frame")
 divider.Name = "Divider"
 divider.Size = UDim2.new(1, -40, 0, 3)
 divider.Position = UDim2.new(0, 20, 0, 95)
@@ -617,7 +383,7 @@ local toggleCorner = Instance.new("UICorner")
 toggleCorner.CornerRadius = UDim.new(1, 0)
 toggleCorner.Parent = toggleButton
 
-local toggleStroke = Instance.new("UIStroke")
+toggleStroke = Instance.new("UIStroke")
 toggleStroke.Color = Color3.fromRGB(255, 0, 0)
 toggleStroke.Thickness = 3
 toggleStroke.Transparency = 0
@@ -625,12 +391,11 @@ toggleStroke.Parent = toggleButton
 
 -- Пульсация toggle button
 spawn(function()
-    while wait(1) do
-        pcall(function()
-            TweenService:Create(toggleStroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 5}):Play()
-            wait(1)
-            TweenService:Create(toggleStroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 3}):Play()
-        end)
+    while true do
+        TweenService:Create(toggleStroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 5}):Play()
+        wait(1)
+        TweenService:Create(toggleStroke, TweenInfo.new(1, Enum.EasingStyle.Sine), {Thickness = 3}):Play()
+        wait(1)
     end
 end)
 
@@ -644,291 +409,12 @@ toggleButton.MouseLeave:Connect(function()
     toggleButton.Text = "◉"
 end)
 
--- ============== МУЗЫКАЛЬНАЯ СИСТЕМА ==============
-
--- Функция воспроизведения музыки
-local function playMusic()
-    if musicEnabled then
-        if currentSong == nil or not currentSong.Parent then
-            currentSong = Instance.new("Sound")
-            currentSong.Name = "BackgroundMusic"
-            currentSong.Volume = musicVolume
-            currentSong.Looped = true -- БЕСКОНЕЧНЫЙ ПОВТОР
-            currentSong.Parent = workspace
-        end
-        
-        currentSong.SoundId = musicTrackId
-        
-        if not currentSong.Playing then
-            currentSong:Play()
-            consoleLog("🎵 Now playing: " .. musicTrackId, Color3.fromRGB(0, 200, 255))
-        end
-    end
-end
-
--- Функция включения/выключения музыки
-local function toggleMusic()
-    musicEnabled = not musicEnabled
-    
-    if musicEnabled then
-        playMusic()
-        
-        -- Плавное увеличение громкости (fade in)
-        if fadeConnection then fadeConnection:Disconnect() end
-        
-        currentSong.Volume = 0
-        local targetVolume = musicVolume
-        local fadeInTime = 2
-        local startTime = tick()
-        
-        fadeConnection = RunService.Heartbeat:Connect(function()
-            local elapsed = tick() - startTime
-            local progress = math.min(elapsed / fadeInTime, 1)
-            currentSong.Volume = targetVolume * progress
-            
-            if progress >= 1 then
-                fadeConnection:Disconnect()
-            end
-        end)
-        
-        consoleLog("🎵 Music: ENABLED (Fade In)", Color3.fromRGB(0, 255, 100))
-        Notify("Music Player", "🎵 Music Enabled - Fading In...")
-    else
-        -- Плавное уменьшение громкости (fade out)
-        if fadeConnection then fadeConnection:Disconnect() end
-        
-        local fadeOutTime = 3
-        local startTime = tick()
-        local startVolume = currentSong.Volume
-        
-        fadeConnection = RunService.Heartbeat:Connect(function()
-            local elapsed = tick() - startTime
-            local progress = math.min(elapsed / fadeOutTime, 1)
-            currentSong.Volume = startVolume * (1 - progress)
-            
-            if progress >= 1 then
-                currentSong:Stop()
-                fadeConnection:Disconnect()
-                consoleLog("🎵 Music: DISABLED (Fade Out Complete)", Color3.fromRGB(255, 100, 0))
-            end
-        end)
-        
-        Notify("Music Player", "🎵 Music Disabled - Fading Out...")
-    end
-    
-    SendWebhook("🎵 Music: " .. tostring(musicEnabled))
-end
-
--- Функция изменения громкости
-local function setMusicVolume(volume)
-    if volume >= 0 and volume <= 1 then
-        musicVolume = volume
-        if currentSong then
-            currentSong.Volume = volume
-        end
-        Config.Settings.MusicVolume = volume
-        consoleLog("🔊 Volume: " .. math.floor(volume * 100) .. "%", Color3.fromRGB(100, 255, 100))
-    end
-end
-
--- Функция изменения ID трека
-local function setMusicTrackId(id)
-    musicTrackId = id
-    Config.Settings.MusicTrackId = id
-    SaveConfig()
-    
-    if musicEnabled and currentSong then
-        currentSong:Stop()
-        currentSong.SoundId = id
-        currentSong:Play()
-        consoleLog("🎵 Track changed to: " .. id, Color3.fromRGB(0, 200, 255))
-        Notify("Music Player", "Track Changed!")
-    else
-        consoleLog("🎵 Track ID saved (enable music to play)", Color3.fromRGB(100, 200, 255))
-    end
-end
-
--- Автоматическое восстановление музыки при окончании (на случай если Looped не работает)
-spawn(function()
-    while wait(1) do
-        pcall(function()
-            if musicEnabled and currentSong and not currentSong.Playing then
-                currentSong:Play()
-            end
-        end)
-    end
-end)
-
-print("╔════════════════════════════════════════════════════════╗")
-print("║        ARUSCRIPT V5 - ЧАСТЬ 3 ЗАГРУЖЕНА               ║")
-print("║        GUI и музыкальная система готовы                ║")
-print("╚════════════════════════════════════════════════════════╝")
--- ============== КОМАНДНАЯ КОНСОЛЬ ==============
-
-local consoleFrame = Instance.new("Frame")
-consoleFrame.Name = "ConsoleFrame"
-consoleFrame.Size = UDim2.new(0, 750, 0, 500)
-consoleFrame.Position = UDim2.new(0.5, -375, 0.5, -250)
-consoleFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-consoleFrame.BackgroundTransparency = 0.1
-consoleFrame.BorderSizePixel = 0
-consoleFrame.Visible = false
-consoleFrame.Active = true
-consoleFrame.Draggable = true
-consoleFrame.ZIndex = 10
-consoleFrame.Parent = screenGui
-
-local consoleCorner = Instance.new("UICorner")
-consoleCorner.CornerRadius = UDim.new(0, 12)
-consoleCorner.Parent = consoleFrame
-
-local consoleStroke = Instance.new("UIStroke")
-consoleStroke.Color = Color3.fromRGB(0, 255, 0)
-consoleStroke.Thickness = 3
-consoleStroke.Parent = consoleFrame
-
--- Заголовок консоли
-local consoleTitle = Instance.new("TextLabel")
-consoleTitle.Size = UDim2.new(1, -100, 0, 40)
-consoleTitle.Position = UDim2.new(0, 20, 0, 10)
-consoleTitle.Text = "⟨ COMMAND CONSOLE ⟩"
-consoleTitle.TextSize = 20
-consoleTitle.TextColor3 = Color3.fromRGB(0, 255, 0)
-consoleTitle.Font = Enum.Font.Code
-consoleTitle.BackgroundTransparency = 1
-consoleTitle.TextXAlignment = Enum.TextXAlignment.Left
-consoleTitle.Parent = consoleFrame
-
--- Кнопка закрытия консоли
-local consoleCloseBtn = Instance.new("TextButton")
-consoleCloseBtn.Size = UDim2.new(0, 40, 0, 40)
-consoleCloseBtn.Position = UDim2.new(1, -60, 0, 10)
-consoleCloseBtn.Text = "✖"
-consoleCloseBtn.TextSize = 20
-consoleCloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-consoleCloseBtn.Font = Enum.Font.Code
-consoleCloseBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-consoleCloseBtn.BackgroundTransparency = 0.3
-consoleCloseBtn.BorderSizePixel = 0
-consoleCloseBtn.Parent = consoleFrame
-
-local consoleCloseBtnCorner = Instance.new("UICorner")
-consoleCloseBtnCorner.CornerRadius = UDim.new(0, 8)
-consoleCloseBtnCorner.Parent = consoleCloseBtn
-
--- Output область
-local consoleOutput = Instance.new("ScrollingFrame")
-consoleOutput.Size = UDim2.new(1, -40, 0, 370)
-consoleOutput.Position = UDim2.new(0, 20, 0, 60)
-consoleOutput.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-consoleOutput.BackgroundTransparency = 0.5
-consoleOutput.BorderSizePixel = 0
-consoleOutput.ScrollBarThickness = 6
-consoleOutput.ScrollBarImageColor3 = Color3.fromRGB(0, 255, 0)
-consoleOutput.CanvasSize = UDim2.new(0, 0, 0, 0)
-consoleOutput.Parent = consoleFrame
-
-local consoleOutputCorner = Instance.new("UICorner")
-consoleOutputCorner.CornerRadius = UDim.new(0, 8)
-consoleOutputCorner.Parent = consoleOutput
-
-local outputLayout = Instance.new("UIListLayout")
-outputLayout.Padding = UDim.new(0, 5)
-outputLayout.SortOrder = Enum.SortOrder.LayoutOrder
-outputLayout.Parent = consoleOutput
-
-outputLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    consoleOutput.CanvasSize = UDim2.new(0, 0, 0, outputLayout.AbsoluteContentSize.Y + 10)
-    consoleOutput.CanvasPosition = Vector2.new(0, consoleOutput.CanvasSize.Y.Offset)
-end)
-
--- Input область
-local consoleInput = Instance.new("TextBox")
-consoleInput.Size = UDim2.new(1, -100, 0, 50)
-consoleInput.Position = UDim2.new(0, 20, 1, -70)
-consoleInput.Text = ""
-consoleInput.PlaceholderText = "⟨ Enter command... ⟩"
-consoleInput.TextSize = 16
-consoleInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-consoleInput.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
-consoleInput.Font = Enum.Font.Code
-consoleInput.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-consoleInput.BackgroundTransparency = 0.5
-consoleInput.BorderSizePixel = 0
-consoleInput.TextXAlignment = Enum.TextXAlignment.Left
-consoleInput.ClearTextOnFocus = false
-consoleInput.Parent = consoleFrame
-
-local consoleInputCorner = Instance.new("UICorner")
-consoleInputCorner.CornerRadius = UDim.new(0, 8)
-consoleInputCorner.Parent = consoleInput
-
-local consoleInputPadding = Instance.new("UIPadding")
-consoleInputPadding.PaddingLeft = UDim.new(0, 10)
-consoleInputPadding.PaddingRight = UDim.new(0, 10)
-consoleInputPadding.Parent = consoleInput
-
--- Execute button
-local executeBtn = Instance.new("TextButton")
-executeBtn.Size = UDim2.new(0, 60, 0, 50)
-executeBtn.Position = UDim2.new(1, -80, 1, -70)
-executeBtn.Text = "RUN"
-executeBtn.TextSize = 16
-executeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-executeBtn.Font = Enum.Font.Code
-executeBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-executeBtn.BackgroundTransparency = 0.3
-executeBtn.BorderSizePixel = 0
-executeBtn.Parent = consoleFrame
-
-local executeBtnCorner = Instance.new("UICorner")
-executeBtnCorner.CornerRadius = UDim.new(0, 8)
-executeBtnCorner.Parent = executeBtn
-
--- Console log function
-local function consoleLog(text, color)
-    local logLabel = Instance.new("TextLabel")
-    logLabel.Size = UDim2.new(1, -20, 0, 20)
-    logLabel.Text = "> " .. text
-    logLabel.TextSize = 14
-    logLabel.TextColor3 = color or Color3.fromRGB(200, 200, 200)
-    logLabel.Font = Enum.Font.Code
-    logLabel.BackgroundTransparency = 1
-    logLabel.TextXAlignment = Enum.TextXAlignment.Left
-    logLabel.TextWrapped = true
-    logLabel.Parent = consoleOutput
-    
-    -- Auto-size
-    logLabel.Size = UDim2.new(1, -20, 0, logLabel.TextBounds.Y + 5)
-end
-
--- Welcome message
-consoleLog("═══════════════════════════════════════", Color3.fromRGB(0, 255, 0))
-consoleLog("ARUSCRIPT V5 - COMMAND CONSOLE", Color3.fromRGB(0, 255, 0))
-consoleLog("═══════════════════════════════════════", Color3.fromRGB(0, 255, 0))
-consoleLog("Type 'help' for list of commands", Color3.fromRGB(255, 255, 0))
-consoleLog("Type 'clear' to clear console", Color3.fromRGB(255, 255, 0))
-consoleLog(" ", Color3.fromRGB(255, 255, 255))
-
-print("╔════════════════════════════════════════════════════════╗")
-print("║        ARUSCRIPT V5 - ЧАСТЬ 4 ЗАГРУЖЕНА               ║")
-print("║        Командная консоль готова                        ║")
-print("╚════════════════════════════════════════════════════════╝")
-
 -- ============== ФУНКЦИИ СОЗДАНИЯ UI ==============
 
-local function createHackerButton(name, text, layoutOrder, column)
+local function createHackerButton(name, text, layoutOrder)
     local buttonContainer = Instance.new("Frame")
     buttonContainer.Name = name .. "Container"
-    
-    -- Определяем размер в зависимости от колонки
-    if column then
-        buttonContainer.Size = UDim2.new(0.48, 0, 0, 40)
-        buttonContainer.Position = UDim2.new(column == 1 and 0 or 0.52, 0, 0, 0)
-    else
-        buttonContainer.Size = UDim2.new(1, 0, 0, 40)
-    end
-    
+    buttonContainer.Size = UDim2.new(1, 0, 0, 45)
     buttonContainer.BackgroundTransparency = 1
     buttonContainer.LayoutOrder = layoutOrder
     buttonContainer.Parent = contentFrame
@@ -957,9 +443,21 @@ local function createHackerButton(name, text, layoutOrder, column)
     stroke.Parent = button
     
     local padding = Instance.new("UIPadding")
-    padding.PaddingLeft = UDim.new(0, 10)
-    padding.PaddingRight = UDim.new(0, 10)
+    padding.PaddingLeft = UDim.new(0, 15)
+    padding.PaddingRight = UDim.new(0, 15)
     padding.Parent = button
+    
+    local hexPattern = Instance.new("TextLabel")
+    hexPattern.Size = UDim2.new(1, 0, 1, 0)
+    hexPattern.Position = UDim2.new(0, 0, 0, 0)
+    hexPattern.Text = "0x" .. string.format("%X", math.random(1000000, 9999999))
+    hexPattern.TextSize = 10
+    hexPattern.TextColor3 = Color3.fromRGB(100, 100, 100)
+    hexPattern.Font = Enum.Font.Code
+    hexPattern.BackgroundTransparency = 1
+    hexPattern.TextTransparency = 0.8
+    hexPattern.ZIndex = 1
+    hexPattern.Parent = button
     
     button.MouseEnter:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.1), {BackgroundTransparency = 0.2}):Play()
@@ -980,17 +478,10 @@ local function createHackerButton(name, text, layoutOrder, column)
     return button
 end
 
-local function createHackerTextBox(name, placeholderText, layoutOrder, column)
+local function createHackerTextBox(name, placeholderText, layoutOrder)
     local textBoxContainer = Instance.new("Frame")
     textBoxContainer.Name = name .. "Container"
-    
-    if column then
-        textBoxContainer.Size = UDim2.new(0.48, 0, 0, 40)
-        textBoxContainer.Position = UDim2.new(column == 1 and 0 or 0.52, 0, 0, 0)
-    else
-        textBoxContainer.Size = UDim2.new(1, 0, 0, 40)
-    end
-    
+    textBoxContainer.Size = UDim2.new(1, 0, 0, 45)
     textBoxContainer.BackgroundTransparency = 1
     textBoxContainer.LayoutOrder = layoutOrder
     textBoxContainer.Parent = contentFrame
@@ -1021,337 +512,130 @@ local function createHackerTextBox(name, placeholderText, layoutOrder, column)
     stroke.Parent = textBox
     
     local padding = Instance.new("UIPadding")
-    padding.PaddingLeft = UDim.new(0, 10)
-    padding.PaddingRight = UDim.new(0, 10)
+    padding.PaddingLeft = UDim.new(0, 15)
+    padding.PaddingRight = UDim.new(0, 15)
     padding.Parent = textBox
     
+    local cursor = Instance.new("Frame")
+    cursor.Name = "Cursor"
+    cursor.Size = UDim2.new(0, 2, 0.6, 0)
+    cursor.Position = UDim2.new(0, 15, 0.2, 0)
+    cursor.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    cursor.BorderSizePixel = 0
+    cursor.Visible = false
+    cursor.Parent = textBox
+    
     textBox.Focused:Connect(function()
+        cursor.Visible = true
         TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0, Thickness = 3}):Play()
+        
+        spawn(function()
+            while textBox:IsFocused() do
+                cursor.Visible = not cursor.Visible
+                wait(0.5)
+            end
+        end)
     end)
     
     textBox.FocusLost:Connect(function()
+        cursor.Visible = false
         TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0.4, Thickness = 2}):Play()
     end)
     
     return textBox
 end
 
--- Создаем разделитель секций
-local function createSectionDivider(text, layoutOrder)
-    local dividerFrame = Instance.new("Frame")
-    dividerFrame.Name = text .. "Divider"
-    dividerFrame.Size = UDim2.new(1, 0, 0, 30)
-    dividerFrame.BackgroundTransparency = 1
-    dividerFrame.LayoutOrder = layoutOrder
-    dividerFrame.Parent = contentFrame
-    
-    local dividerLabel = Instance.new("TextLabel")
-    dividerLabel.Size = UDim2.new(1, 0, 1, 0)
-    dividerLabel.Text = "━━━━ " .. text .. " ━━━━"
-    dividerLabel.TextSize = 16
-    dividerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    dividerLabel.Font = Enum.Font.Code
-    dividerLabel.BackgroundTransparency = 1
-    dividerLabel.Parent = dividerFrame
-    
-    local dividerStroke = Instance.new("UIStroke")
-    dividerStroke.Color = Color3.fromRGB(255, 0, 0)
-    dividerStroke.Thickness = 1
-    dividerStroke.Parent = dividerLabel
-end
-
 -- ============== СОЗДАНИЕ КНОПОК ==============
 
-local layoutCounter = 0
-
--- SYSTEM SECTION
-createSectionDivider("⚙️ SYSTEM & CONFIG", layoutCounter)
-layoutCounter = layoutCounter + 1
-
-local consoleBtn = createHackerButton("ConsoleButton", "COMMAND CONSOLE", layoutCounter, 1)
-local saveConfigBtn = createHackerButton("SaveConfigButton", "SAVE CONFIG", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local loadConfigBtn = createHackerButton("LoadConfigButton", "LOAD CONFIG", layoutCounter, 1)
-local antiAFKBtn = createHackerButton("AntiAFKButton", "ANTI-AFK", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local webhookBox = createHackerTextBox("WebhookInput", "DISCORD WEBHOOK URL", layoutCounter)
-layoutCounter = layoutCounter + 1
-
-local fpsCounterBtn = createHackerButton("FPSCounterButton", "FPS COUNTER", layoutCounter, 1)
-local statsBtn = createHackerButton("StatsButton", "SHOW STATISTICS", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
--- MUSIC SECTION
-createSectionDivider("🎵 MUSIC PLAYER", layoutCounter)
-layoutCounter = layoutCounter + 1
-
-local musicBtn = createHackerButton("MusicButton", "TOGGLE MUSIC", layoutCounter, 1)
-local volumeBox = createHackerTextBox("VolumeInput", "VOLUME (0-1): 0.5", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local musicTrackIdBox = createHackerTextBox("MusicTrackIdInput", "TRACK ID (numbers only)", layoutCounter)
-layoutCounter = layoutCounter + 1
-
-local skipTrackBtn = createHackerButton("SkipTrackButton", "SKIP TRACK", layoutCounter, 1)
-local musicInfoBtn = createHackerButton("MusicInfoButton", "MUSIC INFO", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
--- ESP & VISUALS SECTION
-createSectionDivider("👁️ ESP & VISUALS", layoutCounter)
-layoutCounter = layoutCounter + 1
-
-local espBtn = createHackerButton("ESPButton", "ESP WALLHACK", layoutCounter, 1)
-local colorBtn = createHackerButton("ColorButton", "CYCLE COLOR", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local espTracersBtn = createHackerButton("ESPTracersButton", "ESP TRACERS", layoutCounter, 1)
-local espChamsBtn = createHackerButton("ESPChamsButton", "ESP CHAMS", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local espNamesBtn = createHackerButton("ESPNamesButton", "ESP NAMES", layoutCounter, 1)
-local espDistanceBtn = createHackerButton("ESPDistanceButton", "ESP DISTANCE", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local espHealthBtn = createHackerButton("ESPHealthButton", "ESP HEALTH", layoutCounter, 1)
-local espSkeletonsBtn = createHackerButton("ESPSkeletonsButton", "ESP SKELETONS", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local espHeadDotsBtn = createHackerButton("ESPHeadDotsButton", "ESP HEAD DOTS", layoutCounter, 1)
-local xrayBtn = createHackerButton("XrayButton", "X-RAY VISION", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local fullbrightBtn = createHackerButton("FullbrightButton", "FULLBRIGHT", layoutCounter, 1)
-local noFogBtn = createHackerButton("NoFogButton", "NO FOG", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local radarBtn = createHackerButton("RadarButton", "RADAR", layoutCounter, 1)
-local fovChangerBtn = createHackerButton("FOVChangerButton", "FOV CHANGER", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local thirdPersonBtn = createHackerButton("ThirdPersonButton", "THIRD PERSON", layoutCounter, 1)
-local rainbowSkyBtn = createHackerButton("RainbowSkyButton", "RAINBOW SKY", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
+-- ESP SECTION
+local espBtn = createHackerButton("ESPButton", "ESP WALLHACK", 1)
+local colorBtn = createHackerButton("ColorButton", "CYCLE ESP COLOR", 2)
+local espTracersBtn = createHackerButton("ESPTracersButton", "ESP TRACERS", 3)
+local espChamsBtn = createHackerButton("ESPChamsButton", "ESP CHAMS", 4)
 
 -- MOVEMENT SECTION
-createSectionDivider("🏃 MOVEMENT & MOBILITY", layoutCounter)
-layoutCounter = layoutCounter + 1
-
-local flyBtn = createHackerButton("FlyButton", "FLY MODE", layoutCounter, 1)
-local speedBox = createHackerTextBox("SpeedInput", "FLY SPEED: 50", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local cframeFlyBtn = createHackerButton("CFrameFlyButton", "CFRAME FLY", layoutCounter, 1)
-local cframeSpeedBox = createHackerTextBox("CFrameSpeedInput", "CFRAME SPEED: 5", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local speedhackBtn = createHackerButton("SpeedhackButton", "SPEEDHACK", layoutCounter, 1)
-local speedhackBox = createHackerTextBox("SpeedhackInput", "SPEED: 16", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local noclipBtn = createHackerButton("NoclipButton", "NOCLIP", layoutCounter, 1)
-local infJumpBtn = createHackerButton("InfJumpButton", "INFINITE JUMP", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local bhopBtn = createHackerButton("BhopButton", "BUNNY HOP", layoutCounter, 1)
-local bhopPowerBox = createHackerTextBox("BhopPowerInput", "BHOP POWER: 50", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local walkSpeedBtn = createHackerButton("WalkSpeedButton", "WALK SPEED", layoutCounter, 1)
-local walkSpeedBox = createHackerTextBox("WalkSpeedInput", "SPEED: 16", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local jumpPowerBtn = createHackerButton("JumpPowerButton", "JUMP POWER", layoutCounter, 1)
-local jumpPowerBox = createHackerTextBox("JumpPowerInput", "POWER: 50", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local gravityBtn = createHackerButton("GravityButton", "GRAVITY CHANGER", layoutCounter, 1)
-local gravityBox = createHackerTextBox("GravityInput", "GRAVITY: 196.2", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local autoSprintBtn = createHackerButton("AutoSprintButton", "AUTO SPRINT", layoutCounter, 1)
-local swimSpeedBtn = createHackerButton("SwimSpeedButton", "SWIM SPEED", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local swimSpeedBox = createHackerTextBox("SwimSpeedInput", "SWIM SPEED: 16", layoutCounter, 1)
-local climbSpeedBtn = createHackerButton("ClimbSpeedButton", "CLIMB SPEED", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local climbSpeedBox = createHackerTextBox("ClimbSpeedInput", "CLIMB SPEED: 12", layoutCounter)
-layoutCounter = layoutCounter + 1
+local flyBtn = createHackerButton("FlyButton", "FLY MODE", 5)
+local speedBox = createHackerTextBox("SpeedInput", "FLY SPEED: 50", 6)
+local speedhackBtn = createHackerButton("SpeedhackButton", "SPEEDHACK", 7)
+local speedhackBox = createHackerTextBox("SpeedhackInput", "SPEED: 16", 8)
+local noclipBtn = createHackerButton("NoclipButton", "NOCLIP", 9)
+local infJumpBtn = createHackerButton("InfJumpButton", "INFINITE JUMP", 10)
+local bhopBtn = createHackerButton("BhopButton", "BUNNY HOP", 11)
 
 -- COMBAT SECTION
-createSectionDivider("⚔️ COMBAT & WEAPONS", layoutCounter)
-layoutCounter = layoutCounter + 1
+local aimbotBtn = createHackerButton("AimbotButton", "AIMBOT", 12)
+local fovBox = createHackerTextBox("FOVInput", "FOV: 200", 13)
+local smoothBox = createHackerTextBox("SmoothInput", "SMOOTH: 0.2", 14)
+local triggerbotBtn = createHackerButton("TriggerbotButton", "TRIGGERBOT", 15)
 
-local aimbotBtn = createHackerButton("AimbotButton", "AIMBOT", layoutCounter, 1)
-local triggerbotBtn = createHackerButton("TriggerbotButton", "TRIGGERBOT", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
+-- VISUAL SECTION
+local fullbrightBtn = createHackerButton("FullbrightButton", "FULLBRIGHT", 16)
+local xrayBtn = createHackerButton("XrayButton", "X-RAY VISION", 17)
+local radarBtn = createHackerButton("RadarButton", "RADAR", 18)
+local fovChangerBtn = createHackerButton("FOVChangerButton", "FOV CHANGER", 19)
 
-local fovBox = createHackerTextBox("FOVInput", "AIMBOT FOV: 200", layoutCounter, 1)
-local smoothBox = createHackerTextBox("SmoothInput", "SMOOTH: 0.2", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
+-- UTILITY SECTION
+local godModeBtn = createHackerButton("GodModeButton", "GOD MODE", 20)
+local antiAFKBtn = createHackerButton("AntiAFKButton", "ANTI-AFK", 21)
 
-local silentAimBtn = createHackerButton("SilentAimButton", "SILENT AIM", layoutCounter, 1)
-local godModeBtn = createHackerButton("GodModeButton", "GOD MODE", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
+-- EXTERNAL SCRIPTS
+local infinityYieldBtn = createHackerButton("InfinityYieldButton", "INFINITY YIELD FE", 22)
+local jerkOffR6Btn = createHackerButton("JerkOffR6Button", "JERK OFF R6", 23)
+local jerkOffR15Btn = createHackerButton("JerkOffR15Button", "JERK OFF R15", 24)
 
-local killauraBtn = createHackerButton("KillauraButton", "KILLAURA", layoutCounter, 1)
-local killauraRangeBox = createHackerTextBox("KillauraRangeInput", "RANGE: 20", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local hitboxExpanderBtn = createHackerButton("HitboxButton", "HITBOX EXPANDER", layoutCounter, 1)
-local hitboxSizeBox = createHackerTextBox("HitboxSizeInput", "SIZE: 10", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local reachBtn = createHackerButton("ReachButton", "REACH EXTENDER", layoutCounter, 1)
-local reachBox = createHackerTextBox("ReachInput", "REACH: 10", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local antiKnockbackBtn = createHackerButton("AntiKnockbackButton", "ANTI KNOCKBACK", layoutCounter, 1)
-local criticalHitsBtn = createHackerButton("CriticalHitsButton", "CRITICAL HITS", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local fastPunchBtn = createHackerButton("FastPunchButton", "FAST PUNCH", layoutCounter, 1)
-local autoBlockBtn = createHackerButton("AutoBlockButton", "AUTO BLOCK", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local autoParryBtn = createHackerButton("AutoParryButton", "AUTO PARRY", layoutCounter, 1)
-local autoHealBtn = createHackerButton("AutoHealButton", "AUTO HEAL", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local rapidFireBtn = createHackerButton("RapidFireButton", "RAPID FIRE", layoutCounter, 1)
-local noRecoilBtn = createHackerButton("NoRecoilButton", "NO RECOIL", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local noSpreadBtn = createHackerButton("NoSpreadButton", "NO SPREAD", layoutCounter, 1)
-local wallbangBtn = createHackerButton("WallbangButton", "WALLBANG", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
--- UTILITIES SECTION
-createSectionDivider("🔧 UTILITIES & TOOLS", layoutCounter)
-layoutCounter = layoutCounter + 1
-
-local clickTPBtn = createHackerButton("ClickTPButton", "CLICK TP", layoutCounter, 1)
-local platformBtn = createHackerButton("PlatformButton", "PLATFORM", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local freecamBtn = createHackerButton("FreecamButton", "FREE CAM", layoutCounter, 1)
-local autoRespawnBtn = createHackerButton("AutoRespawnButton", "AUTO RESPAWN", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local autoFarmBtn = createHackerButton("AutoFarmButton", "AUTO FARM", layoutCounter, 1)
-local autoCollectBtn = createHackerButton("AutoCollectButton", "AUTO COLLECT", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local removeBarriersBtn = createHackerButton("RemoveBarriersButton", "REMOVE BARRIERS", layoutCounter, 1)
-local removeTextsBtn = createHackerButton("RemoveTextsButton", "REMOVE TEXTS", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local rejoinBtn = createHackerButton("RejoinButton", "REJOIN SERVER", layoutCounter, 1)
-local serverHopBtn = createHackerButton("ServerHopButton", "SERVER HOP", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
--- TELEPORTATION SECTION
-createSectionDivider("📍 TELEPORTATION & WAYPOINTS", layoutCounter)
-layoutCounter = layoutCounter + 1
-
-local saveWaypointBtn = createHackerButton("SaveWaypointButton", "SAVE WAYPOINT", layoutCounter, 1)
-local loadWaypointBtn = createHackerButton("LoadWaypointButton", "LOAD WAYPOINT", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local waypointNameBox = createHackerTextBox("WaypointNameInput", "WAYPOINT NAME", layoutCounter)
-layoutCounter = layoutCounter + 1
-
-local tpToPlayerBtn = createHackerButton("TPToPlayerButton", "TP TO PLAYER", layoutCounter, 1)
-local playerNameBox = createHackerTextBox("PlayerNameInput", "PLAYER NAME", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local tpAllPlayersBtn = createHackerButton("TPAllPlayersButton", "TP ALL TO YOU", layoutCounter, 1)
-local bringPlayerBtn = createHackerButton("BringPlayerButton", "BRING PLAYER", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
--- EXTERNAL SCRIPTS SECTION
-createSectionDivider("📜 EXTERNAL SCRIPTS", layoutCounter)
-layoutCounter = layoutCounter + 1
-
-local infinityYieldBtn = createHackerButton("InfinityYieldButton", "INFINITY YIELD", layoutCounter)
-layoutCounter = layoutCounter + 1
-
-local darkDexBtn = createHackerButton("DarkDexButton", "DARK DEX V3", layoutCounter, 1)
-local remoteSpyBtn = createHackerButton("RemoteSpyButton", "REMOTE SPY", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local jerkOffR6Btn = createHackerButton("JerkOffR6Button", "JERK OFF R6", layoutCounter, 1)
-local jerkOffR15Btn = createHackerButton("JerkOffR15Button", "JERK OFF R15", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
-local feAnimationsBtn = createHackerButton("FEAnimationsButton", "FE ANIMATIONS", layoutCounter, 1)
-local chatSpammerBtn = createHackerButton("ChatSpammerButton", "CHAT SPAMMER", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
-
--- CREDITS SECTION
-createSectionDivider("ℹ️ INFO & CREDITS", layoutCounter)
-layoutCounter = layoutCounter + 1
-
-local creditsBtn = createHackerButton("CreditsButton", "SHOW CREDITS", layoutCounter, 1)
-local discordBtn = createHackerButton("DiscordButton", "JOIN DISCORD", layoutCounter, 2)
-layoutCounter = layoutCounter + 1
+-- CONFIG SECTION
+local saveConfigBtn = createHackerButton("SaveConfigButton", "SAVE CONFIG", 25)
+local loadConfigBtn = createHackerButton("LoadConfigButton", "LOAD CONFIG", 26)
+local webhookBox = createHackerTextBox("WebhookInput", "DISCORD WEBHOOK URL", 27)
 
 -- ============== РАДУЖНАЯ АНИМАЦИЯ ==============
 
 spawn(function()
-    while wait(0.01) do
-        if rainbowEnabled then
-            pcall(function()
-                local rainbowColor = getRainbowColor()
-                
-                frameStroke1.Color = rainbowColor
-                innerStroke.Color = rainbowColor
-                titleStroke.Color = rainbowColor
-                toggleStroke.Color = rainbowColor
-                divider.BackgroundColor3 = rainbowColor
-                scanlineEffect.BackgroundColor3 = rainbowColor
-                contentFrame.ScrollBarImageColor3 = rainbowColor
-                
-                for _, child in pairs(contentFrame:GetChildren()) do
-                    if child:IsA("Frame") then
-                        local button = child:FindFirstChildOfClass("TextButton")
-                        if button then
-                            local stroke = button:FindFirstChildOfClass("UIStroke")
-                            if stroke then stroke.Color = rainbowColor end
-                        end
-                        
-                        local textBox = child:FindFirstChildOfClass("TextBox")
-                        if textBox then
-                            local stroke = textBox:FindFirstChildOfClass("UIStroke")
-                            if stroke then stroke.Color = rainbowColor end
-                        end
-                        
-                        local dividerLabel = child:FindFirstChildOfClass("TextLabel")
-                        if dividerLabel and child.Name:find("Divider") then
-                            local stroke = dividerLabel:FindFirstChildOfClass("UIStroke")
-                            if stroke then stroke.Color = rainbowColor end
-                        end
+    while rainbowEnabled do
+        local rainbowColor = getRainbowColor()
+        
+        pcall(function()
+            frameStroke1.Color = rainbowColor
+            innerStroke.Color = rainbowColor
+            titleStroke.Color = rainbowColor
+            toggleStroke.Color = rainbowColor
+            divider.BackgroundColor3 = rainbowColor
+            scanlineEffect.BackgroundColor3 = rainbowColor
+            contentFrame.ScrollBarImageColor3 = rainbowColor
+            
+            for _, child in pairs(contentFrame:GetChildren()) do
+                if child:IsA("Frame") then
+                    local button = child:FindFirstChildOfClass("TextButton")
+                    if button then
+                        local stroke = button:FindFirstChildOfClass("UIStroke")
+                        if stroke then stroke.Color = rainbowColor end
+                    end
+                    
+                    local textBox = child:FindFirstChildOfClass("TextBox")
+                    if textBox then
+                        local stroke = textBox:FindFirstChildOfClass("UIStroke")
+                        if stroke then stroke.Color = rainbowColor end
                     end
                 end
-            end)
-        end
+            end
+        end)
+        
+        wait(0.01)
     end
 end)
 
--- ============== TOGGLE MENU FUNCTION ==============
+-- ============== ЧИТ ФУНКЦИИ ==============
 
+-- Toggle Menu
 local function toggleMenu()
     menuVisible = not menuVisible
     
-    local targetPos = menuVisible and UDim2.new(0.5, -325, 0.5, -400) or UDim2.new(0.5, -325, 1.5, 0)
+    local targetPos = menuVisible and UDim2.new(0.5, -250, 0.5, -350) or UDim2.new(0.5, -250, 1.5, 0)
     local targetBlur = menuVisible and 10 or 0
     
     if menuVisible then
         for i = 1, 5 do
-            frame.Position = UDim2.new(0.5, -325 + math.random(-10, 10), 0.5, -400 + math.random(-10, 10))
+            frame.Position = UDim2.new(0.5, -250 + math.random(-10, 10), 0.5, -350 + math.random(-10, 10))
             wait(0.02)
         end
     end
@@ -1367,378 +651,14 @@ local function toggleMenu()
     end
 end
 
--- ============== CONSOLE TOGGLE ==============
-
-local function toggleConsole()
-    consoleFrame.Visible = not consoleFrame.Visible
-    
-    if consoleFrame.Visible then
-        consoleFrame.Position = UDim2.new(0.5, -375, -0.5, 0)
-        TweenService:Create(consoleFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back), {
-            Position = UDim2.new(0.5, -375, 0.5, -250)
-        }):Play()
-        
-        consoleLog("Console opened", Color3.fromRGB(0, 255, 0))
-        wait(0.5)
-        consoleInput:CaptureFocus()
-    else
-        TweenService:Create(consoleFrame, TweenInfo.new(0.3), {
-            Position = UDim2.new(0.5, -375, 1.5, 0)
-        }):Play()
-    end
-end
-
-print("╔════════════════════════════════════════════════════════╗")
-print("║        ARUSCRIPT V5 - ЧАСТЬ 5 ЗАГРУЖЕНА               ║")
-print("║        UI функции и кнопки созданы                     ║")
-print("╚════════════════════════════════════════════════════════╝")
--- ============== КОМАНДНЫЙ ИСПОЛНИТЕЛЬ ==============
-
-local commandHistory = {}
-local historyIndex = 0
-
-local function executeCommand(cmd)
-    local args = cmd:lower():split(" ")
-    local command = args[1]
-    
-    table.insert(commandHistory, cmd)
-    historyIndex = #commandHistory + 1
-    
-    consoleLog(cmd, Color3.fromRGB(255, 255, 0))
-    
-    -- HELP COMMAND
-    if command == "help" then
-        consoleLog("═══ AVAILABLE COMMANDS ═══", Color3.fromRGB(0, 255, 255))
-        consoleLog("help - Show this message", Color3.fromRGB(200, 200, 200))
-        consoleLog("clear - Clear console", Color3.fromRGB(200, 200, 200))
-        consoleLog("fly [on/off] - Toggle fly mode", Color3.fromRGB(200, 200, 200))
-        consoleLog("speed [number] - Set fly speed (1-200)", Color3.fromRGB(200, 200, 200))
-        consoleLog("noclip [on/off] - Toggle noclip", Color3.fromRGB(200, 200, 200))
-        consoleLog("esp [on/off] - Toggle ESP wallhack", Color3.fromRGB(200, 200, 200))
-        consoleLog("walkspeed [number] - Set walk speed", Color3.fromRGB(200, 200, 200))
-        consoleLog("jumppower [number] - Set jump power", Color3.fromRGB(200, 200, 200))
-        consoleLog("gravity [number] - Set gravity value", Color3.fromRGB(200, 200, 200))
-        consoleLog("aimbot [on/off] - Toggle aimbot", Color3.fromRGB(200, 200, 200))
-        consoleLog("fov [number] - Set aimbot FOV", Color3.fromRGB(200, 200, 200))
-        consoleLog("fullbright [on/off] - Toggle fullbright", Color3.fromRGB(200, 200, 200))
-        consoleLog("god [on/off] - Toggle god mode", Color3.fromRGB(200, 200, 200))
-        consoleLog("music [on/off] - Toggle background music", Color3.fromRGB(200, 200, 200))
-        consoleLog("volume [0-1] - Set music volume", Color3.fromRGB(200, 200, 200))
-        consoleLog("tp [player] - Teleport to player", Color3.fromRGB(200, 200, 200))
-        consoleLog("save - Save config", Color3.fromRGB(200, 200, 200))
-        consoleLog("load - Load config", Color3.fromRGB(200, 200, 200))
-        consoleLog("stats - Show statistics", Color3.fromRGB(200, 200, 200))
-        consoleLog("fps - Show current FPS", Color3.fromRGB(200, 200, 200))
-        consoleLog("ping - Show current ping", Color3.fromRGB(200, 200, 200))
-        consoleLog("info - Show script info", Color3.fromRGB(200, 200, 200))
-        consoleLog("═══════════════════════", Color3.fromRGB(0, 255, 255))
-    
-    -- CLEAR COMMAND
-    elseif command == "clear" then
-        for _, child in pairs(consoleOutput:GetChildren()) do
-            if child:IsA("TextLabel") then
-                child:Destroy()
-            end
-        end
-        consoleLog("Console cleared", Color3.fromRGB(0, 255, 0))
-    
-    -- FLY COMMAND
-    elseif command == "fly" then
-        if args[2] == "on" or args[2] == "1" then
-            if not flying then toggleFly() end
-            consoleLog("✈️ Fly: ENABLED", Color3.fromRGB(0, 255, 0))
-        elseif args[2] == "off" or args[2] == "0" then
-            if flying then toggleFly() end
-            consoleLog("✈️ Fly: DISABLED", Color3.fromRGB(255, 0, 0))
-        else
-            toggleFly()
-            consoleLog("✈️ Fly: " .. tostring(flying), flying and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0))
-        end
-    
-    -- SPEED COMMAND
-    elseif command == "speed" and args[2] then
-        local newSpeed = tonumber(args[2])
-        if newSpeed and newSpeed > 0 and newSpeed <= 200 then
-            speed = newSpeed
-            Config.Settings.FlySpeed = newSpeed
-            SaveConfig()
-            consoleLog("✈️ Fly speed set to: " .. newSpeed, Color3.fromRGB(0, 255, 0))
-        else
-            consoleLog("❌ Invalid speed (1-200)", Color3.fromRGB(255, 0, 0))
-        end
-    
-    -- NOCLIP COMMAND
-    elseif command == "noclip" then
-        if args[2] == "on" or args[2] == "1" then
-            if not noclipEnabled then toggleNoclip() end
-            consoleLog("👻 Noclip: ENABLED", Color3.fromRGB(0, 255, 0))
-        elseif args[2] == "off" or args[2] == "0" then
-            if noclipEnabled then toggleNoclip() end
-            consoleLog("👻 Noclip: DISABLED", Color3.fromRGB(255, 0, 0))
-        else
-            toggleNoclip()
-            consoleLog("👻 Noclip: " .. tostring(noclipEnabled), noclipEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0))
-        end
-    
-    -- ESP COMMAND
-    elseif command == "esp" then
-        if args[2] == "on" or args[2] == "1" then
-            if not espEnabled then toggleESP() end
-            consoleLog("👁️ ESP: ENABLED", Color3.fromRGB(0, 255, 0))
-        elseif args[2] == "off" or args[2] == "0" then
-            if espEnabled then toggleESP() end
-            consoleLog("👁️ ESP: DISABLED", Color3.fromRGB(255, 0, 0))
-        else
-            toggleESP()
-            consoleLog("👁️ ESP: " .. tostring(espEnabled), espEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0))
-        end
-    
-    -- WALKSPEED COMMAND
-    elseif command == "walkspeed" and args[2] then
-        local newSpeed = tonumber(args[2])
-        if newSpeed then
-            customWalkSpeed = newSpeed
-            Config.Settings.WalkSpeed = newSpeed
-            SaveConfig()
-            local char = GetCharacter()
-            if char then
-                local humanoid = char:FindFirstChild("Humanoid")
-                if humanoid then
-                    humanoid.WalkSpeed = newSpeed
-                    consoleLog("🏃 Walk speed set to: " .. newSpeed, Color3.fromRGB(0, 255, 0))
-                end
-            end
-        else
-            consoleLog("❌ Invalid walk speed value", Color3.fromRGB(255, 0, 0))
-        end
-    
-    -- JUMPPOWER COMMAND
-    elseif command == "jumppower" and args[2] then
-        local newPower = tonumber(args[2])
-        if newPower then
-            customJumpPower = newPower
-            Config.Settings.JumpPower = newPower
-            SaveConfig()
-            local char = GetCharacter()
-            if char then
-                local humanoid = char:FindFirstChild("Humanoid")
-                if humanoid then
-                    humanoid.JumpPower = newPower
-                    consoleLog("⬆️ Jump power set to: " .. newPower, Color3.fromRGB(0, 255, 0))
-                end
-            end
-        else
-            consoleLog("❌ Invalid jump power value", Color3.fromRGB(255, 0, 0))
-        end
-    
-    -- GRAVITY COMMAND
-    elseif command == "gravity" and args[2] then
-        local newGravity = tonumber(args[2])
-        if newGravity then
-            customGravity = newGravity
-            Config.Settings.Gravity = newGravity
-            SaveConfig()
-            workspace.Gravity = newGravity
-            consoleLog("⬇️ Gravity set to: " .. newGravity, Color3.fromRGB(0, 255, 0))
-        else
-            consoleLog("❌ Invalid gravity value", Color3.fromRGB(255, 0, 0))
-        end
-    
-    -- AIMBOT COMMAND
-    elseif command == "aimbot" then
-        if args[2] == "on" or args[2] == "1" then
-            if not aimbotEnabled then toggleAimbot() end
-            consoleLog("🎯 Aimbot: ENABLED", Color3.fromRGB(0, 255, 0))
-        elseif args[2] == "off" or args[2] == "0" then
-            if aimbotEnabled then toggleAimbot() end
-            consoleLog("🎯 Aimbot: DISABLED", Color3.fromRGB(255, 0, 0))
-        else
-            toggleAimbot()
-            consoleLog("🎯 Aimbot: " .. tostring(aimbotEnabled), aimbotEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0))
-        end
-    
-    -- FOV COMMAND
-    elseif command == "fov" and args[2] then
-        local newFOV = tonumber(args[2])
-        if newFOV and newFOV > 0 and newFOV <= 500 then
-            aimbotFOV = newFOV
-            Config.Settings.AimbotFOV = newFOV
-            SaveConfig()
-            if aimbotCircle then aimbotCircle.Radius = aimbotFOV end
-            consoleLog("🎯 Aimbot FOV set to: " .. newFOV, Color3.fromRGB(0, 255, 0))
-        else
-            consoleLog("❌ Invalid FOV value (1-500)", Color3.fromRGB(255, 0, 0))
-        end
-    
-    -- FULLBRIGHT COMMAND
-    elseif command == "fullbright" then
-        if args[2] == "on" or args[2] == "1" then
-            if not fullbrightEnabled then toggleFullbright() end
-            consoleLog("💡 Fullbright: ENABLED", Color3.fromRGB(0, 255, 0))
-        elseif args[2] == "off" or args[2] == "0" then
-            if fullbrightEnabled then toggleFullbright() end
-            consoleLog("💡 Fullbright: DISABLED", Color3.fromRGB(255, 0, 0))
-        else
-            toggleFullbright()
-            consoleLog("💡 Fullbright: " .. tostring(fullbrightEnabled), fullbrightEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0))
-        end
-    
-    -- GOD MODE COMMAND
-    elseif command == "god" then
-        if args[2] == "on" or args[2] == "1" then
-            if not godModeEnabled then toggleGodMode() end
-            consoleLog("🛡️ God Mode: ENABLED", Color3.fromRGB(0, 255, 0))
-        elseif args[2] == "off" or args[2] == "0" then
-            if godModeEnabled then toggleGodMode() end
-            consoleLog("🛡️ God Mode: DISABLED", Color3.fromRGB(255, 0, 0))
-        else
-            toggleGodMode()
-            consoleLog("🛡️ God Mode: " .. tostring(godModeEnabled), godModeEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0))
-        end
-    
-    -- MUSIC COMMAND
-    elseif command == "music" then
-        if args[2] == "on" or args[2] == "1" then
-            if not musicEnabled then toggleMusic() end
-            consoleLog("🎵 Music: ENABLED", Color3.fromRGB(0, 255, 0))
-        elseif args[2] == "off" or args[2] == "0" then
-            if musicEnabled then toggleMusic() end
-            consoleLog("🎵 Music: DISABLED", Color3.fromRGB(255, 0, 0))
-        else
-            toggleMusic()
-            consoleLog("🎵 Music: " .. tostring(musicEnabled), musicEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0))
-        end
-    
-    -- VOLUME COMMAND
-    elseif command == "volume" and args[2] then
-        local volume = tonumber(args[2])
-        if volume then
-            setMusicVolume(volume)
-            consoleLog("🔊 Volume set to: " .. math.floor(volume * 100) .. "%", Color3.fromRGB(0, 255, 0))
-        else
-            consoleLog("❌ Invalid volume value", Color3.fromRGB(255, 0, 0))
-        end
-    
-    -- TP COMMAND (Teleport to player)
-    elseif command == "tp" and args[2] then
-        local targetName = args[2]
-        local targetPlayer = nil
-        
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Name:lower():find(targetName:lower()) then
-                targetPlayer = player
-                break
-            end
-        end
-        
-        if targetPlayer and targetPlayer.Character then
-            local targetRoot = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-            if targetRoot then
-                SafeTeleport(targetRoot.Position)
-                consoleLog("📍 Teleported to " .. targetPlayer.Name, Color3.fromRGB(0, 255, 0))
-            end
-        else
-            consoleLog("❌ Player not found: " .. targetName, Color3.fromRGB(255, 0, 0))
-        end
-    
-    -- SAVE COMMAND
-    elseif command == "save" then
-        SaveConfig()
-        consoleLog("💾 Configuration saved successfully", Color3.fromRGB(0, 255, 0))
-    
-    -- LOAD COMMAND
-    elseif command == "load" then
-        LoadConfig()
-        consoleLog("📂 Configuration loaded successfully", Color3.fromRGB(0, 255, 0))
-    
-    -- STATS COMMAND
-    elseif command == "stats" then
-        consoleLog("═══ STATISTICS ═══", Color3.fromRGB(0, 255, 255))
-        consoleLog("Kills: " .. statistics.kills, Color3.fromRGB(200, 200, 200))
-        consoleLog("Deaths: " .. statistics.deaths, Color3.fromRGB(200, 200, 200))
-        consoleLog("Teleports: " .. statistics.teleports, Color3.fromRGB(200, 200, 200))
-        consoleLog("Items Collected: " .. statistics.itemsCollected, Color3.fromRGB(200, 200, 200))
-        consoleLog("Play Time: " .. FormatTime(statistics.playTime), Color3.fromRGB(200, 200, 200))
-        consoleLog("═══════════════════", Color3.fromRGB(0, 255, 255))
-    
-    -- FPS COMMAND
-    elseif command == "fps" then
-        local fps = GetFPS()
-        consoleLog("📊 Current FPS: " .. fps, Color3.fromRGB(0, 255, 0))
-    
-    -- PING COMMAND
-    elseif command == "ping" then
-        local ping = GetPing()
-        consoleLog("📶 Current Ping: " .. ping .. "ms", Color3.fromRGB(0, 255, 0))
-    
-    -- INFO COMMAND
-    elseif command == "info" then
-        consoleLog("═══════════════════════════════════════", Color3.fromRGB(0, 255, 255))
-        consoleLog("ARUSCRIPT V5 - ULTIMATE MEGA EDITION", Color3.fromRGB(0, 255, 0))
-        consoleLog("═══════════════════════════════════════", Color3.fromRGB(0, 255, 255))
-        consoleLog("Version: 5.0 ULTIMATE", Color3.fromRGB(200, 200, 200))
-        consoleLog("Features: 100+", Color3.fromRGB(200, 200, 200))
-        consoleLog("Player: " .. LocalPlayer.Name, Color3.fromRGB(200, 200, 200))
-        consoleLog("User ID: " .. LocalPlayer.UserId, Color3.fromRGB(200, 200, 200))
-        consoleLog("Game: " .. game.PlaceId, Color3.fromRGB(200, 200, 200))
-        consoleLog("FPS: " .. GetFPS(), Color3.fromRGB(200, 200, 200))
-        consoleLog("Ping: " .. GetPing() .. "ms", Color3.fromRGB(200, 200, 200))
-        consoleLog("═══════════════════════════════════════", Color3.fromRGB(0, 255, 255))
-    
-    else
-        consoleLog("❌ Unknown command: " .. command, Color3.fromRGB(255, 0, 0))
-        consoleLog("Type 'help' for commands list", Color3.fromRGB(255, 255, 0))
-    end
-end
-
--- Console input handling
-consoleInput.FocusLost:Connect(function(enterPressed)
-    if enterPressed and consoleInput.Text ~= "" then
-        executeCommand(consoleInput.Text)
-        consoleInput.Text = ""
-    end
-end)
-
-executeBtn.MouseButton1Click:Connect(function()
-    if consoleInput.Text ~= "" then
-        executeCommand(consoleInput.Text)
-        consoleInput.Text = ""
-        consoleInput:CaptureFocus()
-    end
-end)
-
-consoleCloseBtn.MouseButton1Click:Connect(toggleConsole)
-
--- История команд (стрелки вверх/вниз)
-consoleInput.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Keyboard then
-        if input.KeyCode == Enum.KeyCode.Up then
-            if historyIndex > 1 then
-                historyIndex = historyIndex - 1
-                consoleInput.Text = commandHistory[historyIndex] or ""
-            end
-        elseif input.KeyCode == Enum.KeyCode.Down then
-            if historyIndex < #commandHistory then
-                historyIndex = historyIndex + 1
-                consoleInput.Text = commandHistory[historyIndex] or ""
-            else
-                historyIndex = #commandHistory + 1
-                consoleInput.Text = ""
-            end
-        end
-    end
-end)
-
--- ============== ОСНОВНЫЕ ЧИТЫ ==============
-
--- ESP WALLHACK
+-- ESP
 local function toggleESP()
     espEnabled = not espEnabled
     espBtn.Text = espEnabled and "⟨ DISABLE WALLHACK ⟩" or "⟨ ESP WALLHACK ⟩"
     
     if espEnabled then
         for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character then
+            if player ~= Players.LocalPlayer and player.Character then
                 local hrp = player.Character:FindFirstChild("HumanoidRootPart")
                 if hrp and not hrp:FindFirstChild("ESPBox") then
                     local espBox = Instance.new("BoxHandleAdornment")
@@ -1753,7 +673,6 @@ local function toggleESP()
                 end
             end
         end
-        consoleLog("👁️ ESP: ENABLED", Color3.fromRGB(0, 255, 0))
     else
         for _, player in pairs(Players:GetPlayers()) do
             if player.Character then
@@ -1764,10 +683,9 @@ local function toggleESP()
                 end
             end
         end
-        consoleLog("👁️ ESP: DISABLED", Color3.fromRGB(255, 0, 0))
     end
     
-    SendWebhook("👁️ ESP: " .. tostring(espEnabled))
+    SendWebhook("👁️ ESP: **" .. tostring(espEnabled) .. "**")
     Notify("ARUSCRIPT V5", "ESP: " .. tostring(espEnabled))
 end
 
@@ -1789,17 +707,16 @@ local function changeESPColor()
         end
     end
     
-    Config.Settings.ESPColor = espColor
     Notify("ARUSCRIPT V5", "ESP Color Changed!")
 end
 
--- FLY MODE
+-- Fly
 local function toggleFly()
     flying = not flying
-    flyBtn.Text = flying and "⟨ DISABLE FLY ⟩" or "⟨ FLY MODE ⟩"
+    flyBtn.Text = flying and "⟨ DEACTIVATE FLY ⟩" or "⟨ FLY MODE ⟩"
     
     if flying then
-        local char = GetCharacter()
+        local char = Players.LocalPlayer.Character
         if char then
             local hrp = char:FindFirstChild("HumanoidRootPart")
             if hrp then
@@ -1814,9 +731,7 @@ local function toggleFly()
                 bodyGyro.Parent = hrp
                 
                 connections.fly = RunService.Heartbeat:Connect(function()
-                    if not flying then return end
-                    
-                    local camera = Camera
+                    local camera = workspace.CurrentCamera
                     local moveDir = Vector3.new(0, 0, 0)
                     
                     if UserInputService:IsKeyDown(Enum.KeyCode.W) then
@@ -1841,27 +756,24 @@ local function toggleFly()
                     bodyVelocity.Velocity = moveDir
                     bodyGyro.CFrame = camera.CFrame
                 end)
-                
-                consoleLog("✈️ Fly: ENABLED", Color3.fromRGB(0, 255, 0))
             end
         end
     else
         if connections.fly then connections.fly:Disconnect() end
         if bodyVelocity then bodyVelocity:Destroy() end
         if bodyGyro then bodyGyro:Destroy() end
-        consoleLog("✈️ Fly: DISABLED", Color3.fromRGB(255, 0, 0))
     end
     
-    SendWebhook("✈️ Fly: " .. tostring(flying))
+    SendWebhook("✈️ Fly: **" .. tostring(flying) .. "**")
     Notify("ARUSCRIPT V5", "Fly: " .. tostring(flying))
 end
 
--- SPEEDHACK
+-- Speedhack
 local function toggleSpeedhack()
     speedhackEnabled = not speedhackEnabled
     speedhackBtn.Text = speedhackEnabled and "⟨ REMOVE SPEEDHACK ⟩" or "⟨ SPEEDHACK ⟩"
     
-    local char = GetCharacter()
+    local char = Players.LocalPlayer.Character
     if char then
         local humanoid = char:FindFirstChild("Humanoid")
         if humanoid then
@@ -1869,20 +781,18 @@ local function toggleSpeedhack()
         end
     end
     
-    SendWebhook("⚡ Speedhack: " .. tostring(speedhackEnabled))
+    SendWebhook("⚡ Speedhack: **" .. tostring(speedhackEnabled) .. "**")
     Notify("ARUSCRIPT V5", "Speedhack: " .. tostring(speedhackEnabled))
 end
 
--- NOCLIP
+-- Noclip
 local function toggleNoclip()
     noclipEnabled = not noclipEnabled
     noclipBtn.Text = noclipEnabled and "⟨ DISABLE NOCLIP ⟩" or "⟨ NOCLIP ⟩"
     
     if noclipEnabled then
         connections.noclip = RunService.Stepped:Connect(function()
-            if not noclipEnabled then return end
-            
-            local char = GetCharacter()
+            local char = Players.LocalPlayer.Character
             if char then
                 for _, part in pairs(char:GetDescendants()) do
                     if part:IsA("BasePart") then
@@ -1891,37 +801,24 @@ local function toggleNoclip()
                 end
             end
         end)
-        consoleLog("👻 Noclip: ENABLED", Color3.fromRGB(0, 255, 0))
     else
         if connections.noclip then
             connections.noclip:Disconnect()
         end
-        
-        local char = GetCharacter()
-        if char then
-            for _, part in pairs(char:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = true
-                end
-            end
-        end
-        consoleLog("👻 Noclip: DISABLED", Color3.fromRGB(255, 0, 0))
     end
     
-    SendWebhook("👻 Noclip: " .. tostring(noclipEnabled))
+    SendWebhook("👻 Noclip: **" .. tostring(noclipEnabled) .. "**")
     Notify("ARUSCRIPT V5", "Noclip: " .. tostring(noclipEnabled))
 end
 
--- INFINITE JUMP
+-- Infinite Jump
 local function toggleInfJump()
     infJumpEnabled = not infJumpEnabled
     infJumpBtn.Text = infJumpEnabled and "⟨ DISABLE INF JUMP ⟩" or "⟨ INFINITE JUMP ⟩"
     
     if infJumpEnabled then
         connections.infJump = UserInputService.JumpRequest:Connect(function()
-            if not infJumpEnabled then return end
-            
-            local char = GetCharacter()
+            local char = Players.LocalPlayer.Character
             if char then
                 local humanoid = char:FindFirstChildOfClass("Humanoid")
                 if humanoid then
@@ -1929,27 +826,23 @@ local function toggleInfJump()
                 end
             end
         end)
-        consoleLog("⬆️ Infinite Jump: ENABLED", Color3.fromRGB(0, 255, 0))
     else
         if connections.infJump then
             connections.infJump:Disconnect()
         end
-        consoleLog("⬆️ Infinite Jump: DISABLED", Color3.fromRGB(255, 0, 0))
     end
     
     Notify("ARUSCRIPT V5", "Infinite Jump: " .. tostring(infJumpEnabled))
 end
 
--- BUNNY HOP
+-- Bhop
 local function toggleBhop()
     bhopEnabled = not bhopEnabled
     bhopBtn.Text = bhopEnabled and "⟨ DISABLE BUNNY HOP ⟩" or "⟨ BUNNY HOP ⟩"
     
     if bhopEnabled then
         connections.bhop = RunService.Heartbeat:Connect(function()
-            if not bhopEnabled then return end
-            
-            local char = GetCharacter()
+            local char = Players.LocalPlayer.Character
             if char then
                 local humanoid = char:FindFirstChild("Humanoid")
                 local hrp = char:FindFirstChild("HumanoidRootPart")
@@ -1971,63 +864,141 @@ local function toggleBhop()
                 end
             end
         end)
-        consoleLog("🐰 Bunny Hop: ENABLED", Color3.fromRGB(0, 255, 0))
     else
         if connections.bhop then
             connections.bhop:Disconnect()
         end
-        consoleLog("🐰 Bunny Hop: DISABLED", Color3.fromRGB(255, 0, 0))
     end
     
     Notify("ARUSCRIPT V5", "Bunny Hop: " .. tostring(bhopEnabled))
 end
 
--- WALK SPEED
-local function toggleWalkSpeed()
-    walkSpeedEnabled = not walkSpeedEnabled
-    walkSpeedBtn.Text = walkSpeedEnabled and "⟨ DISABLE WALKSPEED ⟩" or "⟨ WALK SPEED ⟩"
+-- Aimbot
+pcall(function()
+    aimbotCircle = Drawing.new("Circle")
+    aimbotCircle.Thickness = 2
+    aimbotCircle.NumSides = 64
+    aimbotCircle.Radius = aimbotFOV
+    aimbotCircle.Filled = false
+    aimbotCircle.Transparency = 0.5
+    aimbotCircle.Color = Color3.fromRGB(255, 255, 255)
+    aimbotCircle.Visible = false
+end)
+
+local function getClosestPlayer()
+    local player = Players.LocalPlayer
+    local char = player.Character
+    if not char then return nil end
     
-    local char = GetCharacter()
-    if char then
-        local humanoid = char:FindFirstChild("Humanoid")
-        if humanoid then
-            humanoid.WalkSpeed = walkSpeedEnabled and customWalkSpeed or 16
-            consoleLog("🏃 Walk Speed: " .. (walkSpeedEnabled and customWalkSpeed or 16), Color3.fromRGB(0, 255, 0))
+    local head = char:FindFirstChild("Head")
+    if not head then return nil end
+    
+    local camera = workspace.CurrentCamera
+    local mousePos = UserInputService:GetMouseLocation()
+    
+    local closestPlayer = nil
+    local shortestDistance = aimbotFOV
+    
+    for _, targetPlayer in pairs(Players:GetPlayers()) do
+        if targetPlayer ~= player and targetPlayer.Character then
+            local targetHead = targetPlayer.Character:FindFirstChild("Head")
+            local targetHumanoid = targetPlayer.Character:FindFirstChild("Humanoid")
+            
+            if targetHead and targetHumanoid and targetHumanoid.Health > 0 then
+                local screenPos, onScreen = camera:WorldToViewportPoint(targetHead.Position)
+                
+                if onScreen then
+                    local distance = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
+                    
+                    if distance < shortestDistance then
+                        closestPlayer = targetPlayer
+                        shortestDistance = distance
+                    end
+                end
+            end
         end
     end
     
-    Notify("ARUSCRIPT V5", "Walk Speed: " .. tostring(walkSpeedEnabled))
+    return closestPlayer
 end
 
--- JUMP POWER
-local function toggleJumpPower()
-    jumpPowerEnabled = not jumpPowerEnabled
-    jumpPowerBtn.Text = jumpPowerEnabled and "⟨ DISABLE JUMP POWER ⟩" or "⟨ JUMP POWER ⟩"
+local function toggleAimbot()
+    aimbotEnabled = not aimbotEnabled
+    aimbotBtn.Text = aimbotEnabled and "⟨ DISABLE AIMBOT ⟩" or "⟨ AIMBOT ⟩"
     
-    local char = GetCharacter()
-    if char then
-        local humanoid = char:FindFirstChild("Humanoid")
-        if humanoid then
-            humanoid.JumpPower = jumpPowerEnabled and customJumpPower or 50
-            consoleLog("⬆️ Jump Power: " .. (jumpPowerEnabled and customJumpPower or 50), Color3.fromRGB(0, 255, 0))
+    if aimbotCircle then
+        aimbotCircle.Visible = aimbotEnabled
+    end
+    
+    if aimbotEnabled then
+        connections.aimbot = RunService.RenderStepped:Connect(function()
+            if aimbotCircle then
+                local mousePos = UserInputService:GetMouseLocation()
+                aimbotCircle.Position = mousePos
+            end
+            
+            local target = getClosestPlayer()
+            
+            if target and target.Character then
+                local targetHead = target.Character:FindFirstChild("Head")
+                
+                if targetHead then
+                    local camera = workspace.CurrentCamera
+                    local currentPos = camera.CFrame.Position
+                    local targetCFrame = CFrame.new(currentPos, targetHead.Position)
+                    
+                    camera.CFrame = camera.CFrame:Lerp(targetCFrame, aimbotSmooth)
+                    
+                    if aimbotCircle then
+                        aimbotCircle.Color = Color3.fromRGB(255, 0, 0)
+                    end
+                end
+            else
+                if aimbotCircle then
+                    aimbotCircle.Color = Color3.fromRGB(255, 255, 255)
+                end
+            end
+        end)
+    else
+        if connections.aimbot then
+            connections.aimbot:Disconnect()
         end
     end
     
-    Notify("ARUSCRIPT V5", "Jump Power: " .. tostring(jumpPowerEnabled))
+    SendWebhook("🎯 Aimbot: **" .. tostring(aimbotEnabled) .. "**")
+    Notify("ARUSCRIPT V5", "Aimbot: " .. tostring(aimbotEnabled))
 end
 
--- GRAVITY
-local function toggleGravity()
-    gravityEnabled = not gravityEnabled
-    gravityBtn.Text = gravityEnabled and "⟨ DISABLE GRAVITY ⟩" or "⟨ GRAVITY CHANGER ⟩"
+-- Triggerbot
+local function toggleTriggerbot()
+    triggerbotEnabled = not triggerbotEnabled
+    triggerbotBtn.Text = triggerbotEnabled and "⟨ DISABLE TRIGGERBOT ⟩" or "⟨ TRIGGERBOT ⟩"
     
-    workspace.Gravity = gravityEnabled and customGravity or 196.2
-    consoleLog("⬇️ Gravity: " .. (gravityEnabled and customGravity or 196.2), Color3.fromRGB(0, 255, 0))
+    if triggerbotEnabled then
+        connections.triggerbot = RunService.RenderStepped:Connect(function()
+            local mouse = Players.LocalPlayer:GetMouse()
+            local target = mouse.Target
+            
+            if target and target.Parent then
+                local humanoid = target.Parent:FindFirstChild("Humanoid")
+                if humanoid and humanoid.Health > 0 then
+                    local targetPlayer = Players:GetPlayerFromCharacter(target.Parent)
+                    if targetPlayer and targetPlayer ~= Players.LocalPlayer then
+                        mouse1click()
+                    end
+                end
+            end
+        end)
+    else
+        if connections.triggerbot then
+            connections.triggerbot:Disconnect()
+        end
+    end
     
-    Notify("ARUSCRIPT V5", "Gravity: " .. tostring(gravityEnabled))
+    Notify("ARUSCRIPT V5", "Triggerbot: " .. tostring(triggerbotEnabled))
 end
 
--- FULLBRIGHT
+-- Fullbright
 local function toggleFullbright()
     fullbrightEnabled = not fullbrightEnabled
     fullbrightBtn.Text = fullbrightEnabled and "⟨ DISABLE FULLBRIGHT ⟩" or "⟨ FULLBRIGHT ⟩"
@@ -2038,20 +1009,18 @@ local function toggleFullbright()
         Lighting.FogEnd = 100000
         Lighting.GlobalShadows = false
         Lighting.Ambient = Color3.fromRGB(255, 255, 255)
-        consoleLog("💡 Fullbright: ENABLED", Color3.fromRGB(0, 255, 0))
     else
         Lighting.Brightness = 1
         Lighting.ClockTime = 14
         Lighting.FogEnd = 100000
         Lighting.GlobalShadows = true
         Lighting.Ambient = Color3.fromRGB(0, 0, 0)
-        consoleLog("💡 Fullbright: DISABLED", Color3.fromRGB(255, 0, 0))
     end
     
     Notify("ARUSCRIPT V5", "Fullbright: " .. tostring(fullbrightEnabled))
 end
 
--- X-RAY VISION
+-- X-Ray
 local function toggleXray()
     xrayEnabled = not xrayEnabled
     xrayBtn.Text = xrayEnabled and "⟨ DISABLE X-RAY ⟩" or "⟨ X-RAY VISION ⟩"
@@ -2065,7 +1034,6 @@ local function toggleXray()
                 obj.Transparency = 0.7
             end
         end
-        consoleLog("❌ X-Ray: ENABLED", Color3.fromRGB(0, 255, 0))
     else
         for obj, transparency in pairs(originalTransparency) do
             if obj and obj.Parent then
@@ -2073,43 +1041,145 @@ local function toggleXray()
             end
         end
         originalTransparency = {}
-        consoleLog("❌ X-Ray: DISABLED", Color3.fromRGB(255, 0, 0))
     end
     
     Notify("ARUSCRIPT V5", "X-Ray: " .. tostring(xrayEnabled))
 end
 
--- ANTI-AFK
-local function toggleAntiAFK()
-    antiAFKEnabled = not antiAFKEnabled
-    antiAFKBtn.Text = antiAFKEnabled and "⟨ DISABLE ANTI-AFK ⟩" or "⟨ ANTI-AFK ⟩"
+-- Radar
+local function createRadar()
+    radarFrame = Instance.new("Frame")
+    radarFrame.Name = "Radar"
+    radarFrame.Size = UDim2.new(0, 220, 0, 220)
+    radarFrame.Position = UDim2.new(1, -240, 0, 20)
+    radarFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    radarFrame.BackgroundTransparency = 0.3
+    radarFrame.BorderSizePixel = 0
+    radarFrame.Visible = false
+    radarFrame.Parent = screenGui
     
-    if antiAFKEnabled then
-        connections.antiAFK = Players.LocalPlayer.Idled:Connect(function()
-            VirtualUser:CaptureController()
-            VirtualUser:ClickButton2(Vector2.new())
-        end)
-        consoleLog("🔄 Anti-AFK: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.antiAFK then
-            connections.antiAFK:Disconnect()
+    local radarCorner = Instance.new("UICorner")
+    radarCorner.CornerRadius = UDim.new(1, 0)
+    radarCorner.Parent = radarFrame
+    
+    local radarStroke = Instance.new("UIStroke")
+    radarStroke.Color = Color3.fromRGB(255, 0, 0)
+    radarStroke.Thickness = 3
+    radarStroke.Parent = radarFrame
+    
+    spawn(function()
+        while rainbowEnabled do
+            if radarFrame.Visible then
+                radarStroke.Color = getRainbowColor()
+            end
+            wait(0.01)
         end
-        consoleLog("🔄 Anti-AFK: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
+    end)
     
-    Notify("ARUSCRIPT V5", "Anti-AFK: " .. tostring(antiAFKEnabled))
+    local centerDot = Instance.new("Frame")
+    centerDot.Size = UDim2.new(0, 8, 0, 8)
+    centerDot.Position = UDim2.new(0.5, -4, 0.5, -4)
+    centerDot.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    centerDot.BorderSizePixel = 0
+    centerDot.Parent = radarFrame
+    
+    local centerCorner = Instance.new("UICorner")
+    centerCorner.CornerRadius = UDim.new(1, 0)
+    centerCorner.Parent = centerDot
+    
+    local radarLabel = Instance.new("TextLabel")
+    radarLabel.Size = UDim2.new(1, 0, 0, 25)
+    radarLabel.Position = UDim2.new(0, 0, 0, -30)
+    radarLabel.Text = "⟨ RADAR ⟩"
+    radarLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    radarLabel.Font = Enum.Font.Code
+    radarLabel.TextSize = 16
+    radarLabel.BackgroundTransparency = 1
+    radarLabel.Parent = radarFrame
 end
 
--- GOD MODE
+local function toggleRadar()
+    radarEnabled = not radarEnabled
+    radarBtn.Text = radarEnabled and "⟨ DISABLE RADAR ⟩" or "⟨ RADAR ⟩"
+    
+    if not radarFrame then
+        createRadar()
+    end
+    
+    radarFrame.Visible = radarEnabled
+    
+    if radarEnabled then
+        connections.radar = RunService.RenderStepped:Connect(function()
+            for _, dot in pairs(radarDots) do
+                dot:Destroy()
+            end
+            radarDots = {}
+            
+            local char = Players.LocalPlayer.Character
+            if not char then return end
+            
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
+            
+            for _, targetPlayer in pairs(Players:GetPlayers()) do
+                if targetPlayer ~= Players.LocalPlayer and targetPlayer.Character then
+                    local targetRoot = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+                    if targetRoot then
+                        local distance = (hrp.Position - targetRoot.Position)
+                        local scale = 100
+                        
+                        if distance.Magnitude <= 500 then
+                            local dot = Instance.new("Frame")
+                            dot.Size = UDim2.new(0, 6, 0, 6)
+                            dot.Position = UDim2.new(0.5, distance.X / scale, 0.5, distance.Z / scale)
+                            dot.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+                            dot.BorderSizePixel = 0
+                            dot.Parent = radarFrame
+                            
+                            local dotCorner = Instance.new("UICorner")
+                            dotCorner.CornerRadius = UDim.new(1, 0)
+                            dotCorner.Parent = dot
+                            
+                            table.insert(radarDots, dot)
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        if connections.radar then
+            connections.radar:Disconnect()
+        end
+    end
+    
+    Notify("ARUSCRIPT V5", "Radar: " .. tostring(radarEnabled))
+end
+
+-- FOV Changer
+local function toggleFOVChanger()
+    fovChangerEnabled = not fovChangerEnabled
+    fovChangerBtn.Text = fovChangerEnabled and "⟨ DISABLE FOV ⟩" or "⟨ FOV CHANGER ⟩"
+    
+    local camera = workspace.CurrentCamera
+    
+    if fovChangerEnabled then
+        originalFOV = camera.FieldOfView
+        camera.FieldOfView = newFOV
+    else
+        camera.FieldOfView = originalFOV
+    end
+    
+    Notify("ARUSCRIPT V5", "FOV Changer: " .. tostring(fovChangerEnabled))
+end
+
+-- God Mode
 local function toggleGodMode()
     godModeEnabled = not godModeEnabled
     godModeBtn.Text = godModeEnabled and "⟨ DISABLE GOD MODE ⟩" or "⟨ GOD MODE ⟩"
     
     if godModeEnabled then
         connections.godMode = RunService.Heartbeat:Connect(function()
-            if not godModeEnabled then return end
-            
-            local char = GetCharacter()
+            local char = Players.LocalPlayer.Character
             if char then
                 local humanoid = char:FindFirstChild("Humanoid")
                 if humanoid then
@@ -2126,13 +1196,12 @@ local function toggleGodMode()
                 end
             end
         end)
-        consoleLog("🛡️ God Mode: ENABLED", Color3.fromRGB(0, 255, 0))
     else
         if connections.godMode then
             connections.godMode:Disconnect()
         end
         
-        local char = GetCharacter()
+        local char = Players.LocalPlayer.Character
         if char then
             local ff = char:FindFirstChild("GodModeFF")
             if ff then ff:Destroy() end
@@ -2143,2343 +1212,171 @@ local function toggleGodMode()
                 humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, true)
             end
         end
-        consoleLog("🛡️ God Mode: DISABLED", Color3.fromRGB(255, 0, 0))
     end
     
-    SendWebhook("🛡️ God Mode: " .. tostring(godModeEnabled))
+    SendWebhook("🛡️ God Mode: **" .. tostring(godModeEnabled) .. "**")
     Notify("ARUSCRIPT V5", "God Mode: " .. tostring(godModeEnabled))
 end
 
-print("╔════════════════════════════════════════════════════════╗")
-print("║        ARUSCRIPT V5 - ЧАСТЬ 6 ЗАГРУЖЕНА               ║")
-print("║        Основные команды и читы готовы                  ║")
-print("║        Файл: 2000+ строк                               ║")
-print("╚════════════════════════════════════════════════════════╝")
-
--- ============== AIMBOT СИСТЕМА ==============
-
--- Создание Aimbot круга
-pcall(function()
-    aimbotCircle = Drawing.new("Circle")
-    aimbotCircle.Thickness = 2
-    aimbotCircle.NumSides = 64
-    aimbotCircle.Radius = aimbotFOV
-    aimbotCircle.Filled = false
-    aimbotCircle.Transparency = 0.5
-    aimbotCircle.Color = Color3.fromRGB(255, 255, 255)
-    aimbotCircle.Visible = false
-end)
-
--- Функция получения ближайшего игрока для Aimbot
-local function getClosestPlayer()
-    local player = LocalPlayer
-    local char = GetCharacter()
-    if not char then return nil end
+-- Anti-AFK
+local function toggleAntiAFK()
+    antiAFKEnabled = not antiAFKEnabled
+    antiAFKBtn.Text = antiAFKEnabled and "⟨ DISABLE ANTI-AFK ⟩" or "⟨ ANTI-AFK ⟩"
     
-    local head = char:FindFirstChild("Head")
-    if not head then return nil end
-    
-    local camera = Camera
-    local mousePos = Mouse.Hit.Position
-
-    local closestPlayer = nil
-    local shortestDistance = aimbotFOV
-
-    for _, targetPlayer in pairs(Players:GetPlayers()) do
-        if targetPlayer ~= player and targetPlayer.Character then
-            local targetHead = targetPlayer.Character:FindFirstChild("Head")
-            local targetHumanoid = targetPlayer.Character:FindFirstChild("Humanoid")
-            
-            if targetHead and targetHumanoid and targetHumanoid.Health > 0 then
-                local screenPos, onScreen = camera:WorldToViewportPoint(targetHead.Position)
-                
-                if onScreen then
-                    local distance = (Vector2.new(screenPos.X, screenPos.Y) - Mouse.Hit.Position).Magnitude
-                    
-                    if distance < shortestDistance then
-                        closestPlayer = targetPlayer
-                        shortestDistance = distance
-                    end
-                end
-            end
-        end
-    end
-    
-    return closestPlayer
-end
-
--- Функция получения части для Aimbot
-local function getAimbotTargetPart(player)
-    if not player or not player.Character then return nil end
-    
-    local targetPart = player.Character:FindFirstChild(aimbotTargetPart)
-    if not targetPart then
-        targetPart = player.Character:FindFirstChild("Head")
-    end
-    
-    return targetPart
-end
-
--- Toggle Aimbot
-local function toggleAimbot()
-    aimbotEnabled = not aimbotEnabled
-    aimbotBtn.Text = aimbotEnabled and "⟨ DISABLE AIMBOT ⟩" or "⟨ AIMBOT ⟩"
-    
-    if aimbotCircle then
-        aimbotCircle.Visible = aimbotEnabled
-    end
-    
-    if aimbotEnabled then
-        connections.aimbot = RunService.RenderStepped:Connect(function()
-            if not aimbotEnabled then return end
-            
-            if aimbotCircle then
-                local mousePos = Mouse.Hit.Position
-                aimbotCircle.Position = Vector2.new(mousePos.X, mousePos.Y)
-            end
-            
-            local target = getClosestPlayer()
-            
-            if target and target.Character then
-                local targetPart = getAimbotTargetPart(target)
-                
-                if targetPart then
-                    local camera = Camera
-                    local currentPos = camera.CFrame.Position
-                    local targetCFrame = CFrame.new(currentPos, targetPart.Position)
-                    
-                    camera.CFrame = camera.CFrame:Lerp(targetCFrame, aimbotSmooth)
-                    
-                    if aimbotCircle then
-                        aimbotCircle.Color = Color3.fromRGB(255, 0, 0)
-                    end
-                end
-            else
-                if aimbotCircle then
-                    aimbotCircle.Color = Color3.fromRGB(255, 255, 255)
-                end
-            end
+    if antiAFKEnabled then
+        connections.antiAFK = Players.LocalPlayer.Idled:Connect(function()
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton2(Vector2.new())
         end)
-        consoleLog("🎯 Aimbot: ENABLED", Color3.fromRGB(0, 255, 0))
     else
-        if connections.aimbot then
-            connections.aimbot:Disconnect()
+        if connections.antiAFK then
+            connections.antiAFK:Disconnect()
         end
-        consoleLog("🎯 Aimbot: DISABLED", Color3.fromRGB(255, 0, 0))
     end
     
-    SendWebhook("🎯 Aimbot: " .. tostring(aimbotEnabled))
-    Notify("ARUSCRIPT V5", "Aimbot: " .. tostring(aimbotEnabled))
+    Notify("ARUSCRIPT V5", "Anti-AFK: " .. tostring(antiAFKEnabled))
 end
 
--- TRIGGERBOT
-local function toggleTriggerbot()
-    triggerbotEnabled = not triggerbotEnabled
-    triggerbotBtn.Text = triggerbotEnabled and "⟨ DISABLE TRIGGERBOT ⟩" or "⟨ TRIGGERBOT ⟩"
-    
-    if triggerbotEnabled then
-        connections.triggerbot = RunService.RenderStepped:Connect(function()
-            if not triggerbotEnabled then return end
-            
-            local mouse = Mouse
-            local target = mouse.Target
-            
-            if target and target.Parent then
-                local humanoid = target.Parent:FindFirstChild("Humanoid")
-                if humanoid and humanoid.Health > 0 then
-                    local targetPlayer = Players:GetPlayerFromCharacter(target.Parent)
-                    if targetPlayer and targetPlayer ~= LocalPlayer then
-                        mouse1click()
-                    end
-                end
-            end
-        end)
-        consoleLog("🔫 Triggerbot: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.triggerbot then
-            connections.triggerbot:Disconnect()
-        end
-        consoleLog("🔫 Triggerbot: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Triggerbot: " .. tostring(triggerbotEnabled))
-end
-
--- SILENT AIM
-local function toggleSilentAim()
-    silentAimEnabled = not silentAimEnabled
-    silentAimBtn.Text = silentAimEnabled and "⟨ DISABLE SILENT AIM ⟩" or "⟨ SILENT AIM ⟩"
-    
-    if silentAimEnabled then
-        connections.silentAim = RunService.RenderStepped:Connect(function()
-            if not silentAimEnabled then return end
-            
-            local target = getClosestPlayer()
-            if target and target.Character then
-                local targetPart = getAimbotTargetPart(target)
-                if targetPart then
-                    Mouse.Hit = CFrame.new(Mouse.Hit.Position, targetPart.Position)
-                end
-            end
-        end)
-        consoleLog("🤫 Silent Aim: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.silentAim then
-            connections.silentAim:Disconnect()
-        end
-        consoleLog("🤫 Silent Aim: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Silent Aim: " .. tostring(silentAimEnabled))
-end
-
--- KILLAURA
-local function toggleKillaura()
-    killauraEnabled = not killauraEnabled
-    killauraBtn.Text = killauraEnabled and "⟨ DISABLE KILLAURA ⟩" or "⟨ KILLAURA ⟩"
-    
-    if killauraEnabled then
-        connections.killaura = RunService.Heartbeat:Connect(function()
-            if not killauraEnabled then return end
-            
-            local char = GetCharacter()
-            if not char then return end
-            
-            local hrp = char:FindFirstChild("HumanoidRootPart")
-            if not hrp then return end
-            
-            for _, targetPlayer in pairs(Players:GetPlayers()) do
-                if targetPlayer ~= LocalPlayer and targetPlayer.Character then
-                    local targetRoot = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-                    local targetHumanoid = targetPlayer.Character:FindFirstChild("Humanoid")
-                    
-                    if targetRoot and targetHumanoid and targetHumanoid.Health > 0 then
-                        local distance = (hrp.Position - targetRoot.Position).Magnitude
-                        
-                        if distance <= killauraRange then
-                            -- Атака ближайшего игрока
-                            local tool = char:FindFirstChildOfClass("Tool")
-                            if tool then
-                                tool:Activate()
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-        consoleLog("⚔️ Killaura: ENABLED (Range: " .. killauraRange .. ")", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.killaura then
-            connections.killaura:Disconnect()
-        end
-        consoleLog("⚔️ Killaura: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Killaura: " .. tostring(killauraEnabled))
-end
-
--- HITBOX EXPANDER
-local function toggleHitboxExpander()
-    hitboxExpanderEnabled = not hitboxExpanderEnabled
-    hitboxExpanderBtn.Text = hitboxExpanderEnabled and "⟨ DISABLE HITBOX ⟩" or "⟨ HITBOX EXPANDER ⟩"
-    
-    if hitboxExpanderEnabled then
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character then
-                for _, part in pairs(player.Character:GetChildren()) do
-                    if part:IsA("BasePart") then
-                        part.Size = part.Size + Vector3.new(hitboxSize, hitboxSize, hitboxSize)
-                    end
-                end
-            end
-        end
-        consoleLog("📦 Hitbox Expander: ENABLED (Size: " .. hitboxSize .. ")", Color3.fromRGB(0, 255, 0))
-    else
-        -- Восстановление размеров хитбоксов
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character then
-                for _, part in pairs(player.Character:GetChildren()) do
-                    if part:IsA("BasePart") then
-                        if originalCharacterValues[part] then
-                            part.Size = originalCharacterValues[part]
-                        end
-                    end
-                end
-            end
-        end
-        consoleLog("📦 Hitbox Expander: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Hitbox Expander: " .. tostring(hitboxExpanderEnabled))
-end
-
--- REACH EXTENDER
-local function toggleReach()
-    reachEnabled = not reachEnabled
-    reachBtn.Text = reachEnabled and "⟨ DISABLE REACH ⟩" or "⟨ REACH EXTENDER ⟩"
-    
-    if reachEnabled then
-        connections.reach = RunService.Heartbeat:Connect(function()
-            if not reachEnabled then return end
-            
-            local char = GetCharacter()
-            if not char then return end
-            
-            local tool = char:FindFirstChildOfClass("Tool")
-            if tool and tool:FindFirstChild("Handle") then
-                local handle = tool.Handle
-                
-                for _, player in pairs(Players:GetPlayers()) do
-                    if player ~= LocalPlayer and player.Character then
-                        local targetRoot = player.Character:FindFirstChild("HumanoidRootPart")
-                        if targetRoot then
-                            local distance = (handle.Position - targetRoot.Position).Magnitude
-                            if distance <= reachDistance then
-                                -- Обнаружен враг в пределах reach
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-        consoleLog("🔗 Reach: ENABLED (Distance: " .. reachDistance .. ")", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.reach then
-            connections.reach:Disconnect()
-        end
-        consoleLog("🔗 Reach: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Reach: " .. tostring(reachEnabled))
-end
-
--- FAST PUNCH
-local function toggleFastPunch()
-    fastPunchEnabled = not fastPunchEnabled
-    fastPunchBtn.Text = fastPunchEnabled and "⟨ DISABLE FAST PUNCH ⟩" or "⟨ FAST PUNCH ⟩"
-    
-    if fastPunchEnabled then
-        connections.fastPunch = RunService.Heartbeat:Connect(function()
-            if not fastPunchEnabled then return end
-            
-            local char = GetCharacter()
-            if char then
-                local tool = char:FindFirstChildOfClass("Tool")
-                if tool and tool.Name:lower():find("punch") or tool.Name:lower():find("fist") then
-                    if Mouse.Button1Down then
-                        tool:Activate()
-                        tool:Activate()
-                    end
-                end
-            end
-        end)
-        consoleLog("👊 Fast Punch: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.fastPunch then
-            connections.fastPunch:Disconnect()
-        end
-        consoleLog("👊 Fast Punch: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Fast Punch: " .. tostring(fastPunchEnabled))
-end
-
--- AUTO BLOCK
-local function toggleAutoBlock()
-    autoBlockEnabled = not autoBlockEnabled
-    autoBlockBtn.Text = autoBlockEnabled and "⟨ DISABLE AUTO BLOCK ⟩" or "⟨ AUTO BLOCK ⟩"
-    
-    if autoBlockEnabled then
-        connections.autoBlock = RunService.Heartbeat:Connect(function()
-            if not autoBlockEnabled then return end
-            
-            local char = GetCharacter()
-            if char then
-                local tool = char:FindFirstChildOfClass("Tool")
-                if tool and tool:FindFirstChild("Handle") then
-                    -- Автоматически блокируем атаки
-                    for _, player in pairs(Players:GetPlayers()) do
-                        if player ~= LocalPlayer and player.Character then
-                            local targetRoot = player.Character:FindFirstChild("HumanoidRootPart")
-                            if targetRoot then
-                                local distance = (char:FindFirstChild("HumanoidRootPart").Position - targetRoot.Position).Magnitude
-                                if distance < 25 then
-                                    if tool:FindFirstChild("Block") or tool.Name:lower():find("shield") then
-                                        tool:Activate()
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-        consoleLog("🛡️ Auto Block: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.autoBlock then
-            connections.autoBlock:Disconnect()
-        end
-        consoleLog("🛡️ Auto Block: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Auto Block: " .. tostring(autoBlockEnabled))
-end
-
--- AUTO PARRY
-local function toggleAutoParry()
-    autoParryEnabled = not autoParryEnabled
-    autoParryBtn.Text = autoParryEnabled and "⟨ DISABLE AUTO PARRY ⟩" or "⟨ AUTO PARRY ⟩"
-    
-    if autoParryEnabled then
-        connections.autoParry = RunService.Heartbeat:Connect(function()
-            if not autoParryEnabled then return end
-            
-            local char = GetCharacter()
-            if char then
-                local tool = char:FindFirstChildOfClass("Tool")
-                if tool then
-                    -- Парируем атаки противников
-                    for _, player in pairs(Players:GetPlayers()) do
-                        if player ~= LocalPlayer and player.Character then
-                            local targetHumanoid = player.Character:FindFirstChild("Humanoid")
-                            if targetHumanoid and targetHumanoid.Health > 0 then
-                                if tool:FindFirstChild("Parry") or tool.Name:lower():find("sword") then
-                                    tool:Activate()
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-        consoleLog("⚔️ Auto Parry: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.autoParry then
-            connections.autoParry:Disconnect()
-        end
-        consoleLog("⚔️ Auto Parry: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Auto Parry: " .. tostring(autoParryEnabled))
-end
-
--- ANTI KNOCKBACK
-local function toggleAntiKnockback()
-    antiKnockbackEnabled = not antiKnockbackEnabled
-    antiKnockbackBtn.Text = antiKnockbackEnabled and "⟨ DISABLE ANTI KB ⟩" or "⟨ ANTI KNOCKBACK ⟩"
-    
-    if antiKnockbackEnabled then
-        connections.antiKB = RunService.Heartbeat:Connect(function()
-            if not antiKnockbackEnabled then return end
-            
-            local char = GetCharacter()
-            if char then
-                local hrp = char:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    hrp.CanCollide = true
-                    -- Противодействуем knockback эффектам
-                    if hrp.AssemblyLinearVelocity.Magnitude > 100 then
-                        hrp.AssemblyLinearVelocity = hrp.AssemblyLinearVelocity * 0.5
-                    end
-                end
-            end
-        end)
-        consoleLog("💪 Anti Knockback: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.antiKB then
-            connections.antiKB:Disconnect()
-        end
-        consoleLog("💪 Anti Knockback: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Anti Knockback: " .. tostring(antiKnockbackEnabled))
-end
-
--- CRITICAL HITS
-local function toggleCriticalHits()
-    criticalHitsEnabled = not criticalHitsEnabled
-    criticalHitsBtn.Text = criticalHitsEnabled and "⟨ DISABLE CRIT HITS ⟩" or "⟨ CRITICAL HITS ⟩"
-    
-    if criticalHitsEnabled then
-        connections.critHits = RunService.Heartbeat:Connect(function()
-            if not criticalHitsEnabled then return end
-            
-            local char = GetCharacter()
-            if char then
-                local tool = char:FindFirstChildOfClass("Tool")
-                if tool and tool:FindFirstChild("Handle") then
-                    local handle = tool.Handle
-                    
-                    for _, player in pairs(Players:GetPlayers()) do
-                        if player ~= LocalPlayer and player.Character then
-                            local targetHead = player.Character:FindFirstChild("Head")
-                            if targetHead then
-                                local distance = (handle.Position - targetHead.Position).Magnitude
-                                if distance < 10 then
-                                    -- Критический удар в голову
-                                    if Mouse.Button1Down then
-                                        tool:Activate()
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-        consoleLog("💥 Critical Hits: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.critHits then
-            connections.critHits:Disconnect()
-        end
-        consoleLog("💥 Critical Hits: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Critical Hits: " .. tostring(criticalHitsEnabled))
-end
-
--- AUTO HEAL
-local function toggleAutoHeal()
-    autoHealEnabled = not autoHealEnabled
-    autoHealBtn.Text = autoHealEnabled and "⟨ DISABLE AUTO HEAL ⟩" or "⟨ AUTO HEAL ⟩"
-    
-    if autoHealEnabled then
-        connections.autoHeal = RunService.Heartbeat:Connect(function()
-            if not autoHealEnabled then return end
-            
-            local char = GetCharacter()
-            if char then
-                local humanoid = char:FindFirstChild("Humanoid")
-                if humanoid and humanoid.Health < humanoid.MaxHealth * 0.3 then
-                    -- Используем предмет для лечения (зелье, еда и т.д.)
-                    for _, item in pairs(char:GetChildren()) do
-                        if item:IsA("Tool") and (item.Name:lower():find("heal") or item.Name:lower():find("potion")) then
-                            item:Activate()
-                            break
-                        end
-                    end
-                end
-            end
-        end)
-        consoleLog("🏥 Auto Heal: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.autoHeal then
-            connections.autoHeal:Disconnect()
-        end
-        consoleLog("🏥 Auto Heal: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Auto Heal: " .. tostring(autoHealEnabled))
-end
-
--- RAPID FIRE
-local function toggleRapidFire()
-    rapidFireEnabled = not rapidFireEnabled
-    rapidFireBtn.Text = rapidFireEnabled and "⟨ DISABLE RAPID FIRE ⟩" or "⟨ RAPID FIRE ⟩"
-    
-    if rapidFireEnabled then
-        connections.rapidFire = RunService.Heartbeat:Connect(function()
-            if not rapidFireEnabled then return end
-            
-            local char = GetCharacter()
-            if char then
-                local tool = char:FindFirstChildOfClass("Tool")
-                if tool and (tool.Name:lower():find("gun") or tool.Name:lower():find("blaster")) then
-                    if Mouse.Button1Down then
-                        tool:Activate()
-                        wait(0.05)
-                    end
-                end
-            end
-        end)
-        consoleLog("🔫 Rapid Fire: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.rapidFire then
-            connections.rapidFire:Disconnect()
-        end
-        consoleLog("🔫 Rapid Fire: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Rapid Fire: " .. tostring(rapidFireEnabled))
-end
-
--- NO RECOIL
-local function toggleNoRecoil()
-    noRecoilEnabled = not noRecoilEnabled
-    noRecoilBtn.Text = noRecoilEnabled and "⟨ DISABLE NO RECOIL ⟩" or "⟨ NO RECOIL ⟩"
-    
-    if noRecoilEnabled then
-        connections.noRecoil = RunService.Heartbeat:Connect(function()
-            if not noRecoilEnabled then return end
-            
-            local char = GetCharacter()
-            if char then
-                local tool = char:FindFirstChildOfClass("Tool")
-                if tool and tool:FindFirstChild("Handle") then
-                    -- Отменяем эффекты отдачи
-                    local handle = tool.Handle
-                    if handle:FindFirstChild("BodyGyro") then
-                        handle:FindFirstChild("BodyGyro"):Destroy()
-                    end
-                end
-            end
-        end)
-        consoleLog("🎯 No Recoil: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.noRecoil then
-            connections.noRecoil:Disconnect()
-        end
-        consoleLog("🎯 No Recoil: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "No Recoil: " .. tostring(noRecoilEnabled))
-end
-
--- NO SPREAD
-local function toggleNoSpread()
-    noSpreadEnabled = not noSpreadEnabled
-    noSpreadBtn.Text = noSpreadEnabled and "⟨ DISABLE NO SPREAD ⟩" or "⟨ NO SPREAD ⟩"
-    
-    if noSpreadEnabled then
-        connections.noSpread = RunService.Heartbeat:Connect(function()
-            if not noSpreadEnabled then return end
-            
-            local char = GetCharacter()
-            if char then
-                local tool = char:FindFirstChildOfClass("Tool")
-                if tool then
-                    -- Точная стрельба без разброса
-                    if Mouse.Button1Down then
-                        tool:Activate()
-                    end
-                end
-            end
-        end)
-        consoleLog("🎯 No Spread: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.noSpread then
-            connections.noSpread:Disconnect()
-        end
-        consoleLog("🎯 No Spread: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "No Spread: " .. tostring(noSpreadEnabled))
-end
-
--- WALLBANG
-local function toggleWallbang()
-    wallbangEnabled = not wallbangEnabled
-    wallbangBtn.Text = wallbangEnabled and "⟨ DISABLE WALLBANG ⟩" or "⟨ WALLBANG ⟩"
-    
-    if wallbangEnabled then
-        connections.wallbang = RunService.Heartbeat:Connect(function()
-            if not wallbangEnabled then return end
-            
-            -- Отключаем коллизию снарядов со стенами
-            for _, obj in pairs(workspace:GetDescendants()) do
-                if obj:IsA("BasePart") and obj.Name:lower():find("bullet") or obj.Name:lower():find("projectile") then
-                    obj.CanCollide = false
-                end
-            end
-        end)
-        consoleLog("💥 Wallbang: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.wallbang then
-            connections.wallbang:Disconnect()
-        end
-        consoleLog("💥 Wallbang: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Wallbang: " .. tostring(wallbangEnabled))
-end
-
--- ============== РАДАР СИСТЕМА ==============
-
-local function createRadar()
-    radarFrame = Instance.new("Frame")
-    radarFrame.Name = "Radar"
-    radarFrame.Size = UDim2.new(0, 220, 0, 220)
-    radarFrame.Position = UDim2.new(1, -240, 0, 20)
-    radarFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    radarFrame.BackgroundTransparency = 0.3
-    radarFrame.BorderSizePixel = 0
-    radarFrame.Visible = false
-    radarFrame.Parent = screenGui
-    radarFrame.ZIndex = 5
-    
-    local radarCorner = Instance.new("UICorner")
-    radarCorner.CornerRadius = UDim.new(1, 0)
-    radarCorner.Parent = radarFrame
-    
-    local radarStroke = Instance.new("UIStroke")
-    radarStroke.Color = Color3.fromRGB(255, 0, 0)
-    radarStroke.Thickness = 3
-    radarStroke.Parent = radarFrame
-    
-    spawn(function()
-        while wait(0.01) do
-            if radarFrame and radarFrame.Visible and rainbowEnabled then
-                pcall(function()
-                    radarStroke.Color = getRainbowColor()
-                end)
-            end
-        end
-    end)
-    
-    local centerDot = Instance.new("Frame")
-    centerDot.Size = UDim2.new(0, 8, 0, 8)
-    centerDot.Position = UDim2.new(0.5, -4, 0.5, -4)
-    centerDot.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-    centerDot.BorderSizePixel = 0
-    centerDot.Parent = radarFrame
-    centerDot.ZIndex = 6
-    
-    local centerCorner = Instance.new("UICorner")
-    centerCorner.CornerRadius = UDim.new(1, 0)
-    centerCorner.Parent = centerDot
-    
-    local radarLabel = Instance.new("TextLabel")
-    radarLabel.Size = UDim2.new(1, 0, 0, 25)
-    radarLabel.Position = UDim2.new(0, 0, 0, -30)
-    radarLabel.Text = "⟨ RADAR ⟩"
-    radarLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    radarLabel.Font = Enum.Font.Code
-    radarLabel.TextSize = 16
-    radarLabel.BackgroundTransparency = 1
-    radarLabel.Parent = radarFrame
-    radarLabel.ZIndex = 6
-end
-
-local function toggleRadar()
-    radarEnabled = not radarEnabled
-    radarBtn.Text = radarEnabled and "⟨ DISABLE RADAR ⟩" or "⟨ RADAR ⟩"
-    
-    if not radarFrame then
-        createRadar()
-    end
-    
-    radarFrame.Visible = radarEnabled
-    
-    if radarEnabled then
-        connections.radar = RunService.RenderStepped:Connect(function()
-            if not radarEnabled or not radarFrame.Visible then return end
-            
-            for _, dot in pairs(radarDots) do
-                if dot and dot.Parent then
-                    dot:Destroy()
-                end
-            end
-            radarDots = {}
-            
-            local char = GetCharacter()
-            if not char then return end
-            
-            local hrp = char:FindFirstChild("HumanoidRootPart")
-            if not hrp then return end
-            
-            for _, targetPlayer in pairs(Players:GetPlayers()) do
-                if targetPlayer ~= LocalPlayer and targetPlayer.Character then
-                    local targetRoot = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-                    if targetRoot then
-                        local distance = (hrp.Position - targetRoot.Position)
-                        local scale = 100
-                        
-                        if distance.Magnitude <= 500 then
-                            local dot = Instance.new("Frame")
-                            dot.Size = UDim2.new(0, 6, 0, 6)
-                            dot.Position = UDim2.new(0.5, distance.X / scale, 0.5, distance.Z / scale)
-                            dot.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-                            dot.BorderSizePixel = 0
-                            dot.Parent = radarFrame
-                            dot.ZIndex = 6
-                            
-                            local dotCorner = Instance.new("UICorner")
-                            dotCorner.CornerRadius = UDim.new(1, 0)
-                            dotCorner.Parent = dot
-                            
-                            table.insert(radarDots, dot)
-                        end
-                    end
-                end
-            end
-        end)
-        consoleLog("📡 Radar: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.radar then
-            connections.radar:Disconnect()
-        end
-        consoleLog("📡 Radar: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Radar: " .. tostring(radarEnabled))
-end
-
--- FOV CHANGER
-local function toggleFOVChanger()
-    fovChangerEnabled = not fovChangerEnabled
-    fovChangerBtn.Text = fovChangerEnabled and "⟨ DISABLE FOV ⟩" or "⟨ FOV CHANGER ⟩"
-    
-    local camera = Camera
-    
-    if fovChangerEnabled then
-        originalFOV = camera.FieldOfView
-        camera.FieldOfView = newFOV
-        consoleLog("👁️ FOV set to: " .. newFOV, Color3.fromRGB(0, 255, 0))
-    else
-        camera.FieldOfView = originalFOV
-        consoleLog("👁️ FOV reset to: " .. originalFOV, Color3.fromRGB(0, 255, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "FOV Changer: " .. tostring(fovChangerEnabled))
-end
-
-print("╔════════════════════════════════════════════════════════╗")
-print("║        ARUSCRIPT V5 - ЧАСТЬ 7 ЗАГРУЖЕНА               ║")
-print("║        Aimbot и Combat система готовы                  ║")
-print("║        Файл: 2000+ строк                               ║")
-print("╚════════════════════════════════════════════════════════╝")
-
--- ============== ВИЗУАЛЬНЫЕ ЭФФЕКТЫ ==============
-
--- ESP TRACERS
-local function toggleESPTracers()
-    espTracersEnabled = not espTracersEnabled
-    espTracersBtn.Text = espTracersEnabled and "⟨ DISABLE TRACERS ⟩" or "⟨ ESP TRACERS ⟩"
-    
-    if espTracersEnabled then
-        connections.tracers = RunService.RenderStepped:Connect(function()
-            if not espTracersEnabled then return end
-            
-            local char = GetCharacter()
-            if not char then return end
-            
-            local hrp = char:FindFirstChild("HumanoidRootPart")
-            if not hrp then return end
-            
-            for _, targetPlayer in pairs(Players:GetPlayers()) do
-                if targetPlayer ~= LocalPlayer and targetPlayer.Character then
-                    local targetRoot = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-                    if targetRoot then
-                        local distance = (hrp.Position - targetRoot.Position).Magnitude
-                        
-                        if distance <= 500 then
-                            -- Рисуем линию от вас к игроку
-                            local line = Drawing.new("Line")
-                            line.From = Vector2.new(
-                                Camera:WorldToViewportPoint(hrp.Position).X,
-                                Camera:WorldToViewportPoint(hrp.Position).Y
-                            )
-                            line.To = Vector2.new(
-                                Camera:WorldToViewportPoint(targetRoot.Position).X,
-                                Camera:WorldToViewportPoint(targetRoot.Position).Y
-                            )
-                            line.Color = espColor
-                            line.Thickness = 2
-                            line.Transparency = 0.7
-                            line.Visible = true
-                            
-                            -- Удаляем линию в следующем кадре
-                            task.wait()
-                            line:Remove()
-                        end
-                    end
-                end
-            end
-        end)
-        consoleLog("📍 ESP Tracers: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.tracers then
-            connections.tracers:Disconnect()
-        end
-        consoleLog("📍 ESP Tracers: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "ESP Tracers: " .. tostring(espTracersEnabled))
-end
-
--- ESP CHAMS (Ескиз противников)
-local function toggleESPChams()
-    espChamsEnabled = not espChamsEnabled
-    espChamsBtn.Text = espChamsEnabled and "⟨ DISABLE CHAMS ⟩" or "⟨ ESP CHAMS ⟩"
-    
-    if espChamsEnabled then
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character then
-                for _, part in pairs(player.Character:GetDescendants()) do
-                    if part:IsA("BasePart") and not part.Parent:FindFirstChild("Humanoid") then
-                        if not part:FindFirstChild("ChamsSurface") then
-                            local surface = Instance.new("SurfaceGui")
-                            surface.Name = "ChamsSurface"
-                            surface.Parent = part
-                            surface.Face = Enum.NormalId.Front
-                            
-                            local frame = Instance.new("Frame")
-                            frame.Size = UDim2.new(1, 0, 1, 0)
-                            frame.BackgroundColor3 = espColor
-                            frame.BackgroundTransparency = 0.5
-                            frame.BorderSizePixel = 0
-                            frame.Parent = surface
-                        end
-                    end
-                end
-            end
-        end
-        consoleLog("👻 ESP Chams: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character then
-                for _, part in pairs(player.Character:GetDescendants()) do
-                    if part:FindFirstChild("ChamsSurface") then
-                        part:FindFirstChild("ChamsSurface"):Destroy()
-                    end
-                end
-            end
-        end
-        consoleLog("👻 ESP Chams: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "ESP Chams: " .. tostring(espChamsEnabled))
-end
-
--- ESP NAMES
-local function toggleESPNames()
-    espNamesEnabled = not espNamesEnabled
-    espNamesBtn.Text = espNamesEnabled and "⟨ DISABLE NAMES ⟩" or "⟨ ESP NAMES ⟩"
-    
-    if espNamesEnabled then
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character then
-                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                if hrp and not hrp:FindFirstChild("ESPNameLabel") then
-                    local billboard = Instance.new("BillboardGui")
-                    billboard.Name = "ESPNameLabel"
-                    billboard.Size = UDim2.new(4, 0, 2, 0)
-                    billboard.MaxDistance = 500
-                    billboard.Adornee = hrp
-                    billboard.Parent = hrp
-                    
-                    local textLabel = Instance.new("TextLabel")
-                    textLabel.BackgroundTransparency = 1
-                    textLabel.Size = UDim2.new(1, 0, 1, 0)
-                    textLabel.TextColor3 = espColor
-                    textLabel.TextSize = 18
-                    textLabel.TextScaled = true
-                    textLabel.Text = player.Name
-                    textLabel.Font = Enum.Font.Code
-                    textLabel.Parent = billboard
-                end
-            end
-        end
-        consoleLog("📛 ESP Names: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character then
-                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                if hrp and hrp:FindFirstChild("ESPNameLabel") then
-                    hrp:FindFirstChild("ESPNameLabel"):Destroy()
-                end
-            end
-        end
-        consoleLog("📛 ESP Names: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "ESP Names: " .. tostring(espNamesEnabled))
-end
-
--- ESP DISTANCE
-local function toggleESPDistance()
-    espDistanceEnabled = not espDistanceEnabled
-    espDistanceBtn.Text = espDistanceEnabled and "⟨ DISABLE DISTANCE ⟩" or "⟨ ESP DISTANCE ⟩"
-    
-    if espDistanceEnabled then
-        connections.espDistance = RunService.RenderStepped:Connect(function()
-            if not espDistanceEnabled then return end
-            
-            local char = GetCharacter()
-            if not char then return end
-            
-            local hrp = char:FindFirstChild("HumanoidRootPart")
-            if not hrp then return end
-            
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer and player.Character then
-                    local targetRoot = player.Character:FindFirstChild("HumanoidRootPart")
-                    if targetRoot then
-                        if not targetRoot:FindFirstChild("DistanceLabel") then
-                            local billboard = Instance.new("BillboardGui")
-                            billboard.Name = "DistanceLabel"
-                            billboard.Size = UDim2.new(4, 0, 2, 0)
-                            billboard.MaxDistance = 500
-                            billboard.Adornee = targetRoot
-                            billboard.Parent = targetRoot
-                            
-                            local textLabel = Instance.new("TextLabel")
-                            textLabel.BackgroundTransparency = 1
-                            textLabel.Size = UDim2.new(1, 0, 1, 0)
-                            textLabel.TextColor3 = espColor
-                            textLabel.TextSize = 14
-                            textLabel.TextScaled = true
-                            textLabel.Font = Enum.Font.Code
-                            textLabel.Parent = billboard
-                        end
-                        
-                        local distanceLabel = targetRoot:FindFirstChild("DistanceLabel")
-                        if distanceLabel then
-                            local distance = (hrp.Position - targetRoot.Position).Magnitude
-                            distanceLabel:FindFirstChildOfClass("TextLabel").Text = math.floor(distance) .. " Studs"
-                        end
-                    end
-                end
-            end
-        end)
-        consoleLog("📏 ESP Distance: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.espDistance then
-            connections.espDistance:Disconnect()
-        end
-        
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character then
-                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                if hrp and hrp:FindFirstChild("DistanceLabel") then
-                    hrp:FindFirstChild("DistanceLabel"):Destroy()
-                end
-            end
-        end
-        consoleLog("📏 ESP Distance: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "ESP Distance: " .. tostring(espDistanceEnabled))
-end
-
--- ESP HEALTH
-local function toggleESPHealth()
-    espHealthEnabled = not espHealthEnabled
-    espHealthBtn.Text = espHealthEnabled and "⟨ DISABLE HEALTH ⟩" or "⟨ ESP HEALTH ⟩"
-    
-    if espHealthEnabled then
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character then
-                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                local humanoid = player.Character:FindFirstChild("Humanoid")
-                
-                if hrp and humanoid and not hrp:FindFirstChild("HealthLabel") then
-                    local billboard = Instance.new("BillboardGui")
-                    billboard.Name = "HealthLabel"
-                    billboard.Size = UDim2.new(4, 0, 2, 0)
-                    billboard.MaxDistance = 500
-                    billboard.Adornee = hrp
-                    billboard.Parent = hrp
-                    
-                    local textLabel = Instance.new("TextLabel")
-                    textLabel.BackgroundTransparency = 1
-                    textLabel.Size = UDim2.new(1, 0, 1, 0)
-                    textLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-                    textLabel.TextSize = 14
-                    textLabel.TextScaled = true
-                    textLabel.Text = "HP: " .. math.floor(humanoid.Health) .. "/" .. math.floor(humanoid.MaxHealth)
-                    textLabel.Font = Enum.Font.Code
-                    textLabel.Parent = billboard
-                end
-            end
-        end
-        consoleLog("❤️ ESP Health: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character then
-                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                if hrp and hrp:FindFirstChild("HealthLabel") then
-                    hrp:FindFirstChild("HealthLabel"):Destroy()
-                end
-            end
-        end
-        consoleLog("❤️ ESP Health: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "ESP Health: " .. tostring(espHealthEnabled))
-end
-
--- ESP SKELETONS
-local function toggleESPSkeletons()
-    espSkeletonsEnabled = not espSkeletonsEnabled
-    espSkeletonsBtn.Text = espSkeletonsEnabled and "⟨ DISABLE SKELETONS ⟩" or "⟨ ESP SKELETONS ⟩"
-    
-    if espSkeletonsEnabled then
-        connections.skeletons = RunService.RenderStepped:Connect(function()
-            if not espSkeletonsEnabled then return end
-            
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer and player.Character then
-                    local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
-                    if humanoidRootPart then
-                        -- Рисуем скелет соединением костей
-                        local bones = {
-                            {"Head", "Torso"},
-                            {"Torso", "Left Arm"},
-                            {"Torso", "Right Arm"},
-                            {"Torso", "Left Leg"},
-                            {"Torso", "Right Leg"}
-                        }
-                        
-                        for _, bone in pairs(bones) do
-                            local part1 = player.Character:FindFirstChild(bone[1])
-                            local part2 = player.Character:FindFirstChild(bone[2])
-                            
-                            if part1 and part2 then
-                                local line = Drawing.new("Line")
-                                line.From = Vector2.new(
-                                    Camera:WorldToViewportPoint(part1.Position).X,
-                                    Camera:WorldToViewportPoint(part1.Position).Y
-                                )
-                                line.To = Vector2.new(
-                                    Camera:WorldToViewportPoint(part2.Position).X,
-                                    Camera:WorldToViewportPoint(part2.Position).Y
-                                )
-                                line.Color = espColor
-                                line.Thickness = 1
-                                line.Transparency = 0.8
-                                line.Visible = true
-                                
-                                task.wait()
-                                line:Remove()
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-        consoleLog("💀 ESP Skeletons: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.skeletons then
-            connections.skeletons:Disconnect()
-        end
-        consoleLog("💀 ESP Skeletons: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "ESP Skeletons: " .. tostring(espSkeletonsEnabled))
-end
-
--- ESP HEAD DOTS
-local function toggleESPHeadDots()
-    espHeadDotsEnabled = not espHeadDotsEnabled
-    espHeadDotsBtn.Text = espHeadDotsEnabled and "⟨ DISABLE HEAD DOTS ⟩" or "⟨ ESP HEAD DOTS ⟩"
-    
-    if espHeadDotsEnabled then
-        connections.headDots = RunService.RenderStepped:Connect(function()
-            if not espHeadDotsEnabled then return end
-            
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer and player.Character then
-                    local head = player.Character:FindFirstChild("Head")
-                    if head then
-                        local circle = Drawing.new("Circle")
-                        local screenPos = Camera:WorldToViewportPoint(head.Position)
-                        circle.Position = Vector2.new(screenPos.X, screenPos.Y)
-                        circle.Radius = 5
-                        circle.Color = espColor
-                        circle.Thickness = 2
-                        circle.Filled = false
-                        circle.Transparency = 0.7
-                        circle.Visible = true
-                        
-                        task.wait()
-                        circle:Remove()
-                    end
-                end
-            end
-        end)
-        consoleLog("⭕ ESP Head Dots: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.headDots then
-            connections.headDots:Disconnect()
-        end
-        consoleLog("⭕ ESP Head Dots: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "ESP Head Dots: " .. tostring(espHeadDotsEnabled))
-end
-
--- NO FOG
-local function toggleNoFog()
-    noFogEnabled = not noFogEnabled
-    noFogBtn.Text = noFogEnabled and "⟨ DISABLE NO FOG ⟩" or "⟨ NO FOG ⟩"
-    
-    if noFogEnabled then
-        Lighting.FogEnd = 1000000
-        consoleLog("🌫️ No Fog: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        Lighting.FogEnd = 100000
-        consoleLog("🌫️ No Fog: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "No Fog: " .. tostring(noFogEnabled))
-end
-
--- THIRD PERSON
-local function toggleThirdPerson()
-    thirdPersonEnabled = not thirdPersonEnabled
-    thirdPersonBtn.Text = thirdPersonEnabled and "⟨ DISABLE 3RD PERSON ⟩" or "⟨ THIRD PERSON ⟩"
-    
-    if thirdPersonEnabled then
-        connections.thirdPerson = RunService.RenderStepped:Connect(function()
-            if not thirdPersonEnabled then return end
-            
-            local char = GetCharacter()
-            if char then
-                local hrp = char:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    Camera.CFrame = CFrame.new(
-                        hrp.Position + hrp.CFrame.LookVector * thirdPersonDistance,
-                        hrp.Position
-                    )
-                end
-            end
-        end)
-        consoleLog("📷 Third Person: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.thirdPerson then
-            connections.thirdPerson:Disconnect()
-        end
-        consoleLog("📷 Third Person: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Third Person: " .. tostring(thirdPersonEnabled))
-end
-
--- RAINBOW SKY
-local function toggleRainbowSky()
-    rainbowSkyEnabled = not rainbowSkyEnabled
-    rainbowSkyBtn.Text = rainbowSkyEnabled and "⟨ DISABLE RAINBOW SKY ⟩" or "⟨ RAINBOW SKY ⟩"
-    
-    if rainbowSkyEnabled then
-        connections.rainbowSky = RunService.Heartbeat:Connect(function()
-            if not rainbowSkyEnabled then return end
-            
-            local skyColor = getRainbowColor()
-            Lighting.Ambient = skyColor
-            Lighting.OutdoorAmbient = skyColor
-        end)
-        consoleLog("🌈 Rainbow Sky: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.rainbowSky then
-            connections.rainbowSky:Disconnect()
-        end
-        Lighting.Ambient = Color3.fromRGB(128, 128, 128)
-        Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
-        consoleLog("🌈 Rainbow Sky: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Rainbow Sky: " .. tostring(rainbowSkyEnabled))
-end
-
--- ============== TELEPORTATION СИСТЕМА ==============
-
--- CLICK TP
-local function toggleClickTP()
-    clickTPEnabled = not clickTPEnabled
-    clickTPBtn.Text = clickTPEnabled and "⟨ DISABLE CLICK TP ⟩" or "⟨ CLICK TP ⟩"
-    
-    if clickTPEnabled then
-        Mouse.Button1Down:Connect(function()
-            if clickTPEnabled then
-                local targetPos = Mouse.Hit.Position
-                SafeTeleport(targetPos + Vector3.new(0, 3, 0))
-                consoleLog("📍 Teleported to clicked position", Color3.fromRGB(0, 255, 0))
-            end
-        end)
-        consoleLog("🖱️ Click TP: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        consoleLog("🖱️ Click TP: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Click TP: " .. tostring(clickTPEnabled))
-end
-
--- PLATFORM
-local function togglePlatform()
-    platformEnabled = not platformEnabled
-    platformBtn.Text = platformEnabled and "⟨ DISABLE PLATFORM ⟩" or "⟨ PLATFORM ⟩"
-    
-    if platformEnabled then
-        local char = GetCharacter()
-        if char then
-            local hrp = char:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                platformPart = Instance.new("Part")
-                platformPart.Name = "Platform"
-                platformPart.Shape = Enum.PartType.Block
-                platformPart.Material = Enum.Material.Neon
-                platformPart.Size = Vector3.new(6, 1, 6)
-                platformPart.Color = espColor
-                platformPart.CanCollide = true
-                platformPart.CFrame = hrp.CFrame - Vector3.new(0, 5, 0)
-                platformPart.TopSurface = Enum.SurfaceType.Smooth
-                platformPart.BottomSurface = Enum.SurfaceType.Smooth
-                platformPart.Parent = workspace
-                
-                connections.platform = RunService.Heartbeat:Connect(function()
-                    if platformEnabled and platformPart and platformPart.Parent then
-                        local char = GetCharacter()
-                        if char then
-                            local hrp = char:FindFirstChild("HumanoidRootPart")
-                            if hrp then
-                                platformPart.CFrame = hrp.CFrame - Vector3.new(0, 5, 0)
-                            end
-                        end
-                    end
-                end)
-                
-                consoleLog("🏗️ Platform: ENABLED", Color3.fromRGB(0, 255, 0))
-            end
-        end
-    else
-        if platformPart then
-            platformPart:Destroy()
-            platformPart = nil
-        end
-        if connections.platform then
-            connections.platform:Disconnect()
-        end
-        consoleLog("🏗️ Platform: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Platform: " .. tostring(platformEnabled))
-end
-
--- SAVE WAYPOINT
-local function saveWaypoint()
-    local char = GetCharacter()
-    if char then
-        local hrp = char:FindFirstChild("HumanoidRootPart")
-        if hrp then
-            local waypointName = waypointNameBox.Text
-            if waypointName == "" then
-                waypointName = "Waypoint_" .. #waypointsList + 1
-            end
-            
-            local waypoint = {
-                Name = waypointName,
-                Position = hrp.Position
-            }
-            
-            table.insert(waypointsList, waypoint)
-            Config.Waypoints = waypointsList
-            SaveConfig()
-            
-            consoleLog("📍 Waypoint saved: " .. waypointName, Color3.fromRGB(0, 255, 0))
-            Notify("ARUSCRIPT V5", "Waypoint Saved: " .. waypointName)
-            
-            waypointNameBox.Text = ""
-        end
-    end
-end
-
--- LOAD WAYPOINT
-local function loadWaypoint()
-    if #waypointsList > 0 then
-        local waypointName = waypointNameBox.Text
-        local selectedWaypoint = nil
-        
-        for _, waypoint in pairs(waypointsList) do
-            if waypoint.Name == waypointName then
-                selectedWaypoint = waypoint
-                break
-            end
-        end
-        
-        if selectedWaypoint then
-            SafeTeleport(selectedWaypoint.Position)
-            consoleLog("📍 Teleported to: " .. selectedWaypoint.Name, Color3.fromRGB(0, 255, 0))
-            Notify("ARUSCRIPT V5", "Teleported to: " .. selectedWaypoint.Name)
-        else
-            consoleLog("❌ Waypoint not found", Color3.fromRGB(255, 0, 0))
-        end
-    else
-        consoleLog("❌ No waypoints saved", Color3.fromRGB(255, 0, 0))
-    end
-end
-
--- TP TO PLAYER
-local function tpToPlayer()
-    local playerName = playerNameBox.Text
-    local targetPlayer = nil
-    
-    for _, player in pairs(Players:GetPlayers()) do
-        if player.Name:lower():find(playerName:lower()) then
-            targetPlayer = player
-            break
-        end
-    end
-    
-    if targetPlayer and targetPlayer.Character then
-        local targetRoot = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-        if targetRoot then
-            SafeTeleport(targetRoot.Position + Vector3.new(0, 3, 0))
-            consoleLog("📍 Teleported to " .. targetPlayer.Name, Color3.fromRGB(0, 255, 0))
-            Notify("ARUSCRIPT V5", "Teleported to: " .. targetPlayer.Name)
-        end
-    else
-        consoleLog("❌ Player not found", Color3.fromRGB(255, 0, 0))
-    end
-end
-
--- TP ALL TO YOU
-local function tpAllToYou()
-    local char = GetCharacter()
-    if char then
-        local hrp = char:FindFirstChild("HumanoidRootPart")
-        if hrp then
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer and player.Character then
-                    local targetRoot = player.Character:FindFirstChild("HumanoidRootPart")
-                    if targetRoot then
-                        targetRoot.CFrame = hrp.CFrame + Vector3.new(math.random(-5, 5), 0, math.random(-5, 5))
-                    end
-                end
-            end
-            consoleLog("📍 All players teleported to you", Color3.fromRGB(0, 255, 0))
-            Notify("ARUSCRIPT V5", "All players teleported!")
-        end
-    end
-end
-
--- BRING PLAYER
-local function bringPlayer()
-    local playerName = playerNameBox.Text
-    local targetPlayer = nil
-    
-    for _, player in pairs(Players:GetPlayers()) do
-        if player.Name:lower():find(playerName:lower()) then
-            targetPlayer = player
-            break
-        end
-    end
-    
-    if targetPlayer and targetPlayer.Character then
-        local targetRoot = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-        local myRoot = GetRootPart()
-        
-        if targetRoot and myRoot then
-            targetRoot.CFrame = myRoot.CFrame + Vector3.new(0, 3, 0)
-            consoleLog("📍 Brought " .. targetPlayer.Name .. " to you", Color3.fromRGB(0, 255, 0))
-            Notify("ARUSCRIPT V5", "Brought: " .. targetPlayer.Name)
-        end
-    else
-        consoleLog("❌ Player not found", Color3.fromRGB(255, 0, 0))
-    end
-end
-
--- ============== ДОПОЛНИТЕЛЬНЫЕ УТИЛИТЫ ==============
-
--- AUTO SPRINT
-local function toggleAutoSprint()
-    autoSprintEnabled = not autoSprintEnabled
-    autoSprintBtn.Text = autoSprintEnabled and "⟨ DISABLE AUTO SPRINT ⟩" or "⟨ AUTO SPRINT ⟩"
-    
-    if autoSprintEnabled then
-        connections.autoSprint = RunService.Heartbeat:Connect(function()
-            if not autoSprintEnabled then return end
-            
-            local char = GetCharacter()
-            if char then
-                local humanoid = char:FindFirstChild("Humanoid")
-                if humanoid then
-                    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                        humanoid:SetStateEnabled(Enum.HumanoidStateType.Sprinting, true)
-                    end
-                end
-            end
-        end)
-        consoleLog("🏃 Auto Sprint: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.autoSprint then
-            connections.autoSprint:Disconnect()
-        end
-        consoleLog("🏃 Auto Sprint: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Auto Sprint: " .. tostring(autoSprintEnabled))
-end
-
--- SWIM SPEED
-local function toggleSwimSpeed()
-    swimSpeedEnabled = not swimSpeedEnabled
-    swimSpeedBtn.Text = swimSpeedEnabled and "⟨ DISABLE SWIM SPEED ⟩" or "⟨ SWIM SPEED ⟩"
-    
-    if swimSpeedEnabled then
-        connections.swimSpeed = RunService.Heartbeat:Connect(function()
-            if not swimSpeedEnabled then return end
-            
-            local char = GetCharacter()
-            if char then
-                local hrp = char:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    -- Проверяем находимся ли в воде
-                    local terrain = workspace.Terrain
-                    local materials, sizes = terrain:FillBall(hrp.Position, 5)
-                    
-                    if #materials > 0 and materials[1] == Enum.Material.Water then
-                        local camera = Camera
-                        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                            hrp.Velocity = hrp.Velocity + camera.CFrame.LookVector * customSwimSpeed
-                        end
-                        if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-                            hrp.Velocity = hrp.Velocity - camera.CFrame.LookVector * customSwimSpeed
-                        end
-                    end
-                end
-            end
-        end)
-        consoleLog("🌊 Swim Speed: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.swimSpeed then
-            connections.swimSpeed:Disconnect()
-        end
-        consoleLog("🌊 Swim Speed: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Swim Speed: " .. tostring(swimSpeedEnabled))
-end
-
--- CLIMB SPEED
-local function toggleClimbSpeed()
-    climbSpeedEnabled = not climbSpeedEnabled
-    climbSpeedBtn.Text = climbSpeedEnabled and "⟨ DISABLE CLIMB SPEED ⟩" or "⟨ CLIMB SPEED ⟩"
-    
-    if climbSpeedEnabled then
-        connections.climbSpeed = RunService.Heartbeat:Connect(function()
-            if not climbSpeedEnabled then return end
-            
-            local char = GetCharacter()
-            if char then
-                local humanoid = char:FindFirstChild("Humanoid")
-                if humanoid then
-                    if humanoid:FindFirstChild("Climbing") or humanoid:GetState() == Enum.HumanoidStateType.Climbing then
-                        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                            local hrp = char:FindFirstChild("HumanoidRootPart")
-                            if hrp then
-                                hrp.Velocity = hrp.Velocity + Vector3.new(0, customClimbSpeed, 0)
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-        consoleLog("🧗 Climb Speed: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.climbSpeed then
-            connections.climbSpeed:Disconnect()
-        end
-        consoleLog("🧗 Climb Speed: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Climb Speed: " .. tostring(climbSpeedEnabled))
-end
-
--- CFRAME FLY (альтернативный режим полета)
-local function toggleCFrameFly()
-    cframeFlyEnabled = not cframeFlyEnabled
-    cframeFlyBtn.Text = cframeFlyEnabled and "⟨ DISABLE CFRAME FLY ⟩" or "⟨ CFRAME FLY ⟩"
-    
-    if cframeFlyEnabled then
-        local char = GetCharacter()
-        if char then
-            local hrp = char:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                connections.cframeFly = RunService.Heartbeat:Connect(function()
-                    if not cframeFlyEnabled then return end
-                    
-                    local camera = Camera
-                    local moveDir = Vector3.new(0, 0, 0)
-                    
-                    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                        moveDir = moveDir + camera.CFrame.LookVector * flySpeed2
-                    end
-                    if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-                        moveDir = moveDir - camera.CFrame.LookVector * flySpeed2
-                    end
-                    if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-                        moveDir = moveDir - camera.CFrame.RightVector * flySpeed2
-                    end
-                    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-                        moveDir = moveDir + camera.CFrame.RightVector * flySpeed2
-                    end
-                    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-                        moveDir = moveDir + Vector3.new(0, flySpeed2, 0)
-                    end
-                    if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
-                        moveDir = moveDir - Vector3.new(0, flySpeed2, 0)
-                    end
-                    
-                    hrp.CFrame = hrp.CFrame + moveDir
-                end)
-                
-                consoleLog("✈️ CFrame Fly: ENABLED", Color3.fromRGB(0, 255, 0))
-            end
-        end
-    else
-        if connections.cframeFly then
-            connections.cframeFly:Disconnect()
-        end
-        consoleLog("✈️ CFrame Fly: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "CFrame Fly: " .. tostring(cframeFlyEnabled))
-end
-
--- REMOVE BARRIERS
-local function removeBarriers()
-    for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("BasePart") and (obj.Name:lower():find("barrier") or obj.Name:lower():find("wall")) then
-            if not obj.Parent:FindFirstChild("Humanoid") then
-                obj.CanCollide = false
-                obj.Transparency = 0.5
-            end
-        end
-    end
-    consoleLog("🚫 Barriers removed/disabled", Color3.fromRGB(0, 255, 0))
-    Notify("ARUSCRIPT V5", "Barriers Removed!")
-end
-
--- REMOVE TEXTS
-local function removeTexts()
-    for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("TextLabel") or obj:IsA("TextBox") then
-            obj.Visible = false
-        end
-    end
-    consoleLog("📝 Texts hidden", Color3.fromRGB(0, 255, 0))
-    Notify("ARUSCRIPT V5", "Texts Removed!")
-end
-
--- AUTO RESPAWN
-local function toggleAutoRespawn()
-    autoRespawnEnabled = not autoRespawnEnabled
-    autoRespawnBtn.Text = autoRespawnEnabled and "⟨ DISABLE AUTO RESPAWN ⟩" or "⟨ AUTO RESPAWN ⟩"
-    
-    if autoRespawnEnabled then
-        connections.autoRespawn = RunService.Heartbeat:Connect(function()
-            if not autoRespawnEnabled then return end
-            
-            local humanoid = GetHumanoid()
-            if humanoid and humanoid.Health <= 0 then
-                local char = GetCharacter()
-                if char then
-                    char:Destroy()
-                    LocalPlayer:LoadCharacter()
-                    consoleLog("🔄 Auto respawn triggered", Color3.fromRGB(0, 255, 0))
-                end
-            end
-        end)
-        consoleLog("🔄 Auto Respawn: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.autoRespawn then
-            connections.autoRespawn:Disconnect()
-        end
-        consoleLog("🔄 Auto Respawn: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Auto Respawn: " .. tostring(autoRespawnEnabled))
-end
-
--- AUTO FARM
-local function toggleAutoFarm()
-    autoFarmEnabled = not autoFarmEnabled
-    autoFarmBtn.Text = autoFarmEnabled and "⟨ DISABLE AUTO FARM ⟩" or "⟨ AUTO FARM ⟩"
-    
-    if autoFarmEnabled then
-        connections.autoFarm = RunService.Heartbeat:Connect(function()
-            if not autoFarmEnabled then return end
-            
-            local char = GetCharacter()
-            if char then
-                -- Ищем ресурсы для сбора
-                for _, obj in pairs(workspace:GetDescendants()) do
-                    if obj:IsA("BasePart") and (obj.Name:lower():find("ore") or obj.Name:lower():find("resource")) then
-                        local distance = (char:FindFirstChild("HumanoidRootPart").Position - obj.Position).Magnitude
-                        if distance < 50 then
-                            -- Используем инструмент для сбора
-                            local tool = char:FindFirstChildOfClass("Tool")
-                            if tool then
-                                tool:Activate()
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-        consoleLog("⛏️ Auto Farm: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.autoFarm then
-            connections.autoFarm:Disconnect()
-        end
-        consoleLog("⛏️ Auto Farm: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Auto Farm: " .. tostring(autoFarmEnabled))
-end
-
--- AUTO COLLECT
-local function toggleAutoCollect()
-    autoCollectEnabled = not autoCollectEnabled
-    autoCollectBtn.Text = autoCollectEnabled and "⟨ DISABLE AUTO COLLECT ⟩" or "⟨ AUTO COLLECT ⟩"
-    
-    if autoCollectEnabled then
-        connections.autoCollect = RunService.Heartbeat:Connect(function()
-            if not autoCollectEnabled then return end
-            
-            local char = GetCharacter()
-            if char then
-                local hrp = char:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    -- Ищем предметы для сбора
-                    for _, obj in pairs(workspace:GetDescendants()) do
-                        if obj:IsA("BasePart") and (obj.Name:lower():find("coin") or obj.Name:lower():find("gem") or obj.Name:lower():find("item")) then
-                            local distance = (hrp.Position - obj.Position).Magnitude
-                            if distance < 50 then
-                                -- Телепортируем предмет к нам
-                                obj.CFrame = hrp.CFrame
-                                statistics.itemsCollected = statistics.itemsCollected + 1
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-        consoleLog("✨ Auto Collect: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        if connections.autoCollect then
-            connections.autoCollect:Disconnect()
-        end
-        consoleLog("✨ Auto Collect: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
-    
-    Notify("ARUSCRIPT V5", "Auto Collect: " .. tostring(autoCollectEnabled))
-end
-
-print("╔════════════════════════════════════════════════════════╗")
-print("║        ARUSCRIPT V5 - ЧАСТЬ 8 ЗАГРУЖЕНА               ║")
-print("║        ESP, Визуальные эффекты, Teleport готовы        ║")
-print("║        Файл: 2000+ строк                               ║")
-print("╚════════════════════════════════════════════════════════╝")
-
--- ============== ВНЕШНИЕ СКРИПТЫ ==============
-
--- INFINITY YIELD
+-- External Scripts
 local function loadInfinityYield()
     pcall(function()
         loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-        Notify("ARUSCRIPT V5", "✅ Infinity Yield Loaded!")
-        SendWebhook("📜 Loaded: Infinity Yield")
-        consoleLog("✅ Infinity Yield loaded successfully", Color3.fromRGB(0, 255, 0))
+        Notify("ARUSCRIPT V5", "Infinity Yield Loaded!")
+        SendWebhook("📜 Loaded: **Infinity Yield**")
     end)
 end
 
--- DARK DEX V3
-local function loadDarkDex()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Babyhamsta/ROBLOX_SCRIPTS/main/DARKDEX.lua"))()
-        Notify("ARUSCRIPT V5", "✅ Dark Dex V3 Loaded!")
-        SendWebhook("📜 Loaded: Dark Dex V3")
-        consoleLog("✅ Dark Dex V3 loaded successfully", Color3.fromRGB(0, 255, 0))
-    end)
-end
-
--- REMOTE SPY
-local function loadRemoteSpy()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/78zNJUHJ/RemoteSpy/main/RemoteSpy.lua"))()
-        Notify("ARUSCRIPT V5", "✅ Remote Spy Loaded!")
-        SendWebhook("📜 Loaded: Remote Spy")
-        consoleLog("✅ Remote Spy loaded successfully", Color3.fromRGB(0, 255, 0))
-    end)
-end
-
--- JERK OFF R6
 local function loadJerkOffR6()
     pcall(function()
         loadstring(game:HttpGet("https://pastefy.app/wa3v2Vgm/raw"))()
-        Notify("ARUSCRIPT V5", "✅ Jerk Off R6 Loaded!")
-        SendWebhook("📜 Loaded: Jerk Off R6")
-        consoleLog("✅ Jerk Off R6 loaded successfully", Color3.fromRGB(0, 255, 0))
+        Notify("ARUSCRIPT V5", "Jerk Off R6 Loaded!")
+        SendWebhook("📜 Loaded: **Jerk Off R6**")
     end)
 end
 
--- JERK OFF R15
 local function loadJerkOffR15()
     pcall(function()
         loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
-        Notify("ARUSCRIPT V5", "✅ Jerk Off R15 Loaded!")
-        SendWebhook("📜 Loaded: Jerk Off R15")
-        consoleLog("✅ Jerk Off R15 loaded successfully", Color3.fromRGB(0, 255, 0))
+        Notify("ARUSCRIPT V5", "Jerk Off R15 Loaded!")
+        SendWebhook("📜 Loaded: **Jerk Off R15**")
     end)
 end
 
--- FE ANIMATIONS
-local function loadFEAnimations()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostPlayer352/FE-Animations/main/FE%20Animations"))()
-        Notify("ARUSCRIPT V5", "✅ FE Animations Loaded!")
-        SendWebhook("📜 Loaded: FE Animations")
-        consoleLog("✅ FE Animations loaded successfully", Color3.fromRGB(0, 255, 0))
-    end)
-end
+-- ============== TEXTBOX HANDLERS ==============
 
--- CHAT SPAMMER
-local function loadChatSpammer()
-    pcall(function()
-        local function spam(message, count)
-            for i = 1, count do
-                game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents").SayMessageRequest:FireServer(message, "All")
-                wait(0.5)
-            end
-        end
-        
-        spam("ARUSCRIPT V5 IS ACTIVE!", 5)
-        Notify("ARUSCRIPT V5", "✅ Chat Spammer Executed!")
-        consoleLog("✅ Chat spam executed", Color3.fromRGB(0, 255, 0))
-    end)
-end
-
--- ============== ОБРАБОТЧИКИ TEXTBOX ==============
-
--- Обработчик для Speed Box (Fly Speed)
-speedBox.FocusLost:Connect(function(enterPressed)
-    if speedBox.Text ~= "" then
-        local newSpeed = tonumber(speedBox.Text)
-        if newSpeed and newSpeed > 0 and newSpeed <= 200 then
-            speed = newSpeed
-            Config.Settings.FlySpeed = newSpeed
-            SaveConfig()
-            consoleLog("✈️ Fly speed updated to: " .. newSpeed, Color3.fromRGB(0, 255, 0))
-            speedBox.Text = ""
-            speedBox.PlaceholderText = "⟨ FLY SPEED: " .. speed .. " ⟩"
-        else
-            consoleLog("❌ Invalid fly speed (1-200)", Color3.fromRGB(255, 0, 0))
-            speedBox.Text = ""
-        end
-    end
-end)
-
--- Обработчик для Speedhack Box
-speedhackBox.FocusLost:Connect(function(enterPressed)
-    if speedhackBox.Text ~= "" then
-        local newSpeed = tonumber(speedhackBox.Text)
-        if newSpeed and newSpeed > 0 then
-            speedhackSpeed = newSpeed
-            Config.Settings.SpeedhackSpeed = newSpeed
-            SaveConfig()
-            consoleLog("⚡ Speedhack speed updated to: " .. newSpeed, Color3.fromRGB(0, 255, 0))
-            speedhackBox.Text = ""
-            speedhackBox.PlaceholderText = "⟨ SPEED: " .. speedhackSpeed .. " ⟩"
-        else
-            consoleLog("❌ Invalid speedhack speed", Color3.fromRGB(255, 0, 0))
-            speedhackBox.Text = ""
-        end
-    end
-end)
-
--- Обработчик для Walk Speed Box
-walkSpeedBox.FocusLost:Connect(function(enterPressed)
-    if walkSpeedBox.Text ~= "" then
-        local newSpeed = tonumber(walkSpeedBox.Text)
-        if newSpeed and newSpeed > 0 then
-            customWalkSpeed = newSpeed
-            Config.Settings.WalkSpeed = newSpeed
-            SaveConfig()
-            consoleLog("🏃 Walk speed updated to: " .. newSpeed, Color3.fromRGB(0, 255, 0))
-            walkSpeedBox.Text = ""
-            walkSpeedBox.PlaceholderText = "⟨ SPEED: " .. customWalkSpeed .. " ⟩"
-        else
-            consoleLog("❌ Invalid walk speed", Color3.fromRGB(255, 0, 0))
-            walkSpeedBox.Text = ""
-        end
-    end
-end)
-
--- Обработчик для Jump Power Box
-jumpPowerBox.FocusLost:Connect(function(enterPressed)
-    if jumpPowerBox.Text ~= "" then
-        local newPower = tonumber(jumpPowerBox.Text)
-        if newPower and newPower > 0 then
-            customJumpPower = newPower
-            Config.Settings.JumpPower = newPower
-            SaveConfig()
-            consoleLog("⬆️ Jump power updated to: " .. newPower, Color3.fromRGB(0, 255, 0))
-            jumpPowerBox.Text = ""
-            jumpPowerBox.PlaceholderText = "⟨ POWER: " .. customJumpPower .. " ⟩"
-        else
-            consoleLog("❌ Invalid jump power", Color3.fromRGB(255, 0, 0))
-            jumpPowerBox.Text = ""
-        end
-    end
-end)
-
--- Обработчик для Gravity Box
-gravityBox.FocusLost:Connect(function(enterPressed)
-    if gravityBox.Text ~= "" then
-        local newGravity = tonumber(gravityBox.Text)
-        if newGravity then
-            customGravity = newGravity
-            Config.Settings.Gravity = newGravity
-            SaveConfig()
-            workspace.Gravity = newGravity
-            consoleLog("⬇️ Gravity updated to: " .. newGravity, Color3.fromRGB(0, 255, 0))
-            gravityBox.Text = ""
-            gravityBox.PlaceholderText = "⟨ GRAVITY: " .. customGravity .. " ⟩"
-        else
-            consoleLog("❌ Invalid gravity value", Color3.fromRGB(255, 0, 0))
-            gravityBox.Text = ""
-        end
-    end
-end)
-
--- Обработчик для FOV Box
-fovBox.FocusLost:Connect(function(enterPressed)
-    if fovBox.Text ~= "" then
-        local newFOV = tonumber(fovBox.Text)
-        if newFOV and newFOV > 0 and newFOV <= 500 then
-            aimbotFOV = newFOV
-            Config.Settings.AimbotFOV = newFOV
-            SaveConfig()
-            if aimbotCircle then aimbotCircle.Radius = aimbotFOV end
-            consoleLog("🎯 Aimbot FOV updated to: " .. newFOV, Color3.fromRGB(0, 255, 0))
-            fovBox.Text = ""
-            fovBox.PlaceholderText = "⟨ FOV: " .. aimbotFOV .. " ⟩"
-        else
-            consoleLog("❌ Invalid FOV (1-500)", Color3.fromRGB(255, 0, 0))
-            fovBox.Text = ""
-        end
-    end
-end)
-
--- Обработчик для Smooth Box
-smoothBox.FocusLost:Connect(function(enterPressed)
-    if smoothBox.Text ~= "" then
-        local newSmooth = tonumber(smoothBox.Text)
-        if newSmooth and newSmooth > 0 and newSmooth <= 1 then
-            aimbotSmooth = newSmooth
-            Config.Settings.AimbotSmooth = newSmooth
-            SaveConfig()
-            consoleLog("🎯 Aimbot smooth updated to: " .. newSmooth, Color3.fromRGB(0, 255, 0))
-            smoothBox.Text = ""
-            smoothBox.PlaceholderText = "⟨ SMOOTH: " .. aimbotSmooth .. " ⟩"
-        else
-            consoleLog("❌ Invalid smooth value (0-1)", Color3.fromRGB(255, 0, 0))
-            smoothBox.Text = ""
-        end
-    end
-end)
-
--- Обработчик для Volume Box
-volumeBox.FocusLost:Connect(function(enterPressed)
-    if volumeBox.Text ~= "" then
-        local newVolume = tonumber(volumeBox.Text)
-        if newVolume then
-            local normalizedVolume = math.max(0, math.min(1, newVolume))
-            setMusicVolume(normalizedVolume)
-            Config.Settings.MusicVolume = normalizedVolume
-            SaveConfig()
-            consoleLog("🔊 Volume updated to: " .. math.floor(normalizedVolume * 100) .. "%", Color3.fromRGB(0, 255, 0))
-            volumeBox.Text = ""
-            volumeBox.PlaceholderText = "⟨ VOLUME: " .. normalizedVolume .. " ⟩"
-        else
-            consoleLog("❌ Invalid volume value", Color3.fromRGB(255, 0, 0))
-            volumeBox.Text = ""
-        end
-    end
-end)
-
--- Обработчик для Music Track ID Box
-musicTrackIdBox.FocusLost:Connect(function(enterPressed)
-    if musicTrackIdBox.Text ~= "" then
-        local trackId = "rbxassetid://" .. musicTrackIdBox.Text
-        setMusicTrackId(trackId)
-        musicTrackIdBox.Text = ""
-        musicTrackIdBox.PlaceholderText = "⟨ TRACK ID ⟩"
-    end
-end)
-
--- Обработчик для Webhook Box
-webhookBox.FocusLost:Connect(function(enterPressed)
-    if webhookBox.Text ~= "" then
-        Config.DiscordWebhook = webhookBox.Text
+speedBox.FocusLost:Connect(function()
+    local newSpeed = tonumber(speedBox.Text)
+    if newSpeed then
+        speed = newSpeed
+        Config.Settings.FlySpeed = newSpeed
         SaveConfig()
-        consoleLog("🔗 Webhook URL updated", Color3.fromRGB(0, 255, 0))
-        Notify("ARUSCRIPT V5", "Webhook Saved!")
-        webhookBox.Text = ""
+        speedBox.Text = ""
+        speedBox.PlaceholderText = "⟨ FLY SPEED: " .. speed .. " ⟩"
     end
 end)
 
--- Обработчик для CFrame Fly Speed Box
-cframeSpeedBox.FocusLost:Connect(function(enterPressed)
-    if cframeSpeedBox.Text ~= "" then
-        local newSpeed = tonumber(cframeSpeedBox.Text)
-        if newSpeed and newSpeed > 0 then
-            flySpeed2 = newSpeed
-            consoleLog("✈️ CFrame fly speed updated to: " .. newSpeed, Color3.fromRGB(0, 255, 0))
-            cframeSpeedBox.Text = ""
-            cframeSpeedBox.PlaceholderText = "⟨ SPEED: " .. flySpeed2 .. " ⟩"
-        else
-            consoleLog("❌ Invalid CFrame speed", Color3.fromRGB(255, 0, 0))
-            cframeSpeedBox.Text = ""
+speedhackBox.FocusLost:Connect(function()
+    local newSpeed = tonumber(speedhackBox.Text)
+    if newSpeed then
+        speedhackSpeed = newSpeed
+        Config.Settings.SpeedhackSpeed = newSpeed
+        SaveConfig()
+        speedhackBox.Text = ""
+        speedhackBox.PlaceholderText = "⟨ SPEED: " .. speedhackSpeed .. " ⟩"
+    end
+end)
+
+fovBox.FocusLost:Connect(function()
+    local newFOV = tonumber(fovBox.Text)
+    if newFOV and newFOV > 0 and newFOV <= 500 then
+        aimbotFOV = newFOV
+        Config.Settings.AimbotFOV = newFOV
+        SaveConfig()
+        if aimbotCircle then
+            aimbotCircle.Radius = aimbotFOV
         end
+        fovBox.Text = ""
+        fovBox.PlaceholderText = "⟨ FOV: " .. aimbotFOV .. " ⟩"
     end
 end)
 
--- Обработчик для Bhop Power Box
-bhopPowerBox.FocusLost:Connect(function(enterPressed)
-    if bhopPowerBox.Text ~= "" then
-        local newPower = tonumber(bhopPowerBox.Text)
-        if newPower and newPower > 0 then
-            bhopPower = newPower
-            Config.Settings.BhopPower = newPower
-            SaveConfig()
-            consoleLog("🐰 Bhop power updated to: " .. newPower, Color3.fromRGB(0, 255, 0))
-            bhopPowerBox.Text = ""
-            bhopPowerBox.PlaceholderText = "⟨ POWER: " .. bhopPower .. " ⟩"
-        else
-            consoleLog("❌ Invalid bhop power", Color3.fromRGB(255, 0, 0))
-            bhopPowerBox.Text = ""
-        end
+smoothBox.FocusLost:Connect(function()
+    local newSmooth = tonumber(smoothBox.Text)
+    if newSmooth and newSmooth > 0 and newSmooth <= 1 then
+        aimbotSmooth = newSmooth
+        Config.Settings.AimbotSmooth = newSmooth
+        SaveConfig()
+        smoothBox.Text = ""
+        smoothBox.PlaceholderText = "⟨ SMOOTH: " .. aimbotSmooth .. " ⟩"
     end
 end)
 
--- Обработчик для Killaura Range Box
-killauraRangeBox.FocusLost:Connect(function(enterPressed)
-    if killauraRangeBox.Text ~= "" then
-        local newRange = tonumber(killauraRangeBox.Text)
-        if newRange and newRange > 0 then
-            killauraRange = newRange
-            Config.Settings.KillauraRange = newRange
-            SaveConfig()
-            consoleLog("⚔️ Killaura range updated to: " .. newRange, Color3.fromRGB(0, 255, 0))
-            killauraRangeBox.Text = ""
-            killauraRangeBox.PlaceholderText = "⟨ RANGE: " .. killauraRange .. " ⟩"
-        else
-            consoleLog("❌ Invalid killaura range", Color3.fromRGB(255, 0, 0))
-            killauraRangeBox.Text = ""
-        end
-    end
-end)
-
--- Обработчик для Hitbox Size Box
-hitboxSizeBox.FocusLost:Connect(function(enterPressed)
-    if hitboxSizeBox.Text ~= "" then
-        local newSize = tonumber(hitboxSizeBox.Text)
-        if newSize and newSize > 0 then
-            hitboxSize = newSize
-            Config.Settings.HitboxSize = newSize
-            SaveConfig()
-            consoleLog("📦 Hitbox size updated to: " .. newSize, Color3.fromRGB(0, 255, 0))
-            hitboxSizeBox.Text = ""
-            hitboxSizeBox.PlaceholderText = "⟨ SIZE: " .. hitboxSize .. " ⟩"
-        else
-            consoleLog("❌ Invalid hitbox size", Color3.fromRGB(255, 0, 0))
-            hitboxSizeBox.Text = ""
-        end
-    end
-end)
-
--- Обработчик для Reach Box
-reachBox.FocusLost:Connect(function(enterPressed)
-    if reachBox.Text ~= "" then
-        local newReach = tonumber(reachBox.Text)
-        if newReach and newReach > 0 then
-            reachDistance = newReach
-            Config.Settings.ReachDistance = newReach
-            SaveConfig()
-            consoleLog("🔗 Reach distance updated to: " .. newReach, Color3.fromRGB(0, 255, 0))
-            reachBox.Text = ""
-            reachBox.PlaceholderText = "⟨ REACH: " .. reachDistance .. " ⟩"
-        else
-            consoleLog("❌ Invalid reach distance", Color3.fromRGB(255, 0, 0))
-            reachBox.Text = ""
-        end
-    end
-end)
-
--- Обработчик для Swim Speed Box
-swimSpeedBox.FocusLost:Connect(function(enterPressed)
-    if swimSpeedBox.Text ~= "" then
-        local newSpeed = tonumber(swimSpeedBox.Text)
-        if newSpeed and newSpeed > 0 then
-            customSwimSpeed = newSpeed
-            Config.Settings.SwimSpeed = newSpeed
-            SaveConfig()
-            consoleLog("🌊 Swim speed updated to: " .. newSpeed, Color3.fromRGB(0, 255, 0))
-            swimSpeedBox.Text = ""
-            swimSpeedBox.PlaceholderText = "⟨ SPEED: " .. customSwimSpeed .. " ⟩"
-        else
-            consoleLog("❌ Invalid swim speed", Color3.fromRGB(255, 0, 0))
-            swimSpeedBox.Text = ""
-        end
-    end
-end)
-
--- Обработчик для Climb Speed Box
-climbSpeedBox.FocusLost:Connect(function(enterPressed)
-    if climbSpeedBox.Text ~= "" then
-        local newSpeed = tonumber(climbSpeedBox.Text)
-        if newSpeed and newSpeed > 0 then
-            customClimbSpeed = newSpeed
-            Config.Settings.ClimbSpeed = newSpeed
-            SaveConfig()
-            consoleLog("🧗 Climb speed updated to: " .. newSpeed, Color3.fromRGB(0, 255, 0))
-            climbSpeedBox.Text = ""
-            climbSpeedBox.PlaceholderText = "⟨ SPEED: " .. customClimbSpeed .. " ⟩"
-        else
-            consoleLog("❌ Invalid climb speed", Color3.fromRGB(255, 0, 0))
-            climbSpeedBox.Text = ""
-        end
-    end
-end)
-
--- ============== ОБРАБОТЧИКИ КНОПОК ==============
-
--- System buttons
-consoleBtn.MouseButton1Click:Connect(toggleConsole)
-musicBtn.MouseButton1Click:Connect(toggleMusic)
-saveConfigBtn.MouseButton1Click:Connect(function()
+webhookBox.FocusLost:Connect(function()
+    Config.DiscordWebhook = webhookBox.Text
     SaveConfig()
-    Notify("ARUSCRIPT V5", "✅ Config Saved!")
-    consoleLog("💾 Configuration saved", Color3.fromRGB(0, 255, 0))
-end)
-loadConfigBtn.MouseButton1Click:Connect(function()
-    LoadConfig()
-    Notify("ARUSCRIPT V5", "✅ Config Loaded!")
-    consoleLog("📂 Configuration loaded", Color3.fromRGB(0, 255, 0))
-end)
-antiAFKBtn.MouseButton1Click:Connect(toggleAntiAFK)
-
--- Music buttons
-skipTrackBtn.MouseButton1Click:Connect(function()
-    if currentSong then
-        currentSong:Stop()
-        currentSong:Play()
-        consoleLog("⏭️ Track skipped", Color3.fromRGB(0, 255, 0))
-    end
+    Notify("ARUSCRIPT V5", "Webhook Saved!")
 end)
 
-musicInfoBtn.MouseButton1Click:Connect(function()
-    if musicEnabled and currentSong then
-        consoleLog("🎵 Music Info: " .. musicTrackId, Color3.fromRGB(0, 200, 255))
-        consoleLog("🔊 Volume: " .. math.floor(musicVolume * 100) .. "%", Color3.fromRGB(0, 200, 255))
-    else
-        consoleLog("❌ Music not playing", Color3.fromRGB(255, 0, 0))
-    end
-end)
+-- ============== BUTTON CONNECTIONS ==============
 
--- ESP buttons
 espBtn.MouseButton1Click:Connect(toggleESP)
 colorBtn.MouseButton1Click:Connect(changeESPColor)
-espTracersBtn.MouseButton1Click:Connect(toggleESPTracers)
-espChamsBtn.MouseButton1Click:Connect(toggleESPChams)
-espNamesBtn.MouseButton1Click:Connect(toggleESPNames)
-espDistanceBtn.MouseButton1Click:Connect(toggleESPDistance)
-espHealthBtn.MouseButton1Click:Connect(toggleESPHealth)
-espSkeletonsBtn.MouseButton1Click:Connect(toggleESPSkeletons)
-espHeadDotsBtn.MouseButton1Click:Connect(toggleESPHeadDots)
-
--- Visual buttons
-xrayBtn.MouseButton1Click:Connect(toggleXray)
-fullbrightBtn.MouseButton1Click:Connect(toggleFullbright)
-noFogBtn.MouseButton1Click:Connect(toggleNoFog)
-radarBtn.MouseButton1Click:Connect(toggleRadar)
-fovChangerBtn.MouseButton1Click:Connect(toggleFOVChanger)
-thirdPersonBtn.MouseButton1Click:Connect(toggleThirdPerson)
-rainbowSkyBtn.MouseButton1Click:Connect(toggleRainbowSky)
-
--- Movement buttons
 flyBtn.MouseButton1Click:Connect(toggleFly)
-cframeFlyBtn.MouseButton1Click:Connect(toggleCFrameFly)
 speedhackBtn.MouseButton1Click:Connect(toggleSpeedhack)
 noclipBtn.MouseButton1Click:Connect(toggleNoclip)
 infJumpBtn.MouseButton1Click:Connect(toggleInfJump)
 bhopBtn.MouseButton1Click:Connect(toggleBhop)
-walkSpeedBtn.MouseButton1Click:Connect(toggleWalkSpeed)
-jumpPowerBtn.MouseButton1Click:Connect(toggleJumpPower)
-gravityBtn.MouseButton1Click:Connect(toggleGravity)
-autoSprintBtn.MouseButton1Click:Connect(toggleAutoSprint)
-swimSpeedBtn.MouseButton1Click:Connect(toggleSwimSpeed)
-climbSpeedBtn.MouseButton1Click:Connect(toggleClimbSpeed)
-
--- Combat buttons
 aimbotBtn.MouseButton1Click:Connect(toggleAimbot)
 triggerbotBtn.MouseButton1Click:Connect(toggleTriggerbot)
-silentAimBtn.MouseButton1Click:Connect(toggleSilentAim)
+fullbrightBtn.MouseButton1Click:Connect(toggleFullbright)
+xrayBtn.MouseButton1Click:Connect(toggleXray)
+radarBtn.MouseButton1Click:Connect(toggleRadar)
+fovChangerBtn.MouseButton1Click:Connect(toggleFOVChanger)
 godModeBtn.MouseButton1Click:Connect(toggleGodMode)
-killauraBtn.MouseButton1Click:Connect(toggleKillaura)
-hitboxExpanderBtn.MouseButton1Click:Connect(toggleHitboxExpander)
-reachBtn.MouseButton1Click:Connect(toggleReach)
-antiKnockbackBtn.MouseButton1Click:Connect(toggleAntiKnockback)
-criticalHitsBtn.MouseButton1Click:Connect(toggleCriticalHits)
-fastPunchBtn.MouseButton1Click:Connect(toggleFastPunch)
-autoBlockBtn.MouseButton1Click:Connect(toggleAutoBlock)
-autoParryBtn.MouseButton1Click:Connect(toggleAutoParry)
-autoHealBtn.MouseButton1Click:Connect(toggleAutoHeal)
-rapidFireBtn.MouseButton1Click:Connect(toggleRapidFire)
-noRecoilBtn.MouseButton1Click:Connect(toggleNoRecoil)
-noSpreadBtn.MouseButton1Click:Connect(toggleNoSpread)
-wallbangBtn.MouseButton1Click:Connect(toggleWallbang)
-
--- Utility buttons
-clickTPBtn.MouseButton1Click:Connect(toggleClickTP)
-platformBtn.MouseButton1Click:Connect(togglePlatform)
-freecamBtn.MouseButton1Click:Connect(function()
-    freecamEnabled = not freecamEnabled
-    freecamBtn.Text = freecamEnabled and "⟨ DISABLE FREECAM ⟩" or "⟨ FREE CAM ⟩"
-    Notify("ARUSCRIPT V5", "Freecam: " .. tostring(freecamEnabled))
-end)
-autoRespawnBtn.MouseButton1Click:Connect(toggleAutoRespawn)
-autoFarmBtn.MouseButton1Click:Connect(toggleAutoFarm)
-autoCollectBtn.MouseButton1Click:Connect(toggleAutoCollect)
-removeBarriersBtn.MouseButton1Click:Connect(removeBarriers)
-removeTextsBtn.MouseButton1Click:Connect(removeTexts)
-
--- Teleport buttons
-saveWaypointBtn.MouseButton1Click:Connect(saveWaypoint)
-loadWaypointBtn.MouseButton1Click:Connect(loadWaypoint)
-tpToPlayerBtn.MouseButton1Click:Connect(tpToPlayer)
-tpAllPlayersBtn.MouseButton1Click:Connect(tpAllToYou)
-bringPlayerBtn.MouseButton1Click:Connect(bringPlayer)
-
--- Server buttons
-rejoinBtn.MouseButton1Click:Connect(function()
-    TeleportService:Teleport(game.PlaceId, LocalPlayer)
-end)
-
-serverHopBtn.MouseButton1Click:Connect(function()
-    local servers = {}
-    local req = request({
-        Url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100",
-        Method = "GET"
-    })
-    local body = game:GetService("HttpService"):JSONDecode(req.Body)
-    
-    for _, server in pairs(body.data) do
-        if server.id ~= game.JobId then
-            table.insert(servers, server)
-        end
-    end
-    
-    if #servers > 0 then
-        local randomServer = servers[math.random(1, #servers)]
-        TeleportService:TeleportToPlaceInstance(game.PlaceId, randomServer.id, LocalPlayer)
-    else
-        Notify("ARUSCRIPT V5", "❌ No other servers found")
-    end
-end)
-
--- External scripts buttons
+antiAFKBtn.MouseButton1Click:Connect(toggleAntiAFK)
 infinityYieldBtn.MouseButton1Click:Connect(loadInfinityYield)
-darkDexBtn.MouseButton1Click:Connect(loadDarkDex)
-remoteSpyBtn.MouseButton1Click:Connect(loadRemoteSpy)
 jerkOffR6Btn.MouseButton1Click:Connect(loadJerkOffR6)
 jerkOffR15Btn.MouseButton1Click:Connect(loadJerkOffR15)
-feAnimationsBtn.MouseButton1Click:Connect(loadFEAnimations)
-chatSpammerBtn.MouseButton1Click:Connect(loadChatSpammer)
-
--- Credits button
-creditsBtn.MouseButton1Click:Connect(function()
-    consoleLog("═══════════════════════════════════════", Color3.fromRGB(0, 255, 255))
-    consoleLog("ARUSCRIPT V5 - ULTIMATE MEGA EDITION", Color3.fromRGB(255, 255, 0))
-    consoleLog("═══════════════════════════════════════", Color3.fromRGB(0, 255, 255))
-    consoleLog("Developer: Aru (Anonymous)", Color3.fromRGB(200, 200, 200))
-    consoleLog("Version: 5.0 ULTIMATE", Color3.fromRGB(200, 200, 200))
-    consoleLog("Features: 100+", Color3.fromRGB(200, 200, 200))
-    consoleLog("Last Update: 2024", Color3.fromRGB(200, 200, 200))
-    consoleLog(" ", Color3.fromRGB(255, 255, 255))
-    consoleLog("Special Thanks to:", Color3.fromRGB(100, 200, 255))
-    consoleLog("- EdgeIY (Infinity Yield)", Color3.fromRGB(200, 200, 200))
-    consoleLog("- Babyhamsta (Dark Dex)", Color3.fromRGB(200, 200, 200))
-    consoleLog("- Community Developers", Color3.fromRGB(200, 200, 200))
-    consoleLog(" ", Color3.fromRGB(255, 255, 255))
-    consoleLog("Join Discord for updates!", Color3.fromRGB(0, 200, 255))
-    consoleLog("═══════════════════════════════════════", Color3.fromRGB(0, 255, 255))
-end)
-
--- Discord button
-discordBtn.MouseButton1Click:Connect(function()
-    setclipboard("https://discord.gg/2FX8Wuvq")
-    Notify("ARUSCRIPT V5", "Discord invite copied to clipboard!")
-    consoleLog("📋 Discord invite copied", Color3.fromRGB(0, 255, 0))
-end)
-
--- Toggle button
 toggleButton.MouseButton1Click:Connect(toggleMenu)
 
--- ============== СТАТИСТИКА И ОТСЛЕЖИВАНИЕ ==============
-
--- FPS Counter
-local function createFpsCounter()
-    if fpsLabel == nil then
-        fpsLabel = Instance.new("TextLabel")
-        fpsLabel.Name = "FPSLabel"
-        fpsLabel.Size = UDim2.new(0, 150, 0, 50)
-        fpsLabel.Position = UDim2.new(0, 20, 0, 120)
-        fpsLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        fpsLabel.BackgroundTransparency = 0.3
-        fpsLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-        fpsLabel.TextSize = 18
-        fpsLabel.Font = Enum.Font.Code
-        fpsLabel.Visible = false
-        fpsLabel.ZIndex = 5
-        fpsLabel.Parent = screenGui
-        
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 8)
-        corner.Parent = fpsLabel
-        
-        local stroke = Instance.new("UIStroke")
-        stroke.Color = Color3.fromRGB(0, 255, 0)
-        stroke.Thickness = 2
-        stroke.Parent = fpsLabel
-    end
-    
-    return fpsLabel
-end
-
--- Toggle FPS Counter
-local fpsCounterEnabled = false
-fpsCounterBtn.MouseButton1Click:Connect(function()
-    fpsCounterEnabled = not fpsCounterEnabled
-    fpsCounterBtn.Text = fpsCounterEnabled and "⟨ HIDE FPS ⟩" or "⟨ FPS COUNTER ⟩"
-    
-    if fpsCounterEnabled then
-        local fpsLabel = createFpsCounter()
-        fpsLabel.Visible = true
-        
-        if fpsConnection then fpsConnection:Disconnect() end
-        fpsConnection = RunService.RenderStepped:Connect(function()
-            if fpsLabel and fpsCounterEnabled then
-                fpsLabel.Text = "FPS: " .. GetFPS() .. "\nPING: " .. GetPing() .. "ms"
-            end
-        end)
-        consoleLog("📊 FPS Counter: ENABLED", Color3.fromRGB(0, 255, 0))
-    else
-        local fpsLabel = createFpsCounter()
-        fpsLabel.Visible = false
-        
-        if fpsConnection then
-            fpsConnection:Disconnect()
-        end
-        consoleLog("📊 FPS Counter: DISABLED", Color3.fromRGB(255, 0, 0))
-    end
+saveConfigBtn.MouseButton1Click:Connect(function()
+    SaveConfig()
+    Notify("ARUSCRIPT V5", "Config Saved!")
 end)
 
--- Statistics button
-statsBtn.MouseButton1Click:Connect(function()
-    statistics.playTime = statistics.playTime + 1
-    consoleLog("═══ PLAYER STATISTICS ═══", Color3.fromRGB(0, 255, 255))
-    consoleLog("Kills: " .. statistics.kills, Color3.fromRGB(200, 200, 200))
-    consoleLog("Deaths: " .. statistics.deaths, Color3.fromRGB(200, 200, 200))
-    consoleLog("Teleports: " .. statistics.teleports, Color3.fromRGB(200, 200, 200))
-    consoleLog("Items Collected: " .. statistics.itemsCollected, Color3.fromRGB(200, 200, 200))
-    consoleLog("Play Time: " .. FormatTime(statistics.playTime), Color3.fromRGB(200, 200, 200))
-    consoleLog("FPS: " .. GetFPS(), Color3.fromRGB(200, 200, 200))
-    consoleLog("Ping: " .. GetPing() .. "ms", Color3.fromRGB(200, 200, 200))
-    consoleLog("═════════════════════════", Color3.fromRGB(0, 255, 255))
+loadConfigBtn.MouseButton1Click:Connect(function()
+    LoadConfig()
+    Notify("ARUSCRIPT V5", "Config Loaded!")
+end)
+
+-- ============== CHAT COMMANDS ==============
+
+Players.LocalPlayer.Chatted:Connect(function(message)
+    local args = message:lower():split(" ")
+    local cmd = args[1]
+    
+    if cmd == "/aru" or cmd == "/aruscript" then
+        if args[2] == "help" then
+            Notify("ARUSCRIPT V5", "Commands: /aru [fly/speed/esp/noclip/god/save/load]")
+        elseif args[2] == "fly" then
+            toggleFly()
+        elseif args[2] == "speed" and args[3] then
+            speedhackSpeed = tonumber(args[3]) or 16
+            SaveConfig()
+        elseif args[2] == "esp" then
+            toggleESP()
+        elseif args[2] == "noclip" then
+            toggleNoclip()
+        elseif args[2] == "god" then
+            toggleGodMode()
+        elseif args[2] == "save" then
+            SaveConfig()
+            Notify("ARUSCRIPT V5", "Config Saved!")
+        elseif args[2] == "load" then
+            LoadConfig()
+            Notify("ARUSCRIPT V5", "Config Loaded!")
+        end
+    end
 end)
 
 -- ============== KEYBINDS ==============
@@ -4495,149 +1392,48 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         toggleNoclip()
     elseif input.KeyCode == Enum.KeyCode.E then
         toggleESP()
-    elseif input.KeyCode == Enum.KeyCode.Backquote then -- ~
-        toggleConsole()
-    elseif input.KeyCode == Enum.KeyCode.M then
-        toggleMusic()
-    elseif input.KeyCode == Enum.KeyCode.G then
-        toggleGodMode()
-    elseif input.KeyCode == Enum.KeyCode.C then
-        toggleAimbot()
-    elseif input.KeyCode == Enum.KeyCode.L then
-        toggleRadar()
     end
 end)
 
--- ============== CLEANUP ==============
+-- ============== STARTUP ==============
 
--- Cleanup при выходе
-LocalPlayer.AncestryChanged:Connect(function()
-    if not LocalPlayer.Parent then
-        -- Cleanup всех connections при выходе
-        for _, connection in pairs(connections) do
-            if connection and connection.Connected then
-                connection:Disconnect()
-            end
-        end
-        
-        -- Удаляем объекты
-        if platformPart then
-            platformPart:Destroy()
-        end
-        
-        if radarFrame then
-            radarFrame:Destroy()
-        end
-        
-        if aimbotCircle then
-            pcall(function()
-                aimbotCircle:Remove()
-            end)
-        end
-        
-        if currentSong then
-            currentSong:Destroy()
-        end
-    end
-end)
-
--- ============== ФИНАЛЬНАЯ ИНИЦИАЛИЗАЦИЯ ==============
-
--- Load конфигурации при старте
+-- Load config
 LoadConfig()
 
--- Начальная анимация
+-- Startup animation
 blur.Enabled = true
 TweenService:Create(blur, TweenInfo.new(0.5), {Size = 10}):Play()
 
-frame.Position = UDim2.new(0.5, -325, -1, 0)
+frame.Position = UDim2.new(0.5, -250, -1, 0)
 wait(0.5)
 TweenService:Create(frame, TweenInfo.new(0.8, Enum.EasingStyle.Bounce), {
-    Position = UDim2.new(0.5, -325, 0.5, -400)
+    Position = UDim2.new(0.5, -250, 0.5, -350)
 }):Play()
 
--- Boot sound
+-- Sound effect
 pcall(function()
     local bootSound = Instance.new("Sound")
     bootSound.SoundId = "rbxassetid://6518811702"
     bootSound.Volume = 0.3
     bootSound.Parent = screenGui
     bootSound:Play()
-    game:GetService("Debris"):AddItem(bootSound, 2)
 end)
 
+-- Notifications
 wait(1)
+Notify("ARUSCRIPT V5", "Successfully Loaded!", 5)
+SendWebhook("🚀 **ARUSCRIPT V5 LOADED**\nPlayer: " .. Players.LocalPlayer.Name)
 
--- Final notification
-Notify("ARUSCRIPT V5", "🚀 Successfully Loaded! Press RightShift to toggle menu", 5)
-SendWebhook("✅ ARUSCRIPT V5 LOADED\nPlayer: " .. LocalPlayer.Name .. "\nUserID: " .. LocalPlayer.UserId)
-
--- Console startup message
-consoleLog(" ", Color3.fromRGB(255, 255, 255))
-consoleLog("╔════════════════════════════════════════════════════════╗", Color3.fromRGB(0, 255, 0))
-consoleLog("║           ARUSCRIPT V5 - ULTIMATE LOADED              ║", Color3.fromRGB(0, 255, 0))
-consoleLog("╚════════════════════════════════════════════════════════╝", Color3.fromRGB(0, 255, 0))
-consoleLog("✅ All features loaded and ready to use", Color3.fromRGB(0, 255, 0))
-consoleLog("✅ Press RightShift to toggle menu", Color3.fromRGB(0, 255, 0))
-consoleLog("✅ Press ~ (Backquote) to open console", Color3.fromRGB(0, 255, 0))
-consoleLog("✅ Press M to toggle background music", Color3.fromRGB(0, 255, 0))
-consoleLog("✅ Type 'help' in console for commands", Color3.fromRGB(0, 255, 0))
-consoleLog(" ", Color3.fromRGB(255, 255, 255))
-consoleLog("Loaded features:", Color3.fromRGB(100, 200, 255))
-consoleLog("✓ 100+ Combat, Movement, Visual, Teleport cheats", Color3.fromRGB(200, 200, 200))
-consoleLog("✓ Advanced Aimbot with Circle FOV", Color3.fromRGB(200, 200, 200))
-consoleLog("✓ Complete ESP System with multiple modes", Color3.fromRGB(200, 200, 200))
-consoleLog("✓ Music Player with unlimited loop", Color3.fromRGB(200, 200, 200))
-consoleLog("✓ Command Console with 30+ commands", Color3.fromRGB(200, 200, 200))
-consoleLog("✓ Config System for saving/loading", Color3.fromRGB(200, 200, 200))
-consoleLog("✓ Discord Webhook integration", Color3.fromRGB(200, 200, 200))
-consoleLog("✓ External script loader", Color3.fromRGB(200, 200, 200))
-consoleLog("✓ Waypoint Teleport System", Color3.fromRGB(200, 200, 200))
-consoleLog("✓ FPS Counter and Statistics", Color3.fromRGB(200, 200, 200))
-consoleLog(" ", Color3.fromRGB(255, 255, 255))
-
--- Print to console
+-- Console
 print("╔════════════════════════════════════════════════════════╗")
-print("║        ✅ ARUSCRIPT V5 - ULTIMATE LOADED              ║")
+print("║         ARUSCRIPT V5 - ULTIMATE MEGA EDITION           ║")
 print("║                                                        ║")
-print("║ ✨ 100+ Features | All Systems Active                 ║")
-print("║ 🎮 Combat, Movement, ESP, Teleport Systems           ║")
-print("║ 🎵 Music Player with Infinite Loop                    ║")
-print("║ 💾 Config System (Save/Load)                          ║")
-print("║ 🌈 Rainbow UI Effects                                 ║")
-print("║ 🔧 Command Console with 30+ Commands                 ║")
-print("║ 🎯 Advanced Aimbot with Circle FOV                    ║")
-print("║ 📊 FPS Counter & Statistics                           ║")
-print("║ 📍 Waypoint Teleport System                           ║")
-print("║ 🔗 Discord Webhook Integration                        ║")
+print("║  ✅ Successfully Loaded!                               ║")
+print("║  ✅ Press Right Shift to toggle menu                   ║")
+print("║  ✅ Type /aru help for commands                        ║")
 print("║                                                        ║")
-print("║ 🎹 KEYBINDS:                                          ║")
-print("║ • RightShift = Toggle Menu                            ║")
-print("║ • ~ (Backquote) = Open Console                        ║")
-print("║ • F = Fly                                             ║")
-print("║ • N = Noclip                                          ║")
-print("║ • E = ESP                                             ║")
-print("║ • M = Music                                           ║")
-print("║ • G = God Mode                                        ║")
-print("║ • C = Aimbot                                          ║")
-print("║ • L = Radar                                           ║")
-print("║                                                        ║")
-print("║ Created by: Aru (Anonymous)                           ║")
-print("║ Version: 5.0 ULTIMATE EDITION                         ║")
-print("╚════════════════════════════════════════════════════════╝")
-
-print("✅ ARUSCRIPT V5 fully initialized and ready to use!")
-
--- Автоматическое обновление Play Time
-spawn(function()
-    while wait(1) do
-        statistics.playTime = statistics.playTime + 1
-    end
-end)
-
-print("╔════════════════════════════════════════════════════════╗")
-print("║        ARUSCRIPT V5 - ЧАСТЬ 9 ЗАГРУЖЕНА               ║")
-print("║        Все системы инициализированы и готовы           ║")
-print("║        Файл: 2000+ строк                               ║")
-print("║        Скрипт полностью функционален!                 ║")
+print("║  Features: 50+                                         ║")
+print("║  Themes: Rainbow + 9 More                              ║")
+print("║  Config System: Active                                 ║")
+print("║  Discord Webhook: Ready                                ║")
 print("╚════════════════════════════════════════════════════════╝")
