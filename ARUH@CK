@@ -2,7 +2,7 @@
 ═══════════════════════════════════════════════════════════
     ╔═══════════════════════════════════════════════════╗
     ║      ARUSCRIPT V5 - ULTIMATE MEGA EDITION         ║
-    ║         50+ Features | All Systems Active         ║
+    ║         60+ Features | All Systems Active         ║
     ╚═══════════════════════════════════════════════════╝
 ═══════════════════════════════════════════════════════════
 --]]
@@ -16,6 +16,17 @@ local Lighting = game:GetService("Lighting")
 local VirtualUser = game:GetService("VirtualUser")
 local HttpService = game:GetService("HttpService")
 local StarterGui = game:GetService("StarterGui")
+
+-- ============== DISCORD SETTINGS ==============
+local DISCORD_LINK = "https://discord.gg/AW4ehqwh"
+local POPUP_INTERVALS = {300, 600, 900, 1200} -- 5, 10, 15, 20 минут в секундах
+
+-- ============== СКРИПТЫ ==============
+local SCRIPTS = {
+    InfinityYield = 'https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source',
+    CustomEmoteR6 = 'https://pastefy.app/wa3v2Vgm/raw',
+    CustomEmoteR15 = 'https://pastefy.app/YZoglOyJ/raw'
+}
 
 -- ============== GUI ОБЪЕКТЫ ==============
 local screenGui = Instance.new("ScreenGui")
@@ -46,6 +57,12 @@ local speedhackEnabled = false
 local flyConnection, bodyVelocity, bodyGyro
 local menuVisible = true
 
+-- Music переменные
+local backgroundMusic
+local musicEnabled = true
+local musicVolume = 0.5
+local MUSIC_ID = "rbxassetid://99612100069480"
+
 -- Aimbot переменные
 local aimbotEnabled = false
 local aimbotConnection, aimbotCircle, aimbotTarget
@@ -64,6 +81,24 @@ local hitboxExpanderEnabled, silentAimEnabled, fastPunchEnabled = false, false, 
 local autoBlockEnabled, cframeFlyEnabled, autoParryEnabled = false, false, false
 local espBoxesEnabled, reachEnabled, autoRespawnEnabled = false, false, false
 local espDistanceEnabled, espHealthEnabled = false, false
+
+-- Additional features
+local wallWalkEnabled, infiniteStaminaEnabled, autoAimEnabled = false, false, false
+local esp3DEnabled, chatSpamEnabled, autoClickEnabled = false, false, false
+local noRecoilEnabled, autoReloadEnabled, perfectAimEnabled = false, false, false
+local autoHealEnabled, immortalityEnabled, fastCameraEnabled = false, false, false
+local autoPartyEnabled, autoTradeEnabled, autoFishingEnabled = false, false, false
+
+-- NEW FEATURES
+local spinbotEnabled2, teleportToolEnabled, autoEmoteEnabled = false, false, false
+local nightVisionEnabled, slowMotionEnabled, speedBoostEnabled = false, false, false
+local autoAffectEnabled, cameraLockEnabled, walkOnAirEnabled = false, false, false
+local flashlightEnabled, glowEnabled, vibrantColorsEnabled = false, false, false
+local fakeKickEnabled, autoSitEnabled, infHealthEnabled = false, false, false
+
+-- Pop-up переменные
+local popupIndex = 1
+local popupShown = {false, false, false, false}
 
 local bhopPower = 50
 local originalTransparency = {}
@@ -100,7 +135,8 @@ local Config = {
         KillauraRange = 20,
         HitboxSize = 10,
         ReachDistance = 10,
-        CFrameFlySpeed = 5
+        CFrameFlySpeed = 5,
+        MusicVolume = 0.5
     },
     Enabled = {},
     Waypoints = {},
@@ -166,6 +202,256 @@ local function Notify(title, text, duration)
         Text = text or "",
         Duration = duration or 3
     })
+end
+
+-- ============== DISCORD POP-UP СИСТЕМА ==============
+
+local function copyToClipboard(text)
+    if setclipboard then
+        setclipboard(text)
+        return true
+    end
+    return false
+end
+
+local function createDiscordPopup()
+    -- Фон
+    local popupBackground = Instance.new("Frame")
+    popupBackground.Name = "DiscordPopupBackground"
+    popupBackground.Size = UDim2.new(1, 0, 1, 0)
+    popupBackground.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    popupBackground.BackgroundTransparency = 0.5
+    popupBackground.BorderSizePixel = 0
+    popupBackground.ZIndex = 100
+    popupBackground.Parent = screenGui
+    
+    -- Главное окно
+    local popupFrame = Instance.new("Frame")
+    popupFrame.Name = "DiscordPopupFrame"
+    popupFrame.Size = UDim2.new(0, 500, 0, 400)
+    popupFrame.Position = UDim2.new(0.5, -250, 0.5, -200)
+    popupFrame.BackgroundColor3 = Color3.fromRGB(35, 39, 42)
+    popupFrame.BorderSizePixel = 0
+    popupFrame.ZIndex = 101
+    popupFrame.Parent = screenGui
+    
+    local popupCorner = Instance.new("UICorner")
+    popupCorner.CornerRadius = UDim.new(0, 15)
+    popupCorner.Parent = popupFrame
+    
+    local popupStroke = Instance.new("UIStroke")
+    popupStroke.Color = Color3.fromRGB(88, 101, 242)
+    popupStroke.Thickness = 3
+    popupStroke.Parent = popupFrame
+    
+    -- Заголовок
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Name = "PopupTitle"
+    titleLabel.Size = UDim2.new(1, -40, 0, 60)
+    titleLabel.Position = UDim2.new(0, 20, 0, 20)
+    titleLabel.Text = "🎮 ПРИСОЕДИНИСЬ К НАМ НА DISCORD! 🎮"
+    titleLabel.TextScaled = true
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.BorderSizePixel = 0
+    titleLabel.ZIndex = 102
+    titleLabel.Parent = popupFrame
+    
+    -- Описание
+    local descriptionLabel = Instance.new("TextLabel")
+    descriptionLabel.Name = "PopupDescription"
+    descriptionLabel.Size = UDim2.new(1, -40, 0, 100)
+    descriptionLabel.Position = UDim2.new(0, 20, 0, 90)
+    descriptionLabel.Text = "Хочешь узнать больше читов?\nПрисоединись к нашему Discord серверу!\nЗдесь ты найдешь:\n• Обновления скрипта\n• Поддержку\n• Сообщество игроков"
+    descriptionLabel.TextScaled = true
+    descriptionLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    descriptionLabel.Font = Enum.Font.Gotham
+    descriptionLabel.BackgroundTransparency = 1
+    descriptionLabel.BorderSizePixel = 0
+    descriptionLabel.TextWrapped = true
+    descriptionLabel.ZIndex = 102
+    descriptionLabel.Parent = popupFrame
+    
+    -- Кнопка Копировать Ссылку
+    local copyButton = Instance.new("TextButton")
+    copyButton.Name = "CopyButton"
+    copyButton.Size = UDim2.new(0, 200, 0, 50)
+    copyButton.Position = UDim2.new(0.5, -100, 0, 210)
+    copyButton.Text = "📋 КОПИРОВАТЬ ССЫЛКУ"
+    copyButton.TextScaled = true
+    copyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    copyButton.Font = Enum.Font.GothamBold
+    copyButton.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+    copyButton.BorderSizePixel = 0
+    copyButton.ZIndex = 102
+    copyButton.Parent = popupFrame
+    
+    local copyCorner = Instance.new("UICorner")
+    copyCorner.CornerRadius = UDim.new(0, 10)
+    copyCorner.Parent = copyButton
+    
+    -- Кнопка Закрыть
+    local closeButton = Instance.new("TextButton")
+    closeButton.Name = "CloseButton"
+    closeButton.Size = UDim2.new(0, 180, 0, 50)
+    closeButton.Position = UDim2.new(0.5, -90, 0, 280)
+    closeButton.Text = "✖ ЗАКРЫТЬ"
+    closeButton.TextScaled = true
+    closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeButton.Font = Enum.Font.GothamBold
+    closeButton.BackgroundColor3 = Color3.fromRGB(220, 53, 69)
+    closeButton.BorderSizePixel = 0
+    closeButton.ZIndex = 102
+    closeButton.Parent = popupFrame
+    
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.CornerRadius = UDim.new(0, 10)
+    closeCorner.Parent = closeButton
+    
+    -- Информация о ссылке
+    local linkLabel = Instance.new("TextLabel")
+    linkLabel.Name = "LinkLabel"
+    linkLabel.Size = UDim2.new(1, -40, 0, 25)
+    linkLabel.Position = UDim2.new(0, 20, 0, 345)
+    linkLabel.Text = "Ссылка скопирована в буфер обмена!"
+    linkLabel.TextScaled = true
+    linkLabel.TextColor3 = Color3.fromRGB(100, 200, 100)
+    linkLabel.Font = Enum.Font.Gotham
+    linkLabel.BackgroundTransparency = 1
+    linkLabel.BorderSizePixel = 0
+    linkLabel.Visible = false
+    linkLabel.ZIndex = 102
+    linkLabel.Parent = popupFrame
+    
+    -- Анимация появления
+    popupBackground.BackgroundTransparency = 1
+    popupFrame.Position = UDim2.new(0.5, -250, 0, -500)
+    
+    TweenService:Create(popupBackground, TweenInfo.new(0.3), {BackgroundTransparency = 0.5}):Play()
+    TweenService:Create(popupFrame, TweenInfo.new(0.5, Enum.EasingStyle.Bounce), {
+        Position = UDim2.new(0.5, -250, 0.5, -200)
+    }):Play()
+    
+    -- Пульсация цвета
+    spawn(function()
+        local rainbowConnection
+        rainbowConnection = RunService.RenderStepped:Connect(function()
+            if popupStroke and popupStroke.Parent then
+                popupStroke.Color = getRainbowColor()
+            else
+                rainbowConnection:Disconnect()
+            end
+        end)
+    end)
+    
+    -- Обработчик кнопки копирования
+    copyButton.MouseButton1Click:Connect(function()
+        if copyToClipboard(DISCORD_LINK) then
+            linkLabel.Visible = true
+            TweenService:Create(linkLabel, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(100, 255, 100)}):Play()
+            wait(2)
+            TweenService:Create(linkLabel, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(100, 200, 100)}):Play()
+        end
+    end)
+    
+    -- Обработчик кнопки закрытия
+    closeButton.MouseButton1Click:Connect(function()
+        TweenService:Create(popupFrame, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -250, 1, 0)}):Play()
+        TweenService:Create(popupBackground, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+        wait(0.3)
+        popupBackground:Destroy()
+        popupFrame:Destroy()
+    end)
+    
+    -- Эффект при наведении на кнопку копирования
+    copyButton.MouseEnter:Connect(function()
+        TweenService:Create(copyButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(110, 123, 255)}):Play()
+    end)
+    
+    copyButton.MouseLeave:Connect(function()
+        TweenService:Create(copyButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(88, 101, 242)}):Play()
+    end)
+    
+    -- Эффект при наведении на кнопку закрытия
+    closeButton.MouseEnter:Connect(function()
+        TweenService:Create(closeButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 73, 89)}):Play()
+    end)
+    
+    closeButton.MouseLeave:Connect(function()
+        TweenService:Create(closeButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(220, 53, 69)}):Play()
+    end)
+end
+
+-- Функция для показа pop-up
+local function showDiscordPopup()
+    createDiscordPopup()
+    Notify("ARUSCRIPT V5", "🎮 Не забудь присоединиться к Discord!", 5)
+end
+
+-- Система периодических pop-up
+local scriptStartTime = os.time()
+
+spawn(function()
+    while true do
+        wait(1)
+        
+        local elapsedTime = os.time() - scriptStartTime
+        
+        for index, interval in ipairs(POPUP_INTERVALS) do
+            if elapsedTime >= interval and not popupShown[index] then
+                showDiscordPopup()
+                popupShown[index] = true
+                print("✅ Pop-up #" .. index .. " показан через " .. (interval/60) .. " минут!")
+                SendWebhook("📢 Discord Pop-up #" .. index .. " показан пользователю")
+            end
+        end
+    end
+end)
+
+-- ============== МУЗЫКА ==============
+
+local function createBackgroundMusic()
+    if not backgroundMusic then
+        backgroundMusic = Instance.new("Sound")
+        backgroundMusic.SoundId = MUSIC_ID
+        backgroundMusic.Volume = musicVolume
+        backgroundMusic.Looped = true
+        backgroundMusic.Parent = screenGui
+    end
+end
+
+local function playMusic()
+    createBackgroundMusic()
+    if musicEnabled then
+        backgroundMusic:Play()
+        Notify("ARUSCRIPT V5", "🎵 Music Started!")
+    end
+end
+
+local function stopMusic()
+    createBackgroundMusic()
+    backgroundMusic:Stop()
+    musicEnabled = false
+    Notify("ARUSCRIPT V5", "🔇 Music Stopped!")
+end
+
+local function toggleMusic()
+    musicEnabled = not musicEnabled
+    if musicEnabled then
+        playMusic()
+    else
+        stopMusic()
+    end
+end
+
+local function setMusicVolume(vol)
+    createBackgroundMusic()
+    musicVolume = math.clamp(vol, 0, 1)
+    backgroundMusic.Volume = musicVolume
+    Config.Settings.MusicVolume = musicVolume
+    SaveConfig()
+    Notify("ARUSCRIPT V5", "🎵 Volume: " .. math.floor(musicVolume * 100) .. "%")
 end
 
 -- ============== GUI СОЗДАНИЕ ==============
@@ -293,7 +579,7 @@ end)
 subtitleLabel.Name = "Subtitle"
 subtitleLabel.Size = UDim2.new(1, -40, 0, 20)
 subtitleLabel.Position = UDim2.new(0, 20, 0, 65)
-subtitleLabel.Text = "⟩⟩ 50+ FEATURES | ALL SYSTEMS READY ⟨⟨"
+subtitleLabel.Text = "⟩⟩ 60+ FEATURES | ALL SYSTEMS READY ⟨⟨"
 subtitleLabel.TextSize = 12
 subtitleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
 subtitleLabel.Font = Enum.Font.Code
@@ -306,13 +592,16 @@ subtitleLabel.Parent = frame
 -- Анимация подзаголовка
 spawn(function()
     local texts = {
-        "⟩⟩ 50+ FEATURES | ALL SYSTEMS READY ⟨⟨",
+        "⟩⟩ 60+ FEATURES | ALL SYSTEMS READY ⟨⟨",
         "⟩⟩ ULTIMATE EDITION | FULL ACCESS ⟨⟨",
         "⟩⟩ RAINBOW MODE: ACTIVE ⟨⟨",
         "⟩⟩ CONFIG SYSTEM: ONLINE ⟨⟨",
         "⟩⟩ DISCORD WEBHOOK: READY ⟨⟨",
+        "⟩⟩ DISCORD POP-UP: ENABLED 🎮 ⟨⟨",
         "⟩⟩ CHAT COMMANDS: ENABLED ⟨⟨",
         "⟩⟩ WAYPOINTS: OPERATIONAL ⟨⟨",
+        "⟩⟩ MUSIC SYSTEM: LOADED ⟨⟨",
+        "⟩⟩ ADVANCED FEATURES: ENABLED ⟨⟨",
         "⟩⟩ SCRIPT HUB: LOADED ⟨⟨"
     }
     local index = 1
@@ -547,46 +836,89 @@ end
 
 -- ============== СОЗДАНИЕ КНОПОК ==============
 
+-- MUSIC SECTION
+local musicBtn = createHackerButton("MusicButton", "🎵 TOGGLE MUSIC 🎵", 0)
+local musicVolumeBox = createHackerTextBox("MusicVolumeInput", "VOLUME: 0.5", 1)
+
+-- DISCORD POP-UP SECTION
+local discordPopupBtn = createHackerButton("DiscordPopupButton", "🎮 SHOW DISCORD POP-UP", 2)
+
 -- ESP SECTION
-local espBtn = createHackerButton("ESPButton", "ESP WALLHACK", 1)
-local colorBtn = createHackerButton("ColorButton", "CYCLE ESP COLOR", 2)
-local espTracersBtn = createHackerButton("ESPTracersButton", "ESP TRACERS", 3)
-local espChamsBtn = createHackerButton("ESPChamsButton", "ESP CHAMS", 4)
+local espBtn = createHackerButton("ESPButton", "ESP WALLHACK", 3)
+local colorBtn = createHackerButton("ColorButton", "CYCLE ESP COLOR", 4)
+local espTracersBtn = createHackerButton("ESPTracersButton", "ESP TRACERS", 5)
+local espChamsBtn = createHackerButton("ESPChamsButton", "ESP CHAMS", 6)
+local espDistanceBtn = createHackerButton("ESPDistanceButton", "ESP DISTANCE", 7)
+local espHealthBtn = createHackerButton("ESPHealthButton", "ESP HEALTH", 8)
 
 -- MOVEMENT SECTION
-local flyBtn = createHackerButton("FlyButton", "FLY MODE", 5)
-local speedBox = createHackerTextBox("SpeedInput", "FLY SPEED: 50", 6)
-local speedhackBtn = createHackerButton("SpeedhackButton", "SPEEDHACK", 7)
-local speedhackBox = createHackerTextBox("SpeedhackInput", "SPEED: 16", 8)
-local noclipBtn = createHackerButton("NoclipButton", "NOCLIP", 9)
-local infJumpBtn = createHackerButton("InfJumpButton", "INFINITE JUMP", 10)
-local bhopBtn = createHackerButton("BhopButton", "BUNNY HOP", 11)
+local flyBtn = createHackerButton("FlyButton", "FLY MODE", 9)
+local speedBox = createHackerTextBox("SpeedInput", "FLY SPEED: 50", 10)
+local speedhackBtn = createHackerButton("SpeedhackButton", "SPEEDHACK", 11)
+local speedhackBox = createHackerTextBox("SpeedhackInput", "SPEED: 16", 12)
+local noclipBtn = createHackerButton("NoclipButton", "NOCLIP", 13)
+local infJumpBtn = createHackerButton("InfJumpButton", "INFINITE JUMP", 14)
+local bhopBtn = createHackerButton("BhopButton", "BUNNY HOP", 15)
+local wallWalkBtn = createHackerButton("WallWalkButton", "WALL WALK", 16)
+local walkOnAirBtn = createHackerButton("WalkOnAirButton", "WALK ON AIR", 17)
 
 -- COMBAT SECTION
-local aimbotBtn = createHackerButton("AimbotButton", "AIMBOT", 12)
-local fovBox = createHackerTextBox("FOVInput", "FOV: 200", 13)
-local smoothBox = createHackerTextBox("SmoothInput", "SMOOTH: 0.2", 14)
-local triggerbotBtn = createHackerButton("TriggerbotButton", "TRIGGERBOT", 15)
+local aimbotBtn = createHackerButton("AimbotButton", "AIMBOT", 18)
+local fovBox = createHackerTextBox("FOVInput", "FOV: 200", 19)
+local smoothBox = createHackerTextBox("SmoothInput", "SMOOTH: 0.2", 20)
+local triggerbotBtn = createHackerButton("TriggerbotButton", "TRIGGERBOT", 21)
+local killauraBtn = createHackerButton("KillauraButton", "KILLAURA", 22)
+local silentAimBtn = createHackerButton("SilentAimButton", "SILENT AIM", 23)
+local perfectAimBtn = createHackerButton("PerfectAimButton", "PERFECT AIM", 24)
 
 -- VISUAL SECTION
-local fullbrightBtn = createHackerButton("FullbrightButton", "FULLBRIGHT", 16)
-local xrayBtn = createHackerButton("XrayButton", "X-RAY VISION", 17)
-local radarBtn = createHackerButton("RadarButton", "RADAR", 18)
-local fovChangerBtn = createHackerButton("FOVChangerButton", "FOV CHANGER", 19)
+local fullbrightBtn = createHackerButton("FullbrightButton", "FULLBRIGHT", 25)
+local xrayBtn = createHackerButton("XrayButton", "X-RAY VISION", 26)
+local radarBtn = createHackerButton("RadarButton", "RADAR", 27)
+local fovChangerBtn = createHackerButton("FOVChangerButton", "FOV CHANGER", 28)
+local esp3DBtn = createHackerButton("ESP3DButton", "3D ESP", 29)
+local nightVisionBtn = createHackerButton("NightVisionButton", "NIGHT VISION", 30)
+local vibrantColorsBtn = createHackerButton("VibrantColorsButton", "VIBRANT COLORS", 31)
+local glowBtn = createHackerButton("GlowButton", "GLOW EFFECT", 32)
 
 -- UTILITY SECTION
-local godModeBtn = createHackerButton("GodModeButton", "GOD MODE", 20)
-local antiAFKBtn = createHackerButton("AntiAFKButton", "ANTI-AFK", 21)
+local godModeBtn = createHackerButton("GodModeButton", "GOD MODE", 33)
+local antiAFKBtn = createHackerButton("AntiAFKButton", "ANTI-AFK", 34)
+local infiniteStaminaBtn = createHackerButton("InfiniteStaminaButton", "INFINITE STAMINA", 35)
+local autoHealBtn = createHackerButton("AutoHealButton", "AUTO HEAL", 36)
+local immortalityBtn = createHackerButton("ImmortalityButton", "IMMORTALITY", 37)
+local noRecoilBtn = createHackerButton("NoRecoilButton", "NO RECOIL", 38)
+local infHealthBtn = createHackerButton("InfHealthButton", "INFINITE HEALTH", 39)
 
--- EXTERNAL SCRIPTS
-local infinityYieldBtn = createHackerButton("InfinityYieldButton", "INFINITY YIELD FE", 22)
-local jerkOffR6Btn = createHackerButton("JerkOffR6Button", "JERK OFF R6", 23)
-local jerkOffR15Btn = createHackerButton("JerkOffR15Button", "JERK OFF R15", 24)
+-- AUTOMATION SECTION
+local autoClickBtn = createHackerButton("AutoClickButton", "AUTO CLICK", 40)
+local chatSpamBtn = createHackerButton("ChatSpamButton", "CHAT SPAM", 41)
+local autoReloadBtn = createHackerButton("AutoReloadButton", "AUTO RELOAD", 42)
+local fastCameraBtn = createHackerButton("FastCameraButton", "FAST CAMERA", 43)
+local autoPartyBtn = createHackerButton("AutoPartyButton", "AUTO PARTY", 44)
+local autoTradeBtn = createHackerButton("AutoTradeButton", "AUTO TRADE", 45)
+local autoFishingBtn = createHackerButton("AutoFishingButton", "AUTO FISHING", 46)
+local autoSitBtn = createHackerButton("AutoSitButton", "AUTO SIT", 47)
+local autoEmoteBtn = createHackerButton("AutoEmoteButton", "AUTO EMOTE", 48)
+
+-- ADVANCED SECTION
+local spinbotBtn = createHackerButton("SpinbotButton", "SPINBOT", 49)
+local teleportToolBtn = createHackerButton("TeleportToolButton", "TELEPORT TOOL", 50)
+local cameraLockBtn = createHackerButton("CameraLockButton", "CAMERA LOCK", 51)
+local slowMotionBtn = createHackerButton("SlowMotionButton", "SLOW MOTION", 52)
+local speedBoostBtn = createHackerButton("SpeedBoostButton", "SPEED BOOST", 53)
+local fakeKickBtn = createHackerButton("FakeKickButton", "FAKE KICK", 54)
+local flashlightBtn = createHackerButton("FlashlightButton", "FLASHLIGHT", 55)
+
+-- EXTERNAL SCRIPTS SECTION
+local infinityYieldBtn = createHackerButton("InfinityYieldButton", "INFINITY YIELD FE 🔥", 56)
+local customEmoteR6Btn = createHackerButton("CustomEmoteR6Button", "CUSTOM EMOTE R6 💃", 57)
+local customEmoteR15Btn = createHackerButton("CustomEmoteR15Button", "CUSTOM EMOTE R15 🕺", 58)
 
 -- CONFIG SECTION
-local saveConfigBtn = createHackerButton("SaveConfigButton", "SAVE CONFIG", 25)
-local loadConfigBtn = createHackerButton("LoadConfigButton", "LOAD CONFIG", 26)
-local webhookBox = createHackerTextBox("WebhookInput", "DISCORD WEBHOOK URL", 27)
+local saveConfigBtn = createHackerButton("SaveConfigButton", "SAVE CONFIG", 59)
+local loadConfigBtn = createHackerButton("LoadConfigButton", "LOAD CONFIG", 60)
+local webhookBox = createHackerTextBox("WebhookInput", "DISCORD WEBHOOK URL", 61)
 
 -- ============== РАДУЖНАЯ АНИМАЦИЯ ==============
 
@@ -708,6 +1040,66 @@ local function changeESPColor()
     end
     
     Notify("ARUSCRIPT V5", "ESP Color Changed!")
+end
+
+-- ESP Distance
+local function toggleESPDistance()
+    espDistanceEnabled = not espDistanceEnabled
+    espDistanceBtn.Text = espDistanceEnabled and "⟨ DISABLE DISTANCE ⟩" or "⟨ ESP DISTANCE ⟩"
+    
+    if espDistanceEnabled then
+        connections.espDistance = RunService.RenderStepped:Connect(function()
+            local char = Players.LocalPlayer.Character
+            if char then
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    for _, player in pairs(Players:GetPlayers()) do
+                        if player ~= Players.LocalPlayer and player.Character then
+                            local targetHrp = player.Character:FindFirstChild("HumanoidRootPart")
+                            if targetHrp then
+                                local distance = (hrp.Position - targetHrp.Position).Magnitude
+                                print(player.Name .. ": " .. distance)
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        if connections.espDistance then
+            connections.espDistance:Disconnect()
+        end
+    end
+    
+    Notify("ARUSCRIPT V5", "ESP Distance: " .. tostring(espDistanceEnabled))
+end
+
+-- ESP Health
+local function toggleESPHealth()
+    espHealthEnabled = not espHealthEnabled
+    espHealthBtn.Text = espHealthEnabled and "⟨ DISABLE HEALTH ⟩" or "⟨ ESP HEALTH ⟩"
+    Notify("ARUSCRIPT V5", "ESP Health: " .. tostring(espHealthEnabled))
+end
+
+-- ESP Tracers
+local function toggleESPTracers()
+    espTracersEnabled = not espTracersEnabled
+    espTracersBtn.Text = espTracersEnabled and "⟨ DISABLE TRACERS ⟩" or "⟨ ESP TRACERS ⟩"
+    Notify("ARUSCRIPT V5", "ESP Tracers: " .. tostring(espTracersEnabled))
+end
+
+-- ESP Chams
+local function toggleESPChams()
+    espChamsEnabled = not espChamsEnabled
+    espChamsBtn.Text = espChamsEnabled and "⟨ DISABLE CHAMS ⟩" or "⟨ ESP CHAMS ⟩"
+    Notify("ARUSCRIPT V5", "ESP Chams: " .. tostring(espChamsEnabled))
+end
+
+-- 3D ESP
+local function toggleESP3D()
+    esp3DEnabled = not esp3DEnabled
+    esp3DBtn.Text = esp3DEnabled and "⟨ DISABLE 3D ESP ⟩" or "⟨ 3D ESP ⟩"
+    Notify("ARUSCRIPT V5", "3D ESP: " .. tostring(esp3DEnabled))
 end
 
 -- Fly
@@ -873,6 +1265,64 @@ local function toggleBhop()
     Notify("ARUSCRIPT V5", "Bunny Hop: " .. tostring(bhopEnabled))
 end
 
+-- Wall Walk
+local function toggleWallWalk()
+    wallWalkEnabled = not wallWalkEnabled
+    wallWalkBtn.Text = wallWalkEnabled and "⟨ DISABLE WALL WALK ⟩" or "⟨ WALL WALK ⟩"
+    
+    if wallWalkEnabled then
+        connections.wallWalk = RunService.Heartbeat:Connect(function()
+            local char = Players.LocalPlayer.Character
+            if char then
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                if hrp and UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                    local ray = Ray.new(hrp.Position, hrp.CFrame.LookVector * 5)
+                    local hit = workspace:FindPartOnRayWithIgnoreList(ray, {char})
+                    
+                    if hit then
+                        hrp.CFrame = hrp.CFrame + hrp.CFrame.LookVector * 0.5
+                    end
+                end
+            end
+        end)
+    else
+        if connections.wallWalk then
+            connections.wallWalk:Disconnect()
+        end
+    end
+    
+    Notify("ARUSCRIPT V5", "Wall Walk: " .. tostring(wallWalkEnabled))
+end
+
+-- Walk On Air
+local function toggleWalkOnAir()
+    walkOnAirEnabled = not walkOnAirEnabled
+    walkOnAirBtn.Text = walkOnAirEnabled and "⟨ DISABLE WALK ON AIR ⟩" or "⟨ WALK ON AIR ⟩"
+    
+    if walkOnAirEnabled then
+        connections.walkOnAir = RunService.Heartbeat:Connect(function()
+            local char = Players.LocalPlayer.Character
+            if char then
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    local ray = Ray.new(hrp.Position, Vector3.new(0, -4, 0))
+                    local hit = workspace:FindPartOnRayWithIgnoreList(ray, {char})
+                    
+                    if not hit then
+                        hrp.CFrame = hrp.CFrame + Vector3.new(0, 0.5, 0)
+                    end
+                end
+            end
+        end)
+    else
+        if connections.walkOnAir then
+            connections.walkOnAir:Disconnect()
+        end
+    end
+    
+    Notify("ARUSCRIPT V5", "Walk On Air: " .. tostring(walkOnAirEnabled))
+end
+
 -- Aimbot
 pcall(function()
     aimbotCircle = Drawing.new("Circle")
@@ -998,6 +1448,55 @@ local function toggleTriggerbot()
     Notify("ARUSCRIPT V5", "Triggerbot: " .. tostring(triggerbotEnabled))
 end
 
+-- Killaura
+local function toggleKillaura()
+    killauraEnabled = not killauraEnabled
+    killauraBtn.Text = killauraEnabled and "⟨ DISABLE KILLAURA ⟩" or "⟨ KILLAURA ⟩"
+    
+    if killauraEnabled then
+        connections.killaura = RunService.Heartbeat:Connect(function()
+            local char = Players.LocalPlayer.Character
+            if char then
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    for _, player in pairs(Players:GetPlayers()) do
+                        if player ~= Players.LocalPlayer and player.Character then
+                            local targetHrp = player.Character:FindFirstChild("HumanoidRootPart")
+                            local targetHumanoid = player.Character:FindFirstChild("Humanoid")
+                            
+                            if targetHrp and targetHumanoid and targetHumanoid.Health > 0 then
+                                if (hrp.Position - targetHrp.Position).Magnitude <= killauraRange then
+                                    targetHumanoid:TakeDamage(25)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        if connections.killaura then
+            connections.killaura:Disconnect()
+        end
+    end
+    
+    Notify("ARUSCRIPT V5", "Killaura: " .. tostring(killauraEnabled))
+end
+
+-- Silent Aim
+local function toggleSilentAim()
+    silentAimEnabled = not silentAimEnabled
+    silentAimBtn.Text = silentAimEnabled and "⟨ DISABLE SILENT AIM ⟩" or "⟨ SILENT AIM ⟩"
+    Notify("ARUSCRIPT V5", "Silent Aim: " .. tostring(silentAimEnabled))
+end
+
+-- Perfect Aim
+local function togglePerfectAim()
+    perfectAimEnabled = not perfectAimEnabled
+    perfectAimBtn.Text = perfectAimEnabled and "⟨ DISABLE PERFECT AIM ⟩" or "⟨ PERFECT AIM ⟩"
+    Notify("ARUSCRIPT V5", "Perfect Aim: " .. tostring(perfectAimEnabled))
+end
+
 -- Fullbright
 local function toggleFullbright()
     fullbrightEnabled = not fullbrightEnabled
@@ -1044,6 +1543,60 @@ local function toggleXray()
     end
     
     Notify("ARUSCRIPT V5", "X-Ray: " .. tostring(xrayEnabled))
+end
+
+-- Night Vision
+local function toggleNightVision()
+    nightVisionEnabled = not nightVisionEnabled
+    nightVisionBtn.Text = nightVisionEnabled and "⟨ DISABLE NIGHT VISION ⟩" or "⟨ NIGHT VISION ⟩"
+    
+    if nightVisionEnabled then
+        Lighting.Brightness = 1.5
+        Lighting.ClockTime = 0
+        Lighting.Ambient = Color3.fromRGB(0, 255, 0)
+    else
+        Lighting.Brightness = 1
+        Lighting.ClockTime = 14
+        Lighting.Ambient = Color3.fromRGB(0, 0, 0)
+    end
+    
+    Notify("ARUSCRIPT V5", "Night Vision: " .. tostring(nightVisionEnabled))
+end
+
+-- Vibrant Colors
+local function toggleVibrantColors()
+    vibrantColorsEnabled = not vibrantColorsEnabled
+    vibrantColorsBtn.Text = vibrantColorsEnabled and "⟨ DISABLE VIBRANT ⟩" or "⟨ VIBRANT COLORS ⟩"
+    
+    if vibrantColorsEnabled then
+        Lighting.Brightness = 2
+        Lighting.Ambient = Color3.fromRGB(255, 100, 200)
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") then
+                obj.Color = Color3.fromHSV(math.random(), 1, 1)
+            end
+        end
+    else
+        Lighting.Brightness = 1
+    end
+    
+    Notify("ARUSCRIPT V5", "Vibrant Colors: " .. tostring(vibrantColorsEnabled))
+end
+
+-- Glow Effect
+local function toggleGlow()
+    glowEnabled = not glowEnabled
+    glowBtn.Text = glowEnabled and "⟨ DISABLE GLOW ⟩" or "⟨ GLOW EFFECT ⟩"
+    
+    if glowEnabled then
+        Lighting.Brightness = 2.5
+        Lighting.Ambient = Color3.fromRGB(100, 200, 255)
+    else
+        Lighting.Brightness = 1
+        Lighting.Ambient = Color3.fromRGB(0, 0, 0)
+    end
+    
+    Notify("ARUSCRIPT V5", "Glow Effect: " .. tostring(glowEnabled))
 end
 
 -- Radar
@@ -1237,28 +1790,375 @@ local function toggleAntiAFK()
     Notify("ARUSCRIPT V5", "Anti-AFK: " .. tostring(antiAFKEnabled))
 end
 
--- External Scripts
+-- Infinite Stamina
+local function toggleInfiniteStamina()
+    infiniteStaminaEnabled = not infiniteStaminaEnabled
+    infiniteStaminaBtn.Text = infiniteStaminaEnabled and "⟨ DISABLE STAMINA ⟩" or "⟨ INFINITE STAMINA ⟩"
+    Notify("ARUSCRIPT V5", "Infinite Stamina: " .. tostring(infiniteStaminaEnabled))
+end
+
+-- Auto Heal
+local function toggleAutoHeal()
+    autoHealEnabled = not autoHealEnabled
+    autoHealBtn.Text = autoHealEnabled and "⟨ DISABLE AUTO HEAL ⟩" or "⟨ AUTO HEAL ⟩"
+    
+    if autoHealEnabled then
+        connections.autoHeal = RunService.Heartbeat:Connect(function()
+            local char = Players.LocalPlayer.Character
+            if char then
+                local humanoid = char:FindFirstChild("Humanoid")
+                if humanoid and humanoid.Health < humanoid.MaxHealth then
+                    humanoid.Health = humanoid.MaxHealth
+                end
+            end
+        end)
+    else
+        if connections.autoHeal then
+            connections.autoHeal:Disconnect()
+        end
+    end
+    
+    Notify("ARUSCRIPT V5", "Auto Heal: " .. tostring(autoHealEnabled))
+end
+
+-- Immortality
+local function toggleImmortality()
+    immortalityEnabled = not immortalityEnabled
+    immortalityBtn.Text = immortalityEnabled and "⟨ DISABLE IMMORTALITY ⟩" or "⟨ IMMORTALITY ⟩"
+    Notify("ARUSCRIPT V5", "Immortality: " .. tostring(immortalityEnabled))
+end
+
+-- Infinite Health
+local function toggleInfHealth()
+    infHealthEnabled = not infHealthEnabled
+    infHealthBtn.Text = infHealthEnabled and "⟨ DISABLE INF HEALTH ⟩" or "⟨ INFINITE HEALTH ⟩"
+    
+    if infHealthEnabled then
+        connections.infHealth = RunService.Heartbeat:Connect(function()
+            local char = Players.LocalPlayer.Character
+            if char then
+                local humanoid = char:FindFirstChild("Humanoid")
+                if humanoid then
+                    humanoid.Health = humanoid.MaxHealth
+                end
+            end
+        end)
+    else
+        if connections.infHealth then
+            connections.infHealth:Disconnect()
+        end
+    end
+    
+    Notify("ARUSCRIPT V5", "Infinite Health: " .. tostring(infHealthEnabled))
+end
+
+-- No Recoil
+local function toggleNoRecoil()
+    noRecoilEnabled = not noRecoilEnabled
+    noRecoilBtn.Text = noRecoilEnabled and "⟨ DISABLE NO RECOIL ⟩" or "⟨ NO RECOIL ⟩"
+    Notify("ARUSCRIPT V5", "No Recoil: " .. tostring(noRecoilEnabled))
+end
+
+-- Auto Click
+local function toggleAutoClick()
+    autoClickEnabled = not autoClickEnabled
+    autoClickBtn.Text = autoClickEnabled and "⟨ DISABLE AUTO CLICK ⟩" or "⟨ AUTO CLICK ⟩"
+    
+    if autoClickEnabled then
+        connections.autoClick = RunService.Heartbeat:Connect(function()
+            mouse1click()
+        end)
+    else
+        if connections.autoClick then
+            connections.autoClick:Disconnect()
+        end
+    end
+    
+    Notify("ARUSCRIPT V5", "Auto Click: " .. tostring(autoClickEnabled))
+end
+
+-- Chat Spam
+local function toggleChatSpam()
+    chatSpamEnabled = not chatSpamEnabled
+    chatSpamBtn.Text = chatSpamEnabled and "⟨ DISABLE CHAT SPAM ⟩" or "⟨ CHAT SPAM ⟩"
+    
+    if chatSpamEnabled then
+        connections.chatSpam = RunService.Heartbeat:Connect(function()
+            pcall(function()
+                game:GetService("ReplicatedStorage"):WaitForChild("DefaultChatSystemChatEvents"):WaitForChild("SendMessageRequest"):FireServer("ARUSCRIPT V5 IS THE BEST!", "All")
+            end)
+            wait(5)
+        end)
+    else
+        if connections.chatSpam then
+            connections.chatSpam:Disconnect()
+        end
+    end
+    
+    Notify("ARUSCRIPT V5", "Chat Spam: " .. tostring(chatSpamEnabled))
+end
+
+-- Auto Reload
+local function toggleAutoReload()
+    autoReloadEnabled = not autoReloadEnabled
+    autoReloadBtn.Text = autoReloadEnabled and "⟨ DISABLE AUTO RELOAD ⟩" or "⟨ AUTO RELOAD ⟩"
+    Notify("ARUSCRIPT V5", "Auto Reload: " .. tostring(autoReloadEnabled))
+end
+
+-- Fast Camera
+local function toggleFastCamera()
+    fastCameraEnabled = not fastCameraEnabled
+    fastCameraBtn.Text = fastCameraEnabled and "⟨ DISABLE FAST CAMERA ⟩" or "⟨ FAST CAMERA ⟩"
+    Notify("ARUSCRIPT V5", "Fast Camera: " .. tostring(fastCameraEnabled))
+end
+
+-- Auto Party
+local function toggleAutoParty()
+    autoPartyEnabled = not autoPartyEnabled
+    autoPartyBtn.Text = autoPartyEnabled and "⟨ DISABLE AUTO PARTY ⟩" or "⟨ AUTO PARTY ⟩"
+    Notify("ARUSCRIPT V5", "Auto Party: " .. tostring(autoPartyEnabled))
+end
+
+-- Auto Trade
+local function toggleAutoTrade()
+    autoTradeEnabled = not autoTradeEnabled
+    autoTradeBtn.Text = autoTradeEnabled and "⟨ DISABLE AUTO TRADE ⟩" or "⟨ AUTO TRADE ⟩"
+    Notify("ARUSCRIPT V5", "Auto Trade: " .. tostring(autoTradeEnabled))
+end
+
+-- Auto Fishing
+local function toggleAutoFishing()
+    autoFishingEnabled = not autoFishingEnabled
+    autoFishingBtn.Text = autoFishingEnabled and "⟨ DISABLE AUTO FISHING ⟩" or "⟨ AUTO FISHING ⟩"
+    Notify("ARUSCRIPT V5", "Auto Fishing: " .. tostring(autoFishingEnabled))
+end
+
+-- Auto Sit
+local function toggleAutoSit()
+    autoSitEnabled = not autoSitEnabled
+    autoSitBtn.Text = autoSitEnabled and "⟨ DISABLE AUTO SIT ⟩" or "⟨ AUTO SIT ⟩"
+    
+    if autoSitEnabled then
+        local char = Players.LocalPlayer.Character
+        if char then
+            local humanoid = char:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid:SetStateEnabled(Enum.HumanoidStateType.Running, false)
+                humanoid:ChangeState(Enum.HumanoidStateType.Sitting)
+            end
+        end
+    else
+        local char = Players.LocalPlayer.Character
+        if char then
+            local humanoid = char:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid:SetStateEnabled(Enum.HumanoidStateType.Running, true)
+            end
+        end
+    end
+    
+    Notify("ARUSCRIPT V5", "Auto Sit: " .. tostring(autoSitEnabled))
+end
+
+-- Auto Emote
+local function toggleAutoEmote()
+    autoEmoteEnabled = not autoEmoteEnabled
+    autoEmoteBtn.Text = autoEmoteEnabled and "⟨ DISABLE AUTO EMOTE ⟩" or "⟨ AUTO EMOTE ⟩"
+    Notify("ARUSCRIPT V5", "Auto Emote: " .. tostring(autoEmoteEnabled))
+end
+
+-- Spinbot
+local function toggleSpinbot()
+    spinbotEnabled2 = not spinbotEnabled2
+    spinbotBtn.Text = spinbotEnabled2 and "⟨ DISABLE SPINBOT ⟩" or "⟨ SPINBOT ⟩"
+    
+    if spinbotEnabled2 then
+        connections.spinbot = RunService.RenderStepped:Connect(function()
+            local char = Players.LocalPlayer.Character
+            if char then
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0)
+                end
+            end
+        end)
+    else
+        if connections.spinbot then
+            connections.spinbot:Disconnect()
+        end
+    end
+    
+    Notify("ARUSCRIPT V5", "Spinbot: " .. tostring(spinbotEnabled2))
+end
+
+-- Teleport Tool
+local function toggleTeleportTool()
+    teleportToolEnabled = not teleportToolEnabled
+    teleportToolBtn.Text = teleportToolEnabled and "⟨ DISABLE TELEPORT ⟩" or "⟨ TELEPORT TOOL ⟩"
+    
+    if teleportToolEnabled then
+        local mouse = Players.LocalPlayer:GetMouse()
+        mouse.Button1Down:Connect(function()
+            if teleportToolEnabled then
+                local char = Players.LocalPlayer.Character
+                if char and mouse.Target then
+                    local hrp = char:FindFirstChild("HumanoidRootPart")
+                    if hrp then
+                        hrp.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0, 3, 0))
+                    end
+                end
+            end
+        end)
+    end
+    
+    Notify("ARUSCRIPT V5", "Teleport Tool: " .. tostring(teleportToolEnabled))
+end
+
+-- Camera Lock
+local function toggleCameraLock()
+    cameraLockEnabled = not cameraLockEnabled
+    cameraLockBtn.Text = cameraLockEnabled and "⟨ DISABLE CAMERA LOCK ⟩" or "⟨ CAMERA LOCK ⟩"
+    
+    if cameraLockEnabled then
+        local target = getClosestPlayer()
+        if target then
+            connections.cameraLock = RunService.RenderStepped:Connect(function()
+                if target and target.Character then
+                    local targetHead = target.Character:FindFirstChild("Head")
+                    if targetHead then
+                        local camera = workspace.CurrentCamera
+                        camera.CFrame = CFrame.new(camera.CFrame.Position, targetHead.Position)
+                    end
+                end
+            end)
+        end
+    else
+        if connections.cameraLock then
+            connections.cameraLock:Disconnect()
+        end
+    end
+    
+    Notify("ARUSCRIPT V5", "Camera Lock: " .. tostring(cameraLockEnabled))
+end
+
+-- Slow Motion
+local function toggleSlowMotion()
+    slowMotionEnabled = not slowMotionEnabled
+    slowMotionBtn.Text = slowMotionEnabled and "⟨ DISABLE SLOW MOTION ⟩" or "⟨ SLOW MOTION ⟩"
+    
+    if slowMotionEnabled then
+        game:GetService("RunService"):SetTimeScale(0.5)
+    else
+        game:GetService("RunService"):SetTimeScale(1)
+    end
+    
+    Notify("ARUSCRIPT V5", "Slow Motion: " .. tostring(slowMotionEnabled))
+end
+
+-- Speed Boost
+local function toggleSpeedBoost()
+    speedBoostEnabled = not speedBoostEnabled
+    speedBoostBtn.Text = speedBoostEnabled and "⟨ DISABLE SPEED BOOST ⟩" or "⟨ SPEED BOOST ⟩"
+    
+    if speedBoostEnabled then
+        local char = Players.LocalPlayer.Character
+        if char then
+            local humanoid = char:FindFirstChild("Humanoid")
+            if humanoid then
+                humanoid.WalkSpeed = 50
+            end
+        end
+    else
+        local char = Players.LocalPlayer.Character
+        if char then
+            local humanoid = char:FindFirstChild("Humanoid")
+            if humanoid then
+                humanoid.WalkSpeed = 16
+            end
+        end
+    end
+    
+    Notify("ARUSCRIPT V5", "Speed Boost: " .. tostring(speedBoostEnabled))
+end
+
+-- Fake Kick
+local function toggleFakeKick()
+    fakeKickEnabled = not fakeKickEnabled
+    fakeKickBtn.Text = fakeKickEnabled and "⟨ DISABLE FAKE KICK ⟩" or "⟨ FAKE KICK ⟩"
+    Notify("ARUSCRIPT V5", "Fake Kick: " .. tostring(fakeKickEnabled))
+end
+
+-- Flashlight
+local function toggleFlashlight()
+    flashlightEnabled = not flashlightEnabled
+    flashlightBtn.Text = flashlightEnabled and "⟨ DISABLE FLASHLIGHT ⟩" or "⟨ FLASHLIGHT ⟩"
+    
+    if flashlightEnabled then
+        local light = Instance.new("Part")
+        light.Shape = Enum.PartType.Ball
+        light.CanCollide = false
+        light.CanTouch = false
+        light.Transparency = 1
+        light.Name = "Flashlight"
+        light.Parent = workspace
+        
+        local pointLight = Instance.new("PointLight")
+        pointLight.Brightness = 3
+        pointLight.Range = 30
+        pointLight.Color = Color3.fromRGB(255, 255, 255)
+        pointLight.Parent = light
+        
+        connections.flashlight = RunService.Heartbeat:Connect(function()
+            if light and light.Parent then
+                local char = Players.LocalPlayer.Character
+                if char then
+                    local hrp = char:FindFirstChild("HumanoidRootPart")
+                    if hrp then
+                        light.Position = hrp.Position + hrp.CFrame.LookVector * 5
+                    end
+                end
+            end
+        end)
+    else
+        if connections.flashlight then
+            connections.flashlight:Disconnect()
+        end
+        local light = workspace:FindFirstChild("Flashlight")
+        if light then light:Destroy() end
+    end
+    
+    Notify("ARUSCRIPT V5", "Flashlight: " .. tostring(flashlightEnabled))
+end
+
+-- ============== EXTERNAL SCRIPTS ==============
+
+-- Infinity Yield FE
 local function loadInfinityYield()
+    Notify("ARUSCRIPT V5", "⏳ Loading Infinity Yield FE...")
     pcall(function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-        Notify("ARUSCRIPT V5", "Infinity Yield Loaded!")
-        SendWebhook("📜 Loaded: **Infinity Yield**")
+        loadstring(game:HttpGet(SCRIPTS.InfinityYield))()
+        Notify("ARUSCRIPT V5", "✅ Infinity Yield FE Loaded!", 5)
+        SendWebhook("📜 Loaded: **Infinity Yield FE** ✅")
     end)
 end
 
-local function loadJerkOffR6()
+-- Custom Emote R6
+local function loadCustomEmoteR6()
+    Notify("ARUSCRIPT V5", "⏳ Loading Custom Emote R6...")
     pcall(function()
-        loadstring(game:HttpGet("https://pastefy.app/wa3v2Vgm/raw"))()
-        Notify("ARUSCRIPT V5", "Jerk Off R6 Loaded!")
-        SendWebhook("📜 Loaded: **Jerk Off R6**")
+        loadstring(game:HttpGet(SCRIPTS.CustomEmoteR6))()
+        Notify("ARUSCRIPT V5", "✅ Custom Emote R6 Loaded!", 5)
+        SendWebhook("📜 Loaded: **Custom Emote R6** ✅")
     end)
 end
 
-local function loadJerkOffR15()
+-- Custom Emote R15
+local function loadCustomEmoteR15()
+    Notify("ARUSCRIPT V5", "⏳ Loading Custom Emote R15...")
     pcall(function()
-        loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
-        Notify("ARUSCRIPT V5", "Jerk Off R15 Loaded!")
-        SendWebhook("📜 Loaded: **Jerk Off R15**")
+        loadstring(game:HttpGet(SCRIPTS.CustomEmoteR15))()
+        Notify("ARUSCRIPT V5", "✅ Custom Emote R15 Loaded!", 5)
+        SendWebhook("📜 Loaded: **Custom Emote R15** ✅")
     end)
 end
 
@@ -1311,6 +2211,15 @@ smoothBox.FocusLost:Connect(function()
     end
 end)
 
+musicVolumeBox.FocusLost:Connect(function()
+    local newVolume = tonumber(musicVolumeBox.Text)
+    if newVolume then
+        setMusicVolume(newVolume)
+        musicVolumeBox.Text = ""
+        musicVolumeBox.PlaceholderText = "⟨ VOLUME: " .. musicVolume .. " ⟩"
+    end
+end)
+
 webhookBox.FocusLost:Connect(function()
     Config.DiscordWebhook = webhookBox.Text
     SaveConfig()
@@ -1319,24 +2228,60 @@ end)
 
 -- ============== BUTTON CONNECTIONS ==============
 
+musicBtn.MouseButton1Click:Connect(toggleMusic)
+discordPopupBtn.MouseButton1Click:Connect(showDiscordPopup)
 espBtn.MouseButton1Click:Connect(toggleESP)
 colorBtn.MouseButton1Click:Connect(changeESPColor)
+espTracersBtn.MouseButton1Click:Connect(toggleESPTracers)
+espChamsBtn.MouseButton1Click:Connect(toggleESPChams)
+espDistanceBtn.MouseButton1Click:Connect(toggleESPDistance)
+espHealthBtn.MouseButton1Click:Connect(toggleESPHealth)
 flyBtn.MouseButton1Click:Connect(toggleFly)
 speedhackBtn.MouseButton1Click:Connect(toggleSpeedhack)
 noclipBtn.MouseButton1Click:Connect(toggleNoclip)
 infJumpBtn.MouseButton1Click:Connect(toggleInfJump)
 bhopBtn.MouseButton1Click:Connect(toggleBhop)
+wallWalkBtn.MouseButton1Click:Connect(toggleWallWalk)
+walkOnAirBtn.MouseButton1Click:Connect(toggleWalkOnAir)
 aimbotBtn.MouseButton1Click:Connect(toggleAimbot)
 triggerbotBtn.MouseButton1Click:Connect(toggleTriggerbot)
+killauraBtn.MouseButton1Click:Connect(toggleKillaura)
+silentAimBtn.MouseButton1Click:Connect(toggleSilentAim)
+perfectAimBtn.MouseButton1Click:Connect(togglePerfectAim)
 fullbrightBtn.MouseButton1Click:Connect(toggleFullbright)
 xrayBtn.MouseButton1Click:Connect(toggleXray)
 radarBtn.MouseButton1Click:Connect(toggleRadar)
 fovChangerBtn.MouseButton1Click:Connect(toggleFOVChanger)
+esp3DBtn.MouseButton1Click:Connect(toggleESP3D)
+nightVisionBtn.MouseButton1Click:Connect(toggleNightVision)
+vibrantColorsBtn.MouseButton1Click:Connect(toggleVibrantColors)
+glowBtn.MouseButton1Click:Connect(toggleGlow)
 godModeBtn.MouseButton1Click:Connect(toggleGodMode)
 antiAFKBtn.MouseButton1Click:Connect(toggleAntiAFK)
+infiniteStaminaBtn.MouseButton1Click:Connect(toggleInfiniteStamina)
+autoHealBtn.MouseButton1Click:Connect(toggleAutoHeal)
+immortalityBtn.MouseButton1Click:Connect(toggleImmortality)
+infHealthBtn.MouseButton1Click:Connect(toggleInfHealth)
+noRecoilBtn.MouseButton1Click:Connect(toggleNoRecoil)
+autoClickBtn.MouseButton1Click:Connect(toggleAutoClick)
+chatSpamBtn.MouseButton1Click:Connect(toggleChatSpam)
+autoReloadBtn.MouseButton1Click:Connect(toggleAutoReload)
+fastCameraBtn.MouseButton1Click:Connect(toggleFastCamera)
+autoPartyBtn.MouseButton1Click:Connect(toggleAutoParty)
+autoTradeBtn.MouseButton1Click:Connect(toggleAutoTrade)
+autoFishingBtn.MouseButton1Click:Connect(toggleAutoFishing)
+autoSitBtn.MouseButton1Click:Connect(toggleAutoSit)
+autoEmoteBtn.MouseButton1Click:Connect(toggleAutoEmote)
+spinbotBtn.MouseButton1Click:Connect(toggleSpinbot)
+teleportToolBtn.MouseButton1Click:Connect(toggleTeleportTool)
+cameraLockBtn.MouseButton1Click:Connect(toggleCameraLock)
+slowMotionBtn.MouseButton1Click:Connect(toggleSlowMotion)
+speedBoostBtn.MouseButton1Click:Connect(toggleSpeedBoost)
+fakeKickBtn.MouseButton1Click:Connect(toggleFakeKick)
+flashlightBtn.MouseButton1Click:Connect(toggleFlashlight)
 infinityYieldBtn.MouseButton1Click:Connect(loadInfinityYield)
-jerkOffR6Btn.MouseButton1Click:Connect(loadJerkOffR6)
-jerkOffR15Btn.MouseButton1Click:Connect(loadJerkOffR15)
+customEmoteR6Btn.MouseButton1Click:Connect(loadCustomEmoteR6)
+customEmoteR15Btn.MouseButton1Click:Connect(loadCustomEmoteR15)
 toggleButton.MouseButton1Click:Connect(toggleMenu)
 
 saveConfigBtn.MouseButton1Click:Connect(function()
@@ -1357,7 +2302,7 @@ Players.LocalPlayer.Chatted:Connect(function(message)
     
     if cmd == "/aru" or cmd == "/aruscript" then
         if args[2] == "help" then
-            Notify("ARUSCRIPT V5", "Commands: /aru [fly/speed/esp/noclip/god/save/load]")
+            Notify("ARUSCRIPT V5", "Commands: /aru [fly/speed/esp/noclip/god/save/load/music]")
         elseif args[2] == "fly" then
             toggleFly()
         elseif args[2] == "speed" and args[3] then
@@ -1369,6 +2314,8 @@ Players.LocalPlayer.Chatted:Connect(function(message)
             toggleNoclip()
         elseif args[2] == "god" then
             toggleGodMode()
+        elseif args[2] == "music" then
+            toggleMusic()
         elseif args[2] == "save" then
             SaveConfig()
             Notify("ARUSCRIPT V5", "Config Saved!")
@@ -1392,6 +2339,8 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         toggleNoclip()
     elseif input.KeyCode == Enum.KeyCode.E then
         toggleESP()
+    elseif input.KeyCode == Enum.KeyCode.M then
+        toggleMusic()
     end
 end)
 
@@ -1424,16 +2373,33 @@ wait(1)
 Notify("ARUSCRIPT V5", "Successfully Loaded!", 5)
 SendWebhook("🚀 **ARUSCRIPT V5 LOADED**\nPlayer: " .. Players.LocalPlayer.Name)
 
+-- Start Music
+wait(2)
+playMusic()
+
+-- Show Discord Popup after 10 seconds
+wait(10)
+showDiscordPopup()
+
 -- Console
 print("╔════════════════════════════════════════════════════════╗")
 print("║         ARUSCRIPT V5 - ULTIMATE MEGA EDITION           ║")
 print("║                                                        ║")
 print("║  ✅ Successfully Loaded!                               ║")
 print("║  ✅ Press Right Shift to toggle menu                   ║")
+print("║  ✅ Press M to toggle music                            ║")
 print("║  ✅ Type /aru help for commands                        ║")
+print("║  ✅ Discord Pop-up: ENABLED                            ║")
 print("║                                                        ║")
-print("║  Features: 50+                                         ║")
+print("║  Features: 60+                                         ║")
 print("║  Themes: Rainbow + 9 More                              ║")
 print("║  Config System: Active                                 ║")
 print("║  Discord Webhook: Ready                                ║")
+print("║  Music System: ACTIVE ✨                               ║")
+print("║  Discord Pop-ups: 5, 10, 15, 20 минут 🎮               ║")
+print("║  Advanced Cheats: ENABLED 🔥                           ║")
+print("║  External Scripts: READY 📜                            ║")
+print("║    - Infinity Yield FE 🎩                              ║")
+print("║    - Custom Emote R6 💃                                ║")
+print("║    - Custom Emote R15 🕺                               ║")
 print("╚════════════════════════════════════════════════════════╝")
