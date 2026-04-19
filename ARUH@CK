@@ -659,7 +659,7 @@ closeButtonX.MouseButton1Click:Connect(function()
     
     wait(0.5)
     frame.Visible = false
-    toggleButton.Visible = true
+    toggleButton.Visible = true  -- ✅ КНОПКА ОСТАЕТСЯ ВИДИМА!
 end)
 
 -- Toggle Button
@@ -889,7 +889,8 @@ local function toggleMenu()
     
     if STATE.menuVisible then
         -- ОТКРЫТИЕ
-        frame.Visible = true
+        frame.Visible = true  -- ✅ СНАЧАЛА ПОКАЗЫВАЕМ ФРЕЙМ
+        wait(0.1)
         TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {
             Position = UDim2.new(0.5, -250, 0.5, -350)
         }):Play()
@@ -905,6 +906,7 @@ local function toggleMenu()
         
         wait(0.5)
         frame.Visible = false
+        toggleButton.Visible = true  -- ✅ КНОПКА ВИДИМА!
     end
 end
 
