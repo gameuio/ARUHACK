@@ -768,7 +768,7 @@ function Functions.ToggleMusic()
     
     if not Data.backgroundMusic then
         Data.backgroundMusic = Instance.new("Sound")
-        Data.backgroundMusic.SoundId = "rbxassetid://99612100069480"
+        Data.backgroundMusic.SoundId = "rbxassetid://140704128008979"
         Data.backgroundMusic.Volume = State.musicVolume
         Data.backgroundMusic.Looped = true
         Data.backgroundMusic.Parent = GUI.Screen
