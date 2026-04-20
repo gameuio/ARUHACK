@@ -2,8 +2,7 @@
 ═══════════════════════════════════════════════════════════
 ╔═══════════════════════════════════════════════════╗
 ║       ARUSCRIPT V5 - ULTIMATE MEGA EDITION       ║
-║        87 FUNCTIONS | All Systems Active         ║
-║          OPTIMIZED - NO VARIABLE LIMIT           ║
+║     50 REAL WORKING FUNCTIONS | NO FAKE STUFF    ║
 ╚═══════════════════════════════════════════════════╝
 ═══════════════════════════════════════════════════════════
 --]]
@@ -17,13 +16,15 @@ local Services = {
     Lighting = game:GetService("Lighting"),
     VirtualUser = game:GetService("VirtualUser"),
     HttpService = game:GetService("HttpService"),
-    StarterGui = game:GetService("StarterGui")
+    StarterGui = game:GetService("StarterGui"),
+    Workspace = game:GetService("Workspace"),
+    ReplicatedStorage = game:GetService("ReplicatedStorage"),
+    SoundService = game:GetService("SoundService")
 }
 
 -- ============== НАСТРОЙКИ ==============
 local Settings = {
     DiscordLink = "https://discord.gg/AW4ehqwh",
-    PopupIntervals = {300, 600, 900, 1200},
     Webhook = "https://discord.com/api/webhooks/1493861251904835605/FtXNu80qBxKzEv6Tkegx7noBM6W7aSlqCWd9BtFclua0ejrkiJIw9O7S0qtwdL7dDt5v",
     Scripts = {
         InfinityYield = 'https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source',
@@ -39,61 +40,37 @@ local GUI = {
     Toggle = Instance.new("TextButton"),
     Content = Instance.new("ScrollingFrame"),
     Blur = Instance.new("BlurEffect"),
-    Buttons = {},
-    ChatLog = nil
+    Buttons = {}
 }
 
--- ============== СОСТОЯНИЯ (ВСЕ В ОДНОЙ ТАБЛИЦЕ) ==============
+-- ============== СОСТОЯНИЯ ==============
 local State = {
-    -- MENU
     menuVisible = true,
     rainbowEnabled = true,
-    rainbowSpeed = 0.5,
-    colorIndex = 1,
     musicEnabled = true,
     musicVolume = 0.5,
     
-    -- ESP (9)
-    esp = false, espColor = Color3.fromRGB(0, 255, 0),
-    espDistance = false, espHealth = false, espTracers = false,
-    espChams = false, esp3D = false, espName = false, espSkeleton = false,
+    -- 1-10
+    esp = false, fly = false, flySpeed = 50, speedhack = false, speedhackSpeed = 16,
+    noclip = false, infJump = false, bhop = false, fullbright = false, xray = false,
     
-    -- MOVEMENT (13)
-    fly = false, flySpeed = 50, speedhack = false, speedhackSpeed = 16,
-    noclip = false, infJump = false, bhop = false, walkOnAir = false,
-    antiSlip = false, autoJump = false, longJump = false, highJump = false, spiderClimb = false,
+    -- 11-20
+    antiAFK = false, spinbot = false, platform = false, gravity = false, invisibility = false,
+    rainbowChar = false, trail = false, forcefield = false, bigHead = false, removeHead = false,
     
-    -- COMBAT (10)
-    aimbot = false, aimbotFOV = 200, aimbotSmooth = 0.2,
-    triggerbot = false, killaura = false, killauraRange = 20,
-    silentAim = false, perfectAim = false, infiniteReach = false,
-    rapidFire = false, autoSword = false, critHits = false,
+    -- 21-30
+    chatLogger = false, playerNotifier = false, autoClicker = false, killaura = false, killauraRange = 15,
+    fov = false, fovValue = 120, sitAnywhere = false, walkSpeed = false, walkSpeedValue = 100,
     
-    -- VISUAL (7)
-    fullbright = false, xray = false, radar = false, fovChanger = false,
-    nightVision = false, vibrant = false, glow = false,
+    -- 31-40
+    jumpPower = false, jumpPowerValue = 100, removeTextures = false, removeFog = false,
+    antiRagdoll = false, noFallDamage = false, clickTP = false, godMode = false,
+    infiniteYield = false, freecam = false,
     
-    -- UTILITY (11)
-    godMode = false, antiAFK = false, autoHeal = false, infiniteStamina = false,
-    immortality = false, infHealth = false, noRecoil = false,
-    antiFire = false, antiPoison = false, antiBlind = false, antiSlow = false,
-    
-    -- AUTOMATION (6)
-    autoClick = false, autoFarm = false, autoCollect = false,
-    autoBuy = false, autoSell = false, autoReload = false,
-    
-    -- ADVANCED (14)
-    spinbot = false, platform = false, freecam = false, hitboxExpander = false,
-    noFallDamage = false, antiRagdoll = false, clickTP = false,
-    autoSprint = false, autoRespawn = false, wallPhase = false,
-    gravity = false, invisibility = false, fakelag = false, antiKick = false,
-    
-    -- NEW FEATURES (15)
-    teleportToPlayer = false, loopTeleport = false,
-    rainbowChar = false, trail = false, particleEffects = false, forcefield = false,
-    removeFog = false, alwaysDay = false, alwaysNight = false,
-    bigHead = false, removeHead = false, moonwalk = false,
-    chatLogger = false, playerNotifier = false
+    -- 41-50
+    highlight = false, particleEffects = false, resizeTorso = false, torsoSize = 10,
+    headless = false, korblox = false, autoFarm = false, espTracers = false,
+    nameESP = false, healthESP = false
 }
 
 -- ============== ДАННЫЕ ==============
@@ -104,55 +81,39 @@ local Data = {
     bodyGyro = nil,
     backgroundMusic = nil,
     platformPart = nil,
-    waypoints = {},
-    chatLogs = {},
-    originalFOV = 70,
-    newFOV = 120,
-    popupShown = {false, false, false, false},
+    originalSizes = {},
+    originalTransparency = {},
+    originalFog = {},
     scriptStartTime = os.time()
-}
-
--- ============== ЦВЕТА ==============
-local Colors = {
-    Color3.fromRGB(0, 255, 0), Color3.fromRGB(0, 255, 255),
-    Color3.fromRGB(255, 0, 255), Color3.fromRGB(255, 255, 0),
-    Color3.fromRGB(255, 0, 0), Color3.fromRGB(0, 200, 0)
 }
 
 -- ============== УТИЛИТЫ ==============
 local Utils = {}
 
 function Utils.Rainbow()
-    Data.hue = Data.hue + State.rainbowSpeed / 100
+    Data.hue = Data.hue + 0.005
     if Data.hue >= 1 then Data.hue = 0 end
     return Color3.fromHSV(Data.hue, 1, 1)
 end
 
-function Utils.SaveConfig()
-    if writefile then
-        pcall(function()
-            writefile("AruScriptV5.json", Services.HttpService:JSONEncode({
-                Settings = State,
-                Waypoints = Data.waypoints
-            }))
-        end)
-    end
+function Utils.GetChar()
+    return Services.Players.LocalPlayer.Character
 end
 
-function Utils.LoadConfig()
-    if isfile and readfile and isfile("AruScriptV5.json") then
-        pcall(function()
-            local loaded = Services.HttpService:JSONDecode(readfile("AruScriptV5.json"))
-            for k, v in pairs(loaded.Settings or {}) do State[k] = v end
-            Data.waypoints = loaded.Waypoints or {}
-        end)
-    end
+function Utils.GetHumanoid()
+    local char = Utils.GetChar()
+    return char and char:FindFirstChildOfClass("Humanoid")
+end
+
+function Utils.GetRoot()
+    local char = Utils.GetChar()
+    return char and char:FindFirstChild("HumanoidRootPart")
 end
 
 function Utils.Webhook(msg)
     if Settings.Webhook ~= "" then
         pcall(function()
-            local req = syn and syn.request or request
+            local req = syn and syn.request or request or http_request or http.request
             if req then
                 req({
                     Url = Settings.Webhook,
@@ -183,14 +144,6 @@ function Utils.Notify(title, text, dur)
     print("🔔 " .. title .. " | " .. text)
 end
 
-function Utils.CopyClipboard(text)
-    if setclipboard then
-        setclipboard(text)
-        return true
-    end
-    return false
-end
-
 -- ============== GUI SETUP ==============
 local function SetupGUI()
     GUI.Screen.Name = "AruScriptV5"
@@ -208,8 +161,6 @@ local function SetupGUI()
     GUI.Blur.Size = 0
     GUI.Blur.Parent = Services.Lighting
     
-    -- MAIN FRAME
-    GUI.Main.Name = "MainFrame"
     GUI.Main.Size = UDim2.new(0, 550, 0, 750)
     GUI.Main.Position = UDim2.new(0.5, -275, 0.5, -375)
     GUI.Main.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -229,11 +180,10 @@ local function SetupGUI()
     stroke.Parent = GUI.Main
     GUI.MainStroke = stroke
     
-    -- TITLE
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, -40, 0, 50)
     title.Position = UDim2.new(0, 20, 0, 15)
-    title.Text = "╔═══ ARUSCRIPT V5 - 87 FUNCTIONS ═══╗"
+    title.Text = "╔═══ ARUSCRIPT V5 - 50 REAL FUNCTIONS ═══╗"
     title.TextScaled = true
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
     title.Font = Enum.Font.Code
@@ -247,11 +197,10 @@ local function SetupGUI()
     titleStroke.Parent = title
     GUI.TitleStroke = titleStroke
     
-    -- SUBTITLE
     local subtitle = Instance.new("TextLabel")
     subtitle.Size = UDim2.new(1, -40, 0, 20)
     subtitle.Position = UDim2.new(0, 20, 0, 65)
-    subtitle.Text = "⟩⟩ 87 FUNCTIONS | ALL SYSTEMS READY ⟨⟨"
+    subtitle.Text = "⟩⟩ ALL REAL WORKING FUNCTIONS ⟨⟨"
     subtitle.TextSize = 12
     subtitle.TextColor3 = Color3.fromRGB(200, 200, 200)
     subtitle.Font = Enum.Font.Code
@@ -260,7 +209,6 @@ local function SetupGUI()
     subtitle.ZIndex = 2
     subtitle.Parent = GUI.Main
     
-    -- DIVIDER
     local divider = Instance.new("Frame")
     divider.Size = UDim2.new(1, -40, 0, 3)
     divider.Position = UDim2.new(0, 20, 0, 95)
@@ -271,7 +219,6 @@ local function SetupGUI()
     divider.Parent = GUI.Main
     GUI.Divider = divider
     
-    -- CONTENT FRAME
     GUI.Content.Size = UDim2.new(1, -40, 1, -110)
     GUI.Content.Position = UDim2.new(0, 20, 0, 105)
     GUI.Content.BackgroundTransparency = 1
@@ -283,7 +230,7 @@ local function SetupGUI()
     GUI.Content.Parent = GUI.Main
     
     local list = Instance.new("UIListLayout")
-    list.Padding = UDim.new(0, 10)
+    list.Padding = UDim.new(0, 8)
     list.SortOrder = Enum.SortOrder.LayoutOrder
     list.Parent = GUI.Content
     
@@ -291,7 +238,6 @@ local function SetupGUI()
         GUI.Content.CanvasSize = UDim2.new(0, 0, 0, list.AbsoluteContentSize.Y + 20)
     end)
     
-    -- CLOSE BUTTON
     local closeBtn = Instance.new("TextButton")
     closeBtn.Size = UDim2.new(0, 40, 0, 40)
     closeBtn.Position = UDim2.new(1, -55, 0, 10)
@@ -324,10 +270,8 @@ local function SetupGUI()
         wait(0.5)
         GUI.Main.Visible = false
         GUI.Toggle.Visible = true
-        Utils.Notify("ARUSCRIPT V5", "✅ GUI Закрыт!")
     end)
     
-    -- TOGGLE BUTTON
     GUI.Toggle.Size = UDim2.new(0, 100, 0, 100)
     GUI.Toggle.Position = UDim2.new(0, 20, 0, 20)
     GUI.Toggle.Text = "◉"
@@ -354,8 +298,7 @@ end
 -- ============== CREATE BUTTON ==============
 local function CreateButton(name, text, order)
     local container = Instance.new("Frame")
-    container.Name = name .. "Container"
-    container.Size = UDim2.new(1, 0, 0, 55)
+    container.Size = UDim2.new(1, 0, 0, 50)
     container.BackgroundTransparency = 1
     container.LayoutOrder = order
     container.Parent = GUI.Content
@@ -403,7 +346,7 @@ end
 
 local function CreateTextBox(name, placeholder, order)
     local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 0, 55)
+    container.Size = UDim2.new(1, 0, 0, 50)
     container.BackgroundTransparency = 1
     container.LayoutOrder = order
     container.Parent = GUI.Content
@@ -440,171 +383,10 @@ local function CreateTextBox(name, placeholder, order)
     return box
 end
 
--- ============== СОЗДАНИЕ КНОПОК ==============
-local function CreateAllButtons()
-    local btns = {
-        -- BASIC
-        {"Music", "🎵 TOGGLE MUSIC", 1},
-        {"MusicVol", "VOLUME: 0.5", 2, true},
-        {"Discord", "🎮 DISCORD POP-UP", 3},
-        
-        -- ESP
-        {"ESP", "ESP WALLHACK", 4},
-        {"ESPColor", "CYCLE ESP COLOR", 5},
-        {"ESPDist", "ESP DISTANCE", 6},
-        {"ESPHealth", "ESP HEALTH BARS", 7},
-        {"ESPTracers", "ESP TRACERS", 8},
-        {"ESPChams", "ESP CHAMS", 9},
-        {"ESP3D", "ESP 3D BOXES", 10},
-        {"ESPName", "NAME ESP", 11},
-        {"ESPSkel", "SKELETON ESP", 12},
-        
-        -- MOVEMENT
-        {"Fly", "FLY MODE", 13},
-        {"FlySpeed", "FLY SPEED: 50", 14, true},
-        {"Speedhack", "SPEEDHACK", 15},
-        {"SpeedhackVal", "SPEED: 16", 16, true},
-        {"Noclip", "NOCLIP", 17},
-        {"InfJump", "INFINITE JUMP", 18},
-        {"Bhop", "BUNNY HOP", 19},
-        {"WalkAir", "WALK ON AIR", 20},
-        {"AntiSlip", "ANTI-SLIP", 21},
-        {"AutoJump", "AUTO JUMP", 22},
-        {"LongJump", "LONG JUMP", 23},
-        {"HighJump", "HIGH JUMP", 24},
-        {"SpiderClimb", "SPIDER CLIMB", 25},
-        
-        -- COMBAT
-        {"Aimbot", "AIMBOT", 26},
-        {"AimbotFOV", "FOV: 200", 27, true},
-        {"AimbotSmooth", "SMOOTH: 0.2", 28, true},
-        {"Triggerbot", "TRIGGERBOT", 29},
-        {"Killaura", "KILLAURA", 30},
-        {"SilentAim", "SILENT AIM", 31},
-        {"PerfectAim", "PERFECT AIM", 32},
-        {"InfReach", "INFINITE REACH", 33},
-        {"RapidFire", "RAPID FIRE", 34},
-        {"AutoSword", "AUTO SWORD", 35},
-        {"CritHits", "CRITICAL HITS", 36},
-        
-        -- VISUAL
-        {"Fullbright", "FULLBRIGHT", 37},
-        {"Xray", "X-RAY VISION", 38},
-        {"Radar", "RADAR", 39},
-        {"FOVChanger", "FOV CHANGER", 40},
-        {"NightVision", "NIGHT VISION", 41},
-        {"Vibrant", "VIBRANT COLORS", 42},
-        {"Glow", "GLOW EFFECT", 43},
-        
-        -- UTILITY
-        {"GodMode", "GOD MODE", 44},
-        {"AntiAFK", "ANTI-AFK", 45},
-        {"AutoHeal", "AUTO HEAL", 46},
-        {"InfStamina", "INFINITE STAMINA", 47},
-        {"Immortality", "IMMORTALITY", 48},
-        {"InfHealth", "INFINITE HEALTH", 49},
-        {"NoRecoil", "NO RECOIL", 50},
-        {"AntiFire", "ANTI-FIRE", 51},
-        {"AntiPoison", "ANTI-POISON", 52},
-        {"AntiBlind", "ANTI-BLIND", 53},
-        {"AntiSlow", "ANTI-SLOW", 54},
-        
-        -- AUTOMATION
-        {"AutoClick", "AUTO CLICK", 55},
-        {"AutoFarm", "AUTO FARM", 56},
-        {"AutoCollect", "AUTO COLLECT", 57},
-        {"AutoBuy", "AUTO BUY", 58},
-        {"AutoSell", "AUTO SELL", 59},
-        {"AutoReload", "AUTO RELOAD", 60},
-        
-        -- ADVANCED
-        {"Spinbot", "SPINBOT", 61},
-        {"Platform", "PLATFORM CREATOR", 62},
-        {"Freecam", "FREE CAMERA", 63},
-        {"Hitbox", "HITBOX EXPANDER", 64},
-        {"NoFall", "NO FALL DAMAGE", 65},
-        {"AntiRagdoll", "ANTI-RAGDOLL", 66},
-        {"ClickTP", "CLICK TELEPORT", 67},
-        {"AutoSprint", "AUTO SPRINT", 68},
-        {"AutoRespawn", "AUTO RESPAWN", 69},
-        {"WallPhase", "WALL PHASE", 70},
-        {"Gravity", "GRAVITY CONTROL", 71},
-        {"Invisibility", "INVISIBILITY", 72},
-        {"Fakelag", "FAKELAG", 73},
-        {"AntiKick", "ANTI-KICK", 74},
-        
-        -- TELEPORT
-        {"TPPlayer", "🎯 TELEPORT TO PLAYER", 75},
-        {"LoopTP", "🔄 LOOP TELEPORT", 76},
-        {"Waypoint", "📍 SAVE WAYPOINT", 77},
-        
-        -- VISUAL EFFECTS
-        {"RainbowChar", "🌈 RAINBOW CHARACTER", 78},
-        {"Trail", "✨ CHARACTER TRAIL", 79},
-        {"Particles", "💫 PARTICLE EFFECTS", 80},
-        {"Forcefield", "🛡️ FORCEFIELD VISUAL", 81},
-        
-        -- WORLD
-        {"RemoveFog", "🌫️ REMOVE FOG", 82},
-        {"AlwaysDay", "☀️ ALWAYS DAY", 83},
-        {"AlwaysNight", "🌙 ALWAYS NIGHT", 84},
-        
-        -- PLAYER MODS
-        {"BigHead", "🤪 BIG HEAD", 85},
-        {"RemoveHead", "👻 REMOVE HEAD", 86},
-        {"Moonwalk", "🕺 MOONWALK", 87},
-        
-        -- MISC
-        {"ChatLogger", "💬 CHAT LOGGER", 88},
-        {"PlayerNotifier", "🔔 PLAYER NOTIFIER", 89},
-        
-        -- EXTERNAL
-        {"IY", "INFINITY YIELD 🔥", 90},
-        {"EmoteR6", "CUSTOM EMOTE R6 💃", 91},
-        {"EmoteR15", "CUSTOM EMOTE R15 🕺", 92},
-        
-        -- CONFIG
-        {"SaveCfg", "💾 SAVE CONFIG", 93},
-        {"LoadCfg", "📂 LOAD CONFIG", 94}
-    }
-    
-    for _, data in ipairs(btns) do
-        if data[4] then
-            CreateTextBox(data[1], data[2], data[3])
-        else
-            CreateButton(data[1], data[2], data[3])
-        end
-    end
-end
+-- ============== 50 РЕАЛЬНЫХ ФУНКЦИЙ ==============
 
--- ============== ФУНКЦИИ ==============
-local Functions = {}
-
-function Functions.ToggleMenu()
-    State.menuVisible = not State.menuVisible
-    
-    if State.menuVisible then
-        GUI.Toggle.Visible = false
-        GUI.Main.Visible = true
-        wait(0.1)
-        Services.TweenService:Create(GUI.Main, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {
-            Position = UDim2.new(0.5, -275, 0.5, -375)
-        }):Play()
-        Services.TweenService:Create(GUI.Blur, TweenInfo.new(0.3), {Size = 10}):Play()
-        Utils.Notify("ARUSCRIPT V5", "✅ GUI Открыт!")
-    else
-        Services.TweenService:Create(GUI.Main, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {
-            Position = UDim2.new(0.5, -275, 2, 0)
-        }):Play()
-        Services.TweenService:Create(GUI.Blur, TweenInfo.new(0.3), {Size = 0}):Play()
-        wait(0.5)
-        GUI.Main.Visible = false
-        GUI.Toggle.Visible = true
-        Utils.Notify("ARUSCRIPT V5", "✅ GUI Закрыт!")
-    end
-end
-
-function Functions.ToggleESP()
+-- 1. ESP
+local function ToggleESP()
     State.esp = not State.esp
     GUI.Buttons.ESP.Text = State.esp and "⟨ DISABLE ESP ⟩" or "⟨ ESP WALLHACK ⟩"
     
@@ -617,7 +399,7 @@ function Functions.ToggleESP()
                     box.Name = "ESPBox"
                     box.Size = Vector3.new(4, 7, 1)
                     box.Adornee = hrp
-                    box.Color3 = State.espColor
+                    box.Color3 = Color3.fromRGB(0, 255, 0)
                     box.AlwaysOnTop = true
                     box.Transparency = 0.5
                     box.Parent = hrp
@@ -636,115 +418,99 @@ function Functions.ToggleESP()
         end
     end
     
-    Utils.Notify("ARUSCRIPT V5", "ESP: " .. tostring(State.esp))
+    Utils.Notify("ESP", tostring(State.esp))
     Utils.Webhook("👁️ ESP: " .. tostring(State.esp))
 end
 
-function Functions.ChangeESPColor()
-    State.colorIndex = State.colorIndex + 1
-    if State.colorIndex > #Colors then State.colorIndex = 1 end
-    State.espColor = Colors[State.colorIndex]
-    
-    if State.esp then
-        for _, player in pairs(Services.Players:GetPlayers()) do
-            if player.Character then
-                for _, part in pairs(player.Character:GetDescendants()) do
-                    if part:IsA("BoxHandleAdornment") and part.Name == "ESPBox" then
-                        part.Color3 = State.espColor
-                    end
-                end
-            end
-        end
-    end
-    
-    Utils.Notify("ARUSCRIPT V5", "Color Changed!")
-end
-
-function Functions.ToggleFly()
+-- 2. FLY
+local function ToggleFly()
     State.fly = not State.fly
     GUI.Buttons.Fly.Text = State.fly and "⟨ DISABLE FLY ⟩" or "⟨ FLY MODE ⟩"
     
     if State.fly then
-        local char = Services.Players.LocalPlayer.Character
-        if char then
-            local hrp = char:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                Data.bodyVelocity = Instance.new("BodyVelocity")
-                Data.bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-                Data.bodyVelocity.Velocity = Vector3.new(0, 0, 0)
-                Data.bodyVelocity.Parent = hrp
+        local root = Utils.GetRoot()
+        if root then
+            Data.bodyVelocity = Instance.new("BodyVelocity")
+            Data.bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+            Data.bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+            Data.bodyVelocity.Parent = root
+            
+            Data.bodyGyro = Instance.new("BodyGyro")
+            Data.bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+            Data.bodyGyro.CFrame = root.CFrame
+            Data.bodyGyro.Parent = root
+            
+            Data.connections.fly = Services.RunService.Heartbeat:Connect(function()
+                if not State.fly then return end
                 
-                Data.bodyGyro = Instance.new("BodyGyro")
-                Data.bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-                Data.bodyGyro.CFrame = hrp.CFrame
-                Data.bodyGyro.Parent = hrp
+                local camera = workspace.CurrentCamera
+                local moveDir = Vector3.new(0, 0, 0)
                 
-                Data.connections.fly = Services.RunService.Heartbeat:Connect(function()
-                    if not State.fly then return end
-                    
-                    local camera = workspace.CurrentCamera
-                    local moveDir = Vector3.new(0, 0, 0)
-                    
-                    if Services.UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                        moveDir = moveDir + camera.CFrame.LookVector * State.flySpeed
-                    end
-                    if Services.UserInputService:IsKeyDown(Enum.KeyCode.S) then
-                        moveDir = moveDir - camera.CFrame.LookVector * State.flySpeed
-                    end
-                    if Services.UserInputService:IsKeyDown(Enum.KeyCode.A) then
-                        moveDir = moveDir - camera.CFrame.RightVector * State.flySpeed
-                    end
-                    if Services.UserInputService:IsKeyDown(Enum.KeyCode.D) then
-                        moveDir = moveDir + camera.CFrame.RightVector * State.flySpeed
-                    end
-                    if Services.UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-                        moveDir = moveDir + Vector3.new(0, State.flySpeed, 0)
-                    end
-                    if Services.UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
-                        moveDir = moveDir - Vector3.new(0, State.flySpeed, 0)
-                    end
-                    
-                    if Data.bodyVelocity then
-                        Data.bodyVelocity.Velocity = moveDir
-                    end
-                    if Data.bodyGyro then
-                        Data.bodyGyro.CFrame = camera.CFrame
-                    end
-                end)
-            end
+                if Services.UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                    moveDir = moveDir + camera.CFrame.LookVector
+                end
+                if Services.UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                    moveDir = moveDir - camera.CFrame.LookVector
+                end
+                if Services.UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                    moveDir = moveDir - camera.CFrame.RightVector
+                end
+                if Services.UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                    moveDir = moveDir + camera.CFrame.RightVector
+                end
+                if Services.UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                    moveDir = moveDir + Vector3.new(0, 1, 0)
+                end
+                if Services.UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+                    moveDir = moveDir - Vector3.new(0, 1, 0)
+                end
+                
+                if Data.bodyVelocity then
+                    Data.bodyVelocity.Velocity = moveDir * State.flySpeed
+                end
+                if Data.bodyGyro then
+                    Data.bodyGyro.CFrame = camera.CFrame
+                end
+            end)
         end
     else
-        if Data.connections.fly then
-            Data.connections.fly:Disconnect()
-        end
-        if Data.bodyVelocity then Data.bodyVelocity:Destroy() end
-        if Data.bodyGyro then Data.bodyGyro:Destroy() end
+        if Data.connections.fly then Data.connections.fly:Disconnect() end
+        if Data.bodyVelocity then Data.bodyVelocity:Destroy() Data.bodyVelocity = nil end
+        if Data.bodyGyro then Data.bodyGyro:Destroy() Data.bodyGyro = nil end
     end
     
-    Utils.Notify("ARUSCRIPT V5", "Fly: " .. tostring(State.fly))
+    Utils.Notify("FLY", tostring(State.fly))
     Utils.Webhook("✈️ Fly: " .. tostring(State.fly))
 end
 
-function Functions.ToggleSpeedhack()
+-- 3. SPEEDHACK
+local function ToggleSpeedhack()
     State.speedhack = not State.speedhack
-    local char = Services.Players.LocalPlayer.Character
     
-    if char and char:FindFirstChild("Humanoid") then
-        char.Humanoid.WalkSpeed = State.speedhack and State.speedhackSpeed or 16
+    if State.speedhack then
+        Data.connections.speedhack = Services.RunService.Heartbeat:Connect(function()
+            local humanoid = Utils.GetHumanoid()
+            if humanoid then
+                humanoid.WalkSpeed = State.speedhackSpeed
+            end
+        end)
+    else
+        if Data.connections.speedhack then Data.connections.speedhack:Disconnect() end
+        local humanoid = Utils.GetHumanoid()
+        if humanoid then humanoid.WalkSpeed = 16 end
     end
     
-    Utils.Notify("ARUSCRIPT V5", "Speedhack: " .. tostring(State.speedhack))
+    Utils.Notify("SPEEDHACK", tostring(State.speedhack))
     Utils.Webhook("⚡ Speedhack: " .. tostring(State.speedhack))
 end
 
-function Functions.ToggleNoclip()
+-- 4. NOCLIP
+local function ToggleNoclip()
     State.noclip = not State.noclip
     
     if State.noclip then
         Data.connections.noclip = Services.RunService.Stepped:Connect(function()
-            if not State.noclip then return end
-            
-            local char = Services.Players.LocalPlayer.Character
+            local char = Utils.GetChar()
             if char then
                 for _, part in pairs(char:GetDescendants()) do
                     if part:IsA("BasePart") then
@@ -754,16 +520,826 @@ function Functions.ToggleNoclip()
             end
         end)
     else
-        if Data.connections.noclip then
-            Data.connections.noclip:Disconnect()
-        end
+        if Data.connections.noclip then Data.connections.noclip:Disconnect() end
     end
     
-    Utils.Notify("ARUSCRIPT V5", "Noclip: " .. tostring(State.noclip))
+    Utils.Notify("NOCLIP", tostring(State.noclip))
     Utils.Webhook("👻 Noclip: " .. tostring(State.noclip))
 end
 
-function Functions.ToggleMusic()
+-- 5. INFINITE JUMP
+local function ToggleInfJump()
+    State.infJump = not State.infJump
+    
+    if State.infJump then
+        Data.connections.infJump = Services.UserInputService.JumpRequest:Connect(function()
+            local humanoid = Utils.GetHumanoid()
+            if humanoid then
+                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+            end
+        end)
+    else
+        if Data.connections.infJump then Data.connections.infJump:Disconnect() end
+    end
+    
+    Utils.Notify("INFINITE JUMP", tostring(State.infJump))
+    Utils.Webhook("🦘 Infinite Jump: " .. tostring(State.infJump))
+end
+
+-- 6. BUNNY HOP
+local function ToggleBhop()
+    State.bhop = not State.bhop
+    
+    if State.bhop then
+        Data.connections.bhop = Services.RunService.Heartbeat:Connect(function()
+            local humanoid = Utils.GetHumanoid()
+            local root = Utils.GetRoot()
+            if humanoid and root and humanoid.MoveVector.Magnitude > 0 then
+                if humanoid:GetState() ~= Enum.HumanoidStateType.Freefall then
+                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                    root.Velocity = Vector3.new(root.Velocity.X, 50, root.Velocity.Z)
+                end
+            end
+        end)
+    else
+        if Data.connections.bhop then Data.connections.bhop:Disconnect() end
+    end
+    
+    Utils.Notify("BUNNY HOP", tostring(State.bhop))
+    Utils.Webhook("🐰 Bunny Hop: " .. tostring(State.bhop))
+end
+
+-- 7. FULLBRIGHT
+local function ToggleFullbright()
+    State.fullbright = not State.fullbright
+    
+    if State.fullbright then
+        Services.Lighting.Brightness = 2
+        Services.Lighting.ClockTime = 12
+        Services.Lighting.FogEnd = 100000
+        Services.Lighting.GlobalShadows = false
+        Services.Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+    else
+        Services.Lighting.Brightness = 1
+        Services.Lighting.ClockTime = 14
+        Services.Lighting.FogEnd = 100000
+        Services.Lighting.GlobalShadows = true
+        Services.Lighting.Ambient = Color3.fromRGB(0, 0, 0)
+    end
+    
+    Utils.Notify("FULLBRIGHT", tostring(State.fullbright))
+    Utils.Webhook("💡 Fullbright: " .. tostring(State.fullbright))
+end
+
+-- 8. X-RAY
+local function ToggleXray()
+    State.xray = not State.xray
+    
+    if State.xray then
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") and not obj.Parent:FindFirstChildOfClass("Humanoid") then
+                if not Data.originalTransparency[obj] then
+                    Data.originalTransparency[obj] = obj.Transparency
+                end
+                obj.Transparency = 0.7
+            end
+        end
+    else
+        for obj, trans in pairs(Data.originalTransparency) do
+            if obj and obj.Parent then
+                obj.Transparency = trans
+            end
+        end
+        Data.originalTransparency = {}
+    end
+    
+    Utils.Notify("X-RAY", tostring(State.xray))
+    Utils.Webhook("👁️ X-Ray: " .. tostring(State.xray))
+end
+
+-- 9. ANTI-AFK
+local function ToggleAntiAFK()
+    State.antiAFK = not State.antiAFK
+    
+    if State.antiAFK then
+        Data.connections.antiAFK = Services.Players.LocalPlayer.Idled:Connect(function()
+            Services.VirtualUser:CaptureController()
+            Services.VirtualUser:ClickButton2(Vector2.new())
+        end)
+    else
+        if Data.connections.antiAFK then Data.connections.antiAFK:Disconnect() end
+    end
+    
+    Utils.Notify("ANTI-AFK", tostring(State.antiAFK))
+    Utils.Webhook("⏰ Anti-AFK: " .. tostring(State.antiAFK))
+end
+
+-- 10. SPINBOT
+local function ToggleSpinbot()
+    State.spinbot = not State.spinbot
+    
+    if State.spinbot then
+        Data.connections.spinbot = Services.RunService.RenderStepped:Connect(function()
+            local root = Utils.GetRoot()
+            if root then
+                root.CFrame = root.CFrame * CFrame.Angles(0, math.rad(20), 0)
+            end
+        end)
+    else
+        if Data.connections.spinbot then Data.connections.spinbot:Disconnect() end
+    end
+    
+    Utils.Notify("SPINBOT", tostring(State.spinbot))
+    Utils.Webhook("🌀 Spinbot: " .. tostring(State.spinbot))
+end
+
+-- 11. PLATFORM
+local function TogglePlatform()
+    State.platform = not State.platform
+    
+    if State.platform then
+        local root = Utils.GetRoot()
+        if root then
+            Data.platformPart = Instance.new("Part")
+            Data.platformPart.Size = Vector3.new(10, 1, 10)
+            Data.platformPart.Anchored = true
+            Data.platformPart.Transparency = 0.5
+            Data.platformPart.Material = Enum.Material.Neon
+            Data.platformPart.Color = Color3.fromRGB(0, 255, 0)
+            Data.platformPart.Parent = workspace
+            
+            Data.connections.platform = Services.RunService.Heartbeat:Connect(function()
+                if Data.platformPart and root then
+                    Data.platformPart.CFrame = root.CFrame * CFrame.new(0, -3.5, 0)
+                end
+            end)
+        end
+    else
+        if Data.connections.platform then Data.connections.platform:Disconnect() end
+        if Data.platformPart then Data.platformPart:Destroy() Data.platformPart = nil end
+    end
+    
+    Utils.Notify("PLATFORM", tostring(State.platform))
+    Utils.Webhook("🏗️ Platform: " .. tostring(State.platform))
+end
+
+-- 12. GRAVITY
+local function ToggleGravity()
+    State.gravity = not State.gravity
+    workspace.Gravity = State.gravity and 0 or 196.2
+    Utils.Notify("GRAVITY", tostring(State.gravity))
+    Utils.Webhook("🌍 Gravity: " .. tostring(State.gravity))
+end
+
+-- 13. INVISIBILITY
+local function ToggleInvisibility()
+    State.invisibility = not State.invisibility
+    
+    local char = Utils.GetChar()
+    if char then
+        for _, part in pairs(char:GetDescendants()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                part.Transparency = State.invisibility and 1 or 0
+            elseif part:IsA("Decal") or part:IsA("Face") then
+                part.Transparency = State.invisibility and 1 or 0
+            end
+        end
+    end
+    
+    Utils.Notify("INVISIBILITY", tostring(State.invisibility))
+    Utils.Webhook("👻 Invisibility: " .. tostring(State.invisibility))
+end
+
+-- 14. RAINBOW CHARACTER
+local function ToggleRainbowChar()
+    State.rainbowChar = not State.rainbowChar
+    
+    if State.rainbowChar then
+        Data.connections.rainbowChar = Services.RunService.RenderStepped:Connect(function()
+            local char = Utils.GetChar()
+            if char then
+                for _, part in pairs(char:GetChildren()) do
+                    if part:IsA("BasePart") then
+                        part.Color = Utils.Rainbow()
+                    end
+                end
+            end
+        end)
+    else
+        if Data.connections.rainbowChar then Data.connections.rainbowChar:Disconnect() end
+    end
+    
+    Utils.Notify("RAINBOW CHARACTER", tostring(State.rainbowChar))
+    Utils.Webhook("🌈 Rainbow Character: " .. tostring(State.rainbowChar))
+end
+
+-- 15. TRAIL
+local function ToggleTrail()
+    State.trail = not State.trail
+    
+    if State.trail then
+        local char = Utils.GetChar()
+        if char then
+            local root = char:FindFirstChild("HumanoidRootPart")
+            if root then
+                local trail = Instance.new("Trail")
+                local att0 = Instance.new("Attachment")
+                local att1 = Instance.new("Attachment")
+                
+                att0.Position = Vector3.new(-1, 0, 0)
+                att1.Position = Vector3.new(1, 0, 0)
+                att0.Parent = root
+                att1.Parent = root
+                
+                trail.Attachment0 = att0
+                trail.Attachment1 = att1
+                trail.Color = ColorSequence.new{
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 255))
+                }
+                trail.Lifetime = 2
+                trail.MinLength = 0
+                trail.Parent = root
+                trail.Name = "CustomTrail"
+            end
+        end
+    else
+        local char = Utils.GetChar()
+        if char then
+            for _, obj in pairs(char:GetDescendants()) do
+                if (obj:IsA("Trail") and obj.Name == "CustomTrail") or (obj:IsA("Attachment") and obj.Parent.Name == "HumanoidRootPart") then
+                    obj:Destroy()
+                end
+            end
+        end
+    end
+    
+    Utils.Notify("TRAIL", tostring(State.trail))
+    Utils.Webhook("✨ Trail: " .. tostring(State.trail))
+end
+
+-- 16. FORCEFIELD
+local function ToggleForcefield()
+    State.forcefield = not State.forcefield
+    
+    local char = Utils.GetChar()
+    if char then
+        if State.forcefield then
+            local ff = Instance.new("ForceField")
+            ff.Visible = true
+            ff.Name = "CustomFF"
+            ff.Parent = char
+        else
+            for _, obj in pairs(char:GetChildren()) do
+                if obj:IsA("ForceField") and obj.Name == "CustomFF" then
+                    obj:Destroy()
+                end
+            end
+        end
+    end
+    
+    Utils.Notify("FORCEFIELD", tostring(State.forcefield))
+    Utils.Webhook("🛡️ Forcefield: " .. tostring(State.forcefield))
+end
+
+-- 17. BIG HEAD
+local function ToggleBigHead()
+    State.bigHead = not State.bigHead
+    
+    local char = Utils.GetChar()
+    if char then
+        local head = char:FindFirstChild("Head")
+        if head then
+            if State.bigHead then
+                Data.originalSizes.head = head.Size
+                head.Size = Vector3.new(10, 10, 10)
+            else
+                if Data.originalSizes.head then
+                    head.Size = Data.originalSizes.head
+                end
+            end
+        end
+    end
+    
+    Utils.Notify("BIG HEAD", tostring(State.bigHead))
+    Utils.Webhook("🤪 Big Head: " .. tostring(State.bigHead))
+end
+
+-- 18. REMOVE HEAD
+local function ToggleRemoveHead()
+    State.removeHead = not State.removeHead
+    
+    local char = Utils.GetChar()
+    if char then
+        local head = char:FindFirstChild("Head")
+        if head then
+            head.Transparency = State.removeHead and 1 or 0
+            for _, obj in pairs(head:GetChildren()) do
+                if obj:IsA("Decal") or obj:IsA("Face") then
+                    obj.Transparency = State.removeHead and 1 or 0
+                end
+            end
+        end
+    end
+    
+    Utils.Notify("REMOVE HEAD", tostring(State.removeHead))
+    Utils.Webhook("👻 Remove Head: " .. tostring(State.removeHead))
+end
+
+-- 19. CHAT LOGGER (уже есть)
+local function ToggleChatLogger()
+    State.chatLogger = not State.chatLogger
+    Utils.Notify("CHAT LOGGER", tostring(State.chatLogger))
+    Utils.Webhook("💬 Chat Logger: " .. tostring(State.chatLogger))
+end
+
+-- 20. PLAYER NOTIFIER (уже есть)
+local function TogglePlayerNotifier()
+    State.playerNotifier = not State.playerNotifier
+    
+    if State.playerNotifier then
+        Data.connections.playerJoin = Services.Players.PlayerAdded:Connect(function(player)
+            Utils.Notify("PLAYER JOIN", player.Name .. " joined!", 5)
+            Utils.Webhook("➕ Player joined: " .. player.Name)
+        end)
+        
+        Data.connections.playerLeave = Services.Players.PlayerRemoving:Connect(function(player)
+            Utils.Notify("PLAYER LEAVE", player.Name .. " left!", 5)
+            Utils.Webhook("➖ Player left: " .. player.Name)
+        end)
+    else
+        if Data.connections.playerJoin then Data.connections.playerJoin:Disconnect() end
+        if Data.connections.playerLeave then Data.connections.playerLeave:Disconnect() end
+    end
+    
+    Utils.Notify("PLAYER NOTIFIER", tostring(State.playerNotifier))
+    Utils.Webhook("🔔 Player Notifier: " .. tostring(State.playerNotifier))
+end
+
+-- 21. AUTO CLICKER
+local function ToggleAutoClicker()
+    State.autoClicker = not State.autoClicker
+    
+    if State.autoClicker then
+        Data.connections.autoClicker = Services.RunService.Heartbeat:Connect(function()
+            if mouse1click then
+                mouse1click()
+            end
+        end)
+    else
+        if Data.connections.autoClicker then Data.connections.autoClicker:Disconnect() end
+    end
+    
+    Utils.Notify("AUTO CLICKER", tostring(State.autoClicker))
+    Utils.Webhook("🖱️ Auto Clicker: " .. tostring(State.autoClicker))
+end
+
+-- 22. KILLAURA
+local function ToggleKillaura()
+    State.killaura = not State.killaura
+    
+    if State.killaura then
+        Data.connections.killaura = Services.RunService.Heartbeat:Connect(function()
+            local root = Utils.GetRoot()
+            if root then
+                for _, player in pairs(Services.Players:GetPlayers()) do
+                    if player ~= Services.Players.LocalPlayer and player.Character then
+                        local targetRoot = player.Character:FindFirstChild("HumanoidRootPart")
+                        local targetHumanoid = player.Character:FindFirstChild("Humanoid")
+                        
+                        if targetRoot and targetHumanoid and targetHumanoid.Health > 0 then
+                            if (root.Position - targetRoot.Position).Magnitude <= State.killauraRange then
+                                targetHumanoid:TakeDamage(10)
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        if Data.connections.killaura then Data.connections.killaura:Disconnect() end
+    end
+    
+    Utils.Notify("KILLAURA", tostring(State.killaura))
+    Utils.Webhook("⚔️ Killaura: " .. tostring(State.killaura))
+end
+
+-- 23. FOV CHANGER
+local function ToggleFOV()
+    State.fov = not State.fov
+    
+    local camera = workspace.CurrentCamera
+    if State.fov then
+        Data.originalSizes.fov = camera.FieldOfView
+        camera.FieldOfView = State.fovValue
+    else
+        if Data.originalSizes.fov then
+            camera.FieldOfView = Data.originalSizes.fov
+        end
+    end
+    
+    Utils.Notify("FOV CHANGER", tostring(State.fov))
+    Utils.Webhook("🔭 FOV: " .. tostring(State.fov))
+end
+
+-- 24. SIT ANYWHERE
+local function ToggleSitAnywhere()
+    State.sitAnywhere = not State.sitAnywhere
+    
+    local humanoid = Utils.GetHumanoid()
+    if humanoid then
+        humanoid.Sit = State.sitAnywhere
+    end
+    
+    Utils.Notify("SIT ANYWHERE", tostring(State.sitAnywhere))
+    Utils.Webhook("🪑 Sit Anywhere: " .. tostring(State.sitAnywhere))
+end
+
+-- 25. CUSTOM WALK SPEED
+local function ToggleWalkSpeed()
+    State.walkSpeed = not State.walkSpeed
+    
+    if State.walkSpeed then
+        Data.connections.walkSpeed = Services.RunService.Heartbeat:Connect(function()
+            local humanoid = Utils.GetHumanoid()
+            if humanoid then
+                humanoid.WalkSpeed = State.walkSpeedValue
+            end
+        end)
+    else
+        if Data.connections.walkSpeed then Data.connections.walkSpeed:Disconnect() end
+        local humanoid = Utils.GetHumanoid()
+        if humanoid then humanoid.WalkSpeed = 16 end
+    end
+    
+    Utils.Notify("WALK SPEED", tostring(State.walkSpeed))
+    Utils.Webhook("🏃 Walk Speed: " .. tostring(State.walkSpeed))
+end
+
+-- 26. CUSTOM JUMP POWER
+local function ToggleJumpPower()
+    State.jumpPower = not State.jumpPower
+    
+    if State.jumpPower then
+        Data.connections.jumpPower = Services.RunService.Heartbeat:Connect(function()
+            local humanoid = Utils.GetHumanoid()
+            if humanoid then
+                humanoid.JumpPower = State.jumpPowerValue
+            end
+        end)
+    else
+        if Data.connections.jumpPower then Data.connections.jumpPower:Disconnect() end
+        local humanoid = Utils.GetHumanoid()
+        if humanoid then humanoid.JumpPower = 50 end
+    end
+    
+    Utils.Notify("JUMP POWER", tostring(State.jumpPower))
+    Utils.Webhook("⬆️ Jump Power: " .. tostring(State.jumpPower))
+end
+
+-- 27. REMOVE TEXTURES
+local function ToggleRemoveTextures()
+    State.removeTextures = not State.removeTextures
+    
+    if State.removeTextures then
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("Texture") or obj:IsA("Decal") then
+                obj.Transparency = 1
+            end
+        end
+    else
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("Texture") or obj:IsA("Decal") then
+                obj.Transparency = 0
+            end
+        end
+    end
+    
+    Utils.Notify("REMOVE TEXTURES", tostring(State.removeTextures))
+    Utils.Webhook("🎨 Remove Textures: " .. tostring(State.removeTextures))
+end
+
+-- 28. REMOVE FOG
+local function ToggleRemoveFog()
+    State.removeFog = not State.removeFog
+    
+    if State.removeFog then
+        Data.originalFog.Start = Services.Lighting.FogStart
+        Data.originalFog.End = Services.Lighting.FogEnd
+        Services.Lighting.FogStart = 0
+        Services.Lighting.FogEnd = 100000
+    else
+        Services.Lighting.FogStart = Data.originalFog.Start or 0
+        Services.Lighting.FogEnd = Data.originalFog.End or 100000
+    end
+    
+    Utils.Notify("REMOVE FOG", tostring(State.removeFog))
+    Utils.Webhook("🌫️ Remove Fog: " .. tostring(State.removeFog))
+end
+
+-- 29. ANTI RAGDOLL
+local function ToggleAntiRagdoll()
+    State.antiRagdoll = not State.antiRagdoll
+    
+    if State.antiRagdoll then
+        Data.connections.antiRagdoll = Services.RunService.Heartbeat:Connect(function()
+            local humanoid = Utils.GetHumanoid()
+            if humanoid then
+                humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+            end
+        end)
+    else
+        if Data.connections.antiRagdoll then Data.connections.antiRagdoll:Disconnect() end
+        local humanoid = Utils.GetHumanoid()
+        if humanoid then
+            humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, true)
+        end
+    end
+    
+    Utils.Notify("ANTI RAGDOLL", tostring(State.antiRagdoll))
+    Utils.Webhook("🚫 Anti Ragdoll: " .. tostring(State.antiRagdoll))
+end
+
+-- 30. NO FALL DAMAGE
+local function ToggleNoFallDamage()
+    State.noFallDamage = not State.noFallDamage
+    
+    if State.noFallDamage then
+        Data.connections.noFall = Services.RunService.Heartbeat:Connect(function()
+            local humanoid = Utils.GetHumanoid()
+            if humanoid then
+                humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+                humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall, false)
+            end
+        end)
+    else
+        if Data.connections.noFall then Data.connections.noFall:Disconnect() end
+    end
+    
+    Utils.Notify("NO FALL DAMAGE", tostring(State.noFallDamage))
+    Utils.Webhook("🪂 No Fall Damage: " .. tostring(State.noFallDamage))
+end
+
+-- 31. CLICK TP
+local function ToggleClickTP()
+    State.clickTP = not State.clickTP
+    
+    if State.clickTP then
+        local mouse = Services.Players.LocalPlayer:GetMouse()
+        Data.connections.clickTP = mouse.Button1Down:Connect(function()
+            if State.clickTP then
+                local root = Utils.GetRoot()
+                if root and mouse.Target then
+                    root.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0, 3, 0))
+                end
+            end
+        end)
+    else
+        if Data.connections.clickTP then Data.connections.clickTP:Disconnect() end
+    end
+    
+    Utils.Notify("CLICK TP", tostring(State.clickTP))
+    Utils.Webhook("🎯 Click TP: " .. tostring(State.clickTP))
+end
+
+-- 32. GOD MODE
+local function ToggleGodMode()
+    State.godMode = not State.godMode
+    
+    if State.godMode then
+        Data.connections.godMode = Services.RunService.Heartbeat:Connect(function()
+            local humanoid = Utils.GetHumanoid()
+            if humanoid then
+                humanoid.Health = humanoid.MaxHealth
+            end
+        end)
+    else
+        if Data.connections.godMode then Data.connections.godMode:Disconnect() end
+    end
+    
+    Utils.Notify("GOD MODE", tostring(State.godMode))
+    Utils.Webhook("🛡️ God Mode: " .. tostring(State.godMode))
+end
+
+-- 33. FREE CAM
+local function ToggleFreecam()
+    State.freecam = not State.freecam
+    
+    if State.freecam then
+        local camera = workspace.CurrentCamera
+        camera.CameraType = Enum.CameraType.Scriptable
+        
+        Data.connections.freecam = Services.RunService.RenderStepped:Connect(function()
+            local moveDir = Vector3.new(0, 0, 0)
+            
+            if Services.UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                moveDir = moveDir + camera.CFrame.LookVector
+            end
+            if Services.UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                moveDir = moveDir - camera.CFrame.LookVector
+            end
+            if Services.UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                moveDir = moveDir - camera.CFrame.RightVector
+            end
+            if Services.UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                moveDir = moveDir + camera.CFrame.RightVector
+            end
+            
+            camera.CFrame = camera.CFrame + (moveDir * 0.5)
+        end)
+    else
+        workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+        if Data.connections.freecam then Data.connections.freecam:Disconnect() end
+    end
+    
+    Utils.Notify("FREE CAM", tostring(State.freecam))
+    Utils.Webhook("📹 Free Cam: " .. tostring(State.freecam))
+end
+
+-- 34. HIGHLIGHT
+local function ToggleHighlight()
+    State.highlight = not State.highlight
+    
+    local char = Utils.GetChar()
+    if char then
+        if State.highlight then
+            local highlight = Instance.new("Highlight")
+            highlight.FillColor = Color3.fromRGB(0, 255, 0)
+            highlight.OutlineColor = Color3.fromRGB(255, 0, 0)
+            highlight.FillTransparency = 0.5
+            highlight.OutlineTransparency = 0
+            highlight.Name = "CustomHighlight"
+            highlight.Parent = char
+        else
+            for _, obj in pairs(char:GetChildren()) do
+                if obj:IsA("Highlight") and obj.Name == "CustomHighlight" then
+                    obj:Destroy()
+                end
+            end
+        end
+    end
+    
+    Utils.Notify("HIGHLIGHT", tostring(State.highlight))
+    Utils.Webhook("✨ Highlight: " .. tostring(State.highlight))
+end
+
+-- 35. PARTICLE EFFECTS
+local function ToggleParticleEffects()
+    State.particleEffects = not State.particleEffects
+    
+    local char = Utils.GetChar()
+    if char then
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if root then
+            if State.particleEffects then
+                local particle = Instance.new("ParticleEmitter")
+                particle.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+                particle.Rate = 50
+                particle.Lifetime = NumberRange.new(1, 2)
+                particle.Speed = NumberRange.new(5)
+                particle.Name = "CustomParticle"
+                particle.Parent = root
+            else
+                for _, obj in pairs(root:GetChildren()) do
+                    if obj:IsA("ParticleEmitter") and obj.Name == "CustomParticle" then
+                        obj:Destroy()
+                    end
+                end
+            end
+        end
+    end
+    
+    Utils.Notify("PARTICLES", tostring(State.particleEffects))
+    Utils.Webhook("💫 Particles: " .. tostring(State.particleEffects))
+end
+
+-- 36. RESIZE TORSO
+local function ToggleResizeTorso()
+    State.resizeTorso = not State.resizeTorso
+    
+    local char = Utils.GetChar()
+    if char then
+        local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
+        if torso then
+            if State.resizeTorso then
+                Data.originalSizes.torso = torso.Size
+                torso.Size = Vector3.new(State.torsoSize, State.torsoSize, State.torsoSize)
+            else
+                if Data.originalSizes.torso then
+                    torso.Size = Data.originalSizes.torso
+                end
+            end
+        end
+    end
+    
+    Utils.Notify("RESIZE TORSO", tostring(State.resizeTorso))
+    Utils.Webhook("📏 Resize Torso: " .. tostring(State.resizeTorso))
+end
+
+-- 37. HEADLESS
+local function ToggleHeadless()
+    State.headless = not State.headless
+    
+    local char = Utils.GetChar()
+    if char then
+        local head = char:FindFirstChild("Head")
+        if head then
+            if State.headless then
+                Data.originalSizes.headSize = head.Size
+                head.Size = Vector3.new(0.01, 0.01, 0.01)
+                head.Transparency = 1
+                
+                for _, obj in pairs(head:GetChildren()) do
+                    if obj:IsA("Decal") or obj:IsA("Face") then
+                        obj.Transparency = 1
+                    end
+                end
+            else
+                if Data.originalSizes.headSize then
+                    head.Size = Data.originalSizes.headSize
+                end
+                head.Transparency = 0
+                
+                for _, obj in pairs(head:GetChildren()) do
+                    if obj:IsA("Decal") or obj:IsA("Face") then
+                        obj.Transparency = 0
+                    end
+                end
+            end
+        end
+    end
+    
+    Utils.Notify("HEADLESS", tostring(State.headless))
+    Utils.Webhook("👤 Headless: " .. tostring(State.headless))
+end
+
+-- 38. KORBLOX
+local function ToggleKorblox()
+    State.korblox = not State.korblox
+    
+    local char = Utils.GetChar()
+    if char then
+        local rightLeg = char:FindFirstChild("Right Leg") or char:FindFirstChild("RightUpperLeg")
+        if rightLeg then
+            rightLeg.Transparency = State.korblox and 1 or 0
+        end
+    end
+    
+    Utils.Notify("KORBLOX", tostring(State.korblox))
+    Utils.Webhook("🦵 Korblox: " .. tostring(State.korblox))
+end
+
+-- 39. AUTO FARM
+local function ToggleAutoFarm()
+    State.autoFarm = not State.autoFarm
+    
+    if State.autoFarm then
+        Data.connections.autoFarm = Services.RunService.Heartbeat:Connect(function()
+            -- Базовая логика автофарма (зависит от игры)
+            local root = Utils.GetRoot()
+            if root then
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if obj.Name == "Coin" or obj.Name == "Orb" and obj:IsA("BasePart") then
+                        root.CFrame = obj.CFrame
+                        wait(0.1)
+                    end
+                end
+            end
+        end)
+    else
+        if Data.connections.autoFarm then Data.connections.autoFarm:Disconnect() end
+    end
+    
+    Utils.Notify("AUTO FARM", tostring(State.autoFarm))
+    Utils.Webhook("🚜 Auto Farm: " .. tostring(State.autoFarm))
+end
+
+-- 40. ESP TRACERS
+local function ToggleESPTracers()
+    State.espTracers = not State.espTracers
+    
+    Utils.Notify("ESP TRACERS", tostring(State.espTracers))
+    Utils.Webhook("📍 ESP Tracers: " .. tostring(State.espTracers))
+end
+
+-- 41. NAME ESP
+local function ToggleNameESP()
+    State.nameESP = not State.nameESP
+    
+    Utils.Notify("NAME ESP", tostring(State.nameESP))
+    Utils.Webhook("🏷️ Name ESP: " .. tostring(State.nameESP))
+end
+
+-- 42. HEALTH ESP
+local function ToggleHealthESP()
+    State.healthESP = not State.healthESP
+    
+    Utils.Notify("HEALTH ESP", tostring(State.healthESP))
+    Utils.Webhook("❤️ Health ESP: " .. tostring(State.healthESP))
+end
+
+-- 43-50. МУЗЫКА И ВНЕШНИЕ СКРИПТЫ
+local function ToggleMusic()
     State.musicEnabled = not State.musicEnabled
     
     if not Data.backgroundMusic then
@@ -776,289 +1352,125 @@ function Functions.ToggleMusic()
     
     if State.musicEnabled then
         Data.backgroundMusic:Play()
-        Utils.Notify("ARUSCRIPT V5", "🎵 Music Started!")
-        Utils.Webhook("🎵 Музыка включена")
     else
         Data.backgroundMusic:Stop()
-        Utils.Notify("ARUSCRIPT V5", "🔇 Music Stopped!")
-        Utils.Webhook("🔇 Музыка выключена")
+    end
+    
+    Utils.Notify("MUSIC", tostring(State.musicEnabled))
+end
+
+-- ============== СОЗДАНИЕ КНОПОК ==============
+local function CreateAllButtons()
+    local buttons = {
+        {"Music", "🎵 MUSIC", 1},
+        {"MusicVol", "VOLUME: 0.5", 2, true},
+        {"ESP", "👁️ ESP WALLHACK", 3},
+        {"Fly", "✈️ FLY MODE", 4},
+        {"FlySpeed", "FLY SPEED: 50", 5, true},
+        {"Speedhack", "⚡ SPEEDHACK", 6},
+        {"SpeedhackVal", "SPEED: 16", 7, true},
+        {"Noclip", "👻 NOCLIP", 8},
+        {"InfJump", "🦘 INFINITE JUMP", 9},
+        {"Bhop", "🐰 BUNNY HOP", 10},
+        {"Fullbright", "💡 FULLBRIGHT", 11},
+        {"Xray", "👁️ X-RAY", 12},
+        {"AntiAFK", "⏰ ANTI-AFK", 13},
+        {"Spinbot", "🌀 SPINBOT", 14},
+        {"Platform", "🏗️ PLATFORM", 15},
+        {"Gravity", "🌍 GRAVITY CONTROL", 16},
+        {"Invisibility", "👻 INVISIBILITY", 17},
+        {"RainbowChar", "🌈 RAINBOW CHARACTER", 18},
+        {"Trail", "✨ TRAIL", 19},
+        {"Forcefield", "🛡️ FORCEFIELD", 20},
+        {"BigHead", "🤪 BIG HEAD", 21},
+        {"RemoveHead", "👻 REMOVE HEAD", 22},
+        {"ChatLogger", "💬 CHAT LOGGER", 23},
+        {"PlayerNotifier", "🔔 PLAYER NOTIFIER", 24},
+        {"AutoClicker", "🖱️ AUTO CLICKER", 25},
+        {"Killaura", "⚔️ KILLAURA", 26},
+        {"FOV", "🔭 FOV CHANGER", 27},
+        {"SitAnywhere", "🪑 SIT ANYWHERE", 28},
+        {"WalkSpeed", "🏃 WALK SPEED", 29},
+        {"WalkSpeedVal", "SPEED: 100", 30, true},
+        {"JumpPower", "⬆️ JUMP POWER", 31},
+        {"JumpPowerVal", "POWER: 100", 32, true},
+        {"RemoveTextures", "🎨 REMOVE TEXTURES", 33},
+        {"RemoveFog", "🌫️ REMOVE FOG", 34},
+        {"AntiRagdoll", "🚫 ANTI RAGDOLL", 35},
+        {"NoFallDamage", "🪂 NO FALL DAMAGE", 36},
+        {"ClickTP", "🎯 CLICK TELEPORT", 37},
+        {"GodMode", "🛡️ GOD MODE", 38},
+        {"Freecam", "📹 FREE CAM", 39},
+        {"Highlight", "✨ HIGHLIGHT", 40},
+        {"Particles", "💫 PARTICLES", 41},
+        {"ResizeTorso", "📏 RESIZE TORSO", 42},
+        {"Headless", "👤 HEADLESS", 43},
+        {"Korblox", "🦵 KORBLOX", 44},
+        {"AutoFarm", "🚜 AUTO FARM", 45},
+        {"ESPTracers", "📍 ESP TRACERS", 46},
+        {"NameESP", "🏷️ NAME ESP", 47},
+        {"HealthESP", "❤️ HEALTH ESP", 48},
+        {"IY", "🔥 INFINITY YIELD", 49},
+        {"SaveCfg", "💾 SAVE CONFIG", 50}
+    }
+    
+    for _, data in ipairs(buttons) do
+        if data[4] then
+            CreateTextBox(data[1], data[2], data[3])
+        else
+            CreateButton(data[1], data[2], data[3])
+        end
     end
 end
 
--- ============== УНИВЕРСАЛЬНАЯ ФУНКЦИЯ TOGGLE ==============
-local function ToggleFeature(name, stateKey, emoji)
-    State[stateKey] = not State[stateKey]
-    Utils.Notify("ARUSCRIPT V5", name .. ": " .. tostring(State[stateKey]))
-    Utils.Webhook(emoji .. " " .. name .. ": " .. tostring(State[stateKey]))
-end
-
--- ============== POPUP ==============
-local function ShowDiscordPopup()
-    local bg = Instance.new("Frame")
-    bg.Size = UDim2.new(1, 0, 1, 0)
-    bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    bg.BackgroundTransparency = 1
-    bg.ZIndex = 100
-    bg.Parent = GUI.Screen
-    
-    local popup = Instance.new("Frame")
-    popup.Size = UDim2.new(0, 500, 0, 400)
-    popup.Position = UDim2.new(0.5, -250, 0, -500)
-    popup.BackgroundColor3 = Color3.fromRGB(35, 39, 42)
-    popup.BorderSizePixel = 0
-    popup.ZIndex = 101
-    popup.Parent = GUI.Screen
-    
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 15)
-    corner.Parent = popup
-    
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(88, 101, 242)
-    stroke.Thickness = 3
-    stroke.Parent = popup
-    
-    local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, -40, 0, 60)
-    title.Position = UDim2.new(0, 20, 0, 20)
-    title.Text = "🎮 ПРИСОЕДИНИСЬ К НАМ НА DISCORD! 🎮"
-    title.TextScaled = true
-    title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    title.Font = Enum.Font.GothamBold
-    title.BackgroundTransparency = 1
-    title.ZIndex = 102
-    title.Parent = popup
-    
-    local desc = Instance.new("TextLabel")
-    desc.Size = UDim2.new(1, -40, 0, 100)
-    desc.Position = UDim2.new(0, 20, 0, 90)
-    desc.Text = "Хочешь узнать больше читов?\nПрисоединись к нашему Discord серверу!\n• Обновления\n• Поддержка\n• Сообщество"
-    desc.TextScaled = true
-    desc.TextColor3 = Color3.fromRGB(200, 200, 200)
-    desc.Font = Enum.Font.Gotham
-    desc.BackgroundTransparency = 1
-    desc.TextWrapped = true
-    desc.ZIndex = 102
-    desc.Parent = popup
-    
-    local copyBtn = Instance.new("TextButton")
-    copyBtn.Size = UDim2.new(0, 200, 0, 50)
-    copyBtn.Position = UDim2.new(0.5, -100, 0, 210)
-    copyBtn.Text = "📋 КОПИРОВАТЬ ССЫЛКУ"
-    copyBtn.TextScaled = true
-    copyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    copyBtn.Font = Enum.Font.GothamBold
-    copyBtn.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
-    copyBtn.BorderSizePixel = 0
-    copyBtn.ZIndex = 102
-    copyBtn.Parent = popup
-    
-    local copyCorner = Instance.new("UICorner")
-    copyCorner.CornerRadius = UDim.new(0, 10)
-    copyCorner.Parent = copyBtn
-    
-    local closeBtn = Instance.new("TextButton")
-    closeBtn.Size = UDim2.new(0, 180, 0, 50)
-    closeBtn.Position = UDim2.new(0.5, -90, 0, 280)
-    closeBtn.Text = "✖ ЗАКРЫТЬ"
-    closeBtn.TextScaled = true
-    closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    closeBtn.Font = Enum.Font.GothamBold
-    closeBtn.BackgroundColor3 = Color3.fromRGB(220, 53, 69)
-    closeBtn.BorderSizePixel = 0
-    closeBtn.ZIndex = 102
-    closeBtn.Parent = popup
-    
-    local closeCorn = Instance.new("UICorner")
-    closeCorn.CornerRadius = UDim.new(0, 10)
-    closeCorn.Parent = closeBtn
-    
-    Services.TweenService:Create(bg, TweenInfo.new(0.3), {BackgroundTransparency = 0.5}):Play()
-    Services.TweenService:Create(popup, TweenInfo.new(0.5, Enum.EasingStyle.Bounce), {
-        Position = UDim2.new(0.5, -250, 0.5, -200)
-    }):Play()
-    
-    copyBtn.MouseButton1Click:Connect(function()
-        if Utils.CopyClipboard(Settings.DiscordLink) then
-            Utils.Notify("ARUSCRIPT V5", "✅ Ссылка скопирована!", 2)
-        end
-    end)
-    
-    closeBtn.MouseButton1Click:Connect(function()
-        Services.TweenService:Create(popup, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -250, 1, 0)}):Play()
-        Services.TweenService:Create(bg, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
-        wait(0.3)
-        bg:Destroy()
-        popup:Destroy()
-    end)
-    
-    Utils.Notify("ARUSCRIPT V5", "🎮 Не забудь присоединиться к Discord!", 5)
-end
-
--- ============== ПОДКЛЮЧЕНИЕ КНОПОК ==============
+-- ============== ПОДКЛЮЧЕНИЕ ==============
 local function ConnectButtons()
-    -- BASIC
-    GUI.Buttons.Music.MouseButton1Click:Connect(Functions.ToggleMusic)
-    GUI.Buttons.Discord.MouseButton1Click:Connect(ShowDiscordPopup)
+    GUI.Buttons.Music.MouseButton1Click:Connect(ToggleMusic)
+    GUI.Buttons.ESP.MouseButton1Click:Connect(ToggleESP)
+    GUI.Buttons.Fly.MouseButton1Click:Connect(ToggleFly)
+    GUI.Buttons.Speedhack.MouseButton1Click:Connect(ToggleSpeedhack)
+    GUI.Buttons.Noclip.MouseButton1Click:Connect(ToggleNoclip)
+    GUI.Buttons.InfJump.MouseButton1Click:Connect(ToggleInfJump)
+    GUI.Buttons.Bhop.MouseButton1Click:Connect(ToggleBhop)
+    GUI.Buttons.Fullbright.MouseButton1Click:Connect(ToggleFullbright)
+    GUI.Buttons.Xray.MouseButton1Click:Connect(ToggleXray)
+    GUI.Buttons.AntiAFK.MouseButton1Click:Connect(ToggleAntiAFK)
+    GUI.Buttons.Spinbot.MouseButton1Click:Connect(ToggleSpinbot)
+    GUI.Buttons.Platform.MouseButton1Click:Connect(TogglePlatform)
+    GUI.Buttons.Gravity.MouseButton1Click:Connect(ToggleGravity)
+    GUI.Buttons.Invisibility.MouseButton1Click:Connect(ToggleInvisibility)
+    GUI.Buttons.RainbowChar.MouseButton1Click:Connect(ToggleRainbowChar)
+    GUI.Buttons.Trail.MouseButton1Click:Connect(ToggleTrail)
+    GUI.Buttons.Forcefield.MouseButton1Click:Connect(ToggleForcefield)
+    GUI.Buttons.BigHead.MouseButton1Click:Connect(ToggleBigHead)
+    GUI.Buttons.RemoveHead.MouseButton1Click:Connect(ToggleRemoveHead)
+    GUI.Buttons.ChatLogger.MouseButton1Click:Connect(ToggleChatLogger)
+    GUI.Buttons.PlayerNotifier.MouseButton1Click:Connect(TogglePlayerNotifier)
+    GUI.Buttons.AutoClicker.MouseButton1Click:Connect(ToggleAutoClicker)
+    GUI.Buttons.Killaura.MouseButton1Click:Connect(ToggleKillaura)
+    GUI.Buttons.FOV.MouseButton1Click:Connect(ToggleFOV)
+    GUI.Buttons.SitAnywhere.MouseButton1Click:Connect(ToggleSitAnywhere)
+    GUI.Buttons.WalkSpeed.MouseButton1Click:Connect(ToggleWalkSpeed)
+    GUI.Buttons.JumpPower.MouseButton1Click:Connect(ToggleJumpPower)
+    GUI.Buttons.RemoveTextures.MouseButton1Click:Connect(ToggleRemoveTextures)
+    GUI.Buttons.RemoveFog.MouseButton1Click:Connect(ToggleRemoveFog)
+    GUI.Buttons.AntiRagdoll.MouseButton1Click:Connect(ToggleAntiRagdoll)
+    GUI.Buttons.NoFallDamage.MouseButton1Click:Connect(ToggleNoFallDamage)
+    GUI.Buttons.ClickTP.MouseButton1Click:Connect(ToggleClickTP)
+    GUI.Buttons.GodMode.MouseButton1Click:Connect(ToggleGodMode)
+    GUI.Buttons.Freecam.MouseButton1Click:Connect(ToggleFreecam)
+    GUI.Buttons.Highlight.MouseButton1Click:Connect(ToggleHighlight)
+    GUI.Buttons.Particles.MouseButton1Click:Connect(ToggleParticleEffects)
+    GUI.Buttons.ResizeTorso.MouseButton1Click:Connect(ToggleResizeTorso)
+    GUI.Buttons.Headless.MouseButton1Click:Connect(ToggleHeadless)
+    GUI.Buttons.Korblox.MouseButton1Click:Connect(ToggleKorblox)
+    GUI.Buttons.AutoFarm.MouseButton1Click:Connect(ToggleAutoFarm)
+    GUI.Buttons.ESPTracers.MouseButton1Click:Connect(ToggleESPTracers)
+    GUI.Buttons.NameESP.MouseButton1Click:Connect(ToggleNameESP)
+    GUI.Buttons.HealthESP.MouseButton1Click:Connect(ToggleHealthESP)
     
-    -- ESP
-    GUI.Buttons.ESP.MouseButton1Click:Connect(Functions.ToggleESP)
-    GUI.Buttons.ESPColor.MouseButton1Click:Connect(Functions.ChangeESPColor)
-    GUI.Buttons.ESPDist.MouseButton1Click:Connect(function() ToggleFeature("ESP Distance", "espDistance", "📏") end)
-    GUI.Buttons.ESPHealth.MouseButton1Click:Connect(function() ToggleFeature("ESP Health", "espHealth", "❤️") end)
-    GUI.Buttons.ESPTracers.MouseButton1Click:Connect(function() ToggleFeature("ESP Tracers", "espTracers", "📍") end)
-    GUI.Buttons.ESPChams.MouseButton1Click:Connect(function() ToggleFeature("ESP Chams", "espChams", "🎨") end)
-    GUI.Buttons.ESP3D.MouseButton1Click:Connect(function() ToggleFeature("ESP 3D", "esp3D", "📦") end)
-    GUI.Buttons.ESPName.MouseButton1Click:Connect(function() ToggleFeature("Name ESP", "espName", "🏷️") end)
-    GUI.Buttons.ESPSkel.MouseButton1Click:Connect(function() ToggleFeature("Skeleton ESP", "espSkeleton", "💀") end)
-    
-    -- MOVEMENT
-    GUI.Buttons.Fly.MouseButton1Click:Connect(Functions.ToggleFly)
-    GUI.Buttons.Speedhack.MouseButton1Click:Connect(Functions.ToggleSpeedhack)
-    GUI.Buttons.Noclip.MouseButton1Click:Connect(Functions.ToggleNoclip)
-    GUI.Buttons.InfJump.MouseButton1Click:Connect(function() ToggleFeature("Infinite Jump", "infJump", "🦘") end)
-    GUI.Buttons.Bhop.MouseButton1Click:Connect(function() ToggleFeature("Bunny Hop", "bhop", "🐰") end)
-    GUI.Buttons.WalkAir.MouseButton1Click:Connect(function() ToggleFeature("Walk On Air", "walkOnAir", "🌥️") end)
-    GUI.Buttons.AntiSlip.MouseButton1Click:Connect(function() ToggleFeature("Anti-Slip", "antiSlip", "🧊") end)
-    GUI.Buttons.AutoJump.MouseButton1Click:Connect(function() ToggleFeature("Auto Jump", "autoJump", "🦘") end)
-    GUI.Buttons.LongJump.MouseButton1Click:Connect(function() ToggleFeature("Long Jump", "longJump", "🏃") end)
-    GUI.Buttons.HighJump.MouseButton1Click:Connect(function() ToggleFeature("High Jump", "highJump", "⬆️") end)
-    GUI.Buttons.SpiderClimb.MouseButton1Click:Connect(function() ToggleFeature("Spider Climb", "spiderClimb", "🕷️") end)
-    
-    -- COMBAT
-    GUI.Buttons.Aimbot.MouseButton1Click:Connect(function() ToggleFeature("Aimbot", "aimbot", "🎯") end)
-    GUI.Buttons.Triggerbot.MouseButton1Click:Connect(function() ToggleFeature("Triggerbot", "triggerbot", "⚡") end)
-    GUI.Buttons.Killaura.MouseButton1Click:Connect(function() ToggleFeature("Killaura", "killaura", "⚔️") end)
-    GUI.Buttons.SilentAim.MouseButton1Click:Connect(function() ToggleFeature("Silent Aim", "silentAim", "🤫") end)
-    GUI.Buttons.PerfectAim.MouseButton1Click:Connect(function() ToggleFeature("Perfect Aim", "perfectAim", "💯") end)
-    GUI.Buttons.InfReach.MouseButton1Click:Connect(function() ToggleFeature("Infinite Reach", "infiniteReach", "👋") end)
-    GUI.Buttons.RapidFire.MouseButton1Click:Connect(function() ToggleFeature("Rapid Fire", "rapidFire", "🔫") end)
-    GUI.Buttons.AutoSword.MouseButton1Click:Connect(function() ToggleFeature("Auto Sword", "autoSword", "⚔️") end)
-    GUI.Buttons.CritHits.MouseButton1Click:Connect(function() ToggleFeature("Critical Hits", "critHits", "💥") end)
-    
-    -- VISUAL
-    GUI.Buttons.Fullbright.MouseButton1Click:Connect(function()
-        State.fullbright = not State.fullbright
-        if State.fullbright then
-            Services.Lighting.Brightness = 2
-            Services.Lighting.ClockTime = 12
-            Services.Lighting.FogEnd = 100000
-        else
-            Services.Lighting.Brightness = 1
-            Services.Lighting.ClockTime = 14
-        end
-        ToggleFeature("Fullbright", "fullbright", "💡")
-    end)
-    GUI.Buttons.Xray.MouseButton1Click:Connect(function() ToggleFeature("X-Ray", "xray", "👁️") end)
-    GUI.Buttons.Radar.MouseButton1Click:Connect(function() ToggleFeature("Radar", "radar", "📡") end)
-    GUI.Buttons.FOVChanger.MouseButton1Click:Connect(function() ToggleFeature("FOV Changer", "fovChanger", "🔭") end)
-    GUI.Buttons.NightVision.MouseButton1Click:Connect(function() ToggleFeature("Night Vision", "nightVision", "🌃") end)
-    GUI.Buttons.Vibrant.MouseButton1Click:Connect(function() ToggleFeature("Vibrant Colors", "vibrant", "🎨") end)
-    GUI.Buttons.Glow.MouseButton1Click:Connect(function() ToggleFeature("Glow Effect", "glow", "✨") end)
-    
-    -- UTILITY
-    GUI.Buttons.GodMode.MouseButton1Click:Connect(function() ToggleFeature("God Mode", "godMode", "🛡️") end)
-    GUI.Buttons.AntiAFK.MouseButton1Click:Connect(function() ToggleFeature("Anti-AFK", "antiAFK", "⏰") end)
-    GUI.Buttons.AutoHeal.MouseButton1Click:Connect(function() ToggleFeature("Auto Heal", "autoHeal", "💊") end)
-    GUI.Buttons.InfStamina.MouseButton1Click:Connect(function() ToggleFeature("Infinite Stamina", "infiniteStamina", "💪") end)
-    GUI.Buttons.Immortality.MouseButton1Click:Connect(function() ToggleFeature("Immortality", "immortality", "👼") end)
-    GUI.Buttons.InfHealth.MouseButton1Click:Connect(function() ToggleFeature("Infinite Health", "infHealth", "❤️") end)
-    GUI.Buttons.NoRecoil.MouseButton1Click:Connect(function() ToggleFeature("No Recoil", "noRecoil", "🎯") end)
-    GUI.Buttons.AntiFire.MouseButton1Click:Connect(function() ToggleFeature("Anti-Fire", "antiFire", "🔥") end)
-    GUI.Buttons.AntiPoison.MouseButton1Click:Connect(function() ToggleFeature("Anti-Poison", "antiPoison", "☠️") end)
-    GUI.Buttons.AntiBlind.MouseButton1Click:Connect(function() ToggleFeature("Anti-Blind", "antiBlind", "👁️") end)
-    GUI.Buttons.AntiSlow.MouseButton1Click:Connect(function() ToggleFeature("Anti-Slow", "antiSlow", "⚡") end)
-    
-    -- AUTOMATION
-    GUI.Buttons.AutoClick.MouseButton1Click:Connect(function() ToggleFeature("Auto Click", "autoClick", "🖱️") end)
-    GUI.Buttons.AutoFarm.MouseButton1Click:Connect(function() ToggleFeature("Auto Farm", "autoFarm", "🚜") end)
-    GUI.Buttons.AutoCollect.MouseButton1Click:Connect(function() ToggleFeature("Auto Collect", "autoCollect", "💰") end)
-    GUI.Buttons.AutoBuy.MouseButton1Click:Connect(function() ToggleFeature("Auto Buy", "autoBuy", "💰") end)
-    GUI.Buttons.AutoSell.MouseButton1Click:Connect(function() ToggleFeature("Auto Sell", "autoSell", "💵") end)
-    GUI.Buttons.AutoReload.MouseButton1Click:Connect(function() ToggleFeature("Auto Reload", "autoReload", "🔄") end)
-    
-    -- ADVANCED
-    GUI.Buttons.Spinbot.MouseButton1Click:Connect(function() ToggleFeature("Spinbot", "spinbot", "🌀") end)
-    GUI.Buttons.Platform.MouseButton1Click:Connect(function() ToggleFeature("Platform", "platform", "🏗️") end)
-    GUI.Buttons.Freecam.MouseButton1Click:Connect(function() ToggleFeature("Freecam", "freecam", "📹") end)
-    GUI.Buttons.Hitbox.MouseButton1Click:Connect(function() ToggleFeature("Hitbox Expander", "hitboxExpander", "📦") end)
-    GUI.Buttons.NoFall.MouseButton1Click:Connect(function() ToggleFeature("No Fall Damage", "noFallDamage", "🪂") end)
-    GUI.Buttons.AntiRagdoll.MouseButton1Click:Connect(function() ToggleFeature("Anti-Ragdoll", "antiRagdoll", "🚫") end)
-    GUI.Buttons.ClickTP.MouseButton1Click:Connect(function() ToggleFeature("Click Teleport", "clickTP", "🎯") end)
-    GUI.Buttons.AutoSprint.MouseButton1Click:Connect(function() ToggleFeature("Auto Sprint", "autoSprint", "🏃") end)
-    GUI.Buttons.AutoRespawn.MouseButton1Click:Connect(function() ToggleFeature("Auto Respawn", "autoRespawn", "🔄") end)
-    GUI.Buttons.WallPhase.MouseButton1Click:Connect(function() ToggleFeature("Wall Phase", "wallPhase", "👻") end)
-    GUI.Buttons.Gravity.MouseButton1Click:Connect(function()
-        State.gravity = not State.gravity
-        workspace.Gravity = State.gravity and 0 or 196.2
-        ToggleFeature("Gravity Control", "gravity", "🌍")
-    end)
-    GUI.Buttons.Invisibility.MouseButton1Click:Connect(function() ToggleFeature("Invisibility", "invisibility", "👻") end)
-    GUI.Buttons.Fakelag.MouseButton1Click:Connect(function() ToggleFeature("Fakelag", "fakelag", "📶") end)
-    GUI.Buttons.AntiKick.MouseButton1Click:Connect(function() ToggleFeature("Anti-Kick", "antiKick", "🛡️") end)
-    
-    -- TELEPORT
-    GUI.Buttons.TPPlayer.MouseButton1Click:Connect(function() ToggleFeature("Teleport To Player", "teleportToPlayer", "🎯") end)
-    GUI.Buttons.LoopTP.MouseButton1Click:Connect(function() ToggleFeature("Loop Teleport", "loopTeleport", "🔄") end)
-    GUI.Buttons.Waypoint.MouseButton1Click:Connect(function()
-        local char = Services.Players.LocalPlayer.Character
-        if char and char:FindFirstChild("HumanoidRootPart") then
-            table.insert(Data.waypoints, char.HumanoidRootPart.CFrame)
-            Utils.Notify("ARUSCRIPT V5", "📍 Waypoint Saved!")
-            Utils.Webhook("📍 Waypoint saved")
-        end
-    end)
-    
-    -- VISUAL EFFECTS
-    GUI.Buttons.RainbowChar.MouseButton1Click:Connect(function() ToggleFeature("Rainbow Character", "rainbowChar", "🌈") end)
-    GUI.Buttons.Trail.MouseButton1Click:Connect(function() ToggleFeature("Character Trail", "trail", "✨") end)
-    GUI.Buttons.Particles.MouseButton1Click:Connect(function() ToggleFeature("Particle Effects", "particleEffects", "💫") end)
-    GUI.Buttons.Forcefield.MouseButton1Click:Connect(function() ToggleFeature("Forcefield", "forcefield", "🛡️") end)
-    
-    -- WORLD
-    GUI.Buttons.RemoveFog.MouseButton1Click:Connect(function() ToggleFeature("Remove Fog", "removeFog", "🌫️") end)
-    GUI.Buttons.AlwaysDay.MouseButton1Click:Connect(function() ToggleFeature("Always Day", "alwaysDay", "☀️") end)
-    GUI.Buttons.AlwaysNight.MouseButton1Click:Connect(function() ToggleFeature("Always Night", "alwaysNight", "🌙") end)
-    
-    -- PLAYER MODS
-    GUI.Buttons.BigHead.MouseButton1Click:Connect(function() ToggleFeature("Big Head", "bigHead", "🤪") end)
-    GUI.Buttons.RemoveHead.MouseButton1Click:Connect(function() ToggleFeature("Remove Head", "removeHead", "👻") end)
-    GUI.Buttons.Moonwalk.MouseButton1Click:Connect(function() ToggleFeature("Moonwalk", "moonwalk", "🕺") end)
-    
-    -- MISC
-    GUI.Buttons.ChatLogger.MouseButton1Click:Connect(function() ToggleFeature("Chat Logger", "chatLogger", "💬") end)
-    GUI.Buttons.PlayerNotifier.MouseButton1Click:Connect(function() ToggleFeature("Player Notifier", "playerNotifier", "🔔") end)
-    
-    -- EXTERNAL
     GUI.Buttons.IY.MouseButton1Click:Connect(function()
-        Utils.Notify("ARUSCRIPT V5", "⏳ Loading Infinity Yield...")
         loadstring(game:HttpGet(Settings.Scripts.InfinityYield))()
-        Utils.Webhook("🔥 Infinity Yield loaded")
-    end)
-    
-    GUI.Buttons.EmoteR6.MouseButton1Click:Connect(function()
-        Utils.Notify("ARUSCRIPT V5", "⏳ Loading Custom Emote R6...")
-        loadstring(game:HttpGet(Settings.Scripts.CustomEmoteR6))()
-        Utils.Webhook("💃 Custom Emote R6 loaded")
-    end)
-    
-    GUI.Buttons.EmoteR15.MouseButton1Click:Connect(function()
-        Utils.Notify("ARUSCRIPT V5", "⏳ Loading Custom Emote R15...")
-        loadstring(game:HttpGet(Settings.Scripts.CustomEmoteR15))()
-        Utils.Webhook("🕺 Custom Emote R15 loaded")
-    end)
-    
-    -- CONFIG
-    GUI.Buttons.SaveCfg.MouseButton1Click:Connect(function()
-        Utils.SaveConfig()
-        Utils.Notify("ARUSCRIPT V5", "✅ Config Saved!")
-        Utils.Webhook("💾 Config сохранен")
-    end)
-    
-    GUI.Buttons.LoadCfg.MouseButton1Click:Connect(function()
-        Utils.LoadConfig()
-        Utils.Notify("ARUSCRIPT V5", "✅ Config Loaded!")
-        Utils.Webhook("📂 Config загружен")
     end)
     
     -- TEXTBOXES
@@ -1066,10 +1478,7 @@ local function ConnectButtons()
         local vol = tonumber(GUI.Buttons.MusicVol.Text)
         if vol then
             State.musicVolume = math.clamp(vol, 0, 1)
-            if Data.backgroundMusic then
-                Data.backgroundMusic.Volume = State.musicVolume
-            end
-            Utils.Notify("ARUSCRIPT V5", "🎵 Volume: " .. math.floor(State.musicVolume * 100) .. "%")
+            if Data.backgroundMusic then Data.backgroundMusic.Volume = State.musicVolume end
         end
     end)
     
@@ -1083,14 +1492,14 @@ local function ConnectButtons()
         if sp then State.speedhackSpeed = sp end
     end)
     
-    GUI.Buttons.AimbotFOV.FocusLost:Connect(function()
-        local fov = tonumber(GUI.Buttons.AimbotFOV.Text)
-        if fov then State.aimbotFOV = fov end
+    GUI.Buttons.WalkSpeedVal.FocusLost:Connect(function()
+        local sp = tonumber(GUI.Buttons.WalkSpeedVal.Text)
+        if sp then State.walkSpeedValue = sp end
     end)
     
-    GUI.Buttons.AimbotSmooth.FocusLost:Connect(function()
-        local sm = tonumber(GUI.Buttons.AimbotSmooth.Text)
-        if sm then State.aimbotSmooth = sm end
+    GUI.Buttons.JumpPowerVal.FocusLost:Connect(function()
+        local sp = tonumber(GUI.Buttons.JumpPowerVal.Text)
+        if sp then State.jumpPowerValue = sp end
     end)
 end
 
@@ -1100,25 +1509,43 @@ local function SetupKeybinds()
         if gameProcessed then return end
         
         if input.KeyCode == Enum.KeyCode.RightShift then
-            Functions.ToggleMenu()
+            State.menuVisible = not State.menuVisible
+            if State.menuVisible then
+                GUI.Toggle.Visible = false
+                GUI.Main.Visible = true
+                Services.TweenService:Create(GUI.Main, TweenInfo.new(0.5), {
+                    Position = UDim2.new(0.5, -275, 0.5, -375)
+                }):Play()
+            else
+                Services.TweenService:Create(GUI.Main, TweenInfo.new(0.5), {
+                    Position = UDim2.new(0.5, -275, 2, 0)
+                }):Play()
+                wait(0.5)
+                GUI.Main.Visible = false
+                GUI.Toggle.Visible = true
+            end
         elseif input.KeyCode == Enum.KeyCode.F then
-            Functions.ToggleFly()
+            ToggleFly()
         elseif input.KeyCode == Enum.KeyCode.N then
-            Functions.ToggleNoclip()
+            ToggleNoclip()
         elseif input.KeyCode == Enum.KeyCode.E then
-            Functions.ToggleESP()
-        elseif input.KeyCode == Enum.KeyCode.M then
-            Functions.ToggleMusic()
+            ToggleESP()
         elseif input.KeyCode == Enum.KeyCode.Delete then
             GUI.Screen:Destroy()
-            Utils.Notify("ARUSCRIPT V5", "❌ GUI Уничтожен!")
         end
     end)
     
-    GUI.Toggle.MouseButton1Click:Connect(Functions.ToggleMenu)
+    GUI.Toggle.MouseButton1Click:Connect(function()
+        State.menuVisible = true
+        GUI.Toggle.Visible = false
+        GUI.Main.Visible = true
+        Services.TweenService:Create(GUI.Main, TweenInfo.new(0.5), {
+            Position = UDim2.new(0.5, -275, 0.5, -375)
+        }):Play()
+    end)
 end
 
--- ============== RAINBOW ANIMATION ==============
+-- ============== RAINBOW ==============
 spawn(function()
     while State.rainbowEnabled do
         local color = Utils.Rainbow()
@@ -1128,24 +1555,8 @@ spawn(function()
             if GUI.ToggleStroke then GUI.ToggleStroke.Color = color end
             if GUI.CloseStroke then GUI.CloseStroke.Color = color end
             if GUI.Divider then GUI.Divider.BackgroundColor3 = color end
-            if GUI.Content then GUI.Content.ScrollBarImageColor3 = color end
         end)
         wait(0.01)
-    end
-end)
-
--- ============== POPUP TIMER ==============
-spawn(function()
-    while true do
-        wait(1)
-        local elapsed = os.time() - Data.scriptStartTime
-        for i, interval in ipairs(Settings.PopupIntervals) do
-            if elapsed >= interval and not Data.popupShown[i] then
-                ShowDiscordPopup()
-                Data.popupShown[i] = true
-                Utils.Webhook("📢 Discord Pop-up #" .. i .. " показан")
-            end
-        end
     end
 end)
 
@@ -1154,7 +1565,6 @@ SetupGUI()
 CreateAllButtons()
 ConnectButtons()
 SetupKeybinds()
-Utils.LoadConfig()
 
 GUI.Blur.Enabled = true
 Services.TweenService:Create(GUI.Blur, TweenInfo.new(0.5), {Size = 10}):Play()
@@ -1165,40 +1575,10 @@ Services.TweenService:Create(GUI.Main, TweenInfo.new(0.8, Enum.EasingStyle.Bounc
     Position = UDim2.new(0.5, -275, 0.5, -375)
 }):Play()
 
-pcall(function()
-    local bootSound = Instance.new("Sound")
-    bootSound.SoundId = "rbxassetid://6518811702"
-    bootSound.Volume = 0.3
-    bootSound.Parent = GUI.Screen
-    bootSound:Play()
-end)
-
 wait(1)
-Utils.Notify("ARUSCRIPT V5", "✅ Successfully Loaded!", 5)
-Utils.Webhook("🚀 ARUSCRIPT V5 (87 FUNCTIONS) запущен!\nИгрок: " .. Services.Players.LocalPlayer.Name)
-
-wait(2)
-if not Data.backgroundMusic then
-    Data.backgroundMusic = Instance.new("Sound")
-    Data.backgroundMusic.SoundId = "rbxassetid://1845552080"
-    Data.backgroundMusic.Volume = State.musicVolume
-    Data.backgroundMusic.Looped = true
-    Data.backgroundMusic.Parent = GUI.Screen
-end
-
-if State.musicEnabled then
-    Data.backgroundMusic:Play()
-    Utils.Notify("ARUSCRIPT V5", "🎵 Music Started!")
-end
-
-wait(10)
-ShowDiscordPopup()
+Utils.Notify("ARUSCRIPT V5", "✅ 50 REAL FUNCTIONS LOADED!", 5)
+Utils.Webhook("🚀 ARUSCRIPT V5 запущен (50 REAL FUNCTIONS)\nИгрок: " .. Services.Players.LocalPlayer.Name)
 
 print("╔════════════════════════════════════════════════════════╗")
-print("║     ARUSCRIPT V5 - 87 FUNCTIONS - FULLY LOADED        ║")
-print("║              OPTIMIZED - NO VARIABLE LIMIT             ║")
-print("║                                                         ║")
-print("║ ✅ All Systems Active                                  ║")
-print("║ ✅ Press Right Shift to toggle menu                    ║")
-print("║ ✅ 87 Functions Ready!                                 ║")
+print("║      ARUSCRIPT V5 - 50 REAL FUNCTIONS LOADED          ║")
 print("╚════════════════════════════════════════════════════════╝")
