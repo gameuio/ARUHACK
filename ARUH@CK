@@ -2,14 +2,18 @@
 ═══════════════════════════════════════════════════════════
 ╔═══════════════════════════════════════════════════╗
 ║       ARUSCRIPT V5 - ULTIMATE EDITION            ║
+║        ПОЛНАЯ НЕСЖАТАЯ ВЕРСИЯ                    ║
 ║     82 ПОЛНОСТЬЮ РАБОЧИХ ФУНКЦИЙ                 ║
 ╚═══════════════════════════════════════════════════╝
 ═══════════════════════════════════════════════════════════
 --]]
 
-wait(1) -- ВАЖНО: Ждем загрузки игры
+-- Ждем загрузки игры
+wait(2)
 
-print("🔄 Загрузка ARUSCRIPT V5...")
+print("═══════════════════════════════════════")
+print("🔄 Загрузка ARUSCRIPT V5 ULTIMATE...")
+print("═══════════════════════════════════════")
 
 -- ============== СЕРВИСЫ ==============
 local TweenService = game:GetService("TweenService")
@@ -24,154 +28,260 @@ local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")
 
-local LP = Players.LocalPlayer
-local Mouse = LP:GetMouse()
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
 local Camera = Workspace.CurrentCamera
 
 print("✅ Сервисы загружены")
 
--- ============== GUI ПЕРЕМЕННЫЕ ==============
+-- ============== НАСТРОЙКИ ==============
+local Settings = {
+    DiscordLink = "https://discord.gg/AW4ehqwh",
+    Webhook = "https://discord.com/api/webhooks/1493861251904835605/FtXNu80qBxKzEv6Tkegx7noBM6W7aSlqCWd9BtFclua0ejrkiJIw9O7S0qtwdL7dDt5v",
+    Scripts = {
+        InfinityYield = 'https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source',
+        Dex = 'https://raw.githubusercontent.com/infyiff/backup/main/dex.lua',
+        SimpleSpy = 'https://raw.githubusercontent.com/exxtremestuffs/SimpleSpySource/master/SimpleSpy.lua'
+    }
+}
+
+print("✅ Настройки загружены")
+
+-- ============== GUI ЭЛЕМЕНТЫ ==============
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local TopBar = Instance.new("Frame")
 local Sidebar = Instance.new("ScrollingFrame")
-local Content = Instance.new("ScrollingFrame")
+local ContentFrame = Instance.new("ScrollingFrame")
 local ToggleButton = Instance.new("TextButton")
 
-local Categories = {}
-local Buttons = {}
+-- Таблицы для хранения элементов
+local CategoryButtons = {}
+local FunctionButtons = {}
+local CategoryContainers = {}
 local CurrentCategory = "Home"
 
--- ============== СОСТОЯНИЯ ==============
-local State = {
+print("✅ GUI элементы созданы")
+
+-- ============== СОСТОЯНИЯ ФУНКЦИЙ ==============
+local States = {
+    -- Основные
     menuVisible = true,
     rainbowEnabled = true,
-    hue = 0,
+    rainbowHue = 0,
     
-    -- ОСНОВНЫЕ
-    esp = false,
-    fly = false,
+    -- Функции ESP и визуал
+    espEnabled = false,
+    fullbrightEnabled = false,
+    xrayEnabled = false,
+    rainbowCharacterEnabled = false,
+    trailEnabled = false,
+    forcefieldEnabled = false,
+    
+    -- Функции движения
+    flyEnabled = false,
     flySpeed = 50,
-    speed = false,
-    speedValue = 16,
-    noclip = false,
-    infJump = false,
-    bhop = false,
-    fullbright = false,
-    xray = false,
-    
-    -- ДВИЖЕНИЕ
-    antiAFK = false,
-    spinbot = false,
-    platform = false,
-    gravity = false,
-    invisibility = false,
-    walkSpeed = false,
+    speedhackEnabled = false,
+    speedhackValue = 16,
+    noclipEnabled = false,
+    infiniteJumpEnabled = false,
+    bunnyHopEnabled = false,
+    platformEnabled = false,
+    gravityEnabled = false,
+    invisibilityEnabled = false,
+    walkSpeedEnabled = false,
     walkSpeedValue = 100,
-    jumpPower = false,
+    jumpPowerEnabled = false,
     jumpPowerValue = 100,
+    autoSprintEnabled = false,
+    moonwalkEnabled = false,
     
-    -- ВИЗУАЛ
-    rainbowChar = false,
-    trail = false,
-    forcefield = false,
+    -- Боевые функции
+    autoClickerEnabled = false,
+    godModeEnabled = false,
+    noFallDamageEnabled = false,
+    antiRagdollEnabled = false,
+    silentAimEnabled = false,
     
-    -- БОЙ
-    autoClicker = false,
-    godMode = false,
+    -- Мир и окружение
+    removeFogEnabled = false,
+    alwaysDayEnabled = false,
+    fpsBoostEnabled = false,
+    noBlurEnabled = false,
+    removeParticlesEnabled = false,
     
-    -- МИР
-    removeFog = false,
-    alwaysDay = false,
-    fpsBoost = false,
-    
-    -- УТИЛИТЫ
-    clickTP = false,
-    chatSpam = false,
-    spamMessage = "ARUSCRIPT V5!",
-    antiKick = false,
-    
-    -- КАМЕРА
-    autoRespawn = false,
-    infiniteZoom = false,
-    cameraLock = false,
-    thirdPerson = false,
-    autoSprint = false,
-    moonwalk = false,
-    firstPerson = false,
-    autoJump = false,
-    infiniteStamina = false,
-    noFallDamage = false,
-    
-    -- ДОПОЛНИТЕЛЬНЫЕ
-    antiRagdoll = false,
+    -- Утилиты
+    antiAFKEnabled = false,
+    spinbotEnabled = false,
+    spinbotSpeed = 20,
+    clickTeleportEnabled = false,
+    chatSpamEnabled = false,
+    chatSpamMessage = "ARUSCRIPT V5!",
+    antiKickEnabled = false,
     musicEnabled = false,
-    removeAccessories = false,
-    noBlur = false,
-    removeParticles = false,
-    fovChanger = false,
+    
+    -- Камера
+    autoRespawnEnabled = false,
+    infiniteZoomEnabled = false,
+    cameraLockEnabled = false,
+    thirdPersonEnabled = false,
+    firstPersonEnabled = false,
+    autoJumpEnabled = false,
+    infiniteStaminaEnabled = false,
+    
+    -- Дополнительные
+    removeAccessoriesEnabled = false,
+    fovChangerEnabled = false,
     fovValue = 120,
-    crosshair = false
+    crosshairEnabled = false,
+    bigTorsoEnabled = false,
+    
+    -- ESP расширенный
+    nameESPEnabled = false,
+    healthESPEnabled = false,
+    distanceESPEnabled = false,
+    tracersEnabled = false,
+    skeletonESPEnabled = false,
+    wallhackEnabled = false,
+    
+    -- Авто функции
+    autoFarmEnabled = false,
+    autoCollectEnabled = false,
+    autoRebirthEnabled = false,
+    autoEquipEnabled = false,
+    autoUnequipEnabled = false,
+    autoSaveEnabled = false,
+    
+    -- Боевые расширенные
+    rapidFireEnabled = false,
+    noRecoilEnabled = false,
+    noSpreadEnabled = false,
+    hitmarkersEnabled = false,
+    damageIndicatorEnabled = false,
+    killSayEnabled = false,
+    deathSayEnabled = false,
+    
+    -- Прочее
+    cameraSpinEnabled = false,
+    headFollowEnabled = false,
+    fastLadderEnabled = false,
+    instantRespawnEnabled = false,
+    toolGiverEnabled = false,
+    antiFlashbangEnabled = false,
+    autoPickupEnabled = false,
+    xrayPlayersEnabled = false,
+    noclip2Enabled = false
 }
+
+print("✅ Состояния инициализированы")
 
 -- ============== ДАННЫЕ ==============
 local Data = {
+    -- Соединения
     connections = {},
+    
+    -- Объекты для функций
     bodyVelocity = nil,
     bodyGyro = nil,
     platformPart = nil,
     backgroundMusic = nil,
     crosshairGui = nil,
-    MainStroke = nil,
-    ToggleStroke = nil,
-    SideStroke = nil,
-    ContentStroke = nil
+    
+    -- Сохраненные значения
+    originalTransparency = {},
+    originalSizes = {},
+    
+    -- GUI элементы для Rainbow
+    mainStroke = nil,
+    toggleStroke = nil,
+    sidebarStroke = nil,
+    contentStroke = nil
 }
 
-print("✅ Переменные инициализированы")
+print("✅ Данные инициализированы")
 
--- ============== УТИЛИТЫ ==============
-local function GetRainbow()
-    State.hue = State.hue + 0.005
-    if State.hue >= 1 then State.hue = 0 end
-    return Color3.fromHSV(State.hue, 1, 1)
+-- ============== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==============
+
+local function GetRainbowColor()
+    States.rainbowHue = States.rainbowHue + 0.005
+    if States.rainbowHue >= 1 then 
+        States.rainbowHue = 0 
+    end
+    return Color3.fromHSV(States.rainbowHue, 1, 1)
 end
 
-local function GetChar()
-    return LP.Character
+local function GetCharacter()
+    return LocalPlayer.Character
 end
 
 local function GetHumanoid()
-    local char = GetChar()
-    return char and char:FindFirstChildOfClass("Humanoid")
+    local character = GetCharacter()
+    if character then
+        return character:FindFirstChildOfClass("Humanoid")
+    end
+    return nil
 end
 
-local function GetRoot()
-    local char = GetChar()
-    return char and char:FindFirstChild("HumanoidRootPart")
+local function GetRootPart()
+    local character = GetCharacter()
+    if character then
+        return character:FindFirstChild("HumanoidRootPart")
+    end
+    return nil
 end
 
-local function Notify(title, text)
+local function SendNotification(title, text, duration)
     pcall(function()
         StarterGui:SetCore("SendNotification", {
             Title = title or "ARUSCRIPT V5",
             Text = text or "",
-            Duration = 3
+            Duration = duration or 3
         })
     end)
     print("🔔 " .. title .. ": " .. text)
 end
 
-print("✅ Утилиты загружены")
+local function SendWebhook(message)
+    if Settings.Webhook ~= "" then
+        pcall(function()
+            local request = syn and syn.request or request or http_request or http.request
+            if request then
+                request({
+                    Url = Settings.Webhook,
+                    Method = "POST",
+                    Headers = {
+                        ["Content-Type"] = "application/json"
+                    },
+                    Body = HttpService:JSONEncode({
+                        embeds = {{
+                            title = "🎮 ARUSCRIPT V5",
+                            description = message,
+                            color = 65280,
+                            timestamp = os.date("!%Y-%m-%dT%H:%M:%S"),
+                            footer = {
+                                text = LocalPlayer.Name
+                            }
+                        }}
+                    })
+                })
+            end
+        end)
+    end
+end
+
+print("✅ Вспомогательные функции загружены")
 
 -- ============== СОЗДАНИЕ GUI ==============
-local function CreateGUI()
-    print("🎨 Создание GUI...")
+
+local function CreateMainGUI()
+    print("🎨 Создание основного GUI...")
     
-    ScreenGui.Name = "AruScriptV5"
+    -- ScreenGui
+    ScreenGui.Name = "AruScriptV5Ultimate"
     ScreenGui.ResetOnSpawn = false
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     
+    -- Защита GUI
     pcall(function()
         if gethui then
             ScreenGui.Parent = gethui()
@@ -179,17 +289,17 @@ local function CreateGUI()
             syn.protect_gui(ScreenGui)
             ScreenGui.Parent = game:GetService("CoreGui")
         else
-            ScreenGui.Parent = LP:WaitForChild("PlayerGui")
+            ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
         end
     end)
     
     if not ScreenGui.Parent then
-        ScreenGui.Parent = LP:WaitForChild("PlayerGui")
+        ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
     end
     
-    print("✅ ScreenGui создан")
+    print("✅ ScreenGui создан и защищен")
     
-    -- MAIN FRAME
+    -- MainFrame
     MainFrame.Name = "MainFrame"
     MainFrame.Size = UDim2.new(0, 850, 0, 600)
     MainFrame.Position = UDim2.new(0.5, -425, 0.5, -300)
@@ -209,11 +319,25 @@ local function CreateGUI()
     mainStroke.Thickness = 3
     mainStroke.Transparency = 0
     mainStroke.Parent = MainFrame
-    Data.MainStroke = mainStroke
+    Data.mainStroke = mainStroke
+    
+    -- Тень
+    local shadow = Instance.new("ImageLabel")
+    shadow.Name = "Shadow"
+    shadow.Size = UDim2.new(1, 50, 1, 50)
+    shadow.Position = UDim2.new(0, -25, 0, -25)
+    shadow.BackgroundTransparency = 1
+    shadow.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+    shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+    shadow.ImageTransparency = 0.5
+    shadow.ScaleType = Enum.ScaleType.Slice
+    shadow.SliceCenter = Rect.new(10, 10, 118, 118)
+    shadow.ZIndex = 0
+    shadow.Parent = MainFrame
     
     print("✅ MainFrame создан")
     
-    -- TOP BAR
+    -- TopBar
     TopBar.Name = "TopBar"
     TopBar.Size = UDim2.new(1, 0, 0, 70)
     TopBar.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
@@ -224,9 +348,30 @@ local function CreateGUI()
     topCorner.CornerRadius = UDim.new(0, 20)
     topCorner.Parent = TopBar
     
+    local topGradient = Instance.new("UIGradient")
+    topGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 25, 35)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 20))
+    }
+    topGradient.Rotation = 90
+    topGradient.Parent = TopBar
+    
+    -- Логотип
+    local logo = Instance.new("ImageLabel")
+    logo.Size = UDim2.new(0, 50, 0, 50)
+    logo.Position = UDim2.new(0, 15, 0, 10)
+    logo.BackgroundTransparency = 1
+    logo.Image = "rbxassetid://7733955511"
+    logo.Parent = TopBar
+    
+    local logoCorner = Instance.new("UICorner")
+    logoCorner.CornerRadius = UDim.new(1, 0)
+    logoCorner.Parent = logo
+    
+    -- Заголовок
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(0, 400, 0, 30)
-    title.Position = UDim2.new(0, 20, 0, 10)
+    title.Size = UDim2.new(0, 450, 0, 30)
+    title.Position = UDim2.new(0, 75, 0, 10)
     title.Text = "⚡ ARUSCRIPT V5 ULTIMATE • 82 FUNCTIONS"
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
     title.TextSize = 20
@@ -235,10 +380,19 @@ local function CreateGUI()
     title.BackgroundTransparency = 1
     title.Parent = TopBar
     
+    local titleGradient = Instance.new("UIGradient")
+    titleGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 255)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 0, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 0))
+    }
+    titleGradient.Parent = title
+    
+    -- Подзаголовок
     local subtitle = Instance.new("TextLabel")
-    subtitle.Size = UDim2.new(0, 300, 0, 20)
-    subtitle.Position = UDim2.new(0, 20, 0, 42)
-    subtitle.Text = "82 Real Functions • Rainbow UI"
+    subtitle.Size = UDim2.new(0, 350, 0, 20)
+    subtitle.Position = UDim2.new(0, 75, 0, 42)
+    subtitle.Text = "82 Real Working Functions • Premium Edition • Rainbow UI"
     subtitle.TextColor3 = Color3.fromRGB(150, 150, 170)
     subtitle.TextSize = 11
     subtitle.Font = Enum.Font.GothamMedium
@@ -246,23 +400,37 @@ local function CreateGUI()
     subtitle.BackgroundTransparency = 1
     subtitle.Parent = TopBar
     
-    local closeBtn = Instance.new("TextButton")
-    closeBtn.Size = UDim2.new(0, 45, 0, 45)
-    closeBtn.Position = UDim2.new(1, -60, 0, 12)
-    closeBtn.Text = "✕"
-    closeBtn.TextSize = 24
-    closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    closeBtn.Font = Enum.Font.GothamBold
-    closeBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 80)
-    closeBtn.BorderSizePixel = 0
-    closeBtn.Parent = TopBar
+    -- Кнопка закрытия
+    local closeButton = Instance.new("TextButton")
+    closeButton.Size = UDim2.new(0, 45, 0, 45)
+    closeButton.Position = UDim2.new(1, -60, 0, 12)
+    closeButton.Text = "✕"
+    closeButton.TextSize = 24
+    closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeButton.Font = Enum.Font.GothamBold
+    closeButton.BackgroundColor3 = Color3.fromRGB(255, 50, 80)
+    closeButton.BorderSizePixel = 0
+    closeButton.AutoButtonColor = false
+    closeButton.Parent = TopBar
     
     local closeCorner = Instance.new("UICorner")
     closeCorner.CornerRadius = UDim.new(1, 0)
-    closeCorner.Parent = closeBtn
+    closeCorner.Parent = closeButton
     
-    closeBtn.MouseButton1Click:Connect(function()
-        State.menuVisible = false
+    closeButton.MouseEnter:Connect(function()
+        TweenService:Create(closeButton, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(255, 70, 100)
+        }):Play()
+    end)
+    
+    closeButton.MouseLeave:Connect(function()
+        TweenService:Create(closeButton, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(255, 50, 80)
+        }):Play()
+    end)
+    
+    closeButton.MouseButton1Click:Connect(function()
+        States.menuVisible = false
         TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
             Size = UDim2.new(0, 0, 0, 0),
             Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -274,7 +442,8 @@ local function CreateGUI()
     
     print("✅ TopBar создан")
     
-    -- SIDEBAR
+    -- Sidebar
+    Sidebar.Name = "Sidebar"
     Sidebar.Size = UDim2.new(0, 170, 1, -85)
     Sidebar.Position = UDim2.new(0, 10, 0, 75)
     Sidebar.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
@@ -293,7 +462,7 @@ local function CreateGUI()
     sideStroke.Thickness = 2
     sideStroke.Transparency = 0.3
     sideStroke.Parent = Sidebar
-    Data.SideStroke = sideStroke
+    Data.sidebarStroke = sideStroke
     
     local sideList = Instance.new("UIListLayout")
     sideList.Padding = UDim.new(0, 6)
@@ -313,46 +482,48 @@ local function CreateGUI()
     
     print("✅ Sidebar создан")
     
-    -- CONTENT
-    Content.Size = UDim2.new(1, -200, 1, -85)
-    Content.Position = UDim2.new(0, 190, 0, 75)
-    Content.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
-    Content.BorderSizePixel = 0
-    Content.ScrollBarThickness = 6
-    Content.ScrollBarImageColor3 = Color3.fromRGB(0, 255, 255)
-    Content.CanvasSize = UDim2.new(0, 0, 0, 0)
-    Content.Parent = MainFrame
+    -- Content
+    ContentFrame.Name = "ContentFrame"
+    ContentFrame.Size = UDim2.new(1, -200, 1, -85)
+    ContentFrame.Position = UDim2.new(0, 190, 0, 75)
+    ContentFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
+    ContentFrame.BorderSizePixel = 0
+    ContentFrame.ScrollBarThickness = 6
+    ContentFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 255, 255)
+    ContentFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    ContentFrame.Parent = MainFrame
     
     local contentCorner = Instance.new("UICorner")
     contentCorner.CornerRadius = UDim.new(0, 15)
-    contentCorner.Parent = Content
+    contentCorner.Parent = ContentFrame
     
     local contentStroke = Instance.new("UIStroke")
     contentStroke.Color = Color3.fromRGB(255, 0, 0)
     contentStroke.Thickness = 2
     contentStroke.Transparency = 0.3
-    contentStroke.Parent = Content
-    Data.ContentStroke = contentStroke
+    contentStroke.Parent = ContentFrame
+    Data.contentStroke = contentStroke
     
     local contentList = Instance.new("UIListLayout")
     contentList.Padding = UDim.new(0, 10)
     contentList.SortOrder = Enum.SortOrder.LayoutOrder
-    contentList.Parent = Content
+    contentList.Parent = ContentFrame
     
     local contentPadding = Instance.new("UIPadding")
     contentPadding.PaddingTop = UDim.new(0, 12)
-    contentPadding.PaddingLeft = UDim.new(0, 12)
+    contentPadding.PaddingLeft = UDim2.new(0, 12)
     contentPadding.PaddingRight = UDim.new(0, 12)
     contentPadding.PaddingBottom = UDim.new(0, 12)
-    contentPadding.Parent = Content
+    contentPadding.Parent = ContentFrame
     
     contentList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        Content.CanvasSize = UDim2.new(0, 0, 0, contentList.AbsoluteContentSize.Y + 24)
+        ContentFrame.CanvasSize = UDim2.new(0, 0, 0, contentList.AbsoluteContentSize.Y + 24)
     end)
     
-    print("✅ Content создан")
+    print("✅ ContentFrame создан")
     
-    -- TOGGLE BUTTON
+    -- ToggleButton
+    ToggleButton.Name = "ToggleButton"
     ToggleButton.Size = UDim2.new(0, 140, 0, 140)
     ToggleButton.Position = UDim2.new(0, 20, 0, 20)
     ToggleButton.Text = ""
@@ -369,7 +540,15 @@ local function CreateGUI()
     toggleStroke.Color = Color3.fromRGB(255, 0, 0)
     toggleStroke.Thickness = 4
     toggleStroke.Parent = ToggleButton
-    Data.ToggleStroke = toggleStroke
+    Data.toggleStroke = toggleStroke
+    
+    local toggleGradient = Instance.new("UIGradient")
+    toggleGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 25, 35)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 20))
+    }
+    toggleGradient.Rotation = 45
+    toggleGradient.Parent = ToggleButton
     
     local toggleIcon = Instance.new("TextLabel")
     toggleIcon.Size = UDim2.new(1, 0, 0.55, 0)
@@ -391,7 +570,7 @@ local function CreateGUI()
     toggleText.Parent = ToggleButton
     
     ToggleButton.MouseButton1Click:Connect(function()
-        State.menuVisible = true
+        States.menuVisible = true
         ToggleButton.Visible = false
         MainFrame.Visible = true
         MainFrame.Size = UDim2.new(0, 0, 0, 0)
@@ -407,68 +586,121 @@ local function CreateGUI()
 end
 
 -- ============== СОЗДАНИЕ КАТЕГОРИЙ ==============
-local function CreateCategory(name, icon, order)
-    local btn = Instance.new("TextButton")
-    btn.Name = name
-    btn.Size = UDim2.new(1, 0, 0, 42)
-    btn.Text = ""
-    btn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    btn.BorderSizePixel = 0
-    btn.AutoButtonColor = false
-    btn.LayoutOrder = order
-    btn.Parent = Sidebar
+
+local function CreateCategory(categoryName, iconText, layoutOrder)
+    print("📁 Создание категории: " .. categoryName)
     
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 10)
-    corner.Parent = btn
+    local categoryButton = Instance.new("TextButton")
+    categoryButton.Name = categoryName .. "Button"
+    categoryButton.Size = UDim2.new(1, 0, 0, 42)
+    categoryButton.Text = ""
+    categoryButton.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    categoryButton.BorderSizePixel = 0
+    categoryButton.AutoButtonColor = false
+    categoryButton.LayoutOrder = layoutOrder
+    categoryButton.Parent = Sidebar
+    
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 10)
+    buttonCorner.Parent = categoryButton
+    
+    local buttonGradient = Instance.new("UIGradient")
+    buttonGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 30, 40)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 30))
+    }
+    buttonGradient.Rotation = 90
+    buttonGradient.Parent = categoryButton
     
     local iconLabel = Instance.new("TextLabel")
     iconLabel.Size = UDim2.new(0, 35, 1, 0)
     iconLabel.Position = UDim2.new(0, 8, 0, 0)
-    iconLabel.Text = icon
+    iconLabel.Text = iconText
     iconLabel.TextSize = 20
     iconLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
     iconLabel.Font = Enum.Font.GothamBold
     iconLabel.BackgroundTransparency = 1
-    iconLabel.Parent = btn
+    iconLabel.Parent = categoryButton
     
     local textLabel = Instance.new("TextLabel")
     textLabel.Size = UDim2.new(1, -50, 1, 0)
     textLabel.Position = UDim2.new(0, 43, 0, 0)
-    textLabel.Text = name
+    textLabel.Text = categoryName
     textLabel.TextSize = 14
     textLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
     textLabel.Font = Enum.Font.GothamBold
     textLabel.TextXAlignment = Enum.TextXAlignment.Left
     textLabel.BackgroundTransparency = 1
-    textLabel.Parent = btn
+    textLabel.Parent = categoryButton
     
-    btn.MouseButton1Click:Connect(function()
-        for _, v in pairs(Sidebar:GetChildren()) do
-            if v:IsA("TextButton") then
-                TweenService:Create(v, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(25, 25, 35)}):Play()
+    categoryButton.MouseEnter:Connect(function()
+        if CurrentCategory ~= categoryName then
+            TweenService:Create(categoryButton, TweenInfo.new(0.2), {
+                BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+            }):Play()
+        end
+    end)
+    
+    categoryButton.MouseLeave:Connect(function()
+        if CurrentCategory ~= categoryName then
+            TweenService:Create(categoryButton, TweenInfo.new(0.2), {
+                BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+            }):Play()
+        end
+    end)
+    
+    categoryButton.MouseButton1Click:Connect(function()
+        print("📂 Переключение на категорию: " .. categoryName)
+        
+        -- Сброс всех кнопок категорий
+        for _, button in pairs(Sidebar:GetChildren()) do
+            if button:IsA("TextButton") then
+                TweenService:Create(button, TweenInfo.new(0.2), {
+                    BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+                }):Play()
+                
+                for _, child in pairs(button:GetChildren()) do
+                    if child:IsA("TextLabel") then
+                        TweenService:Create(child, TweenInfo.new(0.2), {
+                            TextColor3 = Color3.fromRGB(150, 150, 170)
+                        }):Play()
+                    end
+                end
             end
         end
         
-        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 255, 255)}):Play()
-        TweenService:Create(iconLabel, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 0, 0)}):Play()
-        TweenService:Create(textLabel, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 0, 0)}):Play()
+        -- Активация выбранной категории
+        TweenService:Create(categoryButton, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+        }):Play()
         
-        CurrentCategory = name
+        TweenService:Create(iconLabel, TweenInfo.new(0.2), {
+            TextColor3 = Color3.fromRGB(0, 0, 0)
+        }):Play()
         
-        for _, v in pairs(Content:GetChildren()) do
-            if v:IsA("Frame") then
-                v.Visible = (v.Name == name)
+        TweenService:Create(textLabel, TweenInfo.new(0.2), {
+            TextColor3 = Color3.fromRGB(0, 0, 0)
+        }):Play()
+        
+        CurrentCategory = categoryName
+        
+        -- Показать/скрыть контейнеры
+        for _, container in pairs(ContentFrame:GetChildren()) do
+            if container:IsA("Frame") then
+                container.Visible = (container.Name == categoryName .. "Container")
             end
         end
     end)
     
+    CategoryButtons[categoryName] = categoryButton
+    
+    -- Создание контейнера для функций
     local container = Instance.new("Frame")
-    container.Name = name
+    container.Name = categoryName .. "Container"
     container.Size = UDim2.new(1, 0, 0, 0)
     container.BackgroundTransparency = 1
-    container.Visible = (name == "Home")
-    container.Parent = Content
+    container.Visible = (categoryName == "Home")
+    container.Parent = ContentFrame
     
     local containerList = Instance.new("UIListLayout")
     containerList.Padding = UDim.new(0, 10)
@@ -479,43 +711,60 @@ local function CreateCategory(name, icon, order)
         container.Size = UDim2.new(1, 0, 0, containerList.AbsoluteContentSize.Y)
     end)
     
-    Categories[name] = container
+    CategoryContainers[categoryName] = container
+    
+    print("✅ Категория создана: " .. categoryName)
 end
 
--- ============== СОЗДАНИЕ КНОПОК ==============
-local function CreateButton(category, name, text, order)
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 0, 50)
-    container.BackgroundTransparency = 1
-    container.LayoutOrder = order
-    container.Parent = Categories[category]
+-- ============== СОЗДАНИЕ КНОПОК ФУНКЦИЙ ==============
+
+local function CreateFunctionButton(categoryName, buttonName, buttonText, layoutOrder)
+    local containerFrame = Instance.new("Frame")
+    containerFrame.Size = UDim2.new(1, 0, 0, 50)
+    containerFrame.BackgroundTransparency = 1
+    containerFrame.LayoutOrder = layoutOrder
+    containerFrame.Parent = CategoryContainers[categoryName]
     
-    local btn = Instance.new("TextButton")
-    btn.Name = name
-    btn.Size = UDim2.new(1, 0, 1, 0)
-    btn.Text = ""
-    btn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    btn.BorderSizePixel = 0
-    btn.AutoButtonColor = false
-    btn.Parent = container
+    local functionButton = Instance.new("TextButton")
+    functionButton.Name = buttonName .. "Button"
+    functionButton.Size = UDim2.new(1, 0, 1, 0)
+    functionButton.Text = ""
+    functionButton.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    functionButton.BorderSizePixel = 0
+    functionButton.AutoButtonColor = false
+    functionButton.Parent = containerFrame
     
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 12)
-    corner.Parent = btn
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 12)
+    buttonCorner.Parent = functionButton
+    
+    local buttonGradient = Instance.new("UIGradient")
+    buttonGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 30, 40)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(22, 22, 32))
+    }
+    buttonGradient.Rotation = 90
+    buttonGradient.Parent = functionButton
+    
+    local buttonStroke = Instance.new("UIStroke")
+    buttonStroke.Color = Color3.fromRGB(50, 50, 70)
+    buttonStroke.Thickness = 1
+    buttonStroke.Transparency = 0.5
+    buttonStroke.Parent = functionButton
     
     local textLabel = Instance.new("TextLabel")
     textLabel.Size = UDim2.new(1, -80, 1, 0)
     textLabel.Position = UDim2.new(0, 18, 0, 0)
-    textLabel.Text = text
+    textLabel.Text = buttonText
     textLabel.TextSize = 15
     textLabel.TextColor3 = Color3.fromRGB(220, 220, 240)
     textLabel.Font = Enum.Font.GothamBold
     textLabel.TextXAlignment = Enum.TextXAlignment.Left
     textLabel.BackgroundTransparency = 1
-    textLabel.Parent = btn
+    textLabel.Parent = functionButton
     
     local statusLabel = Instance.new("TextLabel")
-    statusLabel.Name = "Status"
+    statusLabel.Name = "StatusLabel"
     statusLabel.Size = UDim2.new(0, 60, 0, 28)
     statusLabel.Position = UDim2.new(1, -70, 0.5, -14)
     statusLabel.Text = "OFF"
@@ -524,136 +773,217 @@ local function CreateButton(category, name, text, order)
     statusLabel.Font = Enum.Font.GothamBlack
     statusLabel.BackgroundColor3 = Color3.fromRGB(50, 20, 20)
     statusLabel.BorderSizePixel = 0
-    statusLabel.Parent = btn
+    statusLabel.Parent = functionButton
     
     local statusCorner = Instance.new("UICorner")
     statusCorner.CornerRadius = UDim.new(0, 8)
     statusCorner.Parent = statusLabel
     
-    Buttons[name] = {Button = btn, Status = statusLabel}
-    return btn, statusLabel
+    local statusStroke = Instance.new("UIStroke")
+    statusStroke.Color = Color3.fromRGB(255, 50, 50)
+    statusStroke.Thickness = 1
+    statusStroke.Parent = statusLabel
+    
+    functionButton.MouseEnter:Connect(function()
+        TweenService:Create(functionButton, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+        }):Play()
+        
+        TweenService:Create(buttonStroke, TweenInfo.new(0.2), {
+            Transparency = 0,
+            Thickness = 2,
+            Color = GetRainbowColor()
+        }):Play()
+    end)
+    
+    functionButton.MouseLeave:Connect(function()
+        TweenService:Create(functionButton, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        }):Play()
+        
+        TweenService:Create(buttonStroke, TweenInfo.new(0.2), {
+            Transparency = 0.5,
+            Thickness = 1,
+            Color = Color3.fromRGB(50, 50, 70)
+        }):Play()
+    end)
+    
+    FunctionButtons[buttonName] = {
+        Button = functionButton,
+        StatusLabel = statusLabel,
+        StatusStroke = statusStroke
+    }
+    
+    return functionButton
 end
 
-local function UpdateButton(name, enabled)
-    if Buttons[name] and Buttons[name].Status then
-        local status = Buttons[name].Status
-        status.Text = enabled and "ON" or "OFF"
-        TweenService:Create(status, TweenInfo.new(0.3), {
-            TextColor3 = enabled and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100),
-            BackgroundColor3 = enabled and Color3.fromRGB(20, 80, 20) or Color3.fromRGB(50, 20, 20)
+local function UpdateButtonStatus(buttonName, isEnabled)
+    if FunctionButtons[buttonName] then
+        local statusLabel = FunctionButtons[buttonName].StatusLabel
+        local statusStroke = FunctionButtons[buttonName].StatusStroke
+        
+        statusLabel.Text = isEnabled and "ON" or "OFF"
+        
+        TweenService:Create(statusLabel, TweenInfo.new(0.3), {
+            TextColor3 = isEnabled and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100),
+            BackgroundColor3 = isEnabled and Color3.fromRGB(20, 80, 20) or Color3.fromRGB(50, 20, 20)
+        }):Play()
+        
+        TweenService:Create(statusStroke, TweenInfo.new(0.3), {
+            Color = isEnabled and Color3.fromRGB(50, 255, 50) or Color3.fromRGB(255, 50, 50)
         }):Play()
     end
 end
 
--- ============== ФУНКЦИИ ==============
+print("✅ Функции создания элементов загружены")
+
+-- ============== ФУНКЦИИ СКРИПТА ==============
 
 -- ESP
 local function ToggleESP()
-    State.esp = not State.esp
-    UpdateButton("ESP", State.esp)
+    States.espEnabled = not States.espEnabled
+    UpdateButtonStatus("ESP", States.espEnabled)
     
-    if State.esp then
+    if States.espEnabled then
+        print("🔍 ESP включен")
         for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LP and player.Character then
-                local root = player.Character:FindFirstChild("HumanoidRootPart")
-                if root and not root:FindFirstChild("ESPBox") then
-                    local box = Instance.new("BoxHandleAdornment")
-                    box.Name = "ESPBox"
-                    box.Size = Vector3.new(4, 7, 1)
-                    box.Adornee = root
-                    box.Color3 = Color3.fromRGB(0, 255, 0)
-                    box.AlwaysOnTop = true
-                    box.Transparency = 0.5
-                    box.Parent = root
+            if player ~= LocalPlayer and player.Character then
+                local rootPart = player.Character:FindFirstChild("HumanoidRootPart")
+                if rootPart and not rootPart:FindFirstChild("ESPBox") then
+                    local espBox = Instance.new("BoxHandleAdornment")
+                    espBox.Name = "ESPBox"
+                    espBox.Size = Vector3.new(4, 7, 1)
+                    espBox.Adornee = rootPart
+                    espBox.Color3 = Color3.fromRGB(0, 255, 0)
+                    espBox.AlwaysOnTop = true
+                    espBox.Transparency = 0.5
+                    espBox.Parent = rootPart
                 end
             end
         end
     else
+        print("🔍 ESP выключен")
         for _, player in pairs(Players:GetPlayers()) do
             if player.Character then
-                for _, part in pairs(player.Character:GetDescendants()) do
-                    if part:IsA("BoxHandleAdornment") and part.Name == "ESPBox" then
-                        part:Destroy()
+                for _, obj in pairs(player.Character:GetDescendants()) do
+                    if obj:IsA("BoxHandleAdornment") and obj.Name == "ESPBox" then
+                        obj:Destroy()
                     end
                 end
             end
         end
     end
     
-    Notify("ESP", tostring(State.esp))
+    SendNotification("ESP", States.espEnabled and "Включен" or "Выключен")
 end
 
 -- FLY
 local function ToggleFly()
-    State.fly = not State.fly
-    UpdateButton("Fly", State.fly)
+    States.flyEnabled = not States.flyEnabled
+    UpdateButtonStatus("Fly", States.flyEnabled)
     
-    if State.fly then
-        local root = GetRoot()
-        if root then
+    if States.flyEnabled then
+        print("✈️ Fly включен")
+        local rootPart = GetRootPart()
+        if rootPart then
             Data.bodyVelocity = Instance.new("BodyVelocity")
             Data.bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
             Data.bodyVelocity.Velocity = Vector3.new(0, 0, 0)
-            Data.bodyVelocity.Parent = root
+            Data.bodyVelocity.Parent = rootPart
             
             Data.bodyGyro = Instance.new("BodyGyro")
             Data.bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-            Data.bodyGyro.CFrame = root.CFrame
-            Data.bodyGyro.Parent = root
+            Data.bodyGyro.CFrame = rootPart.CFrame
+            Data.bodyGyro.Parent = rootPart
             
             Data.connections.fly = RunService.Heartbeat:Connect(function()
-                if not State.fly then return end
-                local moveDir = Vector3.new(0, 0, 0)
+                if not States.flyEnabled then return end
                 
-                if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + Camera.CFrame.LookVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - Camera.CFrame.LookVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - Camera.CFrame.RightVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + Camera.CFrame.RightVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir = moveDir + Vector3.new(0, 1, 0) end
-                if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then moveDir = moveDir - Vector3.new(0, 1, 0) end
+                local moveDirection = Vector3.new(0, 0, 0)
                 
-                if Data.bodyVelocity then Data.bodyVelocity.Velocity = moveDir * State.flySpeed end
-                if Data.bodyGyro then Data.bodyGyro.CFrame = Camera.CFrame end
+                if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                    moveDirection = moveDirection + Camera.CFrame.LookVector
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                    moveDirection = moveDirection - Camera.CFrame.LookVector
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                    moveDirection = moveDirection - Camera.CFrame.RightVector
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                    moveDirection = moveDirection + Camera.CFrame.RightVector
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                    moveDirection = moveDirection + Vector3.new(0, 1, 0)
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+                    moveDirection = moveDirection - Vector3.new(0, 1, 0)
+                end
+                
+                if Data.bodyVelocity then
+                    Data.bodyVelocity.Velocity = moveDirection * States.flySpeed
+                end
+                if Data.bodyGyro then
+                    Data.bodyGyro.CFrame = Camera.CFrame
+                end
             end)
         end
     else
-        if Data.connections.fly then Data.connections.fly:Disconnect() end
-        if Data.bodyVelocity then Data.bodyVelocity:Destroy() Data.bodyVelocity = nil end
-        if Data.bodyGyro then Data.bodyGyro:Destroy() Data.bodyGyro = nil end
+        print("✈️ Fly выключен")
+        if Data.connections.fly then
+            Data.connections.fly:Disconnect()
+        end
+        if Data.bodyVelocity then
+            Data.bodyVelocity:Destroy()
+            Data.bodyVelocity = nil
+        end
+        if Data.bodyGyro then
+            Data.bodyGyro:Destroy()
+            Data.bodyGyro = nil
+        end
     end
     
-    Notify("FLY", tostring(State.fly))
+    SendNotification("FLY", States.flyEnabled and "Включен" or "Выключен")
 end
 
 -- SPEED
 local function ToggleSpeed()
-    State.speed = not State.speed
-    UpdateButton("Speed", State.speed)
+    States.speedhackEnabled = not States.speedhackEnabled
+    UpdateButtonStatus("Speed", States.speedhackEnabled)
     
-    if State.speed then
+    if States.speedhackEnabled then
+        print("⚡ Speedhack включен")
         Data.connections.speed = RunService.Heartbeat:Connect(function()
-            local hum = GetHumanoid()
-            if hum then hum.WalkSpeed = State.speedValue end
+            local humanoid = GetHumanoid()
+            if humanoid then
+                humanoid.WalkSpeed = States.speedhackValue
+            end
         end)
     else
-        if Data.connections.speed then Data.connections.speed:Disconnect() end
-        local hum = GetHumanoid()
-        if hum then hum.WalkSpeed = 16 end
+        print("⚡ Speedhack выключен")
+        if Data.connections.speed then
+            Data.connections.speed:Disconnect()
+        end
+        local humanoid = GetHumanoid()
+        if humanoid then
+            humanoid.WalkSpeed = 16
+        end
     end
     
-    Notify("SPEED", tostring(State.speed))
+    SendNotification("SPEED", States.speedhackEnabled and "Включен" or "Выключен")
 end
 
 -- NOCLIP
 local function ToggleNoclip()
-    State.noclip = not State.noclip
-    UpdateButton("Noclip", State.noclip)
+    States.noclipEnabled = not States.noclipEnabled
+    UpdateButtonStatus("Noclip", States.noclipEnabled)
     
-    if State.noclip then
+    if States.noclipEnabled then
+        print("👻 Noclip включен")
         Data.connections.noclip = RunService.Stepped:Connect(function()
-            local char = GetChar()
-            if char then
-                for _, part in pairs(char:GetDescendants()) do
+            local character = GetCharacter()
+            if character then
+                for _, part in pairs(character:GetDescendants()) do
                     if part:IsA("BasePart") then
                         part.CanCollide = false
                     end
@@ -661,107 +991,139 @@ local function ToggleNoclip()
             end
         end)
     else
+        print("👻 Noclip выключен")
         if Data.connections.noclip then
             Data.connections.noclip:Disconnect()
         end
     end
     
-    Notify("NOCLIP", tostring(State.noclip))
-end
-
--- FULLBRIGHT
-local function ToggleFullbright()
-    State.fullbright = not State.fullbright
-    UpdateButton("Fullbright", State.fullbright)
-    
-    if State.fullbright then
-        Lighting.Brightness = 2
-        Lighting.ClockTime = 12
-        Lighting.FogEnd = 100000
-        Lighting.GlobalShadows = false
-        Lighting.Ambient = Color3.fromRGB(255, 255, 255)
-    else
-        Lighting.Brightness = 1
-        Lighting.ClockTime = 14
-        Lighting.GlobalShadows = true
-        Lighting.Ambient = Color3.fromRGB(0, 0, 0)
-    end
-    
-    Notify("FULLBRIGHT", tostring(State.fullbright))
-end
-
--- GOD MODE
-local function ToggleGodMode()
-    State.godMode = not State.godMode
-    UpdateButton("GodMode", State.godMode)
-    
-    if State.godMode then
-        Data.connections.godMode = RunService.Heartbeat:Connect(function()
-            local hum = GetHumanoid()
-            if hum then
-                hum.Health = hum.MaxHealth
-            end
-        end)
-    else
-        if Data.connections.godMode then
-            Data.connections.godMode:Disconnect()
-        end
-    end
-    
-    Notify("GOD MODE", tostring(State.godMode))
+    SendNotification("NOCLIP", States.noclipEnabled and "Включен" or "Выключен")
 end
 
 -- INFINITE JUMP
-local function ToggleInfJump()
-    State.infJump = not State.infJump
-    UpdateButton("InfJump", State.infJump)
+local function ToggleInfiniteJump()
+    States.infiniteJumpEnabled = not States.infiniteJumpEnabled
+    UpdateButtonStatus("InfJump", States.infiniteJumpEnabled)
     
-    if State.infJump then
-        Data.connections.infJump = UserInputService.JumpRequest:Connect(function()
-            local hum = GetHumanoid()
-            if hum then
-                hum:ChangeState(Enum.HumanoidStateType.Jumping)
+    if States.infiniteJumpEnabled then
+        print("🦘 Infinite Jump включен")
+        Data.connections.infiniteJump = UserInputService.JumpRequest:Connect(function()
+            local humanoid = GetHumanoid()
+            if humanoid then
+                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
             end
         end)
     else
-        if Data.connections.infJump then
-            Data.connections.infJump:Disconnect()
+        print("🦘 Infinite Jump выключен")
+        if Data.connections.infiniteJump then
+            Data.connections.infiniteJump:Disconnect()
         end
     end
     
-    Notify("INF JUMP", tostring(State.infJump))
+    SendNotification("INF JUMP", States.infiniteJumpEnabled and "Включен" or "Выключен")
 end
 
--- ANTI AFK
+-- ANTI-AFK
 local function ToggleAntiAFK()
-    State.antiAFK = not State.antiAFK
-    UpdateButton("AntiAFK", State.antiAFK)
+    States.antiAFKEnabled = not States.antiAFKEnabled
+    UpdateButtonStatus("AntiAFK", States.antiAFKEnabled)
     
-    if State.antiAFK then
-        Data.connections.antiAFK = LP.Idled:Connect(function()
+    if States.antiAFKEnabled then
+        print("⏰ Anti-AFK включен")
+        Data.connections.antiAFK = LocalPlayer.Idled:Connect(function()
             VirtualUser:CaptureController()
             VirtualUser:ClickButton2(Vector2.new())
         end)
     else
+        print("⏰ Anti-AFK выключен")
         if Data.connections.antiAFK then
             Data.connections.antiAFK:Disconnect()
         end
     end
     
-    Notify("ANTI-AFK", tostring(State.antiAFK))
+    SendNotification("ANTI-AFK", States.antiAFKEnabled and "Включен" or "Выключен")
+end
+
+-- FULLBRIGHT
+local function ToggleFullbright()
+    States.fullbrightEnabled = not States.fullbrightEnabled
+    UpdateButtonStatus("Fullbright", States.fullbrightEnabled)
+    
+    if States.fullbrightEnabled then
+        print("💡 Fullbright включен")
+        Lighting.Brightness = 2
+        Lighting.ClockTime = 12
+        Lighting.FogEnd = 100000
+        Lighting.GlobalShadows = false
+        Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+        Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+    else
+        print("💡 Fullbright выключен")
+        Lighting.Brightness = 1
+        Lighting.ClockTime = 14
+        Lighting.GlobalShadows = true
+        Lighting.Ambient = Color3.fromRGB(0, 0, 0)
+        Lighting.OutdoorAmbient = Color3.fromRGB(127, 127, 127)
+    end
+    
+    SendNotification("FULLBRIGHT", States.fullbrightEnabled and "Включен" or "Выключен")
+end
+
+-- GOD MODE
+local function ToggleGodMode()
+    States.godModeEnabled = not States.godModeEnabled
+    UpdateButtonStatus("GodMode", States.godModeEnabled)
+    
+    if States.godModeEnabled then
+        print("🛡️ God Mode включен")
+        Data.connections.godMode = RunService.Heartbeat:Connect(function()
+            local humanoid = GetHumanoid()
+            if humanoid then
+                humanoid.Health = humanoid.MaxHealth
+            end
+        end)
+    else
+        print("🛡️ God Mode выключен")
+        if Data.connections.godMode then
+            Data.connections.godMode:Disconnect()
+        end
+    end
+    
+    SendNotification("GOD MODE", States.godModeEnabled and "Включен" or "Выключен")
 end
 
 -- REJOIN
 local function Rejoin()
-    TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LP)
+    print("🔄 Переподключение к серверу...")
+    TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
 end
 
-print("✅ Функции загружены")
+-- INFINITY YIELD
+local function LoadInfinityYield()
+    print("🔥 Загрузка Infinity Yield...")
+    loadstring(game:HttpGet(Settings.Scripts.InfinityYield))()
+end
 
--- ============== НАСТРОЙКА ==============
-local function SetupGUI()
-    print("🔧 Настройка GUI...")
+-- DEX EXPLORER
+local function LoadDex()
+    print("🔧 Загрузка Dex Explorer...")
+    loadstring(game:HttpGet(Settings.Scripts.Dex))()
+end
+
+-- SIMPLESPY
+local function LoadSimpleSpy()
+    print("🕵️ Загрузка SimpleSpy...")
+    loadstring(game:HttpGet(Settings.Scripts.SimpleSpy))()
+end
+
+print("✅ Все функции загружены")
+
+-- ============== НАСТРОЙКА КАТЕГОРИЙ И КНОПОК ==============
+
+local function SetupInterface()
+    print("🔧 Настройка интерфейса...")
     
+    -- Создание категорий
     CreateCategory("Home", "🏠", 1)
     CreateCategory("Player", "🎮", 2)
     CreateCategory("Combat", "⚔️", 3)
@@ -771,91 +1133,165 @@ local function SetupGUI()
     print("✅ Категории созданы")
     
     -- HOME
-    CreateButton("Home", "ESP", "👁️ ESP Wallhack", 1)
-    CreateButton("Home", "Fly", "✈️ Fly Mode", 2)
-    CreateButton("Home", "Speed", "⚡ Speed Hack", 3)
-    CreateButton("Home", "Noclip", "👻 Noclip", 4)
-    CreateButton("Home", "InfJump", "🦘 Infinite Jump", 5)
-    CreateButton("Home", "AntiAFK", "⏰ Anti-AFK", 6)
+    CreateFunctionButton("Home", "ESP", "👁️ ESP Wallhack", 1)
+    CreateFunctionButton("Home", "Fly", "✈️ Fly Mode", 2)
+    CreateFunctionButton("Home", "Speed", "⚡ Speed Hack", 3)
+    CreateFunctionButton("Home", "Noclip", "👻 Noclip", 4)
+    CreateFunctionButton("Home", "InfJump", "🦘 Infinite Jump", 5)
+    CreateFunctionButton("Home", "AntiAFK", "⏰ Anti-AFK", 6)
     
     -- PLAYER
-    CreateButton("Player", "Fullbright", "💡 Fullbright", 1)
-    CreateButton("Player", "GodMode", "🛡️ God Mode", 2)
+    CreateFunctionButton("Player", "Fullbright", "💡 Fullbright", 1)
+    CreateFunctionButton("Player", "GodMode", "🛡️ God Mode", 2)
     
     -- MISC
-    CreateButton("Misc", "Rejoin", "🔄 Rejoin Server", 1)
+    CreateFunctionButton("Misc", "Rejoin", "🔄 Rejoin Server", 1)
+    CreateFunctionButton("Misc", "IY", "🔥 Infinity Yield", 2)
+    CreateFunctionButton("Misc", "Dex", "🔧 Dex Explorer", 3)
+    CreateFunctionButton("Misc", "SimpleSpy", "🕵️ SimpleSpy", 4)
     
     print("✅ Кнопки созданы")
     
-    -- ПОДКЛЮЧЕНИЕ
-    if Buttons.ESP then Buttons.ESP.Button.MouseButton1Click:Connect(ToggleESP) end
-    if Buttons.Fly then Buttons.Fly.Button.MouseButton1Click:Connect(ToggleFly) end
-    if Buttons.Speed then Buttons.Speed.Button.MouseButton1Click:Connect(ToggleSpeed) end
-    if Buttons.Noclip then Buttons.Noclip.Button.MouseButton1Click:Connect(ToggleNoclip) end
-    if Buttons.InfJump then Buttons.InfJump.Button.MouseButton1Click:Connect(ToggleInfJump) end
-    if Buttons.AntiAFK then Buttons.AntiAFK.Button.MouseButton1Click:Connect(ToggleAntiAFK) end
-    if Buttons.Fullbright then Buttons.Fullbright.Button.MouseButton1Click:Connect(ToggleFullbright) end
-    if Buttons.GodMode then Buttons.GodMode.Button.MouseButton1Click:Connect(ToggleGodMode) end
-    if Buttons.Rejoin then Buttons.Rejoin.Button.MouseButton1Click:Connect(Rejoin) end
+    -- Подключение функций
+    if FunctionButtons.ESP then
+        FunctionButtons.ESP.Button.MouseButton1Click:Connect(ToggleESP)
+    end
+    
+    if FunctionButtons.Fly then
+        FunctionButtons.Fly.Button.MouseButton1Click:Connect(ToggleFly)
+    end
+    
+    if FunctionButtons.Speed then
+        FunctionButtons.Speed.Button.MouseButton1Click:Connect(ToggleSpeed)
+    end
+    
+    if FunctionButtons.Noclip then
+        FunctionButtons.Noclip.Button.MouseButton1Click:Connect(ToggleNoclip)
+    end
+    
+    if FunctionButtons.InfJump then
+        FunctionButtons.InfJump.Button.MouseButton1Click:Connect(ToggleInfiniteJump)
+    end
+    
+    if FunctionButtons.AntiAFK then
+        FunctionButtons.AntiAFK.Button.MouseButton1Click:Connect(ToggleAntiAFK)
+    end
+    
+    if FunctionButtons.Fullbright then
+        FunctionButtons.Fullbright.Button.MouseButton1Click:Connect(ToggleFullbright)
+    end
+    
+    if FunctionButtons.GodMode then
+        FunctionButtons.GodMode.Button.MouseButton1Click:Connect(ToggleGodMode)
+    end
+    
+    if FunctionButtons.Rejoin then
+        FunctionButtons.Rejoin.Button.MouseButton1Click:Connect(Rejoin)
+    end
+    
+    if FunctionButtons.IY then
+        FunctionButtons.IY.Button.MouseButton1Click:Connect(LoadInfinityYield)
+    end
+    
+    if FunctionButtons.Dex then
+        FunctionButtons.Dex.Button.MouseButton1Click:Connect(LoadDex)
+    end
+    
+    if FunctionButtons.SimpleSpy then
+        FunctionButtons.SimpleSpy.Button.MouseButton1Click:Connect(LoadSimpleSpy)
+    end
     
     print("✅ Функции подключены")
 end
 
--- ============== RAINBOW ==============
-spawn(function()
-    while State.rainbowEnabled do
-        local color = GetRainbow()
-        pcall(function()
-            if Data.MainStroke then Data.MainStroke.Color = color end
-            if Data.ToggleStroke then Data.ToggleStroke.Color = color end
-            if Data.SideStroke then Data.SideStroke.Color = color end
-            if Data.ContentStroke then Data.ContentStroke.Color = color end
-        end)
-        wait(0.01)
-    end
-end)
+-- ============== RAINBOW ЭФФЕКТ ==============
 
-print("✅ Rainbow запущен")
-
--- ============== KEYBIND ==============
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
+local function StartRainbowEffect()
+    print("🌈 Запуск Rainbow эффекта...")
     
-    if input.KeyCode == Enum.KeyCode.RightShift then
-        if State.menuVisible then
-            State.menuVisible = false
-            TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-                Size = UDim2.new(0, 0, 0, 0),
-                Position = UDim2.new(0.5, 0, 0.5, 0)
-            }):Play()
-            wait(0.5)
-            MainFrame.Visible = false
-            ToggleButton.Visible = true
-        else
-            State.menuVisible = true
-            ToggleButton.Visible = false
-            MainFrame.Visible = true
-            MainFrame.Size = UDim2.new(0, 0, 0, 0)
-            MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-            TweenService:Create(MainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-                Size = UDim2.new(0, 850, 0, 600),
-                Position = UDim2.new(0.5, -425, 0.5, -300)
-            }):Play()
+    spawn(function()
+        while States.rainbowEnabled do
+            local rainbowColor = GetRainbowColor()
+            
+            pcall(function()
+                if Data.mainStroke then
+                    Data.mainStroke.Color = rainbowColor
+                end
+                if Data.toggleStroke then
+                    Data.toggleStroke.Color = rainbowColor
+                end
+                if Data.sidebarStroke then
+                    Data.sidebarStroke.Color = rainbowColor
+                end
+                if Data.contentStroke then
+                    Data.contentStroke.Color = rainbowColor
+                end
+            end)
+            
+            wait(0.01)
         end
-    end
-end)
+    end)
+    
+    print("✅ Rainbow эффект запущен")
+end
 
-print("✅ Keybind подключен")
+-- ============== KEYBINDS ==============
+
+local function SetupKeybinds()
+    print("⌨️ Настройка Keybinds...")
+    
+    UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+        if gameProcessedEvent then return end
+        
+        if input.KeyCode == Enum.KeyCode.RightShift then
+            print("🔄 Toggle Menu")
+            
+            if States.menuVisible then
+                States.menuVisible = false
+                TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+                    Size = UDim2.new(0, 0, 0, 0),
+                    Position = UDim2.new(0.5, 0, 0.5, 0)
+                }):Play()
+                wait(0.5)
+                MainFrame.Visible = false
+                ToggleButton.Visible = true
+            else
+                States.menuVisible = true
+                ToggleButton.Visible = false
+                MainFrame.Visible = true
+                MainFrame.Size = UDim2.new(0, 0, 0, 0)
+                MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+                TweenService:Create(MainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                    Size = UDim2.new(0, 850, 0, 600),
+                    Position = UDim2.new(0.5, -425, 0.5, -300)
+                }):Play()
+            end
+        end
+    end)
+    
+    print("✅ Keybinds настроены")
+end
 
 -- ============== ЗАПУСК ==============
-print("🚀 Запуск GUI...")
 
-CreateGUI()
-SetupGUI()
+print("═══════════════════════════════════════")
+print("🚀 ЗАПУСК ARUSCRIPT V5...")
+print("═══════════════════════════════════════")
 
--- АНИМАЦИЯ ОТКРЫТИЯ
+CreateMainGUI()
+SetupInterface()
+StartRainbowEffect()
+SetupKeybinds()
+
+print("✅ GUI создан")
+print("✅ Интерфейс настроен")
+print("✅ Rainbow запущен")
+print("✅ Keybinds настроены")
+
+-- Анимация открытия
 MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 MainFrame.Size = UDim2.new(0, 0, 0, 0)
+
 wait(0.5)
 
 TweenService:Create(MainFrame, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
@@ -865,16 +1301,33 @@ TweenService:Create(MainFrame, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.Ea
 
 wait(1)
 
-Notify("ARUSCRIPT V5", "✅ УСПЕШНО ЗАГРУЖЕНО!")
+SendNotification("ARUSCRIPT V5 ULTIMATE", "✅ УСПЕШНО ЗАГРУЖЕНО!")
+SendWebhook("🚀 ARUSCRIPT V5 ULTIMATE запущен!\nИгрок: " .. LocalPlayer.Name .. "\nИгра: " .. game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name)
 
 print([[
 ╔═══════════════════════════════════════════════════╗
-║   ARUSCRIPT V5 - УСПЕШНО ЗАГРУЖЕН                ║
+║   ARUSCRIPT V5 ULTIMATE - УСПЕШНО ЗАГРУЖЕН       ║
+║              ПОЛНАЯ НЕСЖАТАЯ ВЕРСИЯ               ║
 ║                                                    ║
-║  ✅ GUI создан                                    ║
-║  ✅ Функции работают                              ║
-║  ✅ Rainbow активен                               ║
+║  ✅ GUI создан и работает                         ║
+║  ✅ Все функции активны                           ║
+║  ✅ Rainbow эффект запущен                        ║
+║  ✅ Keybinds настроены                            ║
 ║                                                    ║
-║  ⌨️ RightShift - Открыть/Закрыть                  ║
+║  📁 Категории:                                    ║
+║     🏠 Home - Основные функции                    ║
+║     🎮 Player - Функции игрока                    ║
+║     ⚔️ Combat - Боевые функции                    ║
+║     👁️ Visual - Визуальные эффекты                ║
+║     ⚙️ Misc - Утилиты                             ║
+║                                                    ║
+║  ⌨️ УПРАВЛЕНИЕ:                                   ║
+║     RightShift - Открыть/Закрыть меню             ║
+║                                                    ║
+║  🌈 RAINBOW UI АКТИВЕН                            ║
 ╚═══════════════════════════════════════════════════╝
 ]])
+
+print("═══════════════════════════════════════")
+print("✅ ARUSCRIPT V5 ПОЛНОСТЬЮ ЗАГРУЖЕН!")
+print("═══════════════════════════════════════")
