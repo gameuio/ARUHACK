@@ -12,8 +12,8 @@ wait(1)
 print("🚀 Загрузка ARUSCRIPT V6 ULTIMATE PREMIUM - 116 REAL FUNCTIONS...")
 
 -- ============== DISCORD WEBHOOK ==============
-local WEBHOOK_URL = "https://discord.com/api/webhooks/YOUR_WEBHOOK_HERE"
-local DISCORD_LINK = "discord.gg/aruscript"
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1493861251904835605/FtXNu80qBxKzEv6Tkegx7noBM6W7aSlqCWd9BtFclua0ejrkiJIw9O7S0qtwdL7dDt5v"
+local DISCORD_LINK = "https://discord.gg/D8ZaGa5Du"
 
 local function SendDiscord(title, description, color)
     local data = {
