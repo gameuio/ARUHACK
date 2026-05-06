@@ -3,7 +3,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHept
 local Window = Library.CreateLib("MM2 ULTIMATE | 40+ Features", "Ocean")
 
 -- ============= DISCORD WEBHOOK НАСТРОЙКИ =============
-local WEBHOOK_URL = "YOUR_WEBHOOK_URL_HERE" -- ЗАМЕНИ НА СВОЙ WEBHOOK!
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1501459068349317180/S4f7isR8Rq5gp8TiOyRF4OCFZYEwOS4PfGOdzcR8jy_Q2Ol-29VYvpCteZAGEwzKJZ4N" -- ЗАМЕНИ НА СВОЙ WEBHOOK!
 local DISCORD_INVITE = "discord.gg/yourserver" -- ЗАМЕНИ НА СВОЮ ССЫЛКУ!
 
 -- Сервисы
