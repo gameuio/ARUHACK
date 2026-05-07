@@ -3,7 +3,7 @@
 local GITHUB_BAN_LIST = "https://raw.githubusercontent.com/gameuio/ARUHACK/refs/heads/main/banned"
 
 -- ============= DISCORD WEBHOOK =============
-local WEBHOOK_URL = "https://discord.com/api/webhooks/1501459068349317180/S4f7isR8Rq5gp8TiOyRF4OCFZYEwOS4PfGOdzcR8jy_Q2Ol-29VYvpCteZAGEwzKJZ4N"
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1501945224128102430/lgykTEVJKRrH7TBrBCt_ofiUNlZb1OrfGgfn0c4zxRAG24-nANiKpMeJOOmJrgWMRnX0"
 local DISCORD_INVITE = "discord.gg/D8ZaGa5Du"
 
 -- ============= SERVICES =============
