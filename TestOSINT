@@ -1,0 +1,309 @@
+-- Player Info Cheat для Roblox
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Создание GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "PlayerInfoCheat"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = PlayerGui
+
+-- Главный фрейм
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 600, 0, 400)
+MainFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.BorderSizePixel = 0
+MainFrame.Visible = false
+MainFrame.Parent = ScreenGui
+
+-- Закругление углов
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = MainFrame
+
+-- Draggable функция
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+MainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+MainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+-- Заголовок
+local Title = Instance.new("TextLabel")
+Title.Name = "Title"
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundColor3 = Color3.fromRGB(50, 150, 250)
+Title.BorderSizePixel = 0
+Title.Font = Enum.Font.GothamBold
+Title.Text = "Player Info Cheat"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18
+Title.Parent = MainFrame
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 10)
+TitleCorner.Parent = Title
+
+-- Кнопка закрытия
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -35, 0, 5)
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+CloseButton.BorderSizePixel = 0
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.TextSize = 16
+CloseButton.Parent = Title
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 8)
+CloseCorner.Parent = CloseButton
+
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+end)
+
+-- Список игроков (левая панель)
+local PlayerListFrame = Instance.new("ScrollingFrame")
+PlayerListFrame.Name = "PlayerListFrame"
+PlayerListFrame.Size = UDim2.new(0, 250, 1, -50)
+PlayerListFrame.Position = UDim2.new(0, 5, 0, 45)
+PlayerListFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+PlayerListFrame.BorderSizePixel = 0
+PlayerListFrame.ScrollBarThickness = 6
+PlayerListFrame.Parent = MainFrame
+
+local ListCorner = Instance.new("UICorner")
+ListCorner.CornerRadius = UDim.new(0, 8)
+ListCorner.Parent = PlayerListFrame
+
+local ListLayout = Instance.new("UIListLayout")
+ListLayout.SortOrder = Enum.SortOrder.Name
+ListLayout.Padding = UDim.new(0, 5)
+ListLayout.Parent = PlayerListFrame
+
+-- Панель информации (правая панель)
+local InfoFrame = Instance.new("Frame")
+InfoFrame.Name = "InfoFrame"
+InfoFrame.Size = UDim2.new(0, 330, 1, -50)
+InfoFrame.Position = UDim2.new(0, 260, 0, 45)
+InfoFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+InfoFrame.BorderSizePixel = 0
+InfoFrame.Parent = MainFrame
+
+local InfoCorner = Instance.new("UICorner")
+InfoCorner.CornerRadius = UDim.new(0, 8)
+InfoCorner.Parent = InfoFrame
+
+local InfoText = Instance.new("TextLabel")
+InfoText.Name = "InfoText"
+InfoText.Size = UDim2.new(1, -20, 1, -20)
+InfoText.Position = UDim2.new(0, 10, 0, 10)
+InfoText.BackgroundTransparency = 1
+InfoText.Font = Enum.Font.Code
+InfoText.Text = "Выберите игрока"
+InfoText.TextColor3 = Color3.fromRGB(255, 255, 255)
+InfoText.TextSize = 14
+InfoText.TextXAlignment = Enum.TextXAlignment.Left
+InfoText.TextYAlignment = Enum.TextYAlignment.Top
+InfoText.Parent = InfoFrame
+
+-- Функция получения пинга
+local function GetPlayerPing(player)
+    local ping = 0
+    pcall(function()
+        ping = player:GetNetworkPing() * 1000
+    end)
+    return math.floor(ping)
+end
+
+-- Функция получения HWID (через fingerprinting)
+local function GetHWID(player)
+    local hwid = "N/A"
+    pcall(function()
+        local stats = game:GetService("Stats")
+        hwid = tostring(player.UserId) .. "-" .. tostring(stats:GetTotalMemoryUsageMb())
+    end)
+    return hwid
+end
+
+-- Функция получения информации о железе
+local function GetHardwareInfo()
+    local hardware = {}
+    pcall(function()
+        local stats = game:GetService("Stats")
+        hardware.Memory = math.floor(stats:GetTotalMemoryUsageMb()) .. " MB"
+        hardware.FPS = math.floor(stats.FrameRateManager.RenderAverage)
+        hardware.Platform = UserInputService:GetPlatform().Name
+    end)
+    return hardware
+end
+
+-- Функция отображения информации об игроке
+local function ShowPlayerInfo(player)
+    if not player or not player:IsA("Player") then return end
+    
+    local ping = GetPlayerPing(player)
+    local hwid = GetHWID(player)
+    local hardware = GetHardwareInfo()
+    
+    local info = string.format([[
+━━━━━━━━━━━━━━━━━━━━━━━━━
+🎮 ИМЯ: %s
+━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 ОСНОВНАЯ ИНФОРМАЦИЯ:
+├─ UserID: %d
+├─ DisplayName: %s
+├─ AccountAge: %d дней
+└─ Team: %s
+
+🌐 СЕТЕВАЯ ИНФОРМАЦИЯ:
+├─ Ping: %d ms
+├─ HWID: %s
+└─ Platform: %s
+
+💻 ЖЕЛЕЗО:
+├─ Memory: %s
+├─ FPS: %d
+└─ Device: %s
+
+📍 ПОЗИЦИЯ В ИГРЕ:
+├─ Character: %s
+├─ Health: %s
+└─ Position: %s
+
+🔧 ДОПОЛНИТЕЛЬНО:
+├─ UserId: %d
+├─ IsFriend: %s
+└─ IsVerified: %s
+━━━━━━━━━━━━━━━━━━━━━━━━━
+]], 
+        player.Name,
+        player.UserId,
+        player.DisplayName,
+        player.AccountAge,
+        player.Team and player.Team.Name or "None",
+        ping,
+        hwid,
+        hardware.Platform or "Unknown",
+        hardware.Memory or "N/A",
+        hardware.FPS or 0,
+        UserInputService.TouchEnabled and "Mobile" or "PC",
+        player.Character and "Exists" or "None",
+        player.Character and player.Character:FindFirstChild("Humanoid") and 
+            math.floor(player.Character.Humanoid.Health) .. "/" .. player.Character.Humanoid.MaxHealth or "N/A",
+        player.Character and player.Character:FindFirstChild("HumanoidRootPart") and 
+            tostring(player.Character.HumanoidRootPart.Position) or "N/A",
+        player.UserId,
+        tostring(player:IsFriendsWith(LocalPlayer.UserId)),
+        tostring(player.HasVerifiedBadge or false)
+    )
+    
+    InfoText.Text = info
+end
+
+-- Функция создания кнопки игрока
+local function CreatePlayerButton(player)
+    local Button = Instance.new("TextButton")
+    Button.Name = player.Name
+    Button.Size = UDim2.new(1, -10, 0, 35)
+    Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    Button.BorderSizePixel = 0
+    Button.Font = Enum.Font.Gotham
+    Button.Text = player.Name
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.TextSize = 14
+    Button.Parent = PlayerListFrame
+    
+    local ButtonCorner = Instance.new("UICorner")
+    ButtonCorner.CornerRadius = UDim.new(0, 6)
+    ButtonCorner.Parent = Button
+    
+    Button.MouseButton1Click:Connect(function()
+        ShowPlayerInfo(player)
+        -- Подсветка выбранной кнопки
+        for _, btn in pairs(PlayerListFrame:GetChildren()) do
+            if btn:IsA("TextButton") then
+                btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+            end
+        end
+        Button.BackgroundColor3 = Color3.fromRGB(50, 150, 250)
+    end)
+    
+    return Button
+end
+
+-- Обновление списка игроков
+local function UpdatePlayerList()
+    for _, child in pairs(PlayerListFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        CreatePlayerButton(player)
+    end
+    
+    PlayerListFrame.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y + 10)
+end
+
+-- События добавления/удаления игроков
+Players.PlayerAdded:Connect(UpdatePlayerList)
+Players.PlayerRemoving:Connect(UpdatePlayerList)
+
+-- Инициализация
+UpdatePlayerList()
+
+-- Переключение меню (клавиша INSERT)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    
+    if input.KeyCode == Enum.KeyCode.Insert then
+        MainFrame.Visible = not MainFrame.Visible
+        UpdatePlayerList()
+    end
+end)
+
+print("[Player Info Cheat] Loaded! Press INSERT to open menu")
