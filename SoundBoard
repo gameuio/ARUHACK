@@ -1,5 +1,6 @@
 -- ═══════════════════════════════════════════════════════════════════════════
---              🎯 ULTIMATE TOOLS v3.0 - Premium Edition
+--         🎯 ULTIMATE TOOLS v3.0 UNIVERSAL EDITION
+--         Автоматическая адаптация под PC и Mobile
 --         🔊 Soundboard Exploit | 🔍 OSINT Intelligence Tool
 -- ═══════════════════════════════════════════════════════════════════════════
 
@@ -12,63 +13,95 @@ local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- Очистка старых GUI
+-- Автоопределение платформы
+local IS_MOBILE = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+local IS_PC = UserInputService.KeyboardEnabled and UserInputService.MouseEnabled
+
+print("═══════════════════════════════════════════════")
+print("🎯 ULTIMATE TOOLS v3.0 UNIVERSAL")
+print("Platform Detected:", IS_MOBILE and "📱 MOBILE" or "💻 PC")
+print("═══════════════════════════════════════════════")
+
+-- Очистка
 pcall(function()
-    if PlayerGui:FindFirstChild("UltimateToolsV3") then
-        PlayerGui:FindFirstChild("UltimateToolsV3"):Destroy()
+    if PlayerGui:FindFirstChild("UltimateToolsUniversal") then
+        PlayerGui:FindFirstChild("UltimateToolsUniversal"):Destroy()
     end
 end)
 
 wait(0.2)
 
 -- ═══════════════════════════════════════════════════════════════════════════
---                          НАСТРОЙКИ И ПЕРЕМЕННЫЕ
+--                          НАСТРОЙКИ
 -- ═══════════════════════════════════════════════════════════════════════════
 
 local Config = {
-    PrimaryColor = Color3.fromRGB(88, 101, 242),      -- Discord Blue
+    PrimaryColor = Color3.fromRGB(88, 101, 242),
     SecondaryColor = Color3.fromRGB(114, 137, 218),
     BackgroundColor = Color3.fromRGB(32, 34, 37),
     DarkColor = Color3.fromRGB(47, 49, 54),
-    AccentColor = Color3.fromRGB(67, 181, 129),       -- Green
-    DangerColor = Color3.fromRGB(237, 66, 69),        -- Red
-    WarningColor = Color3.fromRGB(250, 166, 26),      -- Orange
+    AccentColor = Color3.fromRGB(67, 181, 129),
+    DangerColor = Color3.fromRGB(237, 66, 69),
+    WarningColor = Color3.fromRGB(250, 166, 26),
     TextColor = Color3.fromRGB(220, 221, 222),
     MutedColor = Color3.fromRGB(114, 118, 125)
 }
 
+-- Адаптивные размеры
+local Sizes = {
+    PC = {
+        MainWidth = 1100,
+        MainHeight = 650,
+        TopBarHeight = 60,
+        ButtonHeight = 40,
+        SongButtonHeight = 35,
+        PlayerButtonHeight = 50,
+        TextSize = {Title = 20, Subtitle = 11, Button = 14, Text = 12}
+    },
+    Mobile = {
+        MainWidth = nil, -- Полноэкранный
+        MainHeight = nil,
+        TopBarHeight = 70,
+        ButtonHeight = 55,
+        SongButtonHeight = 55,
+        PlayerButtonHeight = 65,
+        TextSize = {Title = 18, Subtitle = 12, Button = 16, Text = 14}
+    }
+}
+
+local CurrentSizes = IS_MOBILE and Sizes.Mobile or Sizes.PC
+
 local SongDatabase = {
-    {Name = "🎵 Phonk - SHADOW", ID = "7498949047", Genre = "Phonk"},
-    {Name = "🎵 Playboi Carti - RIP", ID = "5410085549", Genre = "Trap"},
-    {Name = "🎵 Kanye West - CARNIVAL", ID = "136821036", Genre = "Hip-Hop"},
-    {Name = "🎵 PlayaPhonk - PHONKY TOWN", ID = "6911766512", Genre = "Phonk"},
-    {Name = "🎵 MC Orsen - GATA ONLY", ID = "7722924256", Genre = "Phonk"},
-    {Name = "🎵 SKELER - TEL AVIV", ID = "5989925142", Genre = "Phonk"},
-    {Name = "🎵 Lil Peep - Star Shopping", ID = "1448630648", Genre = "Emo Rap"},
-    {Name = "🎵 XXXTentacion - Look At Me", ID = "6897166225", Genre = "Rap"},
-    {Name = "🎵 Narvent - FAINTED", ID = "1837849285", Genre = "Phonk"},
-    {Name = "🎵 NXSTY - VXNOM", ID = "6985216729", Genre = "Phonk"},
-    {Name = "🎵 DVRST - Close Eyes", ID = "1843404009", Genre = "Phonk"},
-    {Name = "🎵 Shadowraze - VANDAL", ID = "6863033868", Genre = "Phonk"},
-    {Name = "🎵 INTERWORLD - METAMORPHOSIS", ID = "6908813536", Genre = "Phonk"},
-    {Name = "🎵 Death Note Theme", ID = "2545298782", Genre = "Anime"},
-    {Name = "🎵 Attack on Titan", ID = "5872896357", Genre = "Anime"},
-    {Name = "🎵 Tokyo Ghoul - Unravel", ID = "5410085549", Genre = "Anime"},
-    {Name = "🎵 Demon Slayer OP", ID = "4573493579", Genre = "Anime"},
-    {Name = "🎵 JoJo - Giorno Theme", ID = "3604593754", Genre = "Anime"},
-    {Name = "🔊 Loud Mic Ear Rape", ID = "5567523008", Genre = "Meme"},
-    {Name = "🔊 Bass Boosted", ID = "6343110948", Genre = "Meme"},
-    {Name = "🎪 Circus Theme", ID = "1837879082", Genre = "Meme"},
-    {Name = "💀 Troll Song", ID = "5410084532", Genre = "Meme"},
-    {Name = "🚨 Emergency Alert", ID = "8683380188", Genre = "Meme"},
-    {Name = "🎺 Doot", ID = "5850888869", Genre = "Meme"},
-    {Name = "🎶 Rick Roll", ID = "6897166225", Genre = "Meme"},
+    {Name = "🎵 Phonk - SHADOW", ID = "7498949047"},
+    {Name = "🎵 Playboi Carti - RIP", ID = "5410085549"},
+    {Name = "🎵 Kanye West - CARNIVAL", ID = "136821036"},
+    {Name = "🎵 PlayaPhonk - PHONKY TOWN", ID = "6911766512"},
+    {Name = "🎵 MC Orsen - GATA ONLY", ID = "7722924256"},
+    {Name = "🎵 SKELER - TEL AVIV", ID = "5989925142"},
+    {Name = "🎵 Lil Peep - Star Shopping", ID = "1448630648"},
+    {Name = "🎵 XXXTentacion - Look At Me", ID = "6897166225"},
+    {Name = "🎵 Narvent - FAINTED", ID = "1837849285"},
+    {Name = "🎵 NXSTY - VXNOM", ID = "6985216729"},
+    {Name = "🎵 DVRST - Close Eyes", ID = "1843404009"},
+    {Name = "🎵 Shadowraze - VANDAL", ID = "6863033868"},
+    {Name = "🎵 INTERWORLD - METAMORPHOSIS", ID = "6908813536"},
+    {Name = "🎵 Death Note Theme", ID = "2545298782"},
+    {Name = "🎵 Attack on Titan", ID = "5872896357"},
+    {Name = "🎵 Tokyo Ghoul - Unravel", ID = "5410085549"},
+    {Name = "🎵 Demon Slayer OP", ID = "4573493579"},
+    {Name = "🔊 Loud Mic Ear Rape", ID = "5567523008"},
+    {Name = "🔊 Bass Boosted", ID = "6343110948"},
+    {Name = "🎪 Circus Theme", ID = "1837879082"},
+    {Name = "💀 Troll Song", ID = "5410084532"},
+    {Name = "🚨 Emergency Alert", ID = "8683380188"},
+    {Name = "🎺 Doot", ID = "5850888869"},
+    {Name = "🎶 Rick Roll", ID = "6897166225"},
 }
 
 local selectedPlayer = nil
 local currentSound = nil
 local foundRemotes = {}
-local scanComplete = false
+local currentTab = "soundboard"
 
 -- ═══════════════════════════════════════════════════════════════════════════
 --                          UTILITY FUNCTIONS
@@ -99,13 +132,13 @@ local function AddStroke(parent, color, thickness)
     return stroke
 end
 
-local function AddGradient(parent, colors)
+local function AddGradient(parent, rotation)
     local gradient = Instance.new("UIGradient")
-    gradient.Color = ColorSequence.new(colors or {
+    gradient.Color = ColorSequence.new{
         ColorSequenceKeypoint.new(0, Config.PrimaryColor),
         ColorSequenceKeypoint.new(1, Config.SecondaryColor)
-    })
-    gradient.Rotation = 90
+    }
+    gradient.Rotation = rotation or 90
     gradient.Parent = parent
     return gradient
 end
@@ -123,183 +156,344 @@ end
 -- ═══════════════════════════════════════════════════════════════════════════
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "UltimateToolsV3"
+ScreenGui.Name = "UltimateToolsUniversal"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.Parent = PlayerGui
 
+-- Кнопка открытия (только для мобильных)
+local OpenButton
+if IS_MOBILE then
+    OpenButton = Instance.new("TextButton")
+    OpenButton.Size = UDim2.new(0, 70, 0, 70)
+    OpenButton.Position = UDim2.new(1, -85, 0.5, -35)
+    OpenButton.BackgroundColor3 = Config.PrimaryColor
+    OpenButton.BorderSizePixel = 0
+    OpenButton.Font = Enum.Font.GothamBold
+    OpenButton.Text = "🎯"
+    OpenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    OpenButton.TextSize = 30
+    OpenButton.ZIndex = 1000
+    OpenButton.Parent = ScreenGui
+    
+    AddCorner(OpenButton, 35)
+    AddStroke(OpenButton, Color3.fromRGB(255, 255, 255), 3)
+    
+    -- Draggable для кнопки
+    local btnDragging = false
+    local btnDragStart, btnStartPos
+    
+    OpenButton.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            btnDragging = true
+            btnDragStart = input.Position
+            btnStartPos = OpenButton.Position
+        end
+    end)
+    
+    OpenButton.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            btnDragging = false
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if btnDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - btnDragStart
+            OpenButton.Position = UDim2.new(
+                btnStartPos.X.Scale,
+                btnStartPos.X.Offset + delta.X,
+                btnStartPos.Y.Scale,
+                btnStartPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+    
+    -- Анимация пульсации
+    task.spawn(function()
+        while wait(2) do
+            CreateTween(OpenButton, {Size = UDim2.new(0, 75, 0, 75)}, 0.3)
+            wait(0.3)
+            CreateTween(OpenButton, {Size = UDim2.new(0, 70, 0, 70)}, 0.3)
+        end
+    end)
+end
+
 -- Main Container
 local MainContainer = Instance.new("Frame")
 MainContainer.Name = "MainContainer"
-MainContainer.Size = UDim2.new(0, 1100, 0, 650)
-MainContainer.Position = UDim2.new(0.5, -550, 0.5, -325)
+
+if IS_MOBILE then
+    -- Полноэкранный для мобильных
+    MainContainer.Size = UDim2.new(1, 0, 1, 0)
+    MainContainer.Position = UDim2.new(0, 0, 0, 0)
+else
+    -- Фиксированный размер для ПК
+    MainContainer.Size = UDim2.new(0, CurrentSizes.MainWidth, 0, CurrentSizes.MainHeight)
+    MainContainer.Position = UDim2.new(0.5, -CurrentSizes.MainWidth/2, 0.5, -CurrentSizes.MainHeight/2)
+end
+
 MainContainer.BackgroundColor3 = Config.BackgroundColor
 MainContainer.BorderSizePixel = 0
 MainContainer.Visible = false
-MainContainer.Active = true
+MainContainer.ZIndex = 100
 MainContainer.Parent = ScreenGui
 
-AddCorner(MainContainer, 16)
-AddStroke(MainContainer, Config.PrimaryColor, 2)
-
--- Draggable
-local dragToggle, dragStart, dragInput, startPos
-MainContainer.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragToggle = true
-        dragStart = input.Position
-        startPos = MainContainer.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragToggle = false
-            end
-        end)
-    end
-end)
-
-MainContainer.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        dragInput = input
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragToggle then
-        local delta = input.Position - dragStart
-        CreateTween(MainContainer, {
-            Position = UDim2.new(
-                startPos.X.Scale, 
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale, 
-                startPos.Y.Offset + delta.Y
-            )
-        }, 0.1)
-    end
-end)
+if not IS_MOBILE then
+    AddCorner(MainContainer, 16)
+    AddStroke(MainContainer, Config.PrimaryColor, 2)
+    
+    -- Draggable для ПК
+    local dragging, dragStart, dragInput, startPos
+    
+    MainContainer.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = MainContainer.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    
+    MainContainer.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            CreateTween(MainContainer, {
+                Position = UDim2.new(
+                    startPos.X.Scale,
+                    startPos.X.Offset + delta.X,
+                    startPos.Y.Scale,
+                    startPos.Y.Offset + delta.Y
+                )
+            }, 0.1)
+        end
+    end)
+end
 
 -- Top Bar
 local TopBar = Instance.new("Frame")
-TopBar.Name = "TopBar"
-TopBar.Size = UDim2.new(1, 0, 0, 60)
+TopBar.Size = UDim2.new(1, 0, 0, CurrentSizes.TopBarHeight)
 TopBar.BackgroundColor3 = Config.DarkColor
 TopBar.BorderSizePixel = 0
 TopBar.Parent = MainContainer
 
-AddCorner(TopBar, 16)
+if not IS_MOBILE then
+    AddCorner(TopBar, 16)
+end
 AddGradient(TopBar)
 
 -- Title
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(0, 400, 1, 0)
-Title.Position = UDim2.new(0, 20, 0, 0)
+Title.Position = UDim2.new(0, IS_MOBILE and 15 or 20, 0, 0)
 Title.BackgroundTransparency = 1
 Title.Font = Enum.Font.GothamBold
 Title.Text = "🎯 ULTIMATE TOOLS v3.0"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 20
+Title.TextSize = CurrentSizes.TextSize.Title
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TopBar
 
 local Subtitle = Instance.new("TextLabel")
-Subtitle.Size = UDim2.new(0, 400, 0, 15)
-Subtitle.Position = UDim2.new(0, 20, 0, 35)
+Subtitle.Size = UDim2.new(0, 400, 0, 20)
+Subtitle.Position = UDim2.new(0, IS_MOBILE and 15 or 20, 0, IS_MOBILE and 45 or 35)
 Subtitle.BackgroundTransparency = 1
 Subtitle.Font = Enum.Font.Gotham
-Subtitle.Text = "Premium Edition | Soundboard & OSINT"
+Subtitle.Text = IS_MOBILE and "Mobile Edition" or "Premium Edition | PC"
 Subtitle.TextColor3 = Config.MutedColor
-Subtitle.TextSize = 11
+Subtitle.TextSize = CurrentSizes.TextSize.Subtitle
 Subtitle.TextXAlignment = Enum.TextXAlignment.Left
 Subtitle.Parent = TopBar
 
--- Status Indicator
-local StatusFrame = Instance.new("Frame")
-StatusFrame.Size = UDim2.new(0, 200, 0, 40)
-StatusFrame.Position = UDim2.new(1, -220, 0, 10)
-StatusFrame.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
-StatusFrame.BorderSizePixel = 0
-StatusFrame.Parent = TopBar
-
-AddCorner(StatusFrame, 10)
-
-local StatusDot = Instance.new("Frame")
-StatusDot.Size = UDim2.new(0, 10, 0, 10)
-StatusDot.Position = UDim2.new(0, 10, 0.5, -5)
-StatusDot.BackgroundColor3 = Config.AccentColor
-StatusDot.BorderSizePixel = 0
-StatusDot.Parent = StatusFrame
-
-AddCorner(StatusDot, 5)
-
--- Анимация статуса
-task.spawn(function()
-    while wait(1) do
-        CreateTween(StatusDot, {BackgroundColor3 = Config.WarningColor}, 0.5)
-        wait(0.5)
-        CreateTween(StatusDot, {BackgroundColor3 = Config.AccentColor}, 0.5)
-    end
-end)
-
-local StatusText = Instance.new("TextLabel")
-StatusText.Size = UDim2.new(1, -30, 1, 0)
-StatusText.Position = UDim2.new(0, 30, 0, 0)
-StatusText.BackgroundTransparency = 1
-StatusText.Font = Enum.Font.GothamBold
-StatusText.Text = "READY"
-StatusText.TextColor3 = Config.AccentColor
-StatusText.TextSize = 12
-StatusText.TextXAlignment = Enum.TextXAlignment.Left
-StatusText.Parent = StatusFrame
+-- Status (только для ПК)
+if IS_PC then
+    local StatusFrame = Instance.new("Frame")
+    StatusFrame.Size = UDim2.new(0, 200, 0, 40)
+    StatusFrame.Position = UDim2.new(1, -270, 0, 10)
+    StatusFrame.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
+    StatusFrame.BorderSizePixel = 0
+    StatusFrame.Parent = TopBar
+    
+    AddCorner(StatusFrame, 10)
+    
+    local StatusDot = Instance.new("Frame")
+    StatusDot.Size = UDim2.new(0, 10, 0, 10)
+    StatusDot.Position = UDim2.new(0, 10, 0.5, -5)
+    StatusDot.BackgroundColor3 = Config.AccentColor
+    StatusDot.BorderSizePixel = 0
+    StatusDot.Parent = StatusFrame
+    
+    AddCorner(StatusDot, 5)
+    
+    local StatusText = Instance.new("TextLabel")
+    StatusText.Name = "StatusText"
+    StatusText.Size = UDim2.new(1, -30, 1, 0)
+    StatusText.Position = UDim2.new(0, 30, 0, 0)
+    StatusText.BackgroundTransparency = 1
+    StatusText.Font = Enum.Font.GothamBold
+    StatusText.Text = "READY"
+    StatusText.TextColor3 = Config.AccentColor
+    StatusText.TextSize = 12
+    StatusText.TextXAlignment = Enum.TextXAlignment.Left
+    StatusText.Parent = StatusFrame
+    
+    task.spawn(function()
+        while wait(1) do
+            CreateTween(StatusDot, {BackgroundColor3 = Config.WarningColor}, 0.5)
+            wait(0.5)
+            CreateTween(StatusDot, {BackgroundColor3 = Config.AccentColor}, 0.5)
+        end
+    end)
+end
 
 -- Close Button
 local CloseButton = Instance.new("TextButton")
-CloseButton.Size = UDim2.new(0, 45, 0, 45)
-CloseButton.Position = UDim2.new(1, -55, 0, 7.5)
+CloseButton.Size = UDim2.new(0, IS_MOBILE and 60 or 45, 0, IS_MOBILE and 60 or 45)
+CloseButton.Position = UDim2.new(1, IS_MOBILE and -65 or -55, 0, IS_MOBILE and 5 or 7.5)
 CloseButton.BackgroundColor3 = Config.DangerColor
 CloseButton.BorderSizePixel = 0
 CloseButton.Font = Enum.Font.GothamBold
 CloseButton.Text = "✕"
 CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.TextSize = 20
+CloseButton.TextSize = IS_MOBILE and 25 or 20
 CloseButton.Parent = TopBar
 
-AddCorner(CloseButton, 10)
-
-CloseButton.MouseEnter:Connect(function()
-    CreateTween(CloseButton, {BackgroundColor3 = Color3.fromRGB(255, 80, 80)})
-end)
-
-CloseButton.MouseLeave:Connect(function()
-    CreateTween(CloseButton, {BackgroundColor3 = Config.DangerColor})
-end)
+AddCorner(CloseButton, IS_MOBILE and 12 or 10)
 
 CloseButton.MouseButton1Click:Connect(function()
-    CreateTween(MainContainer, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
-    wait(0.3)
-    MainContainer.Visible = false
-    MainContainer.Size = UDim2.new(0, 1100, 0, 650)
+    if IS_MOBILE then
+        MainContainer.Visible = false
+        OpenButton.Visible = true
+    else
+        CreateTween(MainContainer, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
+        wait(0.3)
+        MainContainer.Visible = false
+        MainContainer.Size = UDim2.new(0, CurrentSizes.MainWidth, 0, CurrentSizes.MainHeight)
+    end
 end)
 
 -- ═══════════════════════════════════════════════════════════════════════════
---                          SOUNDBOARD (LEFT PANEL)
+--                          LAYOUT (PC vs Mobile)
 -- ═══════════════════════════════════════════════════════════════════════════
 
-local SoundboardPanel = Instance.new("Frame")
-SoundboardPanel.Size = UDim2.new(0.5, -10, 1, -70)
-SoundboardPanel.Position = UDim2.new(0, 5, 0, 65)
-SoundboardPanel.BackgroundColor3 = Config.DarkColor
-SoundboardPanel.BorderSizePixel = 0
-SoundboardPanel.Parent = MainContainer
+local SoundboardPanel, OSINTPanel
 
-AddCorner(SoundboardPanel, 12)
+if IS_MOBILE then
+    -- МОБИЛЬНАЯ ВЕРСИЯ: Вкладки
+    
+    local TabSwitcher = Instance.new("Frame")
+    TabSwitcher.Size = UDim2.new(1, -20, 0, 60)
+    TabSwitcher.Position = UDim2.new(0, 10, 0, CurrentSizes.TopBarHeight + 5)
+    TabSwitcher.BackgroundColor3 = Config.DarkColor
+    TabSwitcher.BorderSizePixel = 0
+    TabSwitcher.Parent = MainContainer
+    
+    AddCorner(TabSwitcher, 12)
+    
+    local SoundboardTab = Instance.new("TextButton")
+    SoundboardTab.Size = UDim2.new(0.5, -5, 1, -10)
+    SoundboardTab.Position = UDim2.new(0, 5, 0, 5)
+    SoundboardTab.BackgroundColor3 = Config.PrimaryColor
+    SoundboardTab.BorderSizePixel = 0
+    SoundboardTab.Font = Enum.Font.GothamBold
+    SoundboardTab.Text = "🔊 SOUNDBOARD"
+    SoundboardTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SoundboardTab.TextSize = 14
+    SoundboardTab.Parent = TabSwitcher
+    
+    AddCorner(SoundboardTab, 10)
+    
+    local OSINTTab = Instance.new("TextButton")
+    OSINTTab.Size = UDim2.new(0.5, -5, 1, -10)
+    OSINTTab.Position = UDim2.new(0.5, 0, 0, 5)
+    OSINTTab.BackgroundColor3 = Color3.fromRGB(60, 63, 70)
+    OSINTTab.BorderSizePixel = 0
+    OSINTTab.Font = Enum.Font.GothamBold
+    OSINTTab.Text = "🔍 OSINT"
+    OSINTTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+    OSINTTab.TextSize = 14
+    OSINTTab.Parent = TabSwitcher
+    
+    AddCorner(OSINTTab, 10)
+    
+    SoundboardPanel = Instance.new("Frame")
+    SoundboardPanel.Size = UDim2.new(1, -20, 1, -CurrentSizes.TopBarHeight - 75)
+    SoundboardPanel.Position = UDim2.new(0, 10, 0, CurrentSizes.TopBarHeight + 70)
+    SoundboardPanel.BackgroundTransparency = 1
+    SoundboardPanel.Visible = true
+    SoundboardPanel.Parent = MainContainer
+    
+    OSINTPanel = Instance.new("Frame")
+    OSINTPanel.Size = UDim2.new(1, -20, 1, -CurrentSizes.TopBarHeight - 75)
+    OSINTPanel.Position = UDim2.new(0, 10, 0, CurrentSizes.TopBarHeight + 70)
+    OSINTPanel.BackgroundTransparency = 1
+    OSINTPanel.Visible = false
+    OSINTPanel.Parent = MainContainer
+    
+    -- Tab Events
+    SoundboardTab.MouseButton1Click:Connect(function()
+        currentTab = "soundboard"
+        CreateTween(SoundboardTab, {BackgroundColor3 = Config.PrimaryColor})
+        CreateTween(OSINTTab, {BackgroundColor3 = Color3.fromRGB(60, 63, 70)})
+        SoundboardPanel.Visible = true
+        OSINTPanel.Visible = false
+    end)
+    
+    OSINTTab.MouseButton1Click:Connect(function()
+        currentTab = "osint"
+        CreateTween(OSINTTab, {BackgroundColor3 = Config.PrimaryColor})
+        CreateTween(SoundboardTab, {BackgroundColor3 = Color3.fromRGB(60, 63, 70)})
+        SoundboardPanel.Visible = false
+        OSINTPanel.Visible = true
+    end)
+    
+else
+    -- PC ВЕРСИЯ: Два панели рядом
+    
+    SoundboardPanel = Instance.new("Frame")
+    SoundboardPanel.Size = UDim2.new(0.5, -10, 1, -CurrentSizes.TopBarHeight - 10)
+    SoundboardPanel.Position = UDim2.new(0, 5, 0, CurrentSizes.TopBarHeight + 5)
+    SoundboardPanel.BackgroundColor3 = Config.DarkColor
+    SoundboardPanel.BorderSizePixel = 0
+    SoundboardPanel.Parent = MainContainer
+    
+    AddCorner(SoundboardPanel, 12)
+    
+    OSINTPanel = Instance.new("Frame")
+    OSINTPanel.Size = UDim2.new(0.5, -10, 1, -CurrentSizes.TopBarHeight - 10)
+    OSINTPanel.Position = UDim2.new(0.5, 5, 0, CurrentSizes.TopBarHeight + 5)
+    OSINTPanel.BackgroundColor3 = Config.DarkColor
+    OSINTPanel.BorderSizePixel = 0
+    OSINTPanel.Parent = MainContainer
+    
+    AddCorner(OSINTPanel, 12)
+end
 
--- Soundboard Header
+-- ═══════════════════════════════════════════════════════════════════════════
+--                          SOUNDBOARD CONTENT
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Header
 local SoundHeader = Instance.new("Frame")
-SoundHeader.Size = UDim2.new(1, 0, 0, 50)
+SoundHeader.Size = UDim2.new(1, IS_MOBILE and 0 or -10, 0, 50)
+SoundHeader.Position = UDim2.new(0, IS_MOBILE and 0 or 5, 0, IS_MOBILE and 0 or 5)
 SoundHeader.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
 SoundHeader.BorderSizePixel = 0
 SoundHeader.Parent = SoundboardPanel
 
-AddCorner(SoundHeader, 12)
+if not IS_MOBILE then
+    AddCorner(SoundHeader, 12)
+end
 
 local SoundHeaderTitle = Instance.new("TextLabel")
 SoundHeaderTitle.Size = UDim2.new(1, -20, 1, 0)
@@ -308,14 +502,14 @@ SoundHeaderTitle.BackgroundTransparency = 1
 SoundHeaderTitle.Font = Enum.Font.GothamBold
 SoundHeaderTitle.Text = "🔊 SOUNDBOARD EXPLOIT"
 SoundHeaderTitle.TextColor3 = Config.TextColor
-SoundHeaderTitle.TextSize = 16
+SoundHeaderTitle.TextSize = IS_MOBILE and 14 or 16
 SoundHeaderTitle.TextXAlignment = Enum.TextXAlignment.Left
 SoundHeaderTitle.Parent = SoundHeader
 
 -- Remote Info Panel
 local RemoteInfoPanel = Instance.new("Frame")
-RemoteInfoPanel.Size = UDim2.new(1, -20, 0, 120)
-RemoteInfoPanel.Position = UDim2.new(0, 10, 0, 60)
+RemoteInfoPanel.Size = UDim2.new(1, IS_MOBILE and 0 or -20, 0, IS_MOBILE and 100 : 120)
+RemoteInfoPanel.Position = UDim2.new(0, IS_MOBILE and 0 or 10, 0, IS_MOBILE and 55 or 60)
 RemoteInfoPanel.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
 RemoteInfoPanel.BorderSizePixel = 0
 RemoteInfoPanel.Parent = SoundboardPanel
@@ -329,104 +523,88 @@ RemoteInfoTitle.BackgroundTransparency = 1
 RemoteInfoTitle.Font = Enum.Font.GothamBold
 RemoteInfoTitle.Text = "📡 REMOTE EVENTS STATUS"
 RemoteInfoTitle.TextColor3 = Config.TextColor
-RemoteInfoTitle.TextSize = 13
+RemoteInfoTitle.TextSize = IS_MOBILE and 13 or 13
 RemoteInfoTitle.TextXAlignment = Enum.TextXAlignment.Left
 RemoteInfoTitle.Parent = RemoteInfoPanel
 
-local RemoteStatsFrame = Instance.new("Frame")
-RemoteStatsFrame.Size = UDim2.new(1, -20, 0, 60)
-RemoteStatsFrame.Position = UDim2.new(0, 10, 0, 40)
-RemoteStatsFrame.BackgroundTransparency = 1
-RemoteStatsFrame.Parent = RemoteInfoPanel
+local RemoteEventsLabel = Instance.new("TextLabel")
+RemoteEventsLabel.Name = "RemoteEventsLabel"
+RemoteEventsLabel.Size = UDim2.new(0.48, 0, 0, IS_MOBILE and 25 or 30)
+RemoteEventsLabel.Position = UDim2.new(0, 10, 0, 40)
+RemoteEventsLabel.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
+RemoteEventsLabel.BorderSizePixel = 0
+RemoteEventsLabel.Font = Enum.Font.GothamBold
+RemoteEventsLabel.Text = "Events: 0"
+RemoteEventsLabel.TextColor3 = Config.AccentColor
+RemoteEventsLabel.TextSize = IS_MOBILE and 12 : 14
+RemoteEventsLabel.Parent = RemoteInfoPanel
 
-local function CreateStatBox(text, value, position, color)
-    local box = Instance.new("Frame")
-    box.Size = UDim2.new(0.48, 0, 1, 0)
-    box.Position = position
-    box.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
-    box.BorderSizePixel = 0
-    box.Parent = RemoteStatsFrame
-    
-    AddCorner(box, 8)
-    
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, -10, 0, 20)
-    label.Position = UDim2.new(0, 5, 0, 5)
-    label.BackgroundTransparency = 1
-    label.Font = Enum.Font.Gotham
-    label.Text = text
-    label.TextColor3 = Config.MutedColor
-    label.TextSize = 10
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = box
-    
-    local valueLabel = Instance.new("TextLabel")
-    valueLabel.Name = "Value"
-    valueLabel.Size = UDim2.new(1, -10, 0, 25)
-    valueLabel.Position = UDim2.new(0, 5, 0, 25)
-    valueLabel.BackgroundTransparency = 1
-    valueLabel.Font = Enum.Font.GothamBold
-    valueLabel.Text = value
-    valueLabel.TextColor3 = color
-    valueLabel.TextSize = 18
-    valueLabel.TextXAlignment = Enum.TextXAlignment.Left
-    valueLabel.Parent = box
-    
-    return valueLabel
-end
+AddCorner(RemoteEventsLabel, 8)
 
-local RemoteEventsValue = CreateStatBox("Remote Events", "0", UDim2.new(0, 0, 0, 0), Config.AccentColor)
-local RemoteFunctionsValue = CreateStatBox("Remote Functions", "0", UDim2.new(0.52, 0, 0, 0), Config.SecondaryColor)
+local RemoteFunctionsLabel = Instance.new("TextLabel")
+RemoteFunctionsLabel.Name = "RemoteFunctionsLabel"
+RemoteFunctionsLabel.Size = UDim2.new(0.48, 0, 0, IS_MOBILE and 25 or 30)
+RemoteFunctionsLabel.Position = UDim2.new(0.52, 0, 0, 40)
+RemoteFunctionsLabel.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
+RemoteFunctionsLabel.BorderSizePixel = 0
+RemoteFunctionsLabel.Font = Enum.Font.GothamBold
+RemoteFunctionsLabel.Text = "Functions: 0"
+RemoteFunctionsLabel.TextColor3 = Config.SecondaryColor
+RemoteFunctionsLabel.TextSize = IS_MOBILE and 12 : 14
+RemoteFunctionsLabel.Parent = RemoteInfoPanel
 
--- Scan Button
+AddCorner(RemoteFunctionsLabel, 8)
+
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Name = "StatusLabel"
+StatusLabel.Size = UDim2.new(1, -20, 0, 20)
+StatusLabel.Position = UDim2.new(0, 10, 0, IS_MOBILE and 70 or 75)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Font = Enum.Font.Gotham
+StatusLabel.Text = "⚠️  Tap 'SCAN' to start"
+StatusLabel.TextColor3 = Config.WarningColor
+StatusLabel.TextSize = 11
+StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
+StatusLabel.Parent = RemoteInfoPanel
+
+-- Buttons
+local buttonY = IS_MOBILE and 165 or 190
+
 local ScanButton = Instance.new("TextButton")
-ScanButton.Size = UDim2.new(1, -20, 0, 45)
-ScanButton.Position = UDim2.new(0, 10, 0, 190)
+ScanButton.Size = UDim2.new(1, IS_MOBILE and 0 or -20, 0, IS_MOBILE and 55 or 45)
+ScanButton.Position = UDim2.new(0, IS_MOBILE and 0 or 10, 0, buttonY)
 ScanButton.BackgroundColor3 = Config.PrimaryColor
 ScanButton.BorderSizePixel = 0
 ScanButton.Font = Enum.Font.GothamBold
-ScanButton.Text = "🔍 SCAN FOR REMOTE EVENTS"
+ScanButton.Text = "🔍 SCAN FOR REMOTES"
 ScanButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ScanButton.TextSize = 14
+ScanButton.TextSize = IS_MOBILE and 15 or 14
 ScanButton.Parent = SoundboardPanel
 
-AddCorner(ScanButton, 10)
+AddCorner(ScanButton, IS_MOBILE and 12 or 10)
 AddGradient(ScanButton)
 
-ScanButton.MouseEnter:Connect(function()
-    CreateTween(ScanButton, {Size = UDim2.new(1, -18, 0, 47)})
-end)
+buttonY = buttonY + (IS_MOBILE and 65 or 55)
 
-ScanButton.MouseLeave:Connect(function()
-    CreateTween(ScanButton, {Size = UDim2.new(1, -20, 0, 45)})
-end)
-
--- Stop Button
 local StopButton = Instance.new("TextButton")
-StopButton.Size = UDim2.new(1, -20, 0, 40)
-StopButton.Position = UDim2.new(0, 10, 0, 245)
+StopButton.Size = UDim2.new(1, IS_MOBILE and 0 or -20, 0, IS_MOBILE and 50 or 40)
+StopButton.Position = UDim2.new(0, IS_MOBILE and 0 or 10, 0, buttonY)
 StopButton.BackgroundColor3 = Config.DangerColor
 StopButton.BorderSizePixel = 0
 StopButton.Font = Enum.Font.GothamBold
 StopButton.Text = "⏹️  STOP ALL SOUNDS"
 StopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-StopButton.TextSize = 13
+StopButton.TextSize = IS_MOBILE and 14 or 13
 StopButton.Parent = SoundboardPanel
 
-AddCorner(StopButton, 10)
+AddCorner(StopButton, IS_MOBILE and 12 or 10)
 
-StopButton.MouseEnter:Connect(function()
-    CreateTween(StopButton, {BackgroundColor3 = Color3.fromRGB(255, 80, 80)})
-end)
+buttonY = buttonY + (IS_MOBILE and 60 or 50)
 
-StopButton.MouseLeave:Connect(function()
-    CreateTween(StopButton, {BackgroundColor3 = Config.DangerColor})
-end)
-
--- Custom Audio Frame
+-- Custom Audio
 local CustomFrame = Instance.new("Frame")
-CustomFrame.Size = UDim2.new(1, -20, 0, 80)
-CustomFrame.Position = UDim2.new(0, 10, 0, 295)
+CustomFrame.Size = UDim2.new(1, IS_MOBILE and 0 or -20, 0, IS_MOBILE and 90 or 80)
+CustomFrame.Position = UDim2.new(0, IS_MOBILE and 0 or 10, 0, buttonY)
 CustomFrame.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
 CustomFrame.BorderSizePixel = 0
 CustomFrame.Parent = SoundboardPanel
@@ -435,18 +613,18 @@ AddCorner(CustomFrame, 10)
 
 local CustomLabel = Instance.new("TextLabel")
 CustomLabel.Size = UDim2.new(1, -20, 0, 25)
-CustomLabel.Position = UDim2.new(0, 10, 0, 8)
+CustomLabel.Position = UDim2.new(0, 10, 0, IS_MOBILE and 5 or 8)
 CustomLabel.BackgroundTransparency = 1
 CustomLabel.Font = Enum.Font.GothamBold
 CustomLabel.Text = "🎵 CUSTOM AUDIO ID"
 CustomLabel.TextColor3 = Config.TextColor
-CustomLabel.TextSize = 12
+CustomLabel.TextSize = IS_MOBILE and 13 or 12
 CustomLabel.TextXAlignment = Enum.TextXAlignment.Left
 CustomLabel.Parent = CustomFrame
 
 local CustomInput = Instance.new("TextBox")
-CustomInput.Size = UDim2.new(0.6, -5, 0, 35)
-CustomInput.Position = UDim2.new(0, 10, 0, 38)
+CustomInput.Size = UDim2.new(0.6, -5, 0, IS_MOBILE and 45 or 35)
+CustomInput.Position = UDim2.new(0, 10, 0, IS_MOBILE and 38 or 38)
 CustomInput.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
 CustomInput.BorderSizePixel = 0
 CustomInput.Font = Enum.Font.Gotham
@@ -454,76 +632,64 @@ CustomInput.PlaceholderText = "Enter Audio ID..."
 CustomInput.PlaceholderColor3 = Config.MutedColor
 CustomInput.Text = ""
 CustomInput.TextColor3 = Config.TextColor
-CustomInput.TextSize = 12
+CustomInput.TextSize = IS_MOBILE and 14 or 12
 CustomInput.Parent = CustomFrame
 
-AddCorner(CustomInput, 8)
+AddCorner(CustomInput, IS_MOBILE and 10 or 8)
 
 local PlayCustomButton = Instance.new("TextButton")
-PlayCustomButton.Size = UDim2.new(0.4, -15, 0, 35)
-PlayCustomButton.Position = UDim2.new(0.6, 5, 0, 38)
+PlayCustomButton.Size = UDim2.new(0.4, -15, 0, IS_MOBILE and 45 or 35)
+PlayCustomButton.Position = UDim2.new(0.6, 5, 0, IS_MOBILE and 38 or 38)
 PlayCustomButton.BackgroundColor3 = Config.AccentColor
 PlayCustomButton.BorderSizePixel = 0
 PlayCustomButton.Font = Enum.Font.GothamBold
 PlayCustomButton.Text = "▶️  PLAY"
 PlayCustomButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-PlayCustomButton.TextSize = 13
+PlayCustomButton.TextSize = IS_MOBILE and 14 or 13
 PlayCustomButton.Parent = CustomFrame
 
-AddCorner(PlayCustomButton, 8)
+AddCorner(PlayCustomButton, IS_MOBILE and 10 or 8)
 
-PlayCustomButton.MouseEnter:Connect(function()
-    CreateTween(PlayCustomButton, {BackgroundColor3 = Color3.fromRGB(90, 200, 150)})
-end)
-
-PlayCustomButton.MouseLeave:Connect(function()
-    CreateTween(PlayCustomButton, {BackgroundColor3 = Config.AccentColor})
-end)
+buttonY = buttonY + (IS_MOBILE and 100 or 90)
 
 -- Song List
 local SongListFrame = Instance.new("ScrollingFrame")
-SongListFrame.Size = UDim2.new(1, -20, 1, -395)
-SongListFrame.Position = UDim2.new(0, 10, 0, 385)
+SongListFrame.Size = UDim2.new(1, IS_MOBILE and 0 or -20, 1, -buttonY - (IS_MOBILE and 5 or 10))
+SongListFrame.Position = UDim2.new(0, IS_MOBILE and 0 or 10, 0, buttonY)
 SongListFrame.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
 SongListFrame.BorderSizePixel = 0
-SongListFrame.ScrollBarThickness = 4
+SongListFrame.ScrollBarThickness = IS_MOBILE and 6 or 4
 SongListFrame.ScrollBarImageColor3 = Config.PrimaryColor
 SongListFrame.Parent = SoundboardPanel
 
-AddCorner(SongListFrame, 10)
+AddCorner(SongListFrame, IS_MOBILE and 12 or 10)
 
 local SongListLayout = Instance.new("UIListLayout")
-SongListLayout.Padding = UDim.new(0, 5)
+SongListLayout.Padding = UDim.new(0, IS_MOBILE and 8 or 5)
 SongListLayout.Parent = SongListFrame
 
 local SongListPadding = Instance.new("UIPadding")
-SongListPadding.PaddingTop = UDim.new(0, 8)
-SongListPadding.PaddingBottom = UDim.new(0, 8)
-SongListPadding.PaddingLeft = UDim.new(0, 8)
-SongListPadding.PaddingRight = UDim.new(0, 8)
+SongListPadding.PaddingTop = UDim.new(0, 10)
+SongListPadding.PaddingBottom = UDim.new(0, 10)
+SongListPadding.PaddingLeft = UDim.new(0, 10)
+SongListPadding.PaddingRight = UDim.new(0, 10)
 SongListPadding.Parent = SongListFrame
 
 -- ═══════════════════════════════════════════════════════════════════════════
---                          OSINT TOOL (RIGHT PANEL)
+--                          OSINT CONTENT
 -- ═══════════════════════════════════════════════════════════════════════════
 
-local OSINTPanel = Instance.new("Frame")
-OSINTPanel.Size = UDim2.new(0.5, -10, 1, -70)
-OSINTPanel.Position = UDim2.new(0.5, 5, 0, 65)
-OSINTPanel.BackgroundColor3 = Config.DarkColor
-OSINTPanel.BorderSizePixel = 0
-OSINTPanel.Parent = MainContainer
-
-AddCorner(OSINTPanel, 12)
-
--- OSINT Header
+-- Header
 local OSINTHeader = Instance.new("Frame")
-OSINTHeader.Size = UDim2.new(1, 0, 0, 50)
+OSINTHeader.Size = UDim2.new(1, IS_MOBILE and 0 or -10, 0, 50)
+OSINTHeader.Position = UDim2.new(0, IS_MOBILE and 0 or 5, 0, IS_MOBILE and 0 or 5)
 OSINTHeader.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
 OSINTHeader.BorderSizePixel = 0
 OSINTHeader.Parent = OSINTPanel
 
-AddCorner(OSINTHeader, 12)
+if not IS_MOBILE then
+    AddCorner(OSINTHeader, 12)
+end
 
 local OSINTHeaderTitle = Instance.new("TextLabel")
 OSINTHeaderTitle.Size = UDim2.new(1, -20, 1, 0)
@@ -532,51 +698,53 @@ OSINTHeaderTitle.BackgroundTransparency = 1
 OSINTHeaderTitle.Font = Enum.Font.GothamBold
 OSINTHeaderTitle.Text = "🔍 OSINT INTELLIGENCE TOOL"
 OSINTHeaderTitle.TextColor3 = Config.TextColor
-OSINTHeaderTitle.TextSize = 16
+OSINTHeaderTitle.TextSize = IS_MOBILE and 14 or 16
 OSINTHeaderTitle.TextXAlignment = Enum.TextXAlignment.Left
 OSINTHeaderTitle.Parent = OSINTHeader
 
 -- Player List
 local PlayerListFrame = Instance.new("ScrollingFrame")
-PlayerListFrame.Size = UDim2.new(1, -20, 0, 250)
-PlayerListFrame.Position = UDim2.new(0, 10, 0, 60)
+PlayerListFrame.Size = UDim2.new(1, IS_MOBILE and 0 or -20, 0, IS_MOBILE and 350 or 250)
+PlayerListFrame.Position = UDim2.new(0, IS_MOBILE and 0 or 10, 0, IS_MOBILE and 55 or 60)
 PlayerListFrame.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
 PlayerListFrame.BorderSizePixel = 0
-PlayerListFrame.ScrollBarThickness = 4
+PlayerListFrame.ScrollBarThickness = IS_MOBILE and 6 or 4
 PlayerListFrame.ScrollBarImageColor3 = Config.PrimaryColor
 PlayerListFrame.Parent = OSINTPanel
 
-AddCorner(PlayerListFrame, 10)
+AddCorner(PlayerListFrame, IS_MOBILE and 12 or 10)
 
 local PlayerListLayout = Instance.new("UIListLayout")
-PlayerListLayout.Padding = UDim.new(0, 5)
+PlayerListLayout.Padding = UDim.new(0, IS_MOBILE and 8 or 5)
 PlayerListLayout.Parent = PlayerListFrame
 
 local PlayerListPadding = Instance.new("UIPadding")
-PlayerListPadding.PaddingTop = UDim.new(0, 8)
-PlayerListPadding.PaddingBottom = UDim.new(0, 8)
-PlayerListPadding.PaddingLeft = UDim.new(0, 8)
-PlayerListPadding.PaddingRight = UDim.new(0, 8)
+PlayerListPadding.PaddingTop = UDim.new(0, 10)
+PlayerListPadding.PaddingBottom = UDim.new(0, 10)
+PlayerListPadding.PaddingLeft = UDim.new(0, 10)
+PlayerListPadding.PaddingRight = UDim.new(0, 10)
 PlayerListPadding.Parent = PlayerListFrame
 
 -- OSINT Results
+local resultsY = IS_MOBILE and 410 or 315
+
 local OSINTResults = Instance.new("ScrollingFrame")
-OSINTResults.Size = UDim2.new(1, -20, 1, -320)
-OSINTResults.Position = UDim2.new(0, 10, 0, 315)
+OSINTResults.Size = UDim2.new(1, IS_MOBILE and 0 or -20, 1, -resultsY - (IS_MOBILE and 5 or 10))
+OSINTResults.Position = UDim2.new(0, IS_MOBILE and 0 or 10, 0, resultsY)
 OSINTResults.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
 OSINTResults.BorderSizePixel = 0
-OSINTResults.ScrollBarThickness = 4
+OSINTResults.ScrollBarThickness = IS_MOBILE and 6 or 4
 OSINTResults.ScrollBarImageColor3 = Config.PrimaryColor
 OSINTResults.Parent = OSINTPanel
 
-AddCorner(OSINTResults, 10)
+AddCorner(OSINTResults, IS_MOBILE and 12 or 10)
 
 local OSINTText = Instance.new("TextLabel")
 OSINTText.Size = UDim2.new(1, -20, 0, 10000)
 OSINTText.Position = UDim2.new(0, 10, 0, 10)
 OSINTText.BackgroundTransparency = 1
 OSINTText.Font = Enum.Font.Code
-OSINTText.Text = "👈 Select a player from the list above"
+OSINTText.Text = IS_MOBILE and "👆 Select a player above" or "👈 Select a player from the list"
 OSINTText.TextColor3 = Config.MutedColor
 OSINTText.TextSize = 11
 OSINTText.TextXAlignment = Enum.TextXAlignment.Left
@@ -585,17 +753,25 @@ OSINTText.TextWrapped = true
 OSINTText.Parent = OSINTResults
 
 -- ═══════════════════════════════════════════════════════════════════════════
---                          SOUNDBOARD FUNCTIONS
+--                          FUNCTIONS
 -- ═══════════════════════════════════════════════════════════════════════════
 
 local function UpdateStatus(text, color)
-    StatusText.Text = text
-    CreateTween(StatusText, {TextColor3 = color})
-    CreateTween(StatusDot, {BackgroundColor3 = color})
+    StatusLabel.Text = text
+    StatusLabel.TextColor3 = color
+    
+    if IS_PC then
+        local statusText = MainContainer.TopBar.StatusFrame.StatusText
+        if statusText then
+            statusText.Text = text:upper()
+            CreateTween(statusText, {TextColor3 = color})
+        end
+    end
 end
 
 local function ScanForRemotes()
-    UpdateStatus("SCANNING...", Config.WarningColor)
+    UpdateStatus("⏳ Scanning...", Config.WarningColor)
+    
     foundRemotes = {}
     local remoteEvents = 0
     local remoteFunctions = 0
@@ -606,7 +782,7 @@ local function ScanForRemotes()
         currentDepth = currentDepth or 0
         if currentDepth >= (maxDepth or 15) then return end
         
-        local success, result = pcall(function()
+        pcall(function()
             for _, obj in ipairs(container:GetChildren()) do
                 pcall(function()
                     if obj:IsA("RemoteEvent") or obj:IsA("UnreliableRemoteEvent") then
@@ -627,14 +803,13 @@ local function ScanForRemotes()
         end)
     end
     
-    -- Сканируем все возможные контейнеры
-    print("=== Starting Deep Scan ===")
+    print("=== Starting Remote Scan ===")
     
     pcall(function() DeepScan(ReplicatedStorage, 20) end)
     pcall(function() DeepScan(workspace, 15) end)
     
     for _, player in ipairs(Players:GetPlayers()) do
-        pcall(function() 
+        pcall(function()
             if player.Character then
                 DeepScan(player.Character, 10)
             end
@@ -644,24 +819,20 @@ local function ScanForRemotes()
     
     pcall(function() DeepScan(game:GetService("StarterGui"), 10) end)
     pcall(function() DeepScan(game:GetService("StarterPlayer"), 10) end)
-    pcall(function() DeepScan(game:GetService("StarterPack"), 10) end)
     
-    -- Обновляем UI
-    RemoteEventsValue.Text = tostring(remoteEvents)
-    RemoteFunctionsValue.Text = tostring(remoteFunctions)
+    RemoteEventsLabel.Text = "Events: " .. remoteEvents
+    RemoteFunctionsLabel.Text = "Functions: " .. remoteFunctions
     
     local total = #foundRemotes
     print(string.format("=== Scan Complete: %d total ===", total))
     
     if total > 0 then
-        UpdateStatus("READY - " .. total .. " REMOTES", Config.AccentColor)
-        Notify("✅ Scan Complete", string.format("Found %d Remote Events!", total), 3)
+        UpdateStatus("✅ Found " .. total .. " remotes!", Config.AccentColor)
+        Notify("✅ Scan Complete", string.format("Found %d remotes!", total), 3)
     else
-        UpdateStatus("NO REMOTES FOUND", Config.DangerColor)
-        Notify("❌ Scan Failed", "No exploitable remotes found", 3)
+        UpdateStatus("❌ No remotes found", Config.DangerColor)
+        Notify("❌ Scan Failed", "No remotes found", 3)
     end
-    
-    scanComplete = true
 end
 
 local function PlaySoundViaRemote(audioId)
@@ -682,7 +853,8 @@ local function PlaySoundViaRemote(audioId)
         end)
     end
     
-    UpdateStatus("PLAYING - " .. attempts .. " ATTEMPTS", Config.AccentColor)
+    UpdateStatus("▶️  Sent to " .. attempts .. " remotes", Config.AccentColor)
+    Notify("▶️  Playing", "Sent to " .. attempts .. " remotes", 2)
 end
 
 local function PlaySoundLocal(audioId)
@@ -697,7 +869,8 @@ local function PlaySoundLocal(audioId)
     sound:Play()
     
     currentSound = sound
-    UpdateStatus("PLAYING LOCALLY", Config.WarningColor)
+    UpdateStatus("▶️  Playing locally", Config.WarningColor)
+    Notify("▶️  Playing", "Local mode (only you)", 2)
 end
 
 local function StopAllSounds()
@@ -711,47 +884,156 @@ local function StopAllSounds()
         end
     end
     
-    UpdateStatus("STOPPED", Config.DangerColor)
+    UpdateStatus("⏹️  Stopped", Config.DangerColor)
     Notify("⏹️  Stopped", "All sounds stopped", 2)
 end
 
--- Create Song Buttons
+local function PerformOSINT(player)
+    if not player or not player.Parent then
+        OSINTText.Text = "❌ Player not found!"
+        return
+    end
+    
+    local data = {}
+    data.Name = player.Name
+    data.DisplayName = player.DisplayName
+    data.UserId = player.UserId
+    data.AccountAge = player.AccountAge
+    data.IsPremium = player.MembershipType == Enum.MembershipType.Premium
+    data.HasVerifiedBadge = player.HasVerifiedBadge
+    
+    pcall(function() data.IsFriend = player:IsFriendsWith(LocalPlayer.UserId) end)
+    
+    if player.Team then
+        data.TeamName = player.Team.Name
+        data.TeamPlayers = #player.Team:GetPlayers()
+    end
+    
+    data.LocaleId = player.LocaleId or "Unknown"
+    
+    if player.Character then
+        local humanoid = player.Character:FindFirstChild("Humanoid")
+        if humanoid then
+            data.Health = math.floor(humanoid.Health)
+            data.MaxHealth = math.floor(humanoid.MaxHealth)
+            data.WalkSpeed = humanoid.WalkSpeed
+        end
+        
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local dist = (hrp.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+            data.Distance = math.floor(dist)
+        end
+    end
+    
+    data.Stats = {}
+    local leaderstats = player:FindFirstChild("leaderstats")
+    if leaderstats then
+        for _, stat in ipairs(leaderstats:GetChildren()) do
+            data.Stats[stat.Name] = tostring(stat.Value)
+        end
+    end
+    
+    local report = string.format([[
+╔══════════════════════════════════════════╗
+           🔍 OSINT REPORT
+╚══════════════════════════════════════════╝
+
+👤 PLAYER INFO
+──────────────────────────────────────────
+Name: %s
+Display: %s
+UserID: %d
+Profile: roblox.com/users/%d/profile
+
+Age: %d days (%.1f years)
+Premium: %s
+Verified: %s
+Friend: %s
+Locale: %s
+
+👥 TEAM
+──────────────────────────────────────────
+Team: %s
+Players: %s
+
+🎮 CHARACTER
+──────────────────────────────────────────
+Health: %s/%s
+Speed: %s
+Distance: %s studs
+
+📊 STATS
+──────────────────────────────────────────
+%s
+
+🔗 LINKS
+──────────────────────────────────────────
+Friends: roblox.com/users/%d/friends
+Games: roblox.com/users/%d/games
+Inventory: roblox.com/users/%d/inventory
+
+──────────────────────────────────────────
+Generated: %s
+Platform: %s
+    ]],
+        data.Name, data.DisplayName, data.UserId, data.UserId,
+        data.AccountAge, data.AccountAge / 365,
+        data.IsPremium and "✅" or "❌",
+        data.HasVerifiedBadge and "✅" or "❌",
+        data.IsFriend and "✅" or "❌",
+        data.LocaleId,
+        data.TeamName or "No Team",
+        data.TeamPlayers and tostring(data.TeamPlayers) or "N/A",
+        data.Health or "N/A", data.MaxHealth or "N/A",
+        data.WalkSpeed or "N/A",
+        data.Distance and (data.Distance .. " studs") or "N/A",
+        next(data.Stats) and 
+            (function()
+                local t = ""
+                for k, v in pairs(data.Stats) do
+                    t = t .. string.format("%s: %s\n", k, v)
+                end
+                return t
+            end)() or "No stats",
+        data.UserId, data.UserId, data.UserId,
+        os.date("%H:%M:%S"),
+        IS_MOBILE and "📱 Mobile" or "💻 PC"
+    )
+    
+    OSINTText.Text = report
+    OSINTResults.CanvasSize = UDim2.new(0, 0, 0, OSINTText.TextBounds.Y + 20)
+end
+
+-- ═══════════════════════════════════════════════════════════════════════════
+--                          CREATE UI ELEMENTS
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Song Buttons
 for i, song in ipairs(SongDatabase) do
     local SongButton = Instance.new("TextButton")
-    SongButton.Size = UDim2.new(1, -10, 0, 40)
+    SongButton.Size = UDim2.new(1, -10, 0, CurrentSizes.SongButtonHeight)
     SongButton.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
     SongButton.BorderSizePixel = 0
-    SongButton.Font = Enum.Font.GothamSemibold
-    SongButton.Text = ""
+    SongButton.Font = Enum.Font.GothamBold
+    SongButton.Text = song.Name
     SongButton.TextColor3 = Config.TextColor
-    SongButton.TextSize = 12
+    SongButton.TextSize = IS_MOBILE and 13 or 11
     SongButton.Parent = SongListFrame
     
-    AddCorner(SongButton, 8)
+    AddCorner(SongButton, IS_MOBILE and 10 or 8)
     
-    local SongText = Instance.new("TextLabel")
-    SongText.Size = UDim2.new(1, -50, 1, 0)
-    SongText.Position = UDim2.new(0, 12, 0, 0)
-    SongText.BackgroundTransparency = 1
-    SongText.Font = Enum.Font.GothamBold
-    SongText.Text = song.Name
-    SongText.TextColor3 = Config.TextColor
-    SongText.TextSize = 11
-    SongText.TextXAlignment = Enum.TextXAlignment.Left
-    SongText.Parent = SongButton
-    
-    local GenreLabel = Instance.new("TextLabel")
-    GenreLabel.Size = UDim2.new(0, 60, 0, 20)
-    GenreLabel.Position = UDim2.new(1, -65, 0.5, -10)
-    GenreLabel.BackgroundColor3 = Config.PrimaryColor
-    GenreLabel.BorderSizePixel = 0
-    GenreLabel.Font = Enum.Font.GothamBold
-    GenreLabel.Text = song.Genre
-    GenreLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    GenreLabel.TextSize = 9
-    GenreLabel.Parent = SongButton
-    
-    AddCorner(GenreLabel, 5)
+    SongButton.MouseButton1Click:Connect(function()
+        CreateTween(SongButton, {BackgroundColor3 = Config.AccentColor}, 0.1)
+        wait(0.1)
+        CreateTween(SongButton, {BackgroundColor3 = Color3.fromRGB(47, 49, 54)}, 0.2)
+        
+        if #foundRemotes > 0 then
+            PlaySoundViaRemote(song.ID)
+        else
+            PlaySoundLocal(song.ID)
+        end
+    end)
     
     SongButton.MouseEnter:Connect(function()
         CreateTween(SongButton, {BackgroundColor3 = Color3.fromRGB(60, 63, 70)})
@@ -760,28 +1042,112 @@ for i, song in ipairs(SongDatabase) do
     SongButton.MouseLeave:Connect(function()
         CreateTween(SongButton, {BackgroundColor3 = Color3.fromRGB(47, 49, 54)})
     end)
-    
-    SongButton.MouseButton1Click:Connect(function()
-        CreateTween(SongButton, {BackgroundColor3 = Config.AccentColor}, 0.1)
-        wait(0.1)
-        CreateTween(SongButton, {BackgroundColor3 = Color3.fromRGB(47, 49, 54)}, 0.1)
-        
-        if #foundRemotes > 0 then
-            PlaySoundViaRemote(song.ID)
-        else
-            PlaySoundLocal(song.ID)
-        end
-    end)
 end
 
-SongListFrame.CanvasSize = UDim2.new(0, 0, 0, SongListLayout.AbsoluteContentSize.Y + 16)
+SongListFrame.CanvasSize = UDim2.new(0, 0, 0, SongListLayout.AbsoluteContentSize.Y + 20)
 
--- Button Events
+-- Player Buttons
+local function UpdatePlayerList()
+    for _, child in ipairs(PlayerListFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+    
+    for _, player in ipairs(Players:GetPlayers()) do
+        local PlayerButton = Instance.new("TextButton")
+        PlayerButton.Size = UDim2.new(1, -10, 0, CurrentSizes.PlayerButtonHeight)
+        PlayerButton.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
+        PlayerButton.BorderSizePixel = 0
+        PlayerButton.Font = Enum.Font.GothamBold
+        PlayerButton.Text = ""
+        PlayerButton.Parent = PlayerListFrame
+        
+        AddCorner(PlayerButton, IS_MOBILE and 10 or 8)
+        
+        local avatarSize = IS_MOBILE and 50 or 35
+        
+        local Avatar = Instance.new("ImageLabel")
+        Avatar.Size = UDim2.new(0, avatarSize, 0, avatarSize)
+        Avatar.Position = UDim2.new(0, 7.5, 0.5, -avatarSize/2)
+        Avatar.BackgroundColor3 = Config.PrimaryColor
+        Avatar.BorderSizePixel = 0
+        Avatar.Image = Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size60x60)
+        Avatar.Parent = PlayerButton
+        
+        AddCorner(Avatar, IS_MOBILE and 10 or 8)
+        
+        local PlayerName = Instance.new("TextLabel")
+        PlayerName.Size = UDim2.new(1, -120, 0, IS_MOBILE and 25 or 20)
+        PlayerName.Position = UDim2.new(0, avatarSize + 15, 0, IS_MOBILE and 10 : 8)
+        PlayerName.BackgroundTransparency = 1
+        PlayerName.Font = Enum.Font.GothamBold
+        PlayerName.Text = player.Name
+        PlayerName.TextColor3 = Config.TextColor
+        PlayerName.TextSize = IS_MOBILE and 14 or 12
+        PlayerName.TextXAlignment = Enum.TextXAlignment.Left
+        PlayerName.Parent = PlayerButton
+        
+        local PlayerDisplay = Instance.new("TextLabel")
+        PlayerDisplay.Size = UDim2.new(1, -120, 0, IS_MOBILE and 20 or 15)
+        PlayerDisplay.Position = UDim2.new(0, avatarSize + 15, 0, IS_MOBILE and 35 : 28)
+        PlayerDisplay.BackgroundTransparency = 1
+        PlayerDisplay.Font = Enum.Font.Gotham
+        PlayerDisplay.Text = "@" .. player.DisplayName
+        PlayerDisplay.TextColor3 = Config.MutedColor
+        PlayerDisplay.TextSize = IS_MOBILE and 12 or 10
+        PlayerDisplay.TextXAlignment = Enum.TextXAlignment.Left
+        PlayerDisplay.Parent = PlayerButton
+        
+        local SelectIcon = Instance.new("TextLabel")
+        SelectIcon.Size = UDim2.new(0, IS_MOBILE and 40 or 30, 0, IS_MOBILE and 40 or 30)
+        SelectIcon.Position = UDim2.new(1, IS_MOBILE and -50 or -35, 0.5, IS_MOBILE and -20 or -15)
+        SelectIcon.BackgroundTransparency = 1
+        SelectIcon.Font = Enum.Font.GothamBold
+        SelectIcon.Text = "▶️"
+        SelectIcon.TextColor3 = Config.AccentColor
+        SelectIcon.TextSize = IS_MOBILE and 18 or 14
+        SelectIcon.Parent = PlayerButton
+        
+        PlayerButton.MouseButton1Click:Connect(function()
+            selectedPlayer = player
+            
+            for _, btn in ipairs(PlayerListFrame:GetChildren()) do
+                if btn:IsA("TextButton") then
+                    CreateTween(btn, {BackgroundColor3 = Color3.fromRGB(47, 49, 54)})
+                end
+            end
+            
+            CreateTween(PlayerButton, {BackgroundColor3 = Config.PrimaryColor})
+            PerformOSINT(player)
+        end)
+        
+        PlayerButton.MouseEnter:Connect(function()
+            if selectedPlayer ~= player then
+                CreateTween(PlayerButton, {BackgroundColor3 = Color3.fromRGB(60, 63, 70)})
+            end
+        end)
+        
+        PlayerButton.MouseLeave:Connect(function()
+            if selectedPlayer ~= player then
+                CreateTween(PlayerButton, {BackgroundColor3 = Color3.fromRGB(47, 49, 54)})
+            end
+        end)
+    end
+    
+    PlayerListFrame.CanvasSize = UDim2.new(0, 0, 0, PlayerListLayout.AbsoluteContentSize.Y + 20)
+end
+
+-- ═══════════════════════════════════════════════════════════════════════════
+--                          EVENTS
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Soundboard Buttons
 ScanButton.MouseButton1Click:Connect(function()
     ScanButton.Text = "⏳ SCANNING..."
     ScanForRemotes()
     wait(0.5)
-    ScanButton.Text = "🔍 SCAN FOR REMOTE EVENTS"
+    ScanButton.Text = "🔍 SCAN FOR REMOTES"
 end)
 
 StopButton.MouseButton1Click:Connect(function()
@@ -799,219 +1165,7 @@ PlayCustomButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- ═══════════════════════════════════════════════════════════════════════════
---                          OSINT FUNCTIONS
--- ═══════════════════════════════════════════════════════════════════════════
-
-local function PerformOSINT(player)
-    if not player or not player.Parent then
-        OSINTText.Text = "❌ Player not found!"
-        return
-    end
-    
-    local data = {}
-    
-    -- Collect data
-    data.Name = player.Name
-    data.DisplayName = player.DisplayName
-    data.UserId = player.UserId
-    data.AccountAge = player.AccountAge
-    data.IsPremium = player.MembershipType == Enum.MembershipType.Premium
-    data.HasVerifiedBadge = player.HasVerifiedBadge
-    
-    pcall(function() data.IsFriend = player:IsFriendsWith(LocalPlayer.UserId) end)
-    
-    if player.Team then
-        data.TeamName = player.Team.Name
-        data.TeamPlayers = #player.Team:GetPlayers()
-    end
-    
-    data.LocaleId = player.LocaleId or "Unknown"
-    
-    -- Character data
-    if player.Character then
-        local humanoid = player.Character:FindFirstChild("Humanoid")
-        if humanoid then
-            data.Health = math.floor(humanoid.Health)
-            data.MaxHealth = math.floor(humanoid.MaxHealth)
-            data.WalkSpeed = humanoid.WalkSpeed
-        end
-        
-        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-        if hrp and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            local dist = (hrp.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-            data.Distance = math.floor(dist)
-        end
-    end
-    
-    -- Leaderstats
-    data.Stats = {}
-    local leaderstats = player:FindFirstChild("leaderstats")
-    if leaderstats then
-        for _, stat in ipairs(leaderstats:GetChildren()) do
-            data.Stats[stat.Name] = tostring(stat.Value)
-        end
-    end
-    
-    -- Generate report
-    local report = string.format([[
-╔═══════════════════════════════════════════════════════════════╗
-                    🔍 OSINT INTELLIGENCE REPORT
-╚═══════════════════════════════════════════════════════════════╝
-
-👤 PLAYER PROFILE
-────────────────────────────────────────────────────────────────
-  Name: %s
-  Display: %s
-  UserID: %d
-  Profile: https://www.roblox.com/users/%d/profile
-  
-  Account Age: %d days (%.1f years)
-  Premium: %s
-  Verified: %s
-  Friend: %s
-  Locale: %s
-
-👥 TEAM INFORMATION
-────────────────────────────────────────────────────────────────
-  Team: %s
-  Players: %s
-
-🎮 CHARACTER STATUS
-────────────────────────────────────────────────────────────────
-  Health: %s/%s
-  Speed: %s
-  Distance: %s studs
-
-📊 LEADERSTATS
-────────────────────────────────────────────────────────────────
-%s
-
-🔗 QUICK LINKS
-────────────────────────────────────────────────────────────────
-  Friends: https://www.roblox.com/users/%d/friends
-  Games: https://www.roblox.com/users/%d/games
-  Inventory: https://www.roblox.com/users/%d/inventory
-
-────────────────────────────────────────────────────────────────
-Report generated: %s
-    ]],
-        data.Name, data.DisplayName, data.UserId, data.UserId,
-        data.AccountAge, data.AccountAge / 365,
-        data.IsPremium and "✅ Yes" or "❌ No",
-        data.HasVerifiedBadge and "✅ Yes" or "❌ No",
-        data.IsFriend and "✅ Yes" or "❌ No",
-        data.LocaleId,
-        data.TeamName or "No Team",
-        data.TeamPlayers and tostring(data.TeamPlayers) or "N/A",
-        data.Health or "N/A", data.MaxHealth or "N/A",
-        data.WalkSpeed or "N/A",
-        data.Distance and (data.Distance .. " studs") or "N/A",
-        next(data.Stats) and 
-            (function()
-                local t = ""
-                for k, v in pairs(data.Stats) do
-                    t = t .. string.format("  %s: %s\n", k, v)
-                end
-                return t
-            end)() or "  No stats available",
-        data.UserId, data.UserId, data.UserId,
-        os.date("%H:%M:%S %d/%m/%Y")
-    )
-    
-    OSINTText.Text = report
-    OSINTResults.CanvasSize = UDim2.new(0, 0, 0, OSINTText.TextBounds.Y + 20)
-end
-
--- Create Player Buttons
-local function UpdatePlayerList()
-    for _, child in ipairs(PlayerListFrame:GetChildren()) do
-        if child:IsA("TextButton") then
-            child:Destroy()
-        end
-    end
-    
-    for _, player in ipairs(Players:GetPlayers()) do
-        local PlayerButton = Instance.new("TextButton")
-        PlayerButton.Size = UDim2.new(1, -10, 0, 50)
-        PlayerButton.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
-        PlayerButton.BorderSizePixel = 0
-        PlayerButton.Font = Enum.Font.GothamBold
-        PlayerButton.Text = ""
-        PlayerButton.Parent = PlayerListFrame
-        
-        AddCorner(PlayerButton, 8)
-        
-        local PlayerName = Instance.new("TextLabel")
-        PlayerName.Size = UDim2.new(1, -60, 0, 20)
-        PlayerName.Position = UDim2.new(0, 45, 0, 8)
-        PlayerName.BackgroundTransparency = 1
-        PlayerName.Font = Enum.Font.GothamBold
-        PlayerName.Text = player.Name
-        PlayerName.TextColor3 = Config.TextColor
-        PlayerName.TextSize = 12
-        PlayerName.TextXAlignment = Enum.TextXAlignment.Left
-        PlayerName.Parent = PlayerButton
-        
-        local PlayerDisplay = Instance.new("TextLabel")
-        PlayerDisplay.Size = UDim2.new(1, -60, 0, 15)
-        PlayerDisplay.Position = UDim2.new(0, 45, 0, 28)
-        PlayerDisplay.BackgroundTransparency = 1
-        PlayerDisplay.Font = Enum.Font.Gotham
-        PlayerDisplay.Text = "@" .. player.DisplayName
-        PlayerDisplay.TextColor3 = Config.MutedColor
-        PlayerDisplay.TextSize = 10
-        PlayerDisplay.TextXAlignment = Enum.TextXAlignment.Left
-        PlayerDisplay.Parent = PlayerButton
-        
-        local Avatar = Instance.new("ImageLabel")
-        Avatar.Size = UDim2.new(0, 35, 0, 35)
-        Avatar.Position = UDim2.new(0, 5, 0.5, -17.5)
-        Avatar.BackgroundColor3 = Config.PrimaryColor
-        Avatar.BorderSizePixel = 0
-        Avatar.Image = Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size60x60)
-        Avatar.Parent = PlayerButton
-        
-        AddCorner(Avatar, 8)
-        
-        local SelectIcon = Instance.new("TextLabel")
-        SelectIcon.Size = UDim2.new(0, 30, 0, 30)
-        SelectIcon.Position = UDim2.new(1, -35, 0.5, -15)
-        SelectIcon.BackgroundTransparency = 1
-        SelectIcon.Font = Enum.Font.GothamBold
-        SelectIcon.Text = "▶️"
-        SelectIcon.TextColor3 = Config.AccentColor
-        SelectIcon.TextSize = 14
-        SelectIcon.Parent = PlayerButton
-        
-        PlayerButton.MouseEnter:Connect(function()
-            CreateTween(PlayerButton, {BackgroundColor3 = Color3.fromRGB(60, 63, 70)})
-        end)
-        
-        PlayerButton.MouseLeave:Connect(function()
-            if selectedPlayer ~= player then
-                CreateTween(PlayerButton, {BackgroundColor3 = Color3.fromRGB(47, 49, 54)})
-            end
-        end)
-        
-        PlayerButton.MouseButton1Click:Connect(function()
-            selectedPlayer = player
-            
-            for _, btn in ipairs(PlayerListFrame:GetChildren()) do
-                if btn:IsA("TextButton") then
-                    CreateTween(btn, {BackgroundColor3 = Color3.fromRGB(47, 49, 54)})
-                end
-            end
-            
-            CreateTween(PlayerButton, {BackgroundColor3 = Config.PrimaryColor})
-            PerformOSINT(player)
-        end)
-    end
-    
-    PlayerListFrame.CanvasSize = UDim2.new(0, 0, 0, PlayerListLayout.AbsoluteContentSize.Y + 16)
-end
-
--- Events
+-- Player Events
 Players.PlayerAdded:Connect(function()
     wait(0.1)
     UpdatePlayerList()
@@ -1027,43 +1181,56 @@ end)
 
 UpdatePlayerList()
 
--- ═══════════════════════════════════════════════════════════════════════════
---                          TOGGLE MENU
--- ═══════════════════════════════════════════════════════════════════════════
-
-UserInputService.InputBegan:Connect(function(input, processed)
-    if processed then return end
-    
-    if input.KeyCode == Enum.KeyCode.Insert then
-        if MainContainer.Visible then
-            CreateTween(MainContainer, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
-            wait(0.3)
-            MainContainer.Visible = false
-            MainContainer.Size = UDim2.new(0, 1100, 0, 650)
-        else
-            MainContainer.Size = UDim2.new(0, 0, 0, 0)
-            MainContainer.Visible = true
-            CreateTween(MainContainer, {Size = UDim2.new(0, 1100, 0, 650)}, 0.4)
+-- Open/Close Events
+if IS_MOBILE then
+    OpenButton.MouseButton1Click:Connect(function()
+        MainContainer.Visible = true
+        OpenButton.Visible = false
+    end)
+else
+    UserInputService.InputBegan:Connect(function(input, processed)
+        if processed then return end
+        
+        if input.KeyCode == Enum.KeyCode.Insert then
+            if MainContainer.Visible then
+                CreateTween(MainContainer, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
+                wait(0.3)
+                MainContainer.Visible = false
+                MainContainer.Size = UDim2.new(0, CurrentSizes.MainWidth, 0, CurrentSizes.MainHeight)
+            else
+                MainContainer.Size = UDim2.new(0, 0, 0, 0)
+                MainContainer.Visible = true
+                CreateTween(MainContainer, {Size = UDim2.new(0, CurrentSizes.MainWidth, 0, CurrentSizes.MainHeight)}, 0.4)
+            end
         end
-    end
-end)
+    end)
+end
 
 -- ═══════════════════════════════════════════════════════════════════════════
 --                          INITIALIZATION
 -- ═══════════════════════════════════════════════════════════════════════════
 
-wait(0.5)
-MainContainer.Size = UDim2.new(0, 0, 0, 0)
-MainContainer.Visible = true
-CreateTween(MainContainer, {Size = UDim2.new(0, 1100, 0, 650)}, 0.5)
+wait(0.3)
 
-Notify("🎯 Ultimate Tools v3.0", "Loaded successfully!\nPress INSERT to toggle", 5)
+if IS_MOBILE then
+    Notify("🎯 Ultimate Tools Mobile", "Tap floating button to open!", 5)
+else
+    MainContainer.Size = UDim2.new(0, 0, 0, 0)
+    MainContainer.Visible = true
+    CreateTween(MainContainer, {Size = UDim2.new(0, CurrentSizes.MainWidth, 0, CurrentSizes.MainHeight)}, 0.5)
+    Notify("🎯 Ultimate Tools v3.0", "Press INSERT to toggle!", 5)
+end
 
-print("═══════════════════════════════════════════════════════════════")
-print("✅ ULTIMATE TOOLS v3.0 - Premium Edition Loaded!")
-print("═══════════════════════════════════════════════════════════════")
-print("🔊 Soundboard Exploit - Server Wide Audio")
-print("🔍 OSINT Tool - Complete Player Intelligence")
-print("📌 Press INSERT to toggle interface")
-print("🎨 Premium UI with animations")
-print("═══════════════════════════════════════════════════════════════")
+print("═══════════════════════════════════════════════")
+print("✅ ULTIMATE TOOLS v3.0 UNIVERSAL LOADED!")
+print("Platform:", IS_MOBILE and "📱 MOBILE" or "💻 PC")
+print("═══════════════════════════════════════════════")
+print("🔊 Soundboard Exploit - Server Wide")
+print("🔍 OSINT Intelligence Tool")
+if IS_MOBILE then
+    print("👆 Tap floating button to open")
+else
+    print("📌 Press INSERT to toggle")
+end
+print("🎨 Adaptive UI - Auto-detected platform")
+print("═══════════════════════════════════════════════")
