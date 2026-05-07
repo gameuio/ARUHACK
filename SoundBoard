@@ -1,0 +1,487 @@
+-- ULTIMATE SOUNDBOARD EXPLOIT v1.0
+-- Воспроизводит музыку у ВСЕХ игроков через Remote Events
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Удаляем старый GUI
+if PlayerGui:FindFirstChild("SoundboardExploit") then
+    PlayerGui:FindFirstChild("SoundboardExploit"):Destroy()
+end
+
+wait(0.1)
+
+-- Список песен
+local SongList = {
+    {Name = "🎵 Phonk - SHADOW", ID = "7498949047"},
+    {Name = "🎵 Playboi Carti - RIP", ID = "5410085549"},
+    {Name = "🎵 Kanye West - CARNIVAL", ID = "136821036"},
+    {Name = "🎵 PlayaPhonk - PHONKY TOWN", ID = "6911766512"},
+    {Name = "🎵 MC Orsen - GATA ONLY", ID = "7722924256"},
+    {Name = "🎵 SKELER - TEL AVIV", ID = "5989925142"},
+    {Name = "🎵 Lil Peep - Star Shopping", ID = "1448630648"},
+    {Name = "🎵 XXXTentacion - Look At Me", ID = "6897166225"},
+    {Name = "🎵 Narvent - FAINTED", ID = "1837849285"},
+    {Name = "🎵 NXSTY - VXNOM", ID = "6985216729"},
+    {Name = "🎵 DVRST - Close Eyes", ID = "1843404009"},
+    {Name = "🎵 Shadowraze - VANDAL", ID = "6863033868"},
+    {Name = "🎵 INTERWORLD - METAMORPHOSIS", ID = "6908813536"},
+    {Name = "🎵 Death Note Theme", ID = "2545298782"},
+    {Name = "🎵 Attack on Titan - Vogel Im Kafig", ID = "5872896357"},
+    {Name = "🎵 Tokyo Ghoul - Unravel", ID = "5410085549"},
+    {Name = "🎵 Naruto - Silhouette", ID = "5487718030"},
+    {Name = "🎵 Demon Slayer OP", ID = "4573493579"},
+    {Name = "🎵 JoJo - Giorno Theme", ID = "3604593754"},
+    {Name = "🎵 Caramelldansen", ID = "2303479775"},
+    {Name = "🔊 Loud Mic Ear Rape", ID = "5567523008"},
+    {Name = "🔊 Bass Boosted Meme", ID = "6343110948"},
+    {Name = "🎪 Circus Theme", ID = "1837879082"},
+    {Name = "💀 Troll Song", ID = "5410084532"},
+    {Name = "🚨 Emergency Alert", ID = "8683380188"},
+    {Name = "📢 Annoying Sound", ID = "9125402735"},
+    {Name = "🎺 Doot", ID = "5850888869"},
+    {Name = "🎶 Rick Roll", ID = "6897166225"},
+    {Name = "🔥 Distorted Bass", ID = "9048375035"},
+    {Name = "⚡ Glitch Sound", ID = "9114397505"}
+}
+
+-- Переменные
+local currentSound = nil
+local foundRemotes = {}
+local isScanning = false
+
+-- Создание GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "SoundboardExploit"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = PlayerGui
+
+-- Главный фрейм
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 500, 0, 600)
+MainFrame.Position = UDim2.new(0.5, -250, 0.5, -300)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+MainFrame.BorderSizePixel = 2
+MainFrame.BorderColor3 = Color3.fromRGB(255, 50, 50)
+MainFrame.Visible = false
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 12)
+MainCorner.Parent = MainFrame
+
+-- Заголовок
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 45)
+Title.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+Title.BorderSizePixel = 0
+Title.Font = Enum.Font.GothamBold
+Title.Text = "🔊 ULTIMATE SOUNDBOARD EXPLOIT - SERVER WIDE"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 14
+Title.Parent = MainFrame
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 12)
+TitleCorner.Parent = Title
+
+-- Анимация заголовка
+task.spawn(function()
+    while wait() do
+        for i = 0, 360, 2 do
+            Title.BackgroundColor3 = Color3.fromHSV(i/360, 1, 1)
+            wait(0.03)
+        end
+    end
+end)
+
+-- Кнопка закрытия
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 40, 0, 40)
+CloseButton.Position = UDim2.new(1, -42, 0, 2.5)
+CloseButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+CloseButton.BorderSizePixel = 0
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.TextSize = 18
+CloseButton.Parent = Title
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 8)
+CloseCorner.Parent = CloseButton
+
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+end)
+
+-- Панель информации
+local InfoFrame = Instance.new("Frame")
+InfoFrame.Size = UDim2.new(1, -10, 0, 80)
+InfoFrame.Position = UDim2.new(0, 5, 0, 50)
+InfoFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+InfoFrame.BorderSizePixel = 0
+InfoFrame.Parent = MainFrame
+
+local InfoCorner = Instance.new("UICorner")
+InfoCorner.CornerRadius = UDim.new(0, 8)
+InfoCorner.Parent = InfoFrame
+
+local InfoText = Instance.new("TextLabel")
+InfoText.Size = UDim2.new(1, -10, 1, -10)
+InfoText.Position = UDim2.new(0, 5, 0, 5)
+InfoText.BackgroundTransparency = 1
+InfoText.Font = Enum.Font.GothamBold
+InfoText.Text = "⚠️  СТАТУС: Ожидание поиска Remote Events...\n🔍 Найдено Remotes: 0\n🎵 Текущая песня: Нет"
+InfoText.TextColor3 = Color3.fromRGB(255, 255, 100)
+InfoText.TextSize = 12
+InfoText.TextWrapped = true
+InfoText.TextXAlignment = Enum.TextXAlignment.Left
+InfoText.TextYAlignment = Enum.TextYAlignment.Top
+InfoText.Parent = InfoFrame
+
+-- Кнопка сканирования
+local ScanButton = Instance.new("TextButton")
+ScanButton.Size = UDim2.new(1, -10, 0, 40)
+ScanButton.Position = UDim2.new(0, 5, 0, 135)
+ScanButton.BackgroundColor3 = Color3.fromRGB(50, 150, 255)
+ScanButton.BorderSizePixel = 0
+ScanButton.Font = Enum.Font.GothamBold
+ScanButton.Text = "🔍 СКАНИРОВАТЬ REMOTE EVENTS"
+ScanButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ScanButton.TextSize = 14
+ScanButton.Parent = MainFrame
+
+local ScanCorner = Instance.new("UICorner")
+ScanCorner.CornerRadius = UDim.new(0, 8)
+ScanCorner.Parent = ScanButton
+
+-- Кнопка остановки
+local StopButton = Instance.new("TextButton")
+StopButton.Size = UDim2.new(1, -10, 0, 35)
+StopButton.Position = UDim2.new(0, 5, 0, 180)
+StopButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+StopButton.BorderSizePixel = 0
+StopButton.Font = Enum.Font.GothamBold
+StopButton.Text = "⏹️  ОСТАНОВИТЬ ВСЮ МУЗЫКУ"
+StopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+StopButton.TextSize = 13
+StopButton.Parent = MainFrame
+
+local StopCorner = Instance.new("UICorner")
+StopCorner.CornerRadius = UDim.new(0, 8)
+StopCorner.Parent = StopButton
+
+-- Поле для custom ID
+local CustomFrame = Instance.new("Frame")
+CustomFrame.Size = UDim2.new(1, -10, 0, 60)
+CustomFrame.Position = UDim2.new(0, 5, 0, 220)
+CustomFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+CustomFrame.BorderSizePixel = 0
+CustomFrame.Parent = MainFrame
+
+local CustomCorner = Instance.new("UICorner")
+CustomCorner.CornerRadius = UDim.new(0, 8)
+CustomCorner.Parent = CustomFrame
+
+local CustomLabel = Instance.new("TextLabel")
+CustomLabel.Size = UDim2.new(1, -10, 0, 20)
+CustomLabel.Position = UDim2.new(0, 5, 0, 5)
+CustomLabel.BackgroundTransparency = 1
+CustomLabel.Font = Enum.Font.GothamBold
+CustomLabel.Text = "🎵 CUSTOM AUDIO ID:"
+CustomLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+CustomLabel.TextSize = 11
+CustomLabel.TextXAlignment = Enum.TextXAlignment.Left
+CustomLabel.Parent = CustomFrame
+
+local CustomInput = Instance.new("TextBox")
+CustomInput.Size = UDim2.new(0.65, -5, 0, 28)
+CustomInput.Position = UDim2.new(0, 5, 0, 27)
+CustomInput.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+CustomInput.BorderSizePixel = 0
+CustomInput.Font = Enum.Font.Gotham
+CustomInput.PlaceholderText = "Введите ID (например: 1234567890)"
+CustomInput.Text = ""
+CustomInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+CustomInput.TextSize = 12
+CustomInput.Parent = CustomFrame
+
+local InputCorner = Instance.new("UICorner")
+InputCorner.CornerRadius = UDim.new(0, 6)
+InputCorner.Parent = CustomInput
+
+local PlayCustomButton = Instance.new("TextButton")
+PlayCustomButton.Size = UDim2.new(0.35, -10, 0, 28)
+PlayCustomButton.Position = UDim2.new(0.65, 0, 0, 27)
+PlayCustomButton.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
+PlayCustomButton.BorderSizePixel = 0
+PlayCustomButton.Font = Enum.Font.GothamBold
+PlayCustomButton.Text = "▶️  PLAY"
+PlayCustomButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+PlayCustomButton.TextSize = 12
+PlayCustomButton.Parent = CustomFrame
+
+local PlayCustomCorner = Instance.new("UICorner")
+PlayCustomCorner.CornerRadius = UDim.new(0, 6)
+PlayCustomCorner.Parent = PlayCustomButton
+
+-- Список песен
+local SongListFrame = Instance.new("ScrollingFrame")
+SongListFrame.Size = UDim2.new(1, -10, 1, -290)
+SongListFrame.Position = UDim2.new(0, 5, 0, 285)
+SongListFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+SongListFrame.BorderSizePixel = 0
+SongListFrame.ScrollBarThickness = 6
+SongListFrame.Parent = MainFrame
+
+local SongListCorner = Instance.new("UICorner")
+SongListCorner.CornerRadius = UDim.new(0, 8)
+SongListCorner.Parent = SongListFrame
+
+local SongListLayout = Instance.new("UIListLayout")
+SongListLayout.Padding = UDim.new(0, 3)
+SongListLayout.Parent = SongListFrame
+
+-- ФУНКЦИИ ЭКСПЛОИТА
+
+-- Функция поиска Remote Events
+local function ScanForRemotes()
+    isScanning = true
+    foundRemotes = {}
+    InfoText.Text = "🔍 Сканирование Remote Events..."
+    
+    local function scanContainer(container)
+        for _, obj in pairs(container:GetDescendants()) do
+            if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
+                -- Проверяем, может ли этот Remote воспроизводить звук
+                local name = obj.Name:lower()
+                if name:find("sound") or name:find("audio") or name:find("music") or 
+                   name:find("play") or name:find("fx") or name:find("sfx") then
+                    table.insert(foundRemotes, obj)
+                end
+            end
+        end
+    end
+    
+    -- Сканируем ReplicatedStorage
+    scanContainer(ReplicatedStorage)
+    
+    -- Сканируем Workspace
+    scanContainer(game.Workspace)
+    
+    -- Сканируем всех игроков
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.Character then
+            scanContainer(player.Character)
+        end
+    end
+    
+    isScanning = false
+    InfoText.Text = string.format("✅ Сканирование завершено!\n🔍 Найдено Remotes: %d\n🎵 Текущая песня: Нет", #foundRemotes)
+    
+    if #foundRemotes == 0 then
+        InfoText.Text = "❌ Remote Events не найдены!\n💡 Попробуйте в другой игре или используйте локальный режим"
+    end
+end
+
+-- Функция воспроизведения через Remote
+local function PlaySoundViaRemote(audioId)
+    if #foundRemotes == 0 then
+        InfoText.Text = "❌ Сначала просканируйте Remote Events!"
+        return
+    end
+    
+    local played = false
+    
+    -- Пробуем все найденные Remotes
+    for _, remote in pairs(foundRemotes) do
+        pcall(function()
+            if remote:IsA("RemoteEvent") then
+                -- Пробуем разные варианты аргументов
+                remote:FireServer(audioId)
+                remote:FireServer("rbxassetid://" .. audioId)
+                remote:FireServer({SoundId = audioId})
+                remote:FireServer({Id = audioId})
+                remote:FireServer("Play", audioId)
+                remote:FireServer("PlaySound", audioId)
+                played = true
+            elseif remote:IsA("RemoteFunction") then
+                remote:InvokeServer(audioId)
+                remote:InvokeServer("rbxassetid://" .. audioId)
+                played = true
+            end
+        end)
+    end
+    
+    if played then
+        InfoText.Text = string.format("✅ Отправлено через %d Remote(s)!\n🎵 Audio ID: %s\n⚠️  Если не работает - попробуйте другой ID", #foundRemotes, audioId)
+    end
+end
+
+-- Функция создания локального звука (fallback)
+local function PlaySoundLocal(audioId)
+    -- Останавливаем предыдущий звук
+    if currentSound then
+        currentSound:Stop()
+        currentSound:Destroy()
+    end
+    
+    -- Создаем новый звук локально
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://" .. audioId
+    sound.Volume = 1
+    sound.Looped = false
+    sound.Parent = workspace
+    sound:Play()
+    
+    currentSound = sound
+    
+    InfoText.Text = string.format("🎵 Локальное воспроизведение\n🔊 Audio ID: %s\n⚠️  Слышите только вы!", audioId)
+end
+
+-- Функция остановки всех звуков
+local function StopAllSounds()
+    -- Локальный звук
+    if currentSound then
+        currentSound:Stop()
+        currentSound:Destroy()
+        currentSound = nil
+    end
+    
+    -- Через Remotes
+    for _, remote in pairs(foundRemotes) do
+        pcall(function()
+            if remote:IsA("RemoteEvent") then
+                remote:FireServer("Stop")
+                remote:FireServer("StopSound")
+                remote:FireServer({Action = "Stop"})
+            end
+        end)
+    end
+    
+    -- Удаляем все звуки в Workspace
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("Sound") then
+            pcall(function()
+                obj:Stop()
+                obj:Destroy()
+            end)
+        end
+    end
+    
+    InfoText.Text = "⏹️  Все звуки остановлены!"
+end
+
+-- События кнопок
+ScanButton.MouseButton1Click:Connect(function()
+    ScanButton.Text = "⏳ СКАНИРОВАНИЕ..."
+    ScanButton.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
+    ScanForRemotes()
+    wait(0.5)
+    ScanButton.Text = "🔍 СКАНИРОВАТЬ REMOTE EVENTS"
+    ScanButton.BackgroundColor3 = Color3.fromRGB(50, 150, 255)
+end)
+
+StopButton.MouseButton1Click:Connect(function()
+    StopAllSounds()
+end)
+
+PlayCustomButton.MouseButton1Click:Connect(function()
+    local id = CustomInput.Text
+    if id and id ~= "" then
+        if #foundRemotes > 0 then
+            PlaySoundViaRemote(id)
+        else
+            PlaySoundLocal(id)
+        end
+    end
+end)
+
+-- Создание кнопок песен
+for i, song in ipairs(SongList) do
+    local SongButton = Instance.new("TextButton")
+    SongButton.Size = UDim2.new(1, -5, 0, 35)
+    SongButton.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+    SongButton.BorderSizePixel = 0
+    SongButton.Font = Enum.Font.GothamBold
+    SongButton.Text = song.Name
+    SongButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SongButton.TextSize = 11
+    SongButton.TextXAlignment = Enum.TextXAlignment.Left
+    SongButton.Parent = SongListFrame
+    
+    local Padding = Instance.new("UIPadding")
+    Padding.PaddingLeft = UDim.new(0, 10)
+    Padding.Parent = SongButton
+    
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 6)
+    Corner.Parent = SongButton
+    
+    SongButton.MouseButton1Click:Connect(function()
+        if #foundRemotes > 0 then
+            PlaySoundViaRemote(song.ID)
+        else
+            PlaySoundLocal(song.ID)
+        end
+        
+        -- Подсветка
+        for _, btn in pairs(SongListFrame:GetChildren()) do
+            if btn:IsA("TextButton") then
+                btn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+            end
+        end
+        SongButton.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
+    end)
+    
+    SongButton.MouseEnter:Connect(function()
+        if SongButton.BackgroundColor3 ~= Color3.fromRGB(100, 200, 100) then
+            SongButton.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+        end
+    end)
+    
+    SongButton.MouseLeave:Connect(function()
+        if SongButton.BackgroundColor3 ~= Color3.fromRGB(100, 200, 100) then
+            SongButton.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+        end
+    end)
+end
+
+SongListFrame.CanvasSize = UDim2.new(0, 0, 0, SongListLayout.AbsoluteContentSize.Y + 5)
+
+-- Переключение меню
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    
+    if input.KeyCode == Enum.KeyCode.Insert then
+        MainFrame.Visible = not MainFrame.Visible
+    end
+end)
+
+-- Уведомление
+local function Notify(text)
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Soundboard Exploit";
+        Text = text;
+        Duration = 5;
+    })
+end
+
+Notify("✅ Loaded! Press INSERT\n🔍 Scan for Remotes first!")
+
+print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+print("🔊 ULTIMATE SOUNDBOARD EXPLOIT v1.0 LOADED!")
+print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+print("📌 Press INSERT to open")
+print("🔍 Click 'SCAN REMOTE EVENTS' first!")
+print("🎵 30+ Songs included")
+print("⚠️  Works only if game has exploitable Remotes")
+print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
