@@ -1,375 +1,690 @@
--- ULTIMATE SOUNDBOARD + OSINT TOOL v2.0
--- Fixed Remote Event Scanner + Full OSINT
+-- ═══════════════════════════════════════════════════════════════════════════
+--              🎯 ULTIMATE TOOLS v3.0 - Premium Edition
+--         🔊 Soundboard Exploit | 🔍 OSINT Intelligence Tool
+-- ═══════════════════════════════════════════════════════════════════════════
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
 
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- Удаляем старый GUI
+-- Очистка старых GUI
 pcall(function()
-    if PlayerGui:FindFirstChild("SoundboardExploit") then
-        PlayerGui:FindFirstChild("SoundboardExploit"):Destroy()
-    end
-    if PlayerGui:FindFirstChild("OSINTTool") then
-        PlayerGui:FindFirstChild("OSINTTool"):Destroy()
+    if PlayerGui:FindFirstChild("UltimateToolsV3") then
+        PlayerGui:FindFirstChild("UltimateToolsV3"):Destroy()
     end
 end)
 
 wait(0.2)
 
--- ═══════════════════════════════════════════════════════════
---                    SOUNDBOARD EXPLOIT
--- ═══════════════════════════════════════════════════════════
+-- ═══════════════════════════════════════════════════════════════════════════
+--                          НАСТРОЙКИ И ПЕРЕМЕННЫЕ
+-- ═══════════════════════════════════════════════════════════════════════════
 
--- Список песен
-local SongList = {
-    {Name = "🎵 Phonk - SHADOW", ID = "7498949047"},
-    {Name = "🎵 Playboi Carti - RIP", ID = "5410085549"},
-    {Name = "🎵 Kanye West - CARNIVAL", ID = "136821036"},
-    {Name = "🎵 PlayaPhonk - PHONKY TOWN", ID = "6911766512"},
-    {Name = "🎵 MC Orsen - GATA ONLY", ID = "7722924256"},
-    {Name = "🎵 SKELER - TEL AVIV", ID = "5989925142"},
-    {Name = "🎵 Lil Peep - Star Shopping", ID = "1448630648"},
-    {Name = "🎵 XXXTentacion - Look At Me", ID = "6897166225"},
-    {Name = "🎵 Narvent - FAINTED", ID = "1837849285"},
-    {Name = "🎵 NXSTY - VXNOM", ID = "6985216729"},
-    {Name = "🎵 DVRST - Close Eyes", ID = "1843404009"},
-    {Name = "🎵 Shadowraze - VANDAL", ID = "6863033868"},
-    {Name = "🎵 INTERWORLD - METAMORPHOSIS", ID = "6908813536"},
-    {Name = "🎵 Death Note Theme", ID = "2545298782"},
-    {Name = "🎵 Attack on Titan", ID = "5872896357"},
-    {Name = "🔊 Loud Mic Ear Rape", ID = "5567523008"},
-    {Name = "🔊 Bass Boosted", ID = "6343110948"},
-    {Name = "🎪 Circus Theme", ID = "1837879082"},
-    {Name = "💀 Troll Song", ID = "5410084532"},
-    {Name = "🚨 Emergency Alert", ID = "8683380188"},
-    {Name = "🎺 Doot", ID = "5850888869"},
-    {Name = "🎶 Rick Roll", ID = "6897166225"},
-    {Name = "🔥 Distorted Bass", ID = "9048375035"},
-    {Name = "⚡ Glitch Sound", ID = "9114397505"}
+local Config = {
+    PrimaryColor = Color3.fromRGB(88, 101, 242),      -- Discord Blue
+    SecondaryColor = Color3.fromRGB(114, 137, 218),
+    BackgroundColor = Color3.fromRGB(32, 34, 37),
+    DarkColor = Color3.fromRGB(47, 49, 54),
+    AccentColor = Color3.fromRGB(67, 181, 129),       -- Green
+    DangerColor = Color3.fromRGB(237, 66, 69),        -- Red
+    WarningColor = Color3.fromRGB(250, 166, 26),      -- Orange
+    TextColor = Color3.fromRGB(220, 221, 222),
+    MutedColor = Color3.fromRGB(114, 118, 125)
 }
 
+local SongDatabase = {
+    {Name = "🎵 Phonk - SHADOW", ID = "7498949047", Genre = "Phonk"},
+    {Name = "🎵 Playboi Carti - RIP", ID = "5410085549", Genre = "Trap"},
+    {Name = "🎵 Kanye West - CARNIVAL", ID = "136821036", Genre = "Hip-Hop"},
+    {Name = "🎵 PlayaPhonk - PHONKY TOWN", ID = "6911766512", Genre = "Phonk"},
+    {Name = "🎵 MC Orsen - GATA ONLY", ID = "7722924256", Genre = "Phonk"},
+    {Name = "🎵 SKELER - TEL AVIV", ID = "5989925142", Genre = "Phonk"},
+    {Name = "🎵 Lil Peep - Star Shopping", ID = "1448630648", Genre = "Emo Rap"},
+    {Name = "🎵 XXXTentacion - Look At Me", ID = "6897166225", Genre = "Rap"},
+    {Name = "🎵 Narvent - FAINTED", ID = "1837849285", Genre = "Phonk"},
+    {Name = "🎵 NXSTY - VXNOM", ID = "6985216729", Genre = "Phonk"},
+    {Name = "🎵 DVRST - Close Eyes", ID = "1843404009", Genre = "Phonk"},
+    {Name = "🎵 Shadowraze - VANDAL", ID = "6863033868", Genre = "Phonk"},
+    {Name = "🎵 INTERWORLD - METAMORPHOSIS", ID = "6908813536", Genre = "Phonk"},
+    {Name = "🎵 Death Note Theme", ID = "2545298782", Genre = "Anime"},
+    {Name = "🎵 Attack on Titan", ID = "5872896357", Genre = "Anime"},
+    {Name = "🎵 Tokyo Ghoul - Unravel", ID = "5410085549", Genre = "Anime"},
+    {Name = "🎵 Demon Slayer OP", ID = "4573493579", Genre = "Anime"},
+    {Name = "🎵 JoJo - Giorno Theme", ID = "3604593754", Genre = "Anime"},
+    {Name = "🔊 Loud Mic Ear Rape", ID = "5567523008", Genre = "Meme"},
+    {Name = "🔊 Bass Boosted", ID = "6343110948", Genre = "Meme"},
+    {Name = "🎪 Circus Theme", ID = "1837879082", Genre = "Meme"},
+    {Name = "💀 Troll Song", ID = "5410084532", Genre = "Meme"},
+    {Name = "🚨 Emergency Alert", ID = "8683380188", Genre = "Meme"},
+    {Name = "🎺 Doot", ID = "5850888869", Genre = "Meme"},
+    {Name = "🎶 Rick Roll", ID = "6897166225", Genre = "Meme"},
+}
+
+local selectedPlayer = nil
 local currentSound = nil
 local foundRemotes = {}
+local scanComplete = false
 
--- Создание Soundboard GUI
-local SoundboardGui = Instance.new("ScreenGui")
-SoundboardGui.Name = "SoundboardExploit"
-SoundboardGui.ResetOnSpawn = false
-SoundboardGui.Parent = PlayerGui
+-- ═══════════════════════════════════════════════════════════════════════════
+--                          UTILITY FUNCTIONS
+-- ═══════════════════════════════════════════════════════════════════════════
 
-local SoundFrame = Instance.new("Frame")
-SoundFrame.Size = UDim2.new(0, 500, 0, 600)
-SoundFrame.Position = UDim2.new(0.5, -550, 0.5, -300)
-SoundFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-SoundFrame.BorderSizePixel = 2
-SoundFrame.BorderColor3 = Color3.fromRGB(255, 50, 50)
-SoundFrame.Visible = false
-SoundFrame.Active = true
-SoundFrame.Draggable = true
-SoundFrame.Parent = SoundboardGui
+local function CreateTween(object, properties, duration)
+    local tween = TweenService:Create(
+        object,
+        TweenInfo.new(duration or 0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        properties
+    )
+    tween:Play()
+    return tween
+end
 
-local SoundCorner = Instance.new("UICorner")
-SoundCorner.CornerRadius = UDim.new(0, 12)
-SoundCorner.Parent = SoundFrame
+local function AddCorner(parent, radius)
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, radius or 8)
+    corner.Parent = parent
+    return corner
+end
 
--- Заголовок Soundboard
-local SoundTitle = Instance.new("TextLabel")
-SoundTitle.Size = UDim2.new(1, 0, 0, 45)
-SoundTitle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-SoundTitle.BorderSizePixel = 0
-SoundTitle.Font = Enum.Font.GothamBold
-SoundTitle.Text = "🔊 SOUNDBOARD EXPLOIT - SERVER WIDE"
-SoundTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-SoundTitle.TextSize = 14
-SoundTitle.Parent = SoundFrame
+local function AddStroke(parent, color, thickness)
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = color or Config.PrimaryColor
+    stroke.Thickness = thickness or 1
+    stroke.Parent = parent
+    return stroke
+end
 
-local SoundTitleCorner = Instance.new("UICorner")
-SoundTitleCorner.CornerRadius = UDim.new(0, 12)
-SoundTitleCorner.Parent = SoundTitle
+local function AddGradient(parent, colors)
+    local gradient = Instance.new("UIGradient")
+    gradient.Color = ColorSequence.new(colors or {
+        ColorSequenceKeypoint.new(0, Config.PrimaryColor),
+        ColorSequenceKeypoint.new(1, Config.SecondaryColor)
+    })
+    gradient.Rotation = 90
+    gradient.Parent = parent
+    return gradient
+end
 
--- Анимация
-task.spawn(function()
-    while wait() do
-        for i = 0, 360, 2 do
-            if not SoundFrame.Parent then break end
-            SoundTitle.BackgroundColor3 = Color3.fromHSV(i/360, 1, 1)
-            wait(0.03)
-        end
+local function Notify(title, text, duration)
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = title;
+        Text = text;
+        Duration = duration or 3;
+    })
+end
+
+-- ═══════════════════════════════════════════════════════════════════════════
+--                          MAIN GUI CONTAINER
+-- ═══════════════════════════════════════════════════════════════════════════
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "UltimateToolsV3"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = PlayerGui
+
+-- Main Container
+local MainContainer = Instance.new("Frame")
+MainContainer.Name = "MainContainer"
+MainContainer.Size = UDim2.new(0, 1100, 0, 650)
+MainContainer.Position = UDim2.new(0.5, -550, 0.5, -325)
+MainContainer.BackgroundColor3 = Config.BackgroundColor
+MainContainer.BorderSizePixel = 0
+MainContainer.Visible = false
+MainContainer.Active = true
+MainContainer.Parent = ScreenGui
+
+AddCorner(MainContainer, 16)
+AddStroke(MainContainer, Config.PrimaryColor, 2)
+
+-- Draggable
+local dragToggle, dragStart, dragInput, startPos
+MainContainer.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragToggle = true
+        dragStart = input.Position
+        startPos = MainContainer.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragToggle = false
+            end
+        end)
     end
 end)
 
--- Кнопка закрытия
-local SoundClose = Instance.new("TextButton")
-SoundClose.Size = UDim2.new(0, 40, 0, 40)
-SoundClose.Position = UDim2.new(1, -42, 0, 2.5)
-SoundClose.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-SoundClose.BorderSizePixel = 0
-SoundClose.Font = Enum.Font.GothamBold
-SoundClose.Text = "X"
-SoundClose.TextColor3 = Color3.fromRGB(255, 255, 255)
-SoundClose.TextSize = 18
-SoundClose.Parent = SoundTitle
-
-local SoundCloseCorner = Instance.new("UICorner")
-SoundCloseCorner.CornerRadius = UDim.new(0, 8)
-SoundCloseCorner.Parent = SoundClose
-
-SoundClose.MouseButton1Click:Connect(function()
-    SoundFrame.Visible = false
+MainContainer.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
 end)
 
--- Панель информации
-local InfoFrame = Instance.new("Frame")
-InfoFrame.Size = UDim2.new(1, -10, 0, 100)
-InfoFrame.Position = UDim2.new(0, 5, 0, 50)
-InfoFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-InfoFrame.BorderSizePixel = 0
-InfoFrame.Parent = SoundFrame
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragToggle then
+        local delta = input.Position - dragStart
+        CreateTween(MainContainer, {
+            Position = UDim2.new(
+                startPos.X.Scale, 
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale, 
+                startPos.Y.Offset + delta.Y
+            )
+        }, 0.1)
+    end
+end)
 
-local InfoCorner = Instance.new("UICorner")
-InfoCorner.CornerRadius = UDim.new(0, 8)
-InfoCorner.Parent = InfoFrame
+-- Top Bar
+local TopBar = Instance.new("Frame")
+TopBar.Name = "TopBar"
+TopBar.Size = UDim2.new(1, 0, 0, 60)
+TopBar.BackgroundColor3 = Config.DarkColor
+TopBar.BorderSizePixel = 0
+TopBar.Parent = MainContainer
 
-local InfoText = Instance.new("TextLabel")
-InfoText.Size = UDim2.new(1, -10, 1, -10)
-InfoText.Position = UDim2.new(0, 5, 0, 5)
-InfoText.BackgroundTransparency = 1
-InfoText.Font = Enum.Font.Code
-InfoText.Text = "⚠️  СТАТУС: Ожидание сканирования...\n🔍 Найдено RemoteEvents: 0\n🔍 Найдено RemoteFunctions: 0\n🎵 Текущая песня: Нет"
-InfoText.TextColor3 = Color3.fromRGB(255, 255, 100)
-InfoText.TextSize = 11
-InfoText.TextWrapped = true
-InfoText.TextXAlignment = Enum.TextXAlignment.Left
-InfoText.TextYAlignment = Enum.TextYAlignment.Top
-InfoText.Parent = InfoFrame
+AddCorner(TopBar, 16)
+AddGradient(TopBar)
 
--- Кнопка сканирования
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(0, 400, 1, 0)
+Title.Position = UDim2.new(0, 20, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Font = Enum.Font.GothamBold
+Title.Text = "🎯 ULTIMATE TOOLS v3.0"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 20
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = TopBar
+
+local Subtitle = Instance.new("TextLabel")
+Subtitle.Size = UDim2.new(0, 400, 0, 15)
+Subtitle.Position = UDim2.new(0, 20, 0, 35)
+Subtitle.BackgroundTransparency = 1
+Subtitle.Font = Enum.Font.Gotham
+Subtitle.Text = "Premium Edition | Soundboard & OSINT"
+Subtitle.TextColor3 = Config.MutedColor
+Subtitle.TextSize = 11
+Subtitle.TextXAlignment = Enum.TextXAlignment.Left
+Subtitle.Parent = TopBar
+
+-- Status Indicator
+local StatusFrame = Instance.new("Frame")
+StatusFrame.Size = UDim2.new(0, 200, 0, 40)
+StatusFrame.Position = UDim2.new(1, -220, 0, 10)
+StatusFrame.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
+StatusFrame.BorderSizePixel = 0
+StatusFrame.Parent = TopBar
+
+AddCorner(StatusFrame, 10)
+
+local StatusDot = Instance.new("Frame")
+StatusDot.Size = UDim2.new(0, 10, 0, 10)
+StatusDot.Position = UDim2.new(0, 10, 0.5, -5)
+StatusDot.BackgroundColor3 = Config.AccentColor
+StatusDot.BorderSizePixel = 0
+StatusDot.Parent = StatusFrame
+
+AddCorner(StatusDot, 5)
+
+-- Анимация статуса
+task.spawn(function()
+    while wait(1) do
+        CreateTween(StatusDot, {BackgroundColor3 = Config.WarningColor}, 0.5)
+        wait(0.5)
+        CreateTween(StatusDot, {BackgroundColor3 = Config.AccentColor}, 0.5)
+    end
+end)
+
+local StatusText = Instance.new("TextLabel")
+StatusText.Size = UDim2.new(1, -30, 1, 0)
+StatusText.Position = UDim2.new(0, 30, 0, 0)
+StatusText.BackgroundTransparency = 1
+StatusText.Font = Enum.Font.GothamBold
+StatusText.Text = "READY"
+StatusText.TextColor3 = Config.AccentColor
+StatusText.TextSize = 12
+StatusText.TextXAlignment = Enum.TextXAlignment.Left
+StatusText.Parent = StatusFrame
+
+-- Close Button
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 45, 0, 45)
+CloseButton.Position = UDim2.new(1, -55, 0, 7.5)
+CloseButton.BackgroundColor3 = Config.DangerColor
+CloseButton.BorderSizePixel = 0
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Text = "✕"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.TextSize = 20
+CloseButton.Parent = TopBar
+
+AddCorner(CloseButton, 10)
+
+CloseButton.MouseEnter:Connect(function()
+    CreateTween(CloseButton, {BackgroundColor3 = Color3.fromRGB(255, 80, 80)})
+end)
+
+CloseButton.MouseLeave:Connect(function()
+    CreateTween(CloseButton, {BackgroundColor3 = Config.DangerColor})
+end)
+
+CloseButton.MouseButton1Click:Connect(function()
+    CreateTween(MainContainer, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
+    wait(0.3)
+    MainContainer.Visible = false
+    MainContainer.Size = UDim2.new(0, 1100, 0, 650)
+end)
+
+-- ═══════════════════════════════════════════════════════════════════════════
+--                          SOUNDBOARD (LEFT PANEL)
+-- ═══════════════════════════════════════════════════════════════════════════
+
+local SoundboardPanel = Instance.new("Frame")
+SoundboardPanel.Size = UDim2.new(0.5, -10, 1, -70)
+SoundboardPanel.Position = UDim2.new(0, 5, 0, 65)
+SoundboardPanel.BackgroundColor3 = Config.DarkColor
+SoundboardPanel.BorderSizePixel = 0
+SoundboardPanel.Parent = MainContainer
+
+AddCorner(SoundboardPanel, 12)
+
+-- Soundboard Header
+local SoundHeader = Instance.new("Frame")
+SoundHeader.Size = UDim2.new(1, 0, 0, 50)
+SoundHeader.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
+SoundHeader.BorderSizePixel = 0
+SoundHeader.Parent = SoundboardPanel
+
+AddCorner(SoundHeader, 12)
+
+local SoundHeaderTitle = Instance.new("TextLabel")
+SoundHeaderTitle.Size = UDim2.new(1, -20, 1, 0)
+SoundHeaderTitle.Position = UDim2.new(0, 15, 0, 0)
+SoundHeaderTitle.BackgroundTransparency = 1
+SoundHeaderTitle.Font = Enum.Font.GothamBold
+SoundHeaderTitle.Text = "🔊 SOUNDBOARD EXPLOIT"
+SoundHeaderTitle.TextColor3 = Config.TextColor
+SoundHeaderTitle.TextSize = 16
+SoundHeaderTitle.TextXAlignment = Enum.TextXAlignment.Left
+SoundHeaderTitle.Parent = SoundHeader
+
+-- Remote Info Panel
+local RemoteInfoPanel = Instance.new("Frame")
+RemoteInfoPanel.Size = UDim2.new(1, -20, 0, 120)
+RemoteInfoPanel.Position = UDim2.new(0, 10, 0, 60)
+RemoteInfoPanel.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
+RemoteInfoPanel.BorderSizePixel = 0
+RemoteInfoPanel.Parent = SoundboardPanel
+
+AddCorner(RemoteInfoPanel, 10)
+
+local RemoteInfoTitle = Instance.new("TextLabel")
+RemoteInfoTitle.Size = UDim2.new(1, -20, 0, 25)
+RemoteInfoTitle.Position = UDim2.new(0, 10, 0, 10)
+RemoteInfoTitle.BackgroundTransparency = 1
+RemoteInfoTitle.Font = Enum.Font.GothamBold
+RemoteInfoTitle.Text = "📡 REMOTE EVENTS STATUS"
+RemoteInfoTitle.TextColor3 = Config.TextColor
+RemoteInfoTitle.TextSize = 13
+RemoteInfoTitle.TextXAlignment = Enum.TextXAlignment.Left
+RemoteInfoTitle.Parent = RemoteInfoPanel
+
+local RemoteStatsFrame = Instance.new("Frame")
+RemoteStatsFrame.Size = UDim2.new(1, -20, 0, 60)
+RemoteStatsFrame.Position = UDim2.new(0, 10, 0, 40)
+RemoteStatsFrame.BackgroundTransparency = 1
+RemoteStatsFrame.Parent = RemoteInfoPanel
+
+local function CreateStatBox(text, value, position, color)
+    local box = Instance.new("Frame")
+    box.Size = UDim2.new(0.48, 0, 1, 0)
+    box.Position = position
+    box.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
+    box.BorderSizePixel = 0
+    box.Parent = RemoteStatsFrame
+    
+    AddCorner(box, 8)
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -10, 0, 20)
+    label.Position = UDim2.new(0, 5, 0, 5)
+    label.BackgroundTransparency = 1
+    label.Font = Enum.Font.Gotham
+    label.Text = text
+    label.TextColor3 = Config.MutedColor
+    label.TextSize = 10
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = box
+    
+    local valueLabel = Instance.new("TextLabel")
+    valueLabel.Name = "Value"
+    valueLabel.Size = UDim2.new(1, -10, 0, 25)
+    valueLabel.Position = UDim2.new(0, 5, 0, 25)
+    valueLabel.BackgroundTransparency = 1
+    valueLabel.Font = Enum.Font.GothamBold
+    valueLabel.Text = value
+    valueLabel.TextColor3 = color
+    valueLabel.TextSize = 18
+    valueLabel.TextXAlignment = Enum.TextXAlignment.Left
+    valueLabel.Parent = box
+    
+    return valueLabel
+end
+
+local RemoteEventsValue = CreateStatBox("Remote Events", "0", UDim2.new(0, 0, 0, 0), Config.AccentColor)
+local RemoteFunctionsValue = CreateStatBox("Remote Functions", "0", UDim2.new(0.52, 0, 0, 0), Config.SecondaryColor)
+
+-- Scan Button
 local ScanButton = Instance.new("TextButton")
-ScanButton.Size = UDim2.new(1, -10, 0, 40)
-ScanButton.Position = UDim2.new(0, 5, 0, 155)
-ScanButton.BackgroundColor3 = Color3.fromRGB(50, 150, 255)
+ScanButton.Size = UDim2.new(1, -20, 0, 45)
+ScanButton.Position = UDim2.new(0, 10, 0, 190)
+ScanButton.BackgroundColor3 = Config.PrimaryColor
 ScanButton.BorderSizePixel = 0
 ScanButton.Font = Enum.Font.GothamBold
-ScanButton.Text = "🔍 СКАНИРОВАТЬ REMOTE EVENTS"
+ScanButton.Text = "🔍 SCAN FOR REMOTE EVENTS"
 ScanButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 ScanButton.TextSize = 14
-ScanButton.Parent = SoundFrame
+ScanButton.Parent = SoundboardPanel
 
-local ScanCorner = Instance.new("UICorner")
-ScanCorner.CornerRadius = UDim.new(0, 8)
-ScanCorner.Parent = ScanButton
+AddCorner(ScanButton, 10)
+AddGradient(ScanButton)
 
--- Кнопка остановки
+ScanButton.MouseEnter:Connect(function()
+    CreateTween(ScanButton, {Size = UDim2.new(1, -18, 0, 47)})
+end)
+
+ScanButton.MouseLeave:Connect(function()
+    CreateTween(ScanButton, {Size = UDim2.new(1, -20, 0, 45)})
+end)
+
+-- Stop Button
 local StopButton = Instance.new("TextButton")
-StopButton.Size = UDim2.new(1, -10, 0, 35)
-StopButton.Position = UDim2.new(0, 5, 0, 200)
-StopButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+StopButton.Size = UDim2.new(1, -20, 0, 40)
+StopButton.Position = UDim2.new(0, 10, 0, 245)
+StopButton.BackgroundColor3 = Config.DangerColor
 StopButton.BorderSizePixel = 0
 StopButton.Font = Enum.Font.GothamBold
-StopButton.Text = "⏹️  ОСТАНОВИТЬ ВСЮ МУЗЫКУ"
+StopButton.Text = "⏹️  STOP ALL SOUNDS"
 StopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 StopButton.TextSize = 13
-StopButton.Parent = SoundFrame
+StopButton.Parent = SoundboardPanel
 
-local StopCorner = Instance.new("UICorner")
-StopCorner.CornerRadius = UDim.new(0, 8)
-StopCorner.Parent = StopButton
+AddCorner(StopButton, 10)
 
--- Custom ID
+StopButton.MouseEnter:Connect(function()
+    CreateTween(StopButton, {BackgroundColor3 = Color3.fromRGB(255, 80, 80)})
+end)
+
+StopButton.MouseLeave:Connect(function()
+    CreateTween(StopButton, {BackgroundColor3 = Config.DangerColor})
+end)
+
+-- Custom Audio Frame
 local CustomFrame = Instance.new("Frame")
-CustomFrame.Size = UDim2.new(1, -10, 0, 60)
-CustomFrame.Position = UDim2.new(0, 5, 0, 240)
-CustomFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+CustomFrame.Size = UDim2.new(1, -20, 0, 80)
+CustomFrame.Position = UDim2.new(0, 10, 0, 295)
+CustomFrame.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
 CustomFrame.BorderSizePixel = 0
-CustomFrame.Parent = SoundFrame
+CustomFrame.Parent = SoundboardPanel
 
-local CustomCorner = Instance.new("UICorner")
-CustomCorner.CornerRadius = UDim.new(0, 8)
-CustomCorner.Parent = CustomFrame
+AddCorner(CustomFrame, 10)
 
 local CustomLabel = Instance.new("TextLabel")
-CustomLabel.Size = UDim2.new(1, -10, 0, 20)
-CustomLabel.Position = UDim2.new(0, 5, 0, 5)
+CustomLabel.Size = UDim2.new(1, -20, 0, 25)
+CustomLabel.Position = UDim2.new(0, 10, 0, 8)
 CustomLabel.BackgroundTransparency = 1
 CustomLabel.Font = Enum.Font.GothamBold
-CustomLabel.Text = "🎵 CUSTOM AUDIO ID:"
-CustomLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-CustomLabel.TextSize = 11
+CustomLabel.Text = "🎵 CUSTOM AUDIO ID"
+CustomLabel.TextColor3 = Config.TextColor
+CustomLabel.TextSize = 12
 CustomLabel.TextXAlignment = Enum.TextXAlignment.Left
 CustomLabel.Parent = CustomFrame
 
 local CustomInput = Instance.new("TextBox")
-CustomInput.Size = UDim2.new(0.65, -5, 0, 28)
-CustomInput.Position = UDim2.new(0, 5, 0, 27)
-CustomInput.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+CustomInput.Size = UDim2.new(0.6, -5, 0, 35)
+CustomInput.Position = UDim2.new(0, 10, 0, 38)
+CustomInput.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
 CustomInput.BorderSizePixel = 0
 CustomInput.Font = Enum.Font.Gotham
-CustomInput.PlaceholderText = "ID (например: 1234567890)"
+CustomInput.PlaceholderText = "Enter Audio ID..."
+CustomInput.PlaceholderColor3 = Config.MutedColor
 CustomInput.Text = ""
-CustomInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+CustomInput.TextColor3 = Config.TextColor
 CustomInput.TextSize = 12
 CustomInput.Parent = CustomFrame
 
-local InputCorner = Instance.new("UICorner")
-InputCorner.CornerRadius = UDim.new(0, 6)
-InputCorner.Parent = CustomInput
+AddCorner(CustomInput, 8)
 
 local PlayCustomButton = Instance.new("TextButton")
-PlayCustomButton.Size = UDim2.new(0.35, -10, 0, 28)
-PlayCustomButton.Position = UDim2.new(0.65, 0, 0, 27)
-PlayCustomButton.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
+PlayCustomButton.Size = UDim2.new(0.4, -15, 0, 35)
+PlayCustomButton.Position = UDim2.new(0.6, 5, 0, 38)
+PlayCustomButton.BackgroundColor3 = Config.AccentColor
 PlayCustomButton.BorderSizePixel = 0
 PlayCustomButton.Font = Enum.Font.GothamBold
 PlayCustomButton.Text = "▶️  PLAY"
 PlayCustomButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-PlayCustomButton.TextSize = 12
+PlayCustomButton.TextSize = 13
 PlayCustomButton.Parent = CustomFrame
 
-local PlayCustomCorner = Instance.new("UICorner")
-PlayCustomCorner.CornerRadius = UDim.new(0, 6)
-PlayCustomCorner.Parent = PlayCustomButton
+AddCorner(PlayCustomButton, 8)
 
--- Список песен
+PlayCustomButton.MouseEnter:Connect(function()
+    CreateTween(PlayCustomButton, {BackgroundColor3 = Color3.fromRGB(90, 200, 150)})
+end)
+
+PlayCustomButton.MouseLeave:Connect(function()
+    CreateTween(PlayCustomButton, {BackgroundColor3 = Config.AccentColor})
+end)
+
+-- Song List
 local SongListFrame = Instance.new("ScrollingFrame")
-SongListFrame.Size = UDim2.new(1, -10, 1, -310)
-SongListFrame.Position = UDim2.new(0, 5, 0, 305)
-SongListFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+SongListFrame.Size = UDim2.new(1, -20, 1, -395)
+SongListFrame.Position = UDim2.new(0, 10, 0, 385)
+SongListFrame.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
 SongListFrame.BorderSizePixel = 0
-SongListFrame.ScrollBarThickness = 6
-SongListFrame.Parent = SoundFrame
+SongListFrame.ScrollBarThickness = 4
+SongListFrame.ScrollBarImageColor3 = Config.PrimaryColor
+SongListFrame.Parent = SoundboardPanel
 
-local SongListCorner = Instance.new("UICorner")
-SongListCorner.CornerRadius = UDim.new(0, 8)
-SongListCorner.Parent = SongListFrame
+AddCorner(SongListFrame, 10)
 
 local SongListLayout = Instance.new("UIListLayout")
-SongListLayout.Padding = UDim.new(0, 3)
+SongListLayout.Padding = UDim.new(0, 5)
 SongListLayout.Parent = SongListFrame
 
--- ФУНКЦИИ SOUNDBOARD
+local SongListPadding = Instance.new("UIPadding")
+SongListPadding.PaddingTop = UDim.new(0, 8)
+SongListPadding.PaddingBottom = UDim.new(0, 8)
+SongListPadding.PaddingLeft = UDim.new(0, 8)
+SongListPadding.PaddingRight = UDim.new(0, 8)
+SongListPadding.Parent = SongListFrame
 
--- ИСПРАВЛЕННАЯ функция сканирования
+-- ═══════════════════════════════════════════════════════════════════════════
+--                          OSINT TOOL (RIGHT PANEL)
+-- ═══════════════════════════════════════════════════════════════════════════
+
+local OSINTPanel = Instance.new("Frame")
+OSINTPanel.Size = UDim2.new(0.5, -10, 1, -70)
+OSINTPanel.Position = UDim2.new(0.5, 5, 0, 65)
+OSINTPanel.BackgroundColor3 = Config.DarkColor
+OSINTPanel.BorderSizePixel = 0
+OSINTPanel.Parent = MainContainer
+
+AddCorner(OSINTPanel, 12)
+
+-- OSINT Header
+local OSINTHeader = Instance.new("Frame")
+OSINTHeader.Size = UDim2.new(1, 0, 0, 50)
+OSINTHeader.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
+OSINTHeader.BorderSizePixel = 0
+OSINTHeader.Parent = OSINTPanel
+
+AddCorner(OSINTHeader, 12)
+
+local OSINTHeaderTitle = Instance.new("TextLabel")
+OSINTHeaderTitle.Size = UDim2.new(1, -20, 1, 0)
+OSINTHeaderTitle.Position = UDim2.new(0, 15, 0, 0)
+OSINTHeaderTitle.BackgroundTransparency = 1
+OSINTHeaderTitle.Font = Enum.Font.GothamBold
+OSINTHeaderTitle.Text = "🔍 OSINT INTELLIGENCE TOOL"
+OSINTHeaderTitle.TextColor3 = Config.TextColor
+OSINTHeaderTitle.TextSize = 16
+OSINTHeaderTitle.TextXAlignment = Enum.TextXAlignment.Left
+OSINTHeaderTitle.Parent = OSINTHeader
+
+-- Player List
+local PlayerListFrame = Instance.new("ScrollingFrame")
+PlayerListFrame.Size = UDim2.new(1, -20, 0, 250)
+PlayerListFrame.Position = UDim2.new(0, 10, 0, 60)
+PlayerListFrame.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
+PlayerListFrame.BorderSizePixel = 0
+PlayerListFrame.ScrollBarThickness = 4
+PlayerListFrame.ScrollBarImageColor3 = Config.PrimaryColor
+PlayerListFrame.Parent = OSINTPanel
+
+AddCorner(PlayerListFrame, 10)
+
+local PlayerListLayout = Instance.new("UIListLayout")
+PlayerListLayout.Padding = UDim.new(0, 5)
+PlayerListLayout.Parent = PlayerListFrame
+
+local PlayerListPadding = Instance.new("UIPadding")
+PlayerListPadding.PaddingTop = UDim.new(0, 8)
+PlayerListPadding.PaddingBottom = UDim.new(0, 8)
+PlayerListPadding.PaddingLeft = UDim.new(0, 8)
+PlayerListPadding.PaddingRight = UDim.new(0, 8)
+PlayerListPadding.Parent = PlayerListFrame
+
+-- OSINT Results
+local OSINTResults = Instance.new("ScrollingFrame")
+OSINTResults.Size = UDim2.new(1, -20, 1, -320)
+OSINTResults.Position = UDim2.new(0, 10, 0, 315)
+OSINTResults.BackgroundColor3 = Color3.fromRGB(40, 42, 47)
+OSINTResults.BorderSizePixel = 0
+OSINTResults.ScrollBarThickness = 4
+OSINTResults.ScrollBarImageColor3 = Config.PrimaryColor
+OSINTResults.Parent = OSINTPanel
+
+AddCorner(OSINTResults, 10)
+
+local OSINTText = Instance.new("TextLabel")
+OSINTText.Size = UDim2.new(1, -20, 0, 10000)
+OSINTText.Position = UDim2.new(0, 10, 0, 10)
+OSINTText.BackgroundTransparency = 1
+OSINTText.Font = Enum.Font.Code
+OSINTText.Text = "👈 Select a player from the list above"
+OSINTText.TextColor3 = Config.MutedColor
+OSINTText.TextSize = 11
+OSINTText.TextXAlignment = Enum.TextXAlignment.Left
+OSINTText.TextYAlignment = Enum.TextYAlignment.Top
+OSINTText.TextWrapped = true
+OSINTText.Parent = OSINTResults
+
+-- ═══════════════════════════════════════════════════════════════════════════
+--                          SOUNDBOARD FUNCTIONS
+-- ═══════════════════════════════════════════════════════════════════════════
+
+local function UpdateStatus(text, color)
+    StatusText.Text = text
+    CreateTween(StatusText, {TextColor3 = color})
+    CreateTween(StatusDot, {BackgroundColor3 = color})
+end
+
 local function ScanForRemotes()
+    UpdateStatus("SCANNING...", Config.WarningColor)
     foundRemotes = {}
     local remoteEvents = 0
     local remoteFunctions = 0
     
-    InfoText.Text = "🔍 Сканирование...\n⏳ Ищем Remote Events..."
     wait(0.1)
     
-    -- Функция рекурсивного сканирования
-    local function deepScan(parent, depth)
-        if depth > 10 then return end -- Защита от бесконечной рекурсии
+    local function DeepScan(container, maxDepth, currentDepth)
+        currentDepth = currentDepth or 0
+        if currentDepth >= (maxDepth or 15) then return end
         
-        pcall(function()
-            for _, obj in pairs(parent:GetChildren()) do
+        local success, result = pcall(function()
+            for _, obj in ipairs(container:GetChildren()) do
                 pcall(function()
-                    -- Проверяем тип объекта
-                    if obj:IsA("RemoteEvent") then
-                        table.insert(foundRemotes, {Type = "RemoteEvent", Object = obj, Path = obj:GetFullName()})
+                    if obj:IsA("RemoteEvent") or obj:IsA("UnreliableRemoteEvent") then
+                        table.insert(foundRemotes, {Type = "Event", Object = obj})
                         remoteEvents = remoteEvents + 1
-                        print("[FOUND RemoteEvent]", obj:GetFullName())
+                        print("[FOUND] RemoteEvent:", obj:GetFullName())
                     elseif obj:IsA("RemoteFunction") then
-                        table.insert(foundRemotes, {Type = "RemoteFunction", Object = obj, Path = obj:GetFullName()})
+                        table.insert(foundRemotes, {Type = "Function", Object = obj})
                         remoteFunctions = remoteFunctions + 1
-                        print("[FOUND RemoteFunction]", obj:GetFullName())
-                    elseif obj:IsA("UnreliableRemoteEvent") then
-                        table.insert(foundRemotes, {Type = "UnreliableRemoteEvent", Object = obj, Path = obj:GetFullName()})
-                        remoteEvents = remoteEvents + 1
-                        print("[FOUND UnreliableRemoteEvent]", obj:GetFullName())
+                        print("[FOUND] RemoteFunction:", obj:GetFullName())
                     end
                     
-                    -- Рекурсивно сканируем детей
                     if #obj:GetChildren() > 0 then
-                        deepScan(obj, depth + 1)
+                        DeepScan(obj, maxDepth, currentDepth + 1)
                     end
                 end)
             end
         end)
     end
     
-    -- Сканируем ReplicatedStorage
-    print("Scanning ReplicatedStorage...")
-    deepScan(ReplicatedStorage, 0)
+    -- Сканируем все возможные контейнеры
+    print("=== Starting Deep Scan ===")
     
-    -- Сканируем Workspace
-    print("Scanning Workspace...")
-    deepScan(workspace, 0)
+    pcall(function() DeepScan(ReplicatedStorage, 20) end)
+    pcall(function() DeepScan(workspace, 15) end)
     
-    -- Сканируем игроков
-    print("Scanning Players...")
-    for _, player in pairs(Players:GetPlayers()) do
-        if player.Character then
-            deepScan(player.Character, 0)
-        end
-        deepScan(player, 0)
+    for _, player in ipairs(Players:GetPlayers()) do
+        pcall(function() 
+            if player.Character then
+                DeepScan(player.Character, 10)
+            end
+            DeepScan(player, 10)
+        end)
     end
     
-    -- Сканируем StarterGui, StarterPlayer и другие сервисы
-    pcall(function() deepScan(game:GetService("StarterGui"), 0) end)
-    pcall(function() deepScan(game:GetService("StarterPlayer"), 0) end)
-    pcall(function() deepScan(game:GetService("StarterPack"), 0) end)
+    pcall(function() DeepScan(game:GetService("StarterGui"), 10) end)
+    pcall(function() DeepScan(game:GetService("StarterPlayer"), 10) end)
+    pcall(function() DeepScan(game:GetService("StarterPack"), 10) end)
     
-    -- Обновляем информацию
-    local totalFound = #foundRemotes
-    InfoText.Text = string.format(
-        "✅ Сканирование завершено!\n🔍 RemoteEvents: %d\n🔍 RemoteFunctions: %d\n📊 Всего: %d\n🎵 Готов к воспроизведению!",
-        remoteEvents, remoteFunctions, totalFound
-    )
+    -- Обновляем UI
+    RemoteEventsValue.Text = tostring(remoteEvents)
+    RemoteFunctionsValue.Text = tostring(remoteFunctions)
     
-    print(string.format("[SCAN COMPLETE] Found %d Remotes", totalFound))
+    local total = #foundRemotes
+    print(string.format("=== Scan Complete: %d total ===", total))
     
-    if totalFound == 0 then
-        InfoText.Text = "❌ Remote Events не найдены!\n💡 Игра не использует Remotes\n🎵 Используйте локальный режим"
+    if total > 0 then
+        UpdateStatus("READY - " .. total .. " REMOTES", Config.AccentColor)
+        Notify("✅ Scan Complete", string.format("Found %d Remote Events!", total), 3)
+    else
+        UpdateStatus("NO REMOTES FOUND", Config.DangerColor)
+        Notify("❌ Scan Failed", "No exploitable remotes found", 3)
     end
+    
+    scanComplete = true
 end
 
--- Функция воспроизведения через Remote
 local function PlaySoundViaRemote(audioId)
     if #foundRemotes == 0 then
-        InfoText.Text = "❌ Сначала просканируйте!\n🔍 Нажмите кнопку сканирования"
+        Notify("⚠️  Warning", "Scan for remotes first!", 2)
         return
     end
     
     local attempts = 0
-    
-    for _, remote in pairs(foundRemotes) do
+    for _, remote in ipairs(foundRemotes) do
         pcall(function()
-            local obj = remote.Object
-            
-            if remote.Type == "RemoteEvent" then
-                -- Пробуем разные варианты
-                obj:FireServer("rbxassetid://" .. audioId)
-                obj:FireServer(audioId)
-                obj:FireServer({Sound = audioId})
-                obj:FireServer({SoundId = "rbxassetid://" .. audioId})
-                obj:FireServer({Id = audioId})
-                obj:FireServer("Play", audioId)
-                obj:FireServer("PlaySound", audioId)
-                obj:FireServer("Music", audioId)
-                obj:FireServer({Action = "Play", Id = audioId})
-                attempts = attempts + 1
-            elseif remote.Type == "RemoteFunction" then
-                obj:InvokeServer("rbxassetid://" .. audioId)
-                obj:InvokeServer(audioId)
+            if remote.Type == "Event" then
+                remote.Object:FireServer("rbxassetid://" .. audioId)
+                remote.Object:FireServer(tonumber(audioId))
+                remote.Object:FireServer({Sound = audioId, SoundId = "rbxassetid://" .. audioId})
                 attempts = attempts + 1
             end
         end)
     end
     
-    InfoText.Text = string.format(
-        "✅ Отправлено %d запросов!\n🎵 Audio ID: %s\n📡 Remotes: %d\n⚠️  Проверьте результат",
-        attempts, audioId, #foundRemotes
-    )
+    UpdateStatus("PLAYING - " .. attempts .. " ATTEMPTS", Config.AccentColor)
 end
 
--- Функция локального воспроизведения
 local function PlaySoundLocal(audioId)
     if currentSound then
         pcall(function() currentSound:Stop() currentSound:Destroy() end)
@@ -382,46 +697,91 @@ local function PlaySoundLocal(audioId)
     sound:Play()
     
     currentSound = sound
-    
-    InfoText.Text = string.format(
-        "🎵 Локальное воспроизведение\n🔊 Audio ID: %s\n⚠️  Слышите только ВЫ!",
-        audioId
-    )
+    UpdateStatus("PLAYING LOCALLY", Config.WarningColor)
 end
 
--- Функция остановки
 local function StopAllSounds()
     if currentSound then
         pcall(function() currentSound:Stop() currentSound:Destroy() end)
-        currentSound = nil
     end
     
-    for _, remote in pairs(foundRemotes) do
-        pcall(function()
-            if remote.Type == "RemoteEvent" then
-                remote.Object:FireServer("Stop")
-                remote.Object:FireServer({Action = "Stop"})
-            end
-        end)
-    end
-    
-    for _, obj in pairs(workspace:GetDescendants()) do
+    for _, obj in ipairs(workspace:GetDescendants()) do
         if obj:IsA("Sound") then
             pcall(function() obj:Stop() obj:Destroy() end)
         end
     end
     
-    InfoText.Text = "⏹️  Все звуки остановлены!"
+    UpdateStatus("STOPPED", Config.DangerColor)
+    Notify("⏹️  Stopped", "All sounds stopped", 2)
 end
 
--- События кнопок Soundboard
+-- Create Song Buttons
+for i, song in ipairs(SongDatabase) do
+    local SongButton = Instance.new("TextButton")
+    SongButton.Size = UDim2.new(1, -10, 0, 40)
+    SongButton.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
+    SongButton.BorderSizePixel = 0
+    SongButton.Font = Enum.Font.GothamSemibold
+    SongButton.Text = ""
+    SongButton.TextColor3 = Config.TextColor
+    SongButton.TextSize = 12
+    SongButton.Parent = SongListFrame
+    
+    AddCorner(SongButton, 8)
+    
+    local SongText = Instance.new("TextLabel")
+    SongText.Size = UDim2.new(1, -50, 1, 0)
+    SongText.Position = UDim2.new(0, 12, 0, 0)
+    SongText.BackgroundTransparency = 1
+    SongText.Font = Enum.Font.GothamBold
+    SongText.Text = song.Name
+    SongText.TextColor3 = Config.TextColor
+    SongText.TextSize = 11
+    SongText.TextXAlignment = Enum.TextXAlignment.Left
+    SongText.Parent = SongButton
+    
+    local GenreLabel = Instance.new("TextLabel")
+    GenreLabel.Size = UDim2.new(0, 60, 0, 20)
+    GenreLabel.Position = UDim2.new(1, -65, 0.5, -10)
+    GenreLabel.BackgroundColor3 = Config.PrimaryColor
+    GenreLabel.BorderSizePixel = 0
+    GenreLabel.Font = Enum.Font.GothamBold
+    GenreLabel.Text = song.Genre
+    GenreLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    GenreLabel.TextSize = 9
+    GenreLabel.Parent = SongButton
+    
+    AddCorner(GenreLabel, 5)
+    
+    SongButton.MouseEnter:Connect(function()
+        CreateTween(SongButton, {BackgroundColor3 = Color3.fromRGB(60, 63, 70)})
+    end)
+    
+    SongButton.MouseLeave:Connect(function()
+        CreateTween(SongButton, {BackgroundColor3 = Color3.fromRGB(47, 49, 54)})
+    end)
+    
+    SongButton.MouseButton1Click:Connect(function()
+        CreateTween(SongButton, {BackgroundColor3 = Config.AccentColor}, 0.1)
+        wait(0.1)
+        CreateTween(SongButton, {BackgroundColor3 = Color3.fromRGB(47, 49, 54)}, 0.1)
+        
+        if #foundRemotes > 0 then
+            PlaySoundViaRemote(song.ID)
+        else
+            PlaySoundLocal(song.ID)
+        end
+    end)
+end
+
+SongListFrame.CanvasSize = UDim2.new(0, 0, 0, SongListLayout.AbsoluteContentSize.Y + 16)
+
+-- Button Events
 ScanButton.MouseButton1Click:Connect(function()
-    ScanButton.Text = "⏳ СКАНИРОВАНИЕ..."
-    ScanButton.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
+    ScanButton.Text = "⏳ SCANNING..."
     ScanForRemotes()
     wait(0.5)
-    ScanButton.Text = "🔍 СКАНИРОВАТЬ REMOTE EVENTS"
-    ScanButton.BackgroundColor3 = Color3.fromRGB(50, 150, 255)
+    ScanButton.Text = "🔍 SCAN FOR REMOTE EVENTS"
 end)
 
 StopButton.MouseButton1Click:Connect(function()
@@ -439,481 +799,271 @@ PlayCustomButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Создание кнопок песен
-for i, song in ipairs(SongList) do
-    local SongButton = Instance.new("TextButton")
-    SongButton.Size = UDim2.new(1, -5, 0, 35)
-    SongButton.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-    SongButton.BorderSizePixel = 0
-    SongButton.Font = Enum.Font.GothamBold
-    SongButton.Text = song.Name
-    SongButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    SongButton.TextSize = 11
-    SongButton.TextXAlignment = Enum.TextXAlignment.Left
-    SongButton.Parent = SongListFrame
-    
-    local Padding = Instance.new("UIPadding")
-    Padding.PaddingLeft = UDim.new(0, 10)
-    Padding.Parent = SongButton
-    
-    local Corner = Instance.new("UICorner")
-    Corner.CornerRadius = UDim.new(0, 6)
-    Corner.Parent = SongButton
-    
-    SongButton.MouseButton1Click:Connect(function()
-        if #foundRemotes > 0 then
-            PlaySoundViaRemote(song.ID)
-        else
-            PlaySoundLocal(song.ID)
-        end
-        
-        for _, btn in pairs(SongListFrame:GetChildren()) do
-            if btn:IsA("TextButton") then
-                btn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-            end
-        end
-        SongButton.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
-    end)
-    
-    SongButton.MouseEnter:Connect(function()
-        if SongButton.BackgroundColor3 ~= Color3.fromRGB(100, 200, 100) then
-            SongButton.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-        end
-    end)
-    
-    SongButton.MouseLeave:Connect(function()
-        if SongButton.BackgroundColor3 ~= Color3.fromRGB(100, 200, 100) then
-            SongButton.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-        end
-    end)
-end
-
-SongListFrame.CanvasSize = UDim2.new(0, 0, 0, SongListLayout.AbsoluteContentSize.Y + 5)
-
--- ═══════════════════════════════════════════════════════════
---                    OSINT TOOL (ПОЛНЫЙ)
--- ═══════════════════════════════════════════════════════════
-
-local OSINTGui = Instance.new("ScreenGui")
-OSINTGui.Name = "OSINTTool"
-OSINTGui.ResetOnSpawn = false
-OSINTGui.Parent = PlayerGui
-
-local OSINTFrame = Instance.new("Frame")
-OSINTFrame.Size = UDim2.new(0, 550, 0, 600)
-OSINTFrame.Position = UDim2.new(0.5, 30, 0.5, -300)
-OSINTFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-OSINTFrame.BorderSizePixel = 2
-OSINTFrame.BorderColor3 = Color3.fromRGB(100, 200, 255)
-OSINTFrame.Visible = false
-OSINTFrame.Active = true
-OSINTFrame.Draggable = true
-OSINTFrame.Parent = OSINTGui
-
-local OSINTCorner = Instance.new("UICorner")
-OSINTCorner.CornerRadius = UDim.new(0, 12)
-OSINTCorner.Parent = OSINTFrame
-
--- Заголовок OSINT
-local OSINTTitle = Instance.new("TextLabel")
-OSINTTitle.Size = UDim2.new(1, 0, 0, 45)
-OSINTTitle.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
-OSINTTitle.BorderSizePixel = 0
-OSINTTitle.Font = Enum.Font.GothamBold
-OSINTTitle.Text = "🔍 ULTIMATE OSINT TOOL - Player Intelligence"
-OSINTTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-OSINTTitle.TextSize = 14
-OSINTTitle.Parent = OSINTFrame
-
-local OSINTTitleCorner = Instance.new("UICorner")
-OSINTTitleCorner.CornerRadius = UDim.new(0, 12)
-OSINTTitleCorner.Parent = OSINTTitle
-
--- Кнопка закрытия OSINT
-local OSINTClose = Instance.new("TextButton")
-OSINTClose.Size = UDim2.new(0, 40, 0, 40)
-OSINTClose.Position = UDim2.new(1, -42, 0, 2.5)
-OSINTClose.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-OSINTClose.BorderSizePixel = 0
-OSINTClose.Font = Enum.Font.GothamBold
-OSINTClose.Text = "X"
-OSINTClose.TextColor3 = Color3.fromRGB(255, 255, 255)
-OSINTClose.TextSize = 18
-OSINTClose.Parent = OSINTTitle
-
-local OSINTCloseCorner = Instance.new("UICorner")
-OSINTCloseCorner.CornerRadius = UDim.new(0, 8)
-OSINTCloseCorner.Parent = OSINTClose
-
-OSINTClose.MouseButton1Click:Connect(function()
-    OSINTFrame.Visible = false
-end)
-
--- Поиск игрока
-local SearchFrame = Instance.new("Frame")
-SearchFrame.Size = UDim2.new(1, -10, 0, 60)
-SearchFrame.Position = UDim2.new(0, 5, 0, 50)
-SearchFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-SearchFrame.BorderSizePixel = 0
-SearchFrame.Parent = OSINTFrame
-
-local SearchCorner = Instance.new("UICorner")
-SearchCorner.CornerRadius = UDim.new(0, 8)
-SearchCorner.Parent = SearchFrame
-
-local SearchLabel = Instance.new("TextLabel")
-SearchLabel.Size = UDim2.new(1, -10, 0, 20)
-SearchLabel.Position = UDim2.new(0, 5, 0, 5)
-SearchLabel.BackgroundTransparency = 1
-SearchLabel.Font = Enum.Font.GothamBold
-SearchLabel.Text = "🔎 ПОИСК ИГРОКА (Имя или UserID):"
-SearchLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-SearchLabel.TextSize = 11
-SearchLabel.TextXAlignment = Enum.TextXAlignment.Left
-SearchLabel.Parent = SearchFrame
-
-local SearchInput = Instance.new("TextBox")
-SearchInput.Size = UDim2.new(0.65, -5, 0, 28)
-SearchInput.Position = UDim2.new(0, 5, 0, 27)
-SearchInput.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
-SearchInput.BorderSizePixel = 0
-SearchInput.Font = Enum.Font.Gotham
-SearchInput.PlaceholderText = "Введите имя или UserID..."
-SearchInput.Text = ""
-SearchInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-SearchInput.TextSize = 12
-SearchInput.Parent = SearchFrame
-
-local SearchInputCorner = Instance.new("UICorner")
-SearchInputCorner.CornerRadius = UDim.new(0, 6)
-SearchInputCorner.Parent = SearchInput
-
-local SearchButton = Instance.new("TextButton")
-SearchButton.Size = UDim2.new(0.35, -10, 0, 28)
-SearchButton.Position = UDim2.new(0.65, 0, 0, 27)
-SearchButton.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
-SearchButton.BorderSizePixel = 0
-SearchButton.Font = Enum.Font.GothamBold
-SearchButton.Text = "🔍 НАЙТИ"
-SearchButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-SearchButton.TextSize = 12
-SearchButton.Parent = SearchFrame
-
-local SearchButtonCorner = Instance.new("UICorner")
-SearchButtonCorner.CornerRadius = UDim.new(0, 6)
-SearchButtonCorner.Parent = SearchButton
-
--- Результаты OSINT
-local OSINTResults = Instance.new("ScrollingFrame")
-OSINTResults.Size = UDim2.new(1, -10, 1, -120)
-OSINTResults.Position = UDim2.new(0, 5, 0, 115)
-OSINTResults.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-OSINTResults.BorderSizePixel = 0
-OSINTResults.ScrollBarThickness = 6
-OSINTResults.Parent = OSINTFrame
-
-local OSINTResultsCorner = Instance.new("UICorner")
-OSINTResultsCorner.CornerRadius = UDim.new(0, 8)
-OSINTResultsCorner.Parent = OSINTResults
-
-local OSINTText = Instance.new("TextLabel")
-OSINTText.Size = UDim2.new(1, -10, 0, 10000)
-OSINTText.Position = UDim2.new(0, 5, 0, 5)
-OSINTText.BackgroundTransparency = 1
-OSINTText.Font = Enum.Font.Code
-OSINTText.Text = "👈 Введите имя игрока и нажмите НАЙТИ"
-OSINTText.TextColor3 = Color3.fromRGB(200, 200, 200)
-OSINTText.TextSize = 11
-OSINTText.TextXAlignment = Enum.TextXAlignment.Left
-OSINTText.TextYAlignment = Enum.TextYAlignment.Top
-OSINTText.TextWrapped = true
-OSINTText.Parent = OSINTResults
-
--- ФУНКЦИИ OSINT
-
-local function GetPlayerByNameOrId(input)
-    input = tostring(input)
-    
-    -- Проверяем UserID
-    local userId = tonumber(input)
-    if userId then
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.UserId == userId then
-                return player
-            end
-        end
-    end
-    
-    -- Проверяем имя (частичное совпадение)
-    input = input:lower()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player.Name:lower():find(input) or player.DisplayName:lower():find(input) then
-            return player
-        end
-    end
-    
-    return nil
-end
+-- ═══════════════════════════════════════════════════════════════════════════
+--                          OSINT FUNCTIONS
+-- ═══════════════════════════════════════════════════════════════════════════
 
 local function PerformOSINT(player)
     if not player or not player.Parent then
-        OSINTText.Text = "❌ Игрок не найден!"
+        OSINTText.Text = "❌ Player not found!"
         return
     end
     
-    -- Собираем МАКСИМУМ информации
     local data = {}
     
-    -- Базовая информация
+    -- Collect data
     data.Name = player.Name
     data.DisplayName = player.DisplayName
     data.UserId = player.UserId
     data.AccountAge = player.AccountAge
-    data.AccountAgeYears = string.format("%.2f", player.AccountAge / 365)
-    data.AccountCreated = os.date("%d.%m.%Y", os.time() - (player.AccountAge * 86400))
-    
-    -- Premium и Verified
     data.IsPremium = player.MembershipType == Enum.MembershipType.Premium
-    data.MembershipType = tostring(player.MembershipType):gsub("Enum.MembershipType.", "")
     data.HasVerifiedBadge = player.HasVerifiedBadge
     
-    -- Друг или нет
-    data.IsFriend = false
     pcall(function() data.IsFriend = player:IsFriendsWith(LocalPlayer.UserId) end)
     
-    -- Команда
     if player.Team then
         data.TeamName = player.Team.Name
-        data.TeamColor = tostring(player.Team.TeamColor)
         data.TeamPlayers = #player.Team:GetPlayers()
-    else
-        data.TeamName = "No Team"
-        data.TeamColor = "N/A"
-        data.TeamPlayers = 0
     end
     
-    -- Locale
     data.LocaleId = player.LocaleId or "Unknown"
     
-    -- Персонаж
-    data.HasCharacter = player.Character ~= nil
+    -- Character data
     if player.Character then
         local humanoid = player.Character:FindFirstChild("Humanoid")
         if humanoid then
             data.Health = math.floor(humanoid.Health)
             data.MaxHealth = math.floor(humanoid.MaxHealth)
             data.WalkSpeed = humanoid.WalkSpeed
-            data.JumpPower = humanoid.JumpPower or humanoid.JumpHeight
-            data.RigType = humanoid.RigType.Name
         end
         
         local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-        if hrp then
-            local pos = hrp.Position
-            data.Position = string.format("X:%.1f Y:%.1f Z:%.1f", pos.X, pos.Y, pos.Z)
-            
-            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                local distance = (hrp.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-                data.Distance = math.floor(distance)
-            end
-        end
-        
-        -- Аксессуары
-        data.Accessories = {}
-        for _, item in pairs(player.Character:GetChildren()) do
-            if item:IsA("Accessory") then
-                table.insert(data.Accessories, item.Name)
-            end
+        if hrp and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local dist = (hrp.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+            data.Distance = math.floor(dist)
         end
     end
     
     -- Leaderstats
-    data.Leaderstats = {}
+    data.Stats = {}
     local leaderstats = player:FindFirstChild("leaderstats")
     if leaderstats then
-        for _, stat in pairs(leaderstats:GetChildren()) do
-            data.Leaderstats[stat.Name] = tostring(stat.Value)
+        for _, stat in ipairs(leaderstats:GetChildren()) do
+            data.Stats[stat.Name] = tostring(stat.Value)
         end
     end
     
-    -- Backpack
-    data.BackpackTools = {}
-    local backpack = player:FindFirstChild("Backpack")
-    if backpack then
-        for _, tool in pairs(backpack:GetChildren()) do
-            if tool:IsA("Tool") then
-                table.insert(data.BackpackTools, tool.Name)
-            end
-        end
-    end
-    
-    -- Формируем отчет
+    -- Generate report
     local report = string.format([[
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                    🔍 OSINT ОТЧЕТ ПО ИГРОКУ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╔═══════════════════════════════════════════════════════════════╗
+                    🔍 OSINT INTELLIGENCE REPORT
+╚═══════════════════════════════════════════════════════════════╝
 
-👤 ЛИЧНАЯ ИНФОРМАЦИЯ:
-┌──────────────────────────────────────────────────────────────
-├─ 🏷️  Имя: %s
-├─ 📛 DisplayName: %s
-├─ 🆔 UserID: %d
-├─ 🔗 Profile URL: https://www.roblox.com/users/%d/profile
-├─ 📅 Возраст аккаунта: %d дней (%s лет)
-├─ 📆 Дата создания: %s
-├─ ⭐ Premium: %s (%s)
-├─ ✅ Verified Badge: %s
-├─ 👥 Друг: %s
-├─ 🌍 Locale/Region: %s
-└─ 🎮 Это вы: %s
+👤 PLAYER PROFILE
+────────────────────────────────────────────────────────────────
+  Name: %s
+  Display: %s
+  UserID: %d
+  Profile: https://www.roblox.com/users/%d/profile
+  
+  Account Age: %d days (%.1f years)
+  Premium: %s
+  Verified: %s
+  Friend: %s
+  Locale: %s
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👥 TEAM INFORMATION
+────────────────────────────────────────────────────────────────
+  Team: %s
+  Players: %s
 
-👥 КОМАНДА:
-┌──────────────────────────────────────────────────────────────
-├─ 🏆 Название: %s
-├─ 🎨 Цвет: %s
-└─ 👤 Игроков в команде: %d
+🎮 CHARACTER STATUS
+────────────────────────────────────────────────────────────────
+  Health: %s/%s
+  Speed: %s
+  Distance: %s studs
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎮 ПЕРСОНАЖ:
-┌──────────────────────────────────────────────────────────────
-├─ ✅ Существует: %s
-├─ ❤️  Здоровье: %s / %s
-├─ 🏃 WalkSpeed: %s
-├─ 🦘 JumpPower: %s
-├─ 🎭 Rig Type: %s
-├─ 📍 Позиция: %s
-├─ 📏 Расстояние до вас: %s studs
-└─ 🎩 Аксессуаров: %d
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📊 LEADERSTATS:
-┌──────────────────────────────────────────────────────────────
+📊 LEADERSTATS
+────────────────────────────────────────────────────────────────
 %s
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔗 QUICK LINKS
+────────────────────────────────────────────────────────────────
+  Friends: https://www.roblox.com/users/%d/friends
+  Games: https://www.roblox.com/users/%d/games
+  Inventory: https://www.roblox.com/users/%d/inventory
 
-🎒 ИНВЕНТАРЬ (Backpack):
-┌──────────────────────────────────────────────────────────────
-%s
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎨 АКСЕССУАРЫ (%d):
-┌──────────────────────────────────────────────────────────────
-%s
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🔗 СОЦИАЛЬНЫЕ ССЫЛКИ:
-┌──────────────────────────────────────────────────────────────
-├─ 🌐 Profile: https://www.roblox.com/users/%d/profile
-├─ 👥 Friends: https://www.roblox.com/users/%d/friends
-├─ 🎮 Games: https://www.roblox.com/users/%d/games
-├─ 📦 Inventory: https://www.roblox.com/users/%d/inventory
-├─ 🏆 Badges: https://www.roblox.com/users/%d/badges
-└─ 👕 Avatar: https://www.roblox.com/users/%d/avatar
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-⚠️  ИНФОРМАЦИЯ СОБРАНА: %s
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+────────────────────────────────────────────────────────────────
+Report generated: %s
     ]],
-        -- Личная информация
         data.Name, data.DisplayName, data.UserId, data.UserId,
-        data.AccountAge, data.AccountAgeYears, data.AccountCreated,
-        data.IsPremium and "✅ Yes" or "❌ No", data.MembershipType,
+        data.AccountAge, data.AccountAge / 365,
+        data.IsPremium and "✅ Yes" or "❌ No",
         data.HasVerifiedBadge and "✅ Yes" or "❌ No",
         data.IsFriend and "✅ Yes" or "❌ No",
         data.LocaleId,
-        player == LocalPlayer and "✅ Yes" or "❌ No",
-        
-        -- Команда
-        data.TeamName, data.TeamColor, data.TeamPlayers,
-        
-        -- Персонаж
-        data.HasCharacter and "✅ Yes" or "❌ No",
+        data.TeamName or "No Team",
+        data.TeamPlayers and tostring(data.TeamPlayers) or "N/A",
         data.Health or "N/A", data.MaxHealth or "N/A",
-        data.WalkSpeed or "N/A", data.JumpPower or "N/A",
-        data.RigType or "N/A",
-        data.Position or "N/A",
+        data.WalkSpeed or "N/A",
         data.Distance and (data.Distance .. " studs") or "N/A",
-        #data.Accessories,
-        
-        -- Leaderstats
-        next(data.Leaderstats) and 
+        next(data.Stats) and 
             (function()
                 local t = ""
-                for k, v in pairs(data.Leaderstats) do
-                    t = t .. string.format("├─ %s: %s\n", k, v)
+                for k, v in pairs(data.Stats) do
+                    t = t .. string.format("  %s: %s\n", k, v)
                 end
                 return t
-            end)() or "└─ Нет leaderstats",
-        
-        -- Backpack
-        #data.BackpackTools > 0 and
-            ("├─ " .. table.concat(data.BackpackTools, "\n├─ ")) or "└─ Пусто",
-        
-        -- Аксессуары
-        #data.Accessories,
-        #data.Accessories > 0 and
-            ("├─ " .. table.concat(data.Accessories, "\n├─ ")) or "└─ Нет аксессуаров",
-        
-        -- Ссылки
-        data.UserId, data.UserId, data.UserId, data.UserId, data.UserId, data.UserId,
-        
-        -- Время
-        os.date("%H:%M:%S %d.%m.%Y")
+            end)() or "  No stats available",
+        data.UserId, data.UserId, data.UserId,
+        os.date("%H:%M:%S %d/%m/%Y")
     )
     
     OSINTText.Text = report
     OSINTResults.CanvasSize = UDim2.new(0, 0, 0, OSINTText.TextBounds.Y + 20)
 end
 
--- События OSINT
-SearchButton.MouseButton1Click:Connect(function()
-    local input = SearchInput.Text
-    if input and input ~= "" then
-        local player = GetPlayerByNameOrId(input)
-        if player then
-            PerformOSINT(player)
-        else
-            OSINTText.Text = string.format("❌ Игрок '%s' не найден на сервере!", input)
+-- Create Player Buttons
+local function UpdatePlayerList()
+    for _, child in ipairs(PlayerListFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
         end
     end
+    
+    for _, player in ipairs(Players:GetPlayers()) do
+        local PlayerButton = Instance.new("TextButton")
+        PlayerButton.Size = UDim2.new(1, -10, 0, 50)
+        PlayerButton.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
+        PlayerButton.BorderSizePixel = 0
+        PlayerButton.Font = Enum.Font.GothamBold
+        PlayerButton.Text = ""
+        PlayerButton.Parent = PlayerListFrame
+        
+        AddCorner(PlayerButton, 8)
+        
+        local PlayerName = Instance.new("TextLabel")
+        PlayerName.Size = UDim2.new(1, -60, 0, 20)
+        PlayerName.Position = UDim2.new(0, 45, 0, 8)
+        PlayerName.BackgroundTransparency = 1
+        PlayerName.Font = Enum.Font.GothamBold
+        PlayerName.Text = player.Name
+        PlayerName.TextColor3 = Config.TextColor
+        PlayerName.TextSize = 12
+        PlayerName.TextXAlignment = Enum.TextXAlignment.Left
+        PlayerName.Parent = PlayerButton
+        
+        local PlayerDisplay = Instance.new("TextLabel")
+        PlayerDisplay.Size = UDim2.new(1, -60, 0, 15)
+        PlayerDisplay.Position = UDim2.new(0, 45, 0, 28)
+        PlayerDisplay.BackgroundTransparency = 1
+        PlayerDisplay.Font = Enum.Font.Gotham
+        PlayerDisplay.Text = "@" .. player.DisplayName
+        PlayerDisplay.TextColor3 = Config.MutedColor
+        PlayerDisplay.TextSize = 10
+        PlayerDisplay.TextXAlignment = Enum.TextXAlignment.Left
+        PlayerDisplay.Parent = PlayerButton
+        
+        local Avatar = Instance.new("ImageLabel")
+        Avatar.Size = UDim2.new(0, 35, 0, 35)
+        Avatar.Position = UDim2.new(0, 5, 0.5, -17.5)
+        Avatar.BackgroundColor3 = Config.PrimaryColor
+        Avatar.BorderSizePixel = 0
+        Avatar.Image = Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size60x60)
+        Avatar.Parent = PlayerButton
+        
+        AddCorner(Avatar, 8)
+        
+        local SelectIcon = Instance.new("TextLabel")
+        SelectIcon.Size = UDim2.new(0, 30, 0, 30)
+        SelectIcon.Position = UDim2.new(1, -35, 0.5, -15)
+        SelectIcon.BackgroundTransparency = 1
+        SelectIcon.Font = Enum.Font.GothamBold
+        SelectIcon.Text = "▶️"
+        SelectIcon.TextColor3 = Config.AccentColor
+        SelectIcon.TextSize = 14
+        SelectIcon.Parent = PlayerButton
+        
+        PlayerButton.MouseEnter:Connect(function()
+            CreateTween(PlayerButton, {BackgroundColor3 = Color3.fromRGB(60, 63, 70)})
+        end)
+        
+        PlayerButton.MouseLeave:Connect(function()
+            if selectedPlayer ~= player then
+                CreateTween(PlayerButton, {BackgroundColor3 = Color3.fromRGB(47, 49, 54)})
+            end
+        end)
+        
+        PlayerButton.MouseButton1Click:Connect(function()
+            selectedPlayer = player
+            
+            for _, btn in ipairs(PlayerListFrame:GetChildren()) do
+                if btn:IsA("TextButton") then
+                    CreateTween(btn, {BackgroundColor3 = Color3.fromRGB(47, 49, 54)})
+                end
+            end
+            
+            CreateTween(PlayerButton, {BackgroundColor3 = Config.PrimaryColor})
+            PerformOSINT(player)
+        end)
+    end
+    
+    PlayerListFrame.CanvasSize = UDim2.new(0, 0, 0, PlayerListLayout.AbsoluteContentSize.Y + 16)
+end
+
+-- Events
+Players.PlayerAdded:Connect(function()
+    wait(0.1)
+    UpdatePlayerList()
 end)
 
--- ═══════════════════════════════════════════════════════════
---                    ОБЩИЕ ФУНКЦИИ
--- ═══════════════════════════════════════════════════════════
+Players.PlayerRemoving:Connect(function(player)
+    if selectedPlayer == player then
+        selectedPlayer = nil
+        OSINTText.Text = "Player left the server"
+    end
+    UpdatePlayerList()
+end)
 
--- Переключение меню
+UpdatePlayerList()
+
+-- ═══════════════════════════════════════════════════════════════════════════
+--                          TOGGLE MENU
+-- ═══════════════════════════════════════════════════════════════════════════
+
 UserInputService.InputBegan:Connect(function(input, processed)
     if processed then return end
     
     if input.KeyCode == Enum.KeyCode.Insert then
-        SoundFrame.Visible = not SoundFrame.Visible
-        OSINTFrame.Visible = not OSINTFrame.Visible
+        if MainContainer.Visible then
+            CreateTween(MainContainer, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
+            wait(0.3)
+            MainContainer.Visible = false
+            MainContainer.Size = UDim2.new(0, 1100, 0, 650)
+        else
+            MainContainer.Size = UDim2.new(0, 0, 0, 0)
+            MainContainer.Visible = true
+            CreateTween(MainContainer, {Size = UDim2.new(0, 1100, 0, 650)}, 0.4)
+        end
     end
 end)
 
--- Уведомление
-local function Notify(text)
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Ultimate Tools";
-        Text = text;
-        Duration = 5;
-    })
-end
+-- ═══════════════════════════════════════════════════════════════════════════
+--                          INITIALIZATION
+-- ═══════════════════════════════════════════════════════════════════════════
 
-Notify("✅ Tools Loaded!\n🔊 Soundboard\n🔍 OSINT Tool\nPress INSERT")
+wait(0.5)
+MainContainer.Size = UDim2.new(0, 0, 0, 0)
+MainContainer.Visible = true
+CreateTween(MainContainer, {Size = UDim2.new(0, 1100, 0, 650)}, 0.5)
 
-print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-print("✅ ULTIMATE TOOLS v2.0 LOADED!")
-print("🔊 Soundboard Exploit - Server Wide")
-print("🔍 OSINT Tool - Full Player Intelligence")
-print("📌 Press INSERT to toggle")
-print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+Notify("🎯 Ultimate Tools v3.0", "Loaded successfully!\nPress INSERT to toggle", 5)
+
+print("═══════════════════════════════════════════════════════════════")
+print("✅ ULTIMATE TOOLS v3.0 - Premium Edition Loaded!")
+print("═══════════════════════════════════════════════════════════════")
+print("🔊 Soundboard Exploit - Server Wide Audio")
+print("🔍 OSINT Tool - Complete Player Intelligence")
+print("📌 Press INSERT to toggle interface")
+print("🎨 Premium UI with animations")
+print("═══════════════════════════════════════════════════════════════")
