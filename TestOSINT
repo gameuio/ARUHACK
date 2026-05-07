@@ -1,4 +1,4 @@
--- ULTIMATE Player Info Cheat v3.0 для Roblox
+-- ULTIMATE Player Info Cheat v3.1 для Roblox (FIXED)
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -12,7 +12,6 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local GuiService = game:GetService("GuiService")
 local SoundService = game:GetService("SoundService")
 local VRService = game:GetService("VRService")
-local TextChatService = game:GetService("TextChatService")
 
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
@@ -25,7 +24,7 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.IgnoreGuiInset = true
 ScreenGui.Parent = PlayerGui
 
--- Главный фрейм (увеличен для большего количества информации)
+-- Главный фрейм
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 900, 0, 650)
@@ -46,20 +45,6 @@ UIGradient.Color = ColorSequence.new{
 }
 UIGradient.Rotation = 45
 UIGradient.Parent = MainFrame
-
--- Shadow effect
-local Shadow = Instance.new("ImageLabel")
-Shadow.Name = "Shadow"
-Shadow.Size = UDim2.new(1, 30, 1, 30)
-Shadow.Position = UDim2.new(0, -15, 0, -15)
-Shadow.BackgroundTransparency = 1
-Shadow.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
-Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-Shadow.ImageTransparency = 0.5
-Shadow.ScaleType = Enum.ScaleType.Slice
-Shadow.SliceCenter = Rect.new(10, 10, 118, 118)
-Shadow.ZIndex = 0
-Shadow.Parent = MainFrame
 
 -- Draggable
 local dragging, dragInput, dragStart, startPos
@@ -90,13 +75,13 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- Заголовок с градиентом
+-- Заголовок
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, 0, 0, 50)
 Title.BackgroundColor3 = Color3.fromRGB(40, 120, 255)
 Title.BorderSizePixel = 0
 Title.Font = Enum.Font.GothamBold
-Title.Text = "🎯 ULTIMATE PLAYER INFO CHEAT v3.0 - 100+ Parameters"
+Title.Text = "🎯 ULTIMATE PLAYER INFO CHEAT v3.1 - 100+ Parameters"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 18
 Title.Parent = MainFrame
@@ -113,7 +98,7 @@ TitleGradient.Color = ColorSequence.new{
 }
 TitleGradient.Parent = Title
 
--- Анимация градиента заголовка
+-- Анимация градиента
 spawn(function()
     while wait() do
         for i = 0, 360, 2 do
@@ -124,24 +109,17 @@ spawn(function()
     end
 end)
 
--- Кнопки управления
-local ButtonsFrame = Instance.new("Frame")
-ButtonsFrame.Size = UDim2.new(0, 150, 0, 40)
-ButtonsFrame.Position = UDim2.new(1, -155, 0, 5)
-ButtonsFrame.BackgroundTransparency = 1
-ButtonsFrame.Parent = Title
-
 -- Кнопка закрытия
 local CloseButton = Instance.new("TextButton")
 CloseButton.Size = UDim2.new(0, 40, 0, 40)
-CloseButton.Position = UDim2.new(0, 110, 0, 0)
+CloseButton.Position = UDim2.new(1, -45, 0, 5)
 CloseButton.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
 CloseButton.BorderSizePixel = 0
 CloseButton.Font = Enum.Font.GothamBold
 CloseButton.Text = "✕"
 CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 CloseButton.TextSize = 20
-CloseButton.Parent = ButtonsFrame
+CloseButton.Parent = Title
 
 local CloseCorner = Instance.new("UICorner")
 CloseCorner.CornerRadius = UDim.new(0, 10)
@@ -154,14 +132,14 @@ end)
 -- Кнопка обновления
 local RefreshButton = Instance.new("TextButton")
 RefreshButton.Size = UDim2.new(0, 40, 0, 40)
-RefreshButton.Position = UDim2.new(0, 55, 0, 0)
+RefreshButton.Position = UDim2.new(1, -90, 0, 5)
 RefreshButton.BackgroundColor3 = Color3.fromRGB(40, 200, 80)
 RefreshButton.BorderSizePixel = 0
 RefreshButton.Font = Enum.Font.GothamBold
 RefreshButton.Text = "🔄"
 RefreshButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 RefreshButton.TextSize = 18
-RefreshButton.Parent = ButtonsFrame
+RefreshButton.Parent = Title
 
 local RefreshCorner = Instance.new("UICorner")
 RefreshCorner.CornerRadius = UDim.new(0, 10)
@@ -170,20 +148,20 @@ RefreshCorner.Parent = RefreshButton
 -- Кнопка копирования
 local CopyButton = Instance.new("TextButton")
 CopyButton.Size = UDim2.new(0, 40, 0, 40)
-CopyButton.Position = UDim2.new(0, 0, 0, 0)
+CopyButton.Position = UDim2.new(1, -135, 0, 5)
 CopyButton.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
 CopyButton.BorderSizePixel = 0
 CopyButton.Font = Enum.Font.GothamBold
 CopyButton.Text = "📋"
 CopyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 CopyButton.TextSize = 18
-CopyButton.Parent = ButtonsFrame
+CopyButton.Parent = Title
 
 local CopyCorner = Instance.new("UICorner")
 CopyCorner.CornerRadius = UDim.new(0, 10)
 CopyCorner.Parent = CopyButton
 
--- Поиск игроков
+-- Поиск
 local SearchFrame = Instance.new("Frame")
 SearchFrame.Size = UDim2.new(0, 250, 0, 40)
 SearchFrame.Position = UDim2.new(0, 5, 0, 55)
@@ -249,12 +227,7 @@ local TabsCorner = Instance.new("UICorner")
 TabsCorner.CornerRadius = UDim.new(0, 10)
 TabsCorner.Parent = TabsFrame
 
-local TabsLayout = Instance.new("UIListLayout")
-TabsLayout.FillDirection = Enum.FillDirection.Horizontal
-TabsLayout.Padding = UDim.new(0, 5)
-TabsLayout.Parent = TabsFrame
-
--- Контейнер для контента вкладок
+-- Контейнер для контента
 local TabContentFrame = Instance.new("ScrollingFrame")
 TabContentFrame.Size = UDim2.new(1, -10, 1, -50)
 TabContentFrame.Position = UDim2.new(0, 5, 0, 45)
@@ -265,7 +238,7 @@ TabContentFrame.ScrollBarImageColor3 = Color3.fromRGB(60, 140, 255)
 TabContentFrame.Parent = InfoMainFrame
 
 local ContentText = Instance.new("TextLabel")
-ContentText.Size = UDim2.new(1, -20, 0, 5000)
+ContentText.Size = UDim2.new(1, -20, 0, 10000)
 ContentText.Position = UDim2.new(0, 10, 0, 10)
 ContentText.BackgroundTransparency = 1
 ContentText.Font = Enum.Font.Code
@@ -274,17 +247,15 @@ ContentText.TextColor3 = Color3.fromRGB(200, 200, 200)
 ContentText.TextSize = 12
 ContentText.TextXAlignment = Enum.TextXAlignment.Left
 ContentText.TextYAlignment = Enum.TextYAlignment.Top
+ContentText.TextWrapped = true
 ContentText.Parent = TabContentFrame
 
--- Переменные для мониторинга
+-- Переменные
 local selectedPlayer = nil
-local currentTab = "all"
-local pingHistory = {}
-local fpsHistory = {}
-local dataCache = {}
+local currentTab = "все"
 
 -- Функции создания вкладок
-local tabs = {"Все", "Сеть", "Персонаж", "Система", "Статистика", "Дополнительно"}
+local tabs = {"Все", "Игрок", "Персонаж", "Система", "Сервер", "Дополнительно"}
 local tabButtons = {}
 
 for i, tabName in ipairs(tabs) do
@@ -314,7 +285,7 @@ for i, tabName in ipairs(tabs) do
         TabButton.BackgroundColor3 = Color3.fromRGB(60, 140, 255)
         TabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
         if selectedPlayer then
-            UpdatePlayerInfo(selectedPlayer)
+            ShowPlayerInfo(selectedPlayer)
         end
     end)
 end
@@ -325,99 +296,55 @@ tabButtons["Все"].TextColor3 = Color3.fromRGB(255, 255, 255)
 
 -- ФУНКЦИИ ПОЛУЧЕНИЯ ДАННЫХ
 
--- FPS мониторинг (улучшенный)
-local lastFrameTime = tick()
-local frameCount = 0
-local currentFPS = 0
-local minFPS = 999
-local maxFPS = 0
-
-RunService.RenderStepped:Connect(function()
-    frameCount = frameCount + 1
-    local currentTime = tick()
-    if currentTime - lastFrameTime >= 1 then
-        currentFPS = frameCount
-        if currentFPS < minFPS then minFPS = currentFPS end
-        if currentFPS > maxFPS then maxFPS = currentFPS end
-        frameCount = 0
-        lastFrameTime = currentTime
+-- Функция получения расстояния до игрока
+local function GetDistance(player)
+    if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
+        return "N/A"
     end
-end)
-
--- Функция получения РЕАЛЬНОГО пинга
-local function GetRealPing(player)
-    local success, ping = pcall(function()
-        return player:GetNetworkPing()
-    end)
-    if success and ping then
-        return math.floor(ping * 1000)
+    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        return "N/A"
     end
-    return 0
+    
+    local distance = (player.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+    return math.floor(distance)
 end
 
--- Функция получения расширенной сетевой информации
-local function GetNetworkInfo(player)
-    local netInfo = {}
-    
-    -- Ping
-    local ping = GetRealPing(player)
-    netInfo.CurrentPing = ping
-    
-    -- История пинга
-    if not pingHistory[player.UserId] then
-        pingHistory[player.UserId] = {}
+-- Функция получения информации об устройстве
+local function GetDeviceInfo()
+    local device = "Unknown"
+    if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
+        device = "📱 Mobile"
+    elseif UserInputService.KeyboardEnabled and UserInputService.MouseEnabled then
+        device = "💻 PC"
+    elseif UserInputService.GamepadEnabled then
+        device = "🎮 Console"
     end
-    table.insert(pingHistory[player.UserId], ping)
-    if #pingHistory[player.UserId] > 60 then
-        table.remove(pingHistory[player.UserId], 1)
-    end
-    
-    -- Статистика пинга
-    local total = 0
-    local min = 9999
-    local max = 0
-    for _, p in pairs(pingHistory[player.UserId]) do
-        total = total + p
-        if p < min then min = p end
-        if p > max then max = p end
-    end
-    netInfo.AvgPing = math.floor(total / #pingHistory[player.UserId])
-    netInfo.MinPing = min
-    netInfo.MaxPing = max
-    netInfo.PingStability = max - min
-    netInfo.PingJitter = math.abs(ping - netInfo.AvgPing)
-    
-    -- Качество соединения
-    if ping < 50 then
-        netInfo.Quality = "🟢 Отлично"
-        netInfo.QualityScore = 100
-    elseif ping < 100 then
-        netInfo.Quality = "🟡 Хорошо"
-        netInfo.QualityScore = 75
-    elseif ping < 200 then
-        netInfo.Quality = "🟠 Средне"
-        netInfo.QualityScore = 50
-    else
-        netInfo.Quality = "🔴 Плохо"
-        netInfo.QualityScore = 25
-    end
-    
-    -- Packet loss (приблизительно)
-    netInfo.PacketLoss = netInfo.PingJitter > 50 and "Возможен" or "Нет"
-    
-    -- Тип соединения
-    if ping < 30 then
-        netInfo.ConnectionType = "Кабель/Fiber"
-    elseif ping < 80 then
-        netInfo.ConnectionType = "WiFi (хороший)"
-    else
-        netInfo.ConnectionType = "WiFi/Mobile"
-    end
-    
-    return netInfo
+    return device
 end
 
--- Функция получения информации о персонаже (расширенная)
+-- Функция получения оружия/инструмента
+local function GetEquippedTool(player)
+    if not player.Character then return "None" end
+    local tool = player.Character:FindFirstChildOfClass("Tool")
+    if tool then
+        return tool.Name
+    end
+    return "None"
+end
+
+-- Функция получения всех аксессуаров
+local function GetAccessories(player)
+    if not player.Character then return {} end
+    local accessories = {}
+    for _, item in pairs(player.Character:GetChildren()) do
+        if item:IsA("Accessory") then
+            table.insert(accessories, item.Name)
+        end
+    end
+    return accessories
+end
+
+-- Функция получения информации о персонаже
 local function GetCharacterInfo(player)
     local charInfo = {}
     
@@ -440,17 +367,13 @@ local function GetCharacterInfo(player)
         charInfo.DisplayName = humanoid.DisplayName
         charInfo.RigType = humanoid.RigType.Name
         charInfo.AutoRotate = humanoid.AutoRotate
-        charInfo.PlatformStand = humanoid.PlatformStand
         charInfo.Sit = humanoid.Sit
         charInfo.Jump = humanoid.Jump
-        charInfo.WalkToPoint = tostring(humanoid.WalkToPoint)
-        charInfo.TargetPoint = tostring(humanoid.TargetPoint)
         
         -- Состояние
         local state = humanoid:GetState()
         charInfo.State = tostring(state):gsub("Enum.HumanoidStateType.", "")
         
-        -- Hip Height
         charInfo.HipHeight = humanoid.HipHeight
     end
     
@@ -475,23 +398,8 @@ local function GetCharacterInfo(player)
         charInfo.Rotation = string.format("X: %.1f°, Y: %.1f°, Z: %.1f°", 
             math.deg(rot), math.deg(rot), math.deg(rot))
         
-        -- Расстояние до локального игрока
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            local distance = (hrp.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-            charInfo.Distance = math.floor(distance)
-        else
-            charInfo.Distance = "N/A"
-        end
-        
-        -- Mass
+        charInfo.Distance = GetDistance(player)
         charInfo.Mass = math.floor(hrp.AssemblyMass)
-    end
-    
-    -- Head
-    local head = char:FindFirstChild("Head")
-    if head then
-        charInfo.HeadSize = tostring(head.Size)
-        charInfo.HeadColor = tostring(head.Color)
     end
     
     -- Части тела
@@ -512,22 +420,11 @@ local function GetCharacterInfo(player)
     end
     
     -- Аксессуары
-    charInfo.Accessories = {}
-    for _, item in pairs(char:GetChildren()) do
-        if item:IsA("Accessory") then
-            table.insert(charInfo.Accessories, item.Name)
-        end
-    end
+    charInfo.Accessories = GetAccessories(player)
     charInfo.AccessoryCount = #charInfo.Accessories
     
     -- Инструменты
-    charInfo.Tools = {}
-    for _, item in pairs(char:GetChildren()) do
-        if item:IsA("Tool") then
-            table.insert(charInfo.Tools, item.Name)
-        end
-    end
-    charInfo.EquippedTool = charInfo.Tools[1] or "None"
+    charInfo.EquippedTool = GetEquippedTool(player)
     
     -- Backpack
     local backpack = player:FindFirstChild("Backpack")
@@ -539,34 +436,25 @@ local function GetCharacterInfo(player)
             end
         end
         charInfo.BackpackCount = #charInfo.BackpackTools
+    else
+        charInfo.BackpackCount = 0
+        charInfo.BackpackTools = {}
     end
     
     return charInfo
 end
 
 -- Функция получения системной информации
-local function GetSystemInfo(player)
+local function GetSystemInfo()
     local sysInfo = {}
     
     -- Устройство
-    if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
-        sysInfo.Device = "📱 Mobile"
-        sysInfo.DeviceType = "Mobile"
-    elseif UserInputService.KeyboardEnabled and UserInputService.MouseEnabled then
-        sysInfo.Device = "💻 PC"
-        sysInfo.DeviceType = "PC"
-    elseif UserInputService.GamepadEnabled then
-        sysInfo.Device = "🎮 Console"
-        sysInfo.DeviceType = "Console"
-    else
-        sysInfo.Device = "❓ Unknown"
-        sysInfo.DeviceType = "Unknown"
-    end
+    sysInfo.Device = GetDeviceInfo()
     
     -- VR
     sysInfo.VREnabled = VRService.VREnabled
     
-    -- Touch
+    -- Inputs
     sysInfo.TouchEnabled = UserInputService.TouchEnabled
     sysInfo.KeyboardEnabled = UserInputService.KeyboardEnabled
     sysInfo.MouseEnabled = UserInputService.MouseEnabled
@@ -577,7 +465,7 @@ local function GetSystemInfo(player)
     -- Platform
     local platform = "Unknown"
     pcall(function()
-        platform = UserInputService:GetPlatform().Name
+        platform = tostring(UserInputService:GetPlatform())
     end)
     sysInfo.Platform = platform
     
@@ -594,41 +482,21 @@ local function GetSystemInfo(player)
     sysInfo.CameraSubject = cam.CameraSubject and cam.CameraSubject.Name or "None"
     sysInfo.FieldOfView = cam.FieldOfView
     
-    -- FPS
-    sysInfo.CurrentFPS = currentFPS
-    sysInfo.MinFPS = minFPS
-    sysInfo.MaxFPS = maxFPS
-    sysInfo.AvgFPS = math.floor((minFPS + maxFPS) / 2)
-    
-    -- Performance
-    if currentFPS >= 55 then
-        sysInfo.Performance = "🟢 Отлично"
-    elseif currentFPS >= 30 then
-        sysInfo.Performance = "🟡 Нормально"
-    else
-        sysInfo.Performance = "🔴 Плохо"
-    end
-    
     -- Memory
     sysInfo.MemoryUsage = math.floor(Stats:GetTotalMemoryUsageMb())
     sysInfo.MemoryUsageKB = math.floor(Stats:GetTotalMemoryUsageMb() * 1024)
     
-    -- Графика
+    -- Graphics
     sysInfo.GraphicsQuality = settings().Rendering.QualityLevel
-    sysInfo.GraphicsMode = settings().Rendering.GraphicsMode
     
     -- Instances
     sysInfo.InstanceCount = Stats.InstanceCount
     sysInfo.PrimitivesCount = Stats.PrimitivesCount
-    sysInfo.DataSendKbps = math.floor(Stats.DataSendKbps)
-    sysInfo.DataReceiveKbps = math.floor(Stats.DataReceiveKbps)
-    sysInfo.PhysicsFPS = math.floor(Stats.PhysicsFPS)
-    sysInfo.HeartbeatTime = string.format("%.2f ms", Stats.HeartbeatTimeMs)
     
     return sysInfo
 end
 
--- Функция получения информации об игроке (основная)
+-- Функция получения информации об игроке
 local function GetPlayerInfo(player)
     local info = {}
     
@@ -637,11 +505,10 @@ local function GetPlayerInfo(player)
     info.DisplayName = player.DisplayName
     info.UserId = player.UserId
     info.AccountAge = player.AccountAge
-    info.AccountAgeDays = player.AccountAge
     info.AccountAgeYears = string.format("%.2f", player.AccountAge / 365)
     info.AccountAgeMonths = math.floor(player.AccountAge / 30)
     
-    -- Дата создания аккаунта (приблизительно)
+    -- Дата создания
     local creationDate = os.time() - (player.AccountAge * 86400)
     info.AccountCreated = os.date("%d.%m.%Y", creationDate)
     
@@ -679,55 +546,21 @@ local function GetPlayerInfo(player)
     
     -- Locale
     info.LocaleId = player.LocaleId or "Unknown"
-    info.Region = player.LocaleId or "Unknown"
-    
-    -- Статус
-    info.IsConnected = player.Parent ~= nil
-    info.ConnectionStatus = player.Parent and "🟢 Online" or "🔴 Offline"
-    
-    -- Time
-    local timeConnected = tick() - player.AccountAge
-    info.TimeInGame = string.format("%.1f мин", (tick() - timeConnected) / 60)
-    info.TimeInGameSeconds = math.floor(tick() - timeConnected)
     
     -- Following
     info.FollowUserId = player.FollowUserId
     info.IsFollowing = player.FollowUserId ~= 0
     
-    -- Character Age
-    if player.Character then
-        local charAge = tick() - player.Character:GetPropertyChangedSignal("Parent"):Wait()
-        info.CharacterAge = string.format("%.1f сек", charAge)
-    else
-        info.CharacterAge = "N/A"
-    end
-    
-    -- Guest check
+    -- Guest
     info.IsGuest = player.UserId < 0
-    info.GuestStatus = info.IsGuest and "✅ Guest" or "❌ Not Guest"
-    
-    -- Chat
-    info.CanSendChat = true
-    pcall(function()
-        info.CanSendChat = TextChatService.ChatVersion == Enum.ChatVersion.TextChatService
-    end)
-    info.ChatStatus = info.CanSendChat and "✅ Enabled" or "❌ Disabled"
-    
-    -- Voice Chat
-    info.VoiceChatEnabled = false
-    pcall(function()
-        info.VoiceChatEnabled = player:IsVoiceEnabled()
-    end)
-    info.VoiceStatus = info.VoiceChatEnabled and "✅ Enabled" or "❌ Disabled"
     
     return info
 end
 
--- Функция получения статистики игрока
+-- Функция получения статистики
 local function GetPlayerStats(player)
     local stats = {}
     
-    -- Leaderstats
     local leaderstats = player:FindFirstChild("leaderstats")
     if leaderstats then
         stats.Leaderstats = {}
@@ -738,168 +571,108 @@ local function GetPlayerStats(player)
         stats.Leaderstats = {}
     end
     
-    -- Custom stats folders
-    for _, folder in pairs(player:GetChildren()) do
-        if folder:IsA("Folder") and folder.Name:lower():find("stat") then
-            stats[folder.Name] = {}
-            for _, stat in pairs(folder:GetChildren()) do
-                if stat:IsA("IntValue") or stat:IsA("NumberValue") or stat:IsA("StringValue") then
-                    stats[folder.Name][stat.Name] = tostring(stat.Value)
-                end
-            end
-        end
-    end
-    
     return stats
 end
 
--- Функция получения дополнительной информации
-local function GetAdditionalInfo(player)
-    local addInfo = {}
+-- Функция получения информации о сервере
+local function GetServerInfo()
+    local serverInfo = {}
     
-    -- Server Info
-    addInfo.PlaceId = game.PlaceId
-    addInfo.JobId = game.JobId ~= "" and string.sub(game.JobId, 1, 25) .. "..." or "Local Server"
-    addInfo.GameId = game.GameId
-    addInfo.CreatorId = game.CreatorId
-    addInfo.CreatorType = game.CreatorType.Name
+    serverInfo.PlaceId = game.PlaceId
+    serverInfo.JobId = game.JobId ~= "" and string.sub(game.JobId, 1, 25) .. "..." or "Local Server"
+    serverInfo.GameId = game.GameId
+    serverInfo.CreatorId = game.CreatorId
+    serverInfo.CreatorType = game.CreatorType.Name
     
-    -- Players
-    addInfo.TotalPlayers = #Players:GetPlayers()
-    addInfo.MaxPlayers = Players.MaxPlayers
-    addInfo.PlayerSlots = string.format("%d/%d", addInfo.TotalPlayers, addInfo.MaxPlayers)
-    addInfo.ServerFull = addInfo.TotalPlayers >= addInfo.MaxPlayers
+    serverInfo.TotalPlayers = #Players:GetPlayers()
+    serverInfo.MaxPlayers = Players.MaxPlayers
+    serverInfo.PlayerSlots = string.format("%d/%d", serverInfo.TotalPlayers, serverInfo.MaxPlayers)
     
-    -- Time
-    addInfo.ServerTime = os.date("%H:%M:%S")
-    addInfo.ServerDate = os.date("%d.%m.%Y")
-    addInfo.Uptime = math.floor(time())
-    addInfo.UptimeFormatted = string.format("%02d:%02d:%02d", 
+    serverInfo.ServerTime = os.date("%H:%M:%S")
+    serverInfo.ServerDate = os.date("%d.%m.%Y")
+    serverInfo.Uptime = math.floor(time())
+    serverInfo.UptimeFormatted = string.format("%02d:%02d:%02d", 
         math.floor(time() / 3600),
         math.floor(time() % 3600 / 60),
         math.floor(time() % 60))
     
-    -- Lighting
-    addInfo.TimeOfDay = Lighting.TimeOfDay
-    addInfo.ClockTime = Lighting.ClockTime
-    addInfo.Brightness = Lighting.Brightness
-    addInfo.FogEnd = Lighting.FogEnd
-    addInfo.FogStart = Lighting.FogStart
-    addInfo.FogColor = tostring(Lighting.FogColor)
-    addInfo.GlobalShadows = Lighting.GlobalShadows
-    addInfo.OutdoorAmbient = tostring(Lighting.OutdoorAmbient)
+    serverInfo.TimeOfDay = Lighting.TimeOfDay
+    serverInfo.ClockTime = Lighting.ClockTime
+    serverInfo.Brightness = Lighting.Brightness
+    serverInfo.FogEnd = Lighting.FogEnd
+    serverInfo.FogStart = Lighting.FogStart
+    serverInfo.GlobalShadows = Lighting.GlobalShadows
     
-    -- Workspace
-    addInfo.Gravity = Workspace.Gravity
-    addInfo.StreamingEnabled = Workspace.StreamingEnabled
-    addInfo.FilteringEnabled = Workspace.FilteringEnabled
-    addInfo.AllowThirdPartySales = Workspace.AllowThirdPartySales
+    serverInfo.Gravity = Workspace.Gravity
+    serverInfo.StreamingEnabled = Workspace.StreamingEnabled
     
-    -- Sound
-    addInfo.MasterVolume = SoundService.MasterVolume
-    addInfo.SoundEnabled = SoundService.MasterVolume > 0
-    
-    -- GUI
-    local guiInset = GuiService:GetGuiInset()
-    addInfo.GuiInset = string.format("X: %d, Y: %d", guiInset.X, guiInset.Y)
-    addInfo.TopbarInset = GuiService.TopbarInset.Height
-    
-    -- ReplicatedStorage
-    addInfo.ReplicatedStorageSize = #ReplicatedStorage:GetChildren()
-    
-    -- Misc
-    addInfo.IsStudio = RunService:IsStudio()
-    addInfo.IsServer = RunService:IsServer()
-    addInfo.IsClient = RunService:IsClient()
-    addInfo.IsLocalPlayer = player == LocalPlayer
-    
-    return addInfo
+    return serverInfo
 end
 
--- ГЛАВНАЯ ФУНКЦИЯ ОТОБРАЖЕНИЯ ИНФОРМАЦИИ
-function UpdatePlayerInfo(player)
-    if not player or not player:IsA("Player") then return end
+-- ГЛАВНАЯ ФУНКЦИЯ ОТОБРАЖЕНИЯ
+function ShowPlayerInfo(player)
+    if not player or not player:IsA("Player") or not player.Parent then 
+        ContentText.Text = "❌ Игрок не найден или покинул игру"
+        return 
+    end
     
     local playerInfo = GetPlayerInfo(player)
-    local netInfo = GetNetworkInfo(player)
     local charInfo = GetCharacterInfo(player)
-    local sysInfo = GetSystemInfo(player)
+    local sysInfo = GetSystemInfo()
     local statsInfo = GetPlayerStats(player)
-    local addInfo = GetAdditionalInfo(player)
+    local serverInfo = GetServerInfo()
     
     local text = ""
     
     if currentTab == "все" then
         text = string.format([[
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                    🎯 ULTIMATE PLAYER INFO - ВСЯ ИНФОРМАЦИЯ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🎯 ПОЛНАЯ ИНФОРМАЦИЯ ОБ ИГРОКЕ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 👤 ОСНОВНАЯ ИНФОРМАЦИЯ:
-┌─────────────────────────────────────────────────────────────────
-├─ 🏷️  Имя игрока: %s
-├─ 📛 Отображаемое имя: %s
+├─ 🏷️  Имя: %s
+├─ 📛 DisplayName: %s
 ├─ 🆔 UserID: %d
-├─ 📅 Возраст аккаунта: %d дней (%.2f лет / %d месяцев)
-├─ 📆 Дата создания: %s
-├─ ⭐ Premium статус: %s
-├─ 🎖️  Membership: %s
-├─ ✅ Verified Badge: %s
-├─ 👥 Статус друга: %s
-├─ 🌍 Регион/Локаль: %s
-├─ 🔌 Статус подключения: %s
-├─ ⏱️  Время в игре: %s
-├─ 👤 Следит за: %s
-└─ 🎮 Это вы: %s
+├─ 📅 Возраст: %d дней (%.2f лет / %d месяцев)
+├─ 📆 Создан: %s
+├─ ⭐ Premium: %s (%s)
+├─ ✅ Verified: %s
+├─ 👥 Друг: %s
+├─ 🌍 Locale: %s
+└─ 👤 Following: %s
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🌐 СЕТЕВАЯ ИНФОРМАЦИЯ:
-┌─────────────────────────────────────────────────────────────────
-├─ 📡 Текущий Ping: %d ms
-├─ 📊 Средний Ping: %d ms
-├─ 🟢 Минимальный Ping: %d ms
-├─ 🔴 Максимальный Ping: %d ms
-├─ 📈 Стабильность: %d ms (разброс)
-├─ ⚡ Jitter: %d ms
-├─ 🎯 Качество связи: %s (%d%%)
-├─ 📦 Packet Loss: %s
-├─ 🔗 Тип соединения: %s
-├─ 📤 Upload: %d kbps
-├─ 📥 Download: %d kbps
-└─ 🌐 Server Region: %s
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 🎮 ПЕРСОНАЖ:
-┌─────────────────────────────────────────────────────────────────
 ├─ ✅ Существует: %s
-├─ ❤️  Здоровье: %s/%s (%s%%)
+├─ ❤️  HP: %s/%s (%s%%)
 ├─ 🏃 WalkSpeed: %s
 ├─ 🦘 JumpPower: %s
-├─ 👤 DisplayName: %s
 ├─ 🎭 Rig Type: %s
-├─ 🔄 AutoRotate: %s
 ├─ 🧍 Состояние: %s
 ├─ 💺 Сидит: %s
-├─ 🦘 Прыгает: %s
 ├─ 📏 Hip Height: %s
 ├─ ⚖️  Масса: %s kg
-├─ 📍 Позиция: %s
-├─ 💨 Скорость: %s (%d studs/s)
-├─ 🧭 Velocity: X:%d Y:%d Z:%d
-├─ 🔄 Rotation: %s
-├─ 📏 Расстояние до вас: %s studs
-├─ 🔫 Equipped Tool: %s
-├─ 🎒 Инструментов в рюкзаке: %d
+├─ 📍 Position: %s
+├─ 💨 Velocity: %s
+├─ 🧭 Скорость: %d studs/s
+├─ 📏 Distance: %s studs
+├─ 🔫 Equipped: %s
+├─ 🎒 В рюкзаке: %d
 ├─ 👕 Частей тела: %d
-├─ 🎨 Аксессуаров: %d
-└─ 👗 Одежды: %d
+└─ 🎩 Аксессуаров: %d
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-💻 СИСТЕМА И ЖЕЛЕЗО:
-┌─────────────────────────────────────────────────────────────────
+👥 КОМАНДА:
+├─ 🏆 Название: %s
+├─ 🎨 Цвет: %s
+└─ 👤 Игроков: %d
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💻 СИСТЕМА:
 ├─ 🖥️  Устройство: %s
 ├─ 📱 Platform: %s
 ├─ 🥽 VR: %s
@@ -907,254 +680,156 @@ function UpdatePlayerInfo(player)
 ├─ ⌨️  Keyboard: %s
 ├─ 🖱️  Mouse: %s
 ├─ 🎮 Gamepad: %s
-├─ 📐 Accelerometer: %s
-├─ 🧭 Gyroscope: %s
-├─ 🖥️  Разрешение: %s (%s)
-├─ 📏 Aspect Ratio: %s
-├─ 🎯 FPS (текущий): %d
-├─ 📊 FPS (средний): %d
-├─ 🟢 FPS (мин): %d
-├─ 🔴 FPS (макс): %d
-├─ ⚡ Производительность: %s
-├─ 💾 Память: %d MB (%d KB)
-├─ 🎨 Графика: Level %s (%s)
-├─ 📦 Instances: %d
-├─ 🔺 Primitives: %d
-├─ ⚙️  Physics FPS: %d
-├─ 💓 Heartbeat: %s
-├─ 📹 Camera Type: %s
-├─ 🎯 Camera Subject: %s
-└─ 👁️  Field of View: %s°
+├─ 🖥️  Разрешение: %s
+├─ 💾 Память: %d MB
+└─ 📦 Instances: %d
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-👥 КОМАНДА:
-┌─────────────────────────────────────────────────────────────────
-├─ 🏆 Название: %s
-├─ 🎨 Цвет: %s
-└─ 👤 Игроков в команде: %d
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📊 СТАТИСТИКА:
-┌─────────────────────────────────────────────────────────────────
-%s
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎨 АКСЕССУАРЫ (%d):
-┌─────────────────────────────────────────────────────────────────
-%s
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🔧 ТЕХНИЧЕСКАЯ ИНФОРМАЦИЯ:
-┌─────────────────────────────────────────────────────────────────
-├─ 🎮 PlaceID: %d
-├─ 🌐 GameID: %d
+🎮 СЕРВЕР:
+├─ 🎯 PlaceID: %d
 ├─ 🔑 JobID: %s
-├─ 👤 CreatorID: %d
-├─ 🏢 Creator Type: %s
 ├─ 👥 Игроков: %s
-├─ 🌍 Server Full: %s
-├─ ⏰ Server Time: %s
-├─ 📅 Server Date: %s
+├─ ⏰ Time: %s
+├─ 📅 Date: %s
 ├─ ⏱️  Uptime: %s
 ├─ 🌅 Time of Day: %s
-├─ ⏰ Clock Time: %s
-├─ ☀️  Brightness: %s
-├─ 🌫️  Fog End: %s studs
-├─ 🌫️  Fog Start: %s studs
-├─ 🌈 Fog Color: %s
-├─ 🌑 Global Shadows: %s
-├─ 🌤️  Outdoor Ambient: %s
 ├─ ⬇️  Gravity: %s
-├─ 📡 Streaming: %s
-├─ 🛡️  Filtering: %s
-├─ 🔊 Master Volume: %s
-├─ 📱 GUI Inset: %s
-├─ 📏 Topbar Inset: %dpx
-├─ 📦 ReplicatedStorage Items: %d
-├─ 🏠 Is Studio: %s
-├─ 🖥️  Is Server: %s
-└─ 💻 Is Client: %s
+└─ 📡 Streaming: %s
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🛡️ БЕЗОПАСНОСТЬ И ПРАВА:
-┌─────────────────────────────────────────────────────────────────
-├─ 💬 Can Send Chat: %s
-├─ 🎙️  Voice Chat: %s
-├─ 🚫 Is Guest: %s
-└─ ⚠️  Is Banned: Нет
+📊 СТАТИСТИКА:
+%s
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         ]],
             -- Основная информация
-            playerInfo.Name, playerInfo.DisplayName, playerInfo.UserId, 
-            playerInfo.AccountAgeDays, tonumber(playerInfo.AccountAgeYears), playerInfo.AccountAgeMonths,
+            playerInfo.Name, playerInfo.DisplayName, playerInfo.UserId,
+            playerInfo.AccountAge, tonumber(playerInfo.AccountAgeYears), playerInfo.AccountAgeMonths,
             playerInfo.AccountCreated, playerInfo.PremiumStatus, playerInfo.MembershipType,
-            playerInfo.VerifiedStatus, playerInfo.FriendStatus, playerInfo.Region,
-            playerInfo.ConnectionStatus, playerInfo.TimeInGame,
+            playerInfo.VerifiedStatus, playerInfo.FriendStatus, playerInfo.LocaleId,
             playerInfo.IsFollowing and "User #" .. playerInfo.FollowUserId or "Никого",
-            addInfo.IsLocalPlayer and "✅ Да" or "❌ Нет",
-            
-            -- Сетевая информация
-            netInfo.CurrentPing, netInfo.AvgPing, netInfo.MinPing, netInfo.MaxPing,
-            netInfo.PingStability, netInfo.PingJitter, netInfo.Quality, netInfo.QualityScore,
-            netInfo.PacketLoss, netInfo.ConnectionType,
-            sysInfo.DataSendKbps, sysInfo.DataReceiveKbps,
-            addInfo.JobId ~= "Local Server" and "Remote" or "Local",
             
             -- Персонаж
             charInfo.Exists and "✅ Да" or "❌ Нет",
             charInfo.Health or "N/A", charInfo.MaxHealth or "N/A", charInfo.HealthPercent or "N/A",
             charInfo.WalkSpeed or "N/A", charInfo.JumpPower or "N/A",
-            charInfo.DisplayName or "N/A", charInfo.RigType or "N/A",
-            charInfo.AutoRotate and "✅" or "❌",
-            charInfo.State or "N/A",
+            charInfo.RigType or "N/A", charInfo.State or "N/A",
             charInfo.Sit and "✅" or "❌",
-            charInfo.Jump and "✅" or "❌",
-            charInfo.HipHeight or "N/A",
-            charInfo.Mass or "N/A",
-            charInfo.Position or "N/A",
-            charInfo.Velocity or "N/A", charInfo.Speed or 0,
-            charInfo.VelocityX or 0, charInfo.VelocityY or 0, charInfo.VelocityZ or 0,
-            charInfo.Rotation or "N/A",
-            charInfo.Distance or "N/A",
-            charInfo.EquippedTool,
-            charInfo.BackpackCount or 0,
-            charInfo.BodyPartsCount,
-            charInfo.AccessoryCount,
-            #charInfo.Clothing,
-            
-            -- Система
-            sysInfo.Device, sysInfo.Platform,
-            sysInfo.VREnabled and "✅ Да" or "❌ Нет",
-            sysInfo.TouchEnabled and "✅" or "❌",
-            sysInfo.KeyboardEnabled and "✅" or "❌",
-            sysInfo.MouseEnabled and "✅" or "❌",
-            sysInfo.GamepadEnabled and "✅" or "❌",
-            sysInfo.AccelerometerEnabled and "✅" or "❌",
-            sysInfo.GyroscopeEnabled and "✅" or "❌",
-            sysInfo.ScreenResolution, sysInfo.ScreenWidth .. "x" .. sysInfo.ScreenHeight,
-            sysInfo.AspectRatio,
-            sysInfo.CurrentFPS, sysInfo.AvgFPS, sysInfo.MinFPS, sysInfo.MaxFPS,
-            sysInfo.Performance,
-            sysInfo.MemoryUsage, sysInfo.MemoryUsageKB,
-            sysInfo.GraphicsQuality, sysInfo.GraphicsMode,
-            sysInfo.InstanceCount, sysInfo.PrimitivesCount,
-            sysInfo.PhysicsFPS, sysInfo.HeartbeatTime,
-            sysInfo.CameraType, sysInfo.CameraSubject, sysInfo.FieldOfView,
+            charInfo.HipHeight or "N/A", charInfo.Mass or "N/A",
+            charInfo.Position or "N/A", charInfo.Velocity or "N/A",
+            charInfo.Speed or 0, charInfo.Distance or "N/A",
+            charInfo.EquippedTool, charInfo.BackpackCount or 0,
+            charInfo.BodyPartsCount, charInfo.AccessoryCount,
             
             -- Команда
             playerInfo.TeamName, playerInfo.TeamColor, playerInfo.TeamPlayers,
             
+            -- Система
+            sysInfo.Device, sysInfo.Platform,
+            sysInfo.VREnabled and "✅" or "❌",
+            sysInfo.TouchEnabled and "✅" or "❌",
+            sysInfo.KeyboardEnabled and "✅" or "❌",
+            sysInfo.MouseEnabled and "✅" or "❌",
+            sysInfo.GamepadEnabled and "✅" or "❌",
+            sysInfo.ScreenResolution, sysInfo.MemoryUsage, sysInfo.InstanceCount,
+            
+            -- Сервер
+            serverInfo.PlaceId, serverInfo.JobId, serverInfo.PlayerSlots,
+            serverInfo.ServerTime, serverInfo.ServerDate, serverInfo.UptimeFormatted,
+            serverInfo.TimeOfDay, serverInfo.Gravity,
+            serverInfo.StreamingEnabled and "✅" or "❌",
+            
             -- Статистика
-            (function()
-                local statText = ""
-                if next(statsInfo.Leaderstats) then
-                    for name, value in pairs(statsInfo.Leaderstats) do
-                        statText = statText .. string.format("├─ %s: %s\n", name, value)
+            next(statsInfo.Leaderstats) and 
+                (function()
+                    local t = ""
+                    for k, v in pairs(statsInfo.Leaderstats) do
+                        t = t .. string.format("├─ %s: %s\n", k, v)
                     end
-                else
-                    statText = "└─ Нет статистики"
-                end
-                return statText
-            end)(),
-            
-            -- Аксессуары
-            charInfo.AccessoryCount,
-            #charInfo.Accessories > 0 and ("├─ " .. table.concat(charInfo.Accessories, "\n├─ ")) or "└─ Нет аксессуаров",
-            
-            -- Техническая информация
-            addInfo.PlaceId, addInfo.GameId, addInfo.JobId,
-            addInfo.CreatorId, addInfo.CreatorType,
-            addInfo.PlayerSlots,
-            addInfo.ServerFull and "✅ Да" or "❌ Нет",
-            addInfo.ServerTime, addInfo.ServerDate, addInfo.UptimeFormatted,
-            addInfo.TimeOfDay, addInfo.ClockTime, addInfo.Brightness,
-            addInfo.FogEnd, addInfo.FogStart, addInfo.FogColor,
-            addInfo.GlobalShadows and "✅" or "❌",
-            addInfo.OutdoorAmbient,
-            addInfo.Gravity,
-            addInfo.StreamingEnabled and "✅" or "❌",
-            addInfo.FilteringEnabled and "✅" or "❌",
-            addInfo.MasterVolume,
-            addInfo.GuiInset, addInfo.TopbarInset,
-            addInfo.ReplicatedStorageSize,
-            addInfo.IsStudio and "✅" or "❌",
-            addInfo.IsServer and "✅" or "❌",
-            addInfo.IsClient and "✅" or "❌",
-            
-            -- Безопасность
-            playerInfo.ChatStatus, playerInfo.VoiceStatus, playerInfo.GuestStatus
+                    return t
+                end)() or "└─ Нет статистики"
         )
         
-    elseif currentTab == "сеть" then
+    elseif currentTab == "игрок" then
         text = string.format([[
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                         🌐 СЕТЕВАЯ ИНФОРМАЦИЯ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+               👤 ИНФОРМАЦИЯ ОБ ИГРОКЕ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📡 PING СТАТИСТИКА:
-┌─────────────────────────────────────────────────────────────────
-├─ 📊 Текущий Ping: %d ms
-├─ 📈 Средний Ping: %d ms
-├─ 🟢 Минимальный: %d ms
-├─ 🔴 Максимальный: %d ms
-├─ 📉 Стабильность: %d ms (разброс)
-├─ ⚡ Jitter: %d ms
-└─ 🎯 Качество: %s (%d%%)
+📋 ОСНОВНЫЕ ДАННЫЕ:
+├─ 🏷️  Имя игрока: %s
+├─ 📛 Отображаемое имя: %s
+├─ 🆔 UserID: %d
+├─ 📅 Возраст аккаунта: %d дней
+├─ 📊 В годах: %.2f лет
+├─ 📊 В месяцах: %d месяцев
+├─ 📆 Дата создания: %s
+├─ ⭐ Premium статус: %s
+├─ 🎖️  Membership: %s
+├─ ✅ Verified Badge: %s
+├─ 👥 Статус друга: %s
+├─ 🌍 Регион/Locale: %s
+├─ 👤 Следит за: %s
+└─ 🎮 Это вы: %s
 
-🔗 СОЕДИНЕНИЕ:
-┌─────────────────────────────────────────────────────────────────
-├─ 🌐 Тип: %s
-├─ 📦 Packet Loss: %s
-├─ 📤 Upload Speed: %d kbps
-├─ 📥 Download Speed: %d kbps
-├─ 🔌 Статус: %s
-└─ 🌍 Region: %s
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📊 ИСТОРИЯ ПИНГА (последние 60 сек):
-┌─────────────────────────────────────────────────────────────────
+👥 КОМАНДА:
+├─ 🏆 Название: %s
+├─ 🎨 Цвет: %s
+├─ 👤 Игроков в команде: %d
+└─ 📊 Всего команд: %d
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 LEADERSTATS:
 %s
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         ]],
-            netInfo.CurrentPing, netInfo.AvgPing, netInfo.MinPing, netInfo.MaxPing,
-            netInfo.PingStability, netInfo.PingJitter, netInfo.Quality, netInfo.QualityScore,
-            netInfo.ConnectionType, netInfo.PacketLoss,
-            sysInfo.DataSendKbps, sysInfo.DataReceiveKbps,
-            playerInfo.ConnectionStatus,
-            addInfo.JobId ~= "Local Server" and "Remote Server" or "Local Server",
-            (function()
-                local history = pingHistory[player.UserId] or {}
-                local graph = ""
-                for i, ping in ipairs(history) do
-                    graph = graph .. string.format("├─ [%02d сек назад] %d ms\n", 60 - i, ping)
-                end
-                return graph ~= "" and graph or "└─ Нет данных"
-            end)()
+            playerInfo.Name, playerInfo.DisplayName, playerInfo.UserId,
+            playerInfo.AccountAge, tonumber(playerInfo.AccountAgeYears), 
+            playerInfo.AccountAgeMonths, playerInfo.AccountCreated,
+            playerInfo.PremiumStatus, playerInfo.MembershipType,
+            playerInfo.VerifiedStatus, playerInfo.FriendStatus,
+            playerInfo.LocaleId,
+            playerInfo.IsFollowing and "User #" .. playerInfo.FollowUserId or "Никого",
+            player == LocalPlayer and "✅ Да" or "❌ Нет",
+            
+            playerInfo.TeamName, playerInfo.TeamColor, playerInfo.TeamPlayers,
+            #game:GetService("Teams"):GetTeams(),
+            
+            next(statsInfo.Leaderstats) and 
+                (function()
+                    local t = ""
+                    for k, v in pairs(statsInfo.Leaderstats) do
+                        t = t .. string.format("├─ %s: %s\n", k, v)
+                    end
+                    return t
+                end)() or "└─ Нет leaderstats"
         )
         
     elseif currentTab == "персонаж" then
         text = string.format([[
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                          🎮 ИНФОРМАЦИЯ О ПЕРСОНАЖЕ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+              🎮 ИНФОРМАЦИЯ О ПЕРСОНАЖЕ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-👤 ОБЩИЕ ДАННЫЕ:
-┌─────────────────────────────────────────────────────────────────
+👤 ОБЩАЯ ИНФОРМАЦИЯ:
 ├─ ✅ Персонаж существует: %s
 ├─ 📛 Display Name: %s
 ├─ 🎭 Rig Type: %s
 ├─ ⚖️  Масса: %s kg
 └─ 🧍 Состояние: %s
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ❤️  ЗДОРОВЬЕ И ФИЗИКА:
-┌─────────────────────────────────────────────────────────────────
-├─ 💚 HP: %s/%s (%s%%)
+├─ 💚 Текущее HP: %s
+├─ 💙 Максимальное HP: %s
+├─ 📊 Процент HP: %s%%
 ├─ 🏃 WalkSpeed: %s
 ├─ 🦘 JumpPower: %s
 ├─ 📏 Hip Height: %s
@@ -1162,37 +837,43 @@ function UpdatePlayerInfo(player)
 ├─ 💺 Сидит: %s
 └─ 🦘 Прыгает: %s
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 📍 ПОЗИЦИЯ И ДВИЖЕНИЕ:
-┌─────────────────────────────────────────────────────────────────
 ├─ 🗺️  Position: %s
-├─ 📊 X: %s | Y: %s | Z: %s
-├─ 💨 Скорость: %s (%d studs/s)
+├─ 📊 Координата X: %s
+├─ 📊 Координата Y: %s
+├─ 📊 Координата Z: %s
+├─ 💨 Velocity: %s
 ├─ 🧭 Velocity X: %d
 ├─ 🧭 Velocity Y: %d
 ├─ 🧭 Velocity Z: %d
+├─ 🚀 Скорость: %d studs/s
 ├─ 🔄 Rotation: %s
 └─ 📏 Расстояние до вас: %s studs
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 🔫 ОРУЖИЕ И ИНСТРУМЕНТЫ:
-┌─────────────────────────────────────────────────────────────────
 ├─ ⚔️  В руках: %s
 ├─ 🎒 В рюкзаке: %d
-└─ 📜 Список: %s
+└─ 📜 Список в рюкзаке:
+%s
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 🎨 ВНЕШНИЙ ВИД:
-┌─────────────────────────────────────────────────────────────────
 ├─ 👕 Частей тела: %d
 ├─ 🎩 Аксессуаров: %d
 ├─ 👗 Одежды: %d
-└─ 📋 Детали: %s
+├─ 📋 Список частей тела:
+%s
+├─ 🎩 Список аксессуаров:
+%s
+└─ 👗 Одежда:
+%s
 
-🏗️  СТРУКТУРА ПЕРСОНАЖА:
-┌─────────────────────────────────────────────────────────────────
-├─ 🧩 Части тела: %s
-├─ 🎨 Аксессуары: %s
-└─ 👕 Одежда: %s
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         ]],
             charInfo.Exists and "✅ Да" or "❌ Нет",
             charInfo.DisplayName or "N/A",
@@ -1200,7 +881,9 @@ function UpdatePlayerInfo(player)
             charInfo.Mass or "N/A",
             charInfo.State or "N/A",
             
-            charInfo.Health or "N/A", charInfo.MaxHealth or "N/A", charInfo.HealthPercent or "N/A",
+            charInfo.Health or "N/A",
+            charInfo.MaxHealth or "N/A",
+            charInfo.HealthPercent or "N/A",
             charInfo.WalkSpeed or "N/A",
             charInfo.JumpPower or "N/A",
             charInfo.HipHeight or "N/A",
@@ -1209,94 +892,74 @@ function UpdatePlayerInfo(player)
             charInfo.Jump and "✅ Да" or "❌ Нет",
             
             charInfo.Position or "N/A",
-            charInfo.PosX or "N/A", charInfo.PosY or "N/A", charInfo.PosZ or "N/A",
-            charInfo.Velocity or "N/A", charInfo.Speed or 0,
+            charInfo.PosX or "N/A",
+            charInfo.PosY or "N/A",
+            charInfo.PosZ or "N/A",
+            charInfo.Velocity or "N/A",
             charInfo.VelocityX or 0,
             charInfo.VelocityY or 0,
             charInfo.VelocityZ or 0,
+            charInfo.Speed or 0,
             charInfo.Rotation or "N/A",
             charInfo.Distance or "N/A",
             
             charInfo.EquippedTool,
             charInfo.BackpackCount or 0,
-            charInfo.BackpackTools and table.concat(charInfo.BackpackTools, ", ") or "Пусто",
+            #charInfo.BackpackTools > 0 and 
+                ("    " .. table.concat(charInfo.BackpackTools, "\n    ")) or "    Пусто",
             
             charInfo.BodyPartsCount,
             charInfo.AccessoryCount,
             #charInfo.Clothing,
-            string.format("Тело: %d, Аксессуары: %d, Одежда: %d", 
-                charInfo.BodyPartsCount, charInfo.AccessoryCount, #charInfo.Clothing),
-            
-            table.concat(charInfo.BodyParts or {}, ", "),
-            #charInfo.Accessories > 0 and table.concat(charInfo.Accessories, ", ") or "Нет",
-            #charInfo.Clothing > 0 and table.concat(charInfo.Clothing, ", ") or "Нет"
+            #charInfo.BodyParts > 0 and 
+                ("    " .. table.concat(charInfo.BodyParts, ", ")) or "    N/A",
+            #charInfo.Accessories > 0 and 
+                ("    " .. table.concat(charInfo.Accessories, "\n    ")) or "    Нет аксессуаров",
+            #charInfo.Clothing > 0 and 
+                ("    " .. table.concat(charInfo.Clothing, ", ")) or "    Нет одежды"
         )
         
     elseif currentTab == "система" then
         text = string.format([[
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                       💻 СИСТЕМНАЯ ИНФОРМАЦИЯ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+              💻 СИСТЕМНАЯ ИНФОРМАЦИЯ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 🖥️  УСТРОЙСТВО:
-┌─────────────────────────────────────────────────────────────────
-├─ 📱 Тип: %s
+├─ 📱 Тип устройства: %s
 ├─ 🌐 Platform: %s
 ├─ 🥽 VR Enabled: %s
-├─ 📱 Touch: %s
-├─ ⌨️  Keyboard: %s
-├─ 🖱️  Mouse: %s
-├─ 🎮 Gamepad: %s
+├─ 📱 Touch Support: %s
+├─ ⌨️  Keyboard Support: %s
+├─ 🖱️  Mouse Support: %s
+├─ 🎮 Gamepad Support: %s
 ├─ 📐 Accelerometer: %s
 └─ 🧭 Gyroscope: %s
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 🖥️  ЭКРАН И КАМЕРА:
-┌─────────────────────────────────────────────────────────────────
-├─ 📺 Разрешение: %s
-├─ 📏 Width: %d px
-├─ 📏 Height: %d px
-├─ 📐 Aspect Ratio: %s
-├─ 📹 Camera Type: %s
+├─ 📺 Разрешение экрана: %s
+├─ 📏 Ширина: %d px
+├─ 📏 Высота: %d px
+├─ 📐 Соотношение сторон: %s
+├─ 📹 Тип камеры: %s
 ├─ 🎯 Camera Subject: %s
 └─ 👁️  Field of View: %.1f°
 
-⚡ ПРОИЗВОДИТЕЛЬНОСТЬ:
-┌─────────────────────────────────────────────────────────────────
-├─ 🎯 FPS (текущий): %d
-├─ 📊 FPS (средний): %d
-├─ 🟢 FPS (мин): %d
-├─ 🔴 FPS (макс): %d
-├─ ⚡ Оценка: %s
-├─ ⚙️  Physics FPS: %d
-└─ 💓 Heartbeat Time: %s
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-💾 ПАМЯТЬ:
-┌─────────────────────────────────────────────────────────────────
-├─ 📦 Использовано: %d MB
+💾 ПАМЯТЬ И ПРОИЗВОДИТЕЛЬНОСТЬ:
+├─ 📦 Использовано памяти: %d MB
 ├─ 📊 В килобайтах: %d KB
-├─ 🔢 Instances: %d
-└─ 🔺 Primitives: %d
+├─ 🔢 Количество Instances: %d
+├─ 🔺 Количество Primitives: %d
+└─ 🎨 Качество графики: Level %s
 
-🎨 ГРАФИКА:
-┌─────────────────────────────────────────────────────────────────
-├─ 🎮 Quality Level: %s
-├─ 🖼️  Graphics Mode: %s
-├─ ☀️  Brightness: %s
-├─ 🌫️  Fog End: %s studs
-├─ 🌫️  Fog Start: %s studs
-├─ 🌈 Fog Color: %s
-├─ 🌑 Global Shadows: %s
-└─ 🌤️  Outdoor Ambient: %s
-
-📡 СЕТЬ:
-┌─────────────────────────────────────────────────────────────────
-├─ 📤 Upload: %d kbps
-├─ 📥 Download: %d kbps
-└─ 📡 Ping: %d ms
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         ]],
-            sysInfo.Device, sysInfo.Platform,
+            sysInfo.Device,
+            sysInfo.Platform,
             sysInfo.VREnabled and "✅ Да" or "❌ Нет",
             sysInfo.TouchEnabled and "✅ Да" or "❌ Нет",
             sysInfo.KeyboardEnabled and "✅ Да" or "❌ Нет",
@@ -1306,172 +969,191 @@ function UpdatePlayerInfo(player)
             sysInfo.GyroscopeEnabled and "✅ Да" or "❌ Нет",
             
             sysInfo.ScreenResolution,
-            sysInfo.ScreenWidth, sysInfo.ScreenHeight,
+            sysInfo.ScreenWidth,
+            sysInfo.ScreenHeight,
             sysInfo.AspectRatio,
-            sysInfo.CameraType, sysInfo.CameraSubject,
+            sysInfo.CameraType,
+            sysInfo.CameraSubject,
             sysInfo.FieldOfView,
             
-            sysInfo.CurrentFPS, sysInfo.AvgFPS, sysInfo.MinFPS, sysInfo.MaxFPS,
-            sysInfo.Performance,
-            sysInfo.PhysicsFPS,
-            sysInfo.HeartbeatTime,
-            
-            sysInfo.MemoryUsage, sysInfo.MemoryUsageKB,
-            sysInfo.InstanceCount, sysInfo.PrimitivesCount,
-            
-            sysInfo.GraphicsQuality, sysInfo.GraphicsMode,
-            addInfo.Brightness, addInfo.FogEnd, addInfo.FogStart,
-            addInfo.FogColor,
-            addInfo.GlobalShadows and "✅ Включены" or "❌ Выключены",
-            addInfo.OutdoorAmbient,
-            
-            sysInfo.DataSendKbps, sysInfo.DataReceiveKbps,
-            netInfo.CurrentPing
+            sysInfo.MemoryUsage,
+            sysInfo.MemoryUsageKB,
+            sysInfo.InstanceCount,
+            sysInfo.PrimitivesCount,
+            sysInfo.GraphicsQuality
         )
         
-    elseif currentTab == "статистика" then
-        local statsText = ""
-        if next(statsInfo.Leaderstats) then
-            for name, value in pairs(statsInfo.Leaderstats) do
-                statsText = statsText .. string.format("├─ %s: %s\n", name, value)
-            end
-        else
-            statsText = "└─ Нет статистики leaderstats"
-        end
-        
+    elseif currentTab == "сервер" then
         text = string.format([[
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                          📊 СТАТИСТИКА ИГРОКА
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+              🎮 ИНФОРМАЦИЯ О СЕРВЕРЕ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📈 LEADERSTATS:
-┌─────────────────────────────────────────────────────────────────
-%s
-
-👤 ИНФОРМАЦИЯ ОБ АККАУНТЕ:
-┌─────────────────────────────────────────────────────────────────
-├─ 🆔 UserID: %d
-├─ 📅 Возраст: %d дней (%.2f лет)
-├─ 📆 Создан: %s
-├─ ⭐ Premium: %s
-├─ ✅ Verified: %s
-└─ 👥 Друг: %s
-
-⏱️  ИГРОВОЕ ВРЕМЯ:
-┌─────────────────────────────────────────────────────────────────
-├─ 🕐 В этой сессии: %s
-├─ ⏱️  Секунд: %d
-└─ 📊 Uptime сервера: %s
-
-👥 КОМАНДА:
-┌─────────────────────────────────────────────────────────────────
-├─ 🏆 Название: %s
-├─ 🎨 Цвет: %s
-└─ 👤 Игроков: %d
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        ]],
-            statsText,
-            playerInfo.UserId, playerInfo.AccountAgeDays, tonumber(playerInfo.AccountAgeYears),
-            playerInfo.AccountCreated, playerInfo.PremiumStatus,
-            playerInfo.VerifiedStatus, playerInfo.FriendStatus,
-            playerInfo.TimeInGame, playerInfo.TimeInGameSeconds,
-            addInfo.UptimeFormatted,
-            playerInfo.TeamName, playerInfo.TeamColor, playerInfo.TeamPlayers
-        )
-        
-    elseif currentTab == "дополнительно" then
-        text = string.format([[
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                      🔧 ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎮 ИНФОРМАЦИЯ О СЕРВЕРЕ:
-┌─────────────────────────────────────────────────────────────────
+🌐 ОСНОВНАЯ ИНФОРМАЦИЯ:
 ├─ 🎯 PlaceID: %d
 ├─ 🌐 GameID: %d
 ├─ 🔑 JobID: %s
 ├─ 👤 CreatorID: %d
 ├─ 🏢 Creator Type: %s
-├─ 👥 Игроков: %s
-├─ 🌍 Server Full: %s
-├─ ⏰ Server Time: %s
-├─ 📅 Server Date: %s
-└─ ⏱️  Uptime: %s
+├─ 👥 Игроков онлайн: %d
+├─ 🎮 Максимум игроков: %d
+├─ 📊 Заполненность: %s
+└─ 🔴 Сервер полон: %s
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⏰ ВРЕМЯ И ДАТА:
+├─ 🕐 Текущее время: %s
+├─ 📅 Текущая дата: %s
+├─ ⏱️  Uptime сервера: %s
+├─ ⏰ Uptime в секундах: %d
+└─ 📊 Запущен: %s
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 🌍 ИГРОВОЙ МИР:
-┌─────────────────────────────────────────────────────────────────
 ├─ 🌅 Time of Day: %s
 ├─ ⏰ Clock Time: %.2f
 ├─ ☀️  Brightness: %.2f
 ├─ 🌫️  Fog End: %d studs
 ├─ 🌫️  Fog Start: %d studs
-├─ 🌈 Fog Color: %s
 ├─ 🌑 Global Shadows: %s
-├─ 🌤️  Outdoor Ambient: %s
 ├─ ⬇️  Gravity: %.2f
-├─ 📡 Streaming: %s
-└─ 🛡️  Filtering: %s
+└─ 📡 Streaming Enabled: %s
 
-🔊 ЗВУК И GUI:
-┌─────────────────────────────────────────────────────────────────
-├─ 🔊 Master Volume: %.2f
-├─ 🔇 Sound Enabled: %s
-├─ 📱 GUI Inset: %s
-├─ 📏 Topbar Inset: %dpx
-└─ 📦 ReplicatedStorage: %d items
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🛡️ БЕЗОПАСНОСТЬ:
-┌─────────────────────────────────────────────────────────────────
-├─ 💬 Chat: %s
-├─ 🎙️  Voice: %s
-├─ 🚫 Guest: %s
-└─ 🌍 Locale: %s
+📋 СПИСОК ИГРОКОВ (%d):
+%s
 
-🔧 ТЕХНИЧЕСКОЕ:
-┌─────────────────────────────────────────────────────────────────
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        ]],
+            serverInfo.PlaceId,
+            serverInfo.GameId,
+            serverInfo.JobId,
+            serverInfo.CreatorId,
+            serverInfo.CreatorType,
+            serverInfo.TotalPlayers,
+            serverInfo.MaxPlayers,
+            serverInfo.PlayerSlots,
+            serverInfo.TotalPlayers >= serverInfo.MaxPlayers and "✅ Да" or "❌ Нет",
+            
+            serverInfo.ServerTime,
+            serverInfo.ServerDate,
+            serverInfo.UptimeFormatted,
+            serverInfo.Uptime,
+            os.date("%H:%M:%S %d.%m.%Y", os.time() - serverInfo.Uptime),
+            
+            serverInfo.TimeOfDay,
+            serverInfo.ClockTime,
+            serverInfo.Brightness,
+            serverInfo.FogEnd,
+            serverInfo.FogStart,
+            serverInfo.GlobalShadows and "✅ Включены" or "❌ Выключены",
+            serverInfo.Gravity,
+            serverInfo.StreamingEnabled and "✅ Да" or "❌ Нет",
+            
+            serverInfo.TotalPlayers,
+            (function()
+                local list = ""
+                for i, plr in ipairs(Players:GetPlayers()) do
+                    list = list .. string.format("├─ %d. %s (@%s)\n", i, plr.Name, plr.DisplayName)
+                end
+                return list
+            end)()
+        )
+        
+    elseif currentTab == "дополнительно" then
+        text = string.format([[
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+           🔧 ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👤 О ВАС (LocalPlayer):
+├─ 🏷️  Ваше имя: %s
+├─ 📛 Display Name: %s
+├─ 🆔 Ваш UserID: %d
+├─ ⭐ Premium: %s
+└─ 👥 Друзей: Проверяется...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎮 СРАВНЕНИЕ С ВЫБРАННЫМ ИГРОКОМ:
+├─ 👤 Выбран: %s
+├─ 📏 Расстояние: %s studs
+├─ 👥 Друг: %s
+├─ 🏆 В одной команде: %s
+└─ ⚡ Старше аккаунт: %s
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🌐 ТЕХНИЧЕСКИЕ ДАННЫЕ:
+├─ 🎮 PlaceID: %d
+├─ 🌐 GameID: %d
+├─ 🔑 JobID: %s
 ├─ 🏠 Is Studio: %s
 ├─ 🖥️  Is Server: %s
 ├─ 💻 Is Client: %s
-├─ 🎮 Is Local Player: %s
-└─ 👤 Following: %s
+└─ 📦 ReplicatedStorage Items: %d
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎨 ГРАФИКА И ЗВУК:
+├─ ☀️  Brightness: %.2f
+├─ 🌫️  Fog Color: RGB(...)
+├─ 🔊 Master Volume: %.2f
+├─ 🔇 Sound Enabled: %s
+└─ 📏 GUI Inset: ...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 КОМАНДЫ НА СЕРВЕРЕ (%d):
+%s
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         ]],
-            addInfo.PlaceId, addInfo.GameId, addInfo.JobId,
-            addInfo.CreatorId, addInfo.CreatorType,
-            addInfo.PlayerSlots,
-            addInfo.ServerFull and "✅ Да" or "❌ Нет",
-            addInfo.ServerTime, addInfo.ServerDate, addInfo.UptimeFormatted,
+            LocalPlayer.Name,
+            LocalPlayer.DisplayName,
+            LocalPlayer.UserId,
+            LocalPlayer.MembershipType == Enum.MembershipType.Premium and "✅ Да" or "❌ Нет",
             
-            addInfo.TimeOfDay, addInfo.ClockTime, addInfo.Brightness,
-            addInfo.FogEnd, addInfo.FogStart, addInfo.FogColor,
-            addInfo.GlobalShadows and "✅ Включены" or "❌ Выключены",
-            addInfo.OutdoorAmbient, addInfo.Gravity,
-            addInfo.StreamingEnabled and "✅ Да" or "❌ Нет",
-            addInfo.FilteringEnabled and "✅ Да" or "❌ Нет",
+            playerInfo.Name,
+            charInfo.Distance or "N/A",
+            playerInfo.FriendStatus,
+            (LocalPlayer.Team == player.Team) and "✅ Да" or "❌ Нет",
+            LocalPlayer.AccountAge > player.AccountAge and "✅ Да (на " .. (LocalPlayer.AccountAge - player.AccountAge) .. " дней)" or "❌ Нет",
             
-            addInfo.MasterVolume,
-            addInfo.SoundEnabled and "✅ Да" or "❌ Нет",
-            addInfo.GuiInset, addInfo.TopbarInset,
-            addInfo.ReplicatedStorageSize,
+            serverInfo.PlaceId,
+            serverInfo.GameId,
+            serverInfo.JobId,
+            RunService:IsStudio() and "✅ Да" or "❌ Нет",
+            RunService:IsServer() and "✅ Да" or "❌ Нет",
+            RunService:IsClient() and "✅ Да" or "❌ Нет",
+            #ReplicatedStorage:GetChildren(),
             
-            playerInfo.ChatStatus, playerInfo.VoiceStatus,
-            playerInfo.GuestStatus, playerInfo.LocaleId,
+            serverInfo.Brightness,
+            SoundService.MasterVolume,
+            SoundService.MasterVolume > 0 and "✅ Да" or "❌ Нет",
             
-            addInfo.IsStudio and "✅ Да" or "❌ Нет",
-            addInfo.IsServer and "✅ Да" or "❌ Нет",
-            addInfo.IsClient and "✅ Да" or "❌ Нет",
-            addInfo.IsLocalPlayer and "✅ Да (это вы)" or "❌ Нет",
-            playerInfo.IsFollowing and "User #" .. playerInfo.FollowUserId or "Никого"
+            #game:GetService("Teams"):GetTeams(),
+            (function()
+                local teams = ""
+                for i, team in ipairs(game:GetService("Teams"):GetTeams()) do
+                    teams = teams .. string.format("├─ %d. %s (%d игроков)\n", i, team.Name, #team:GetPlayers())
+                end
+                return teams ~= "" and teams or "└─ Нет команд"
+            end)()
         )
     end
     
     ContentText.Text = text
+    
+    -- Обновляем размер канваса
+    task.wait()
     TabContentFrame.CanvasSize = UDim2.new(0, 0, 0, ContentText.TextBounds.Y + 20)
 end
 
--- Функция создания кнопки игрока
+-- Создание кнопки игрока
 local function CreatePlayerButton(player)
     local Button = Instance.new("TextButton")
     Button.Name = player.Name
@@ -1480,25 +1162,15 @@ local function CreatePlayerButton(player)
     Button.BorderSizePixel = 0
     Button.Font = Enum.Font.GothamSemibold
     Button.Text = ""
-    Button.TextColor3 = Color3.fromRGB(220, 220, 220)
-    Button.TextSize = 13
     Button.Parent = PlayerListFrame
     
     local ButtonCorner = Instance.new("UICorner")
     ButtonCorner.CornerRadius = UDim.new(0, 10)
     ButtonCorner.Parent = Button
     
-    local ButtonGradient = Instance.new("UIGradient")
-    ButtonGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 35, 45)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(45, 45, 55))
-    }
-    ButtonGradient.Rotation = 90
-    ButtonGradient.Parent = Button
-    
-    -- Имя игрока
+    -- Имя
     local NameLabel = Instance.new("TextLabel")
-    NameLabel.Size = UDim2.new(1, -60, 1, -25)
+    NameLabel.Size = UDim2.new(1, -20, 1, -25)
     NameLabel.Position = UDim2.new(0, 10, 0, 0)
     NameLabel.BackgroundTransparency = 1
     NameLabel.Font = Enum.Font.GothamBold
@@ -1511,7 +1183,7 @@ local function CreatePlayerButton(player)
     
     -- DisplayName
     local DisplayLabel = Instance.new("TextLabel")
-    DisplayLabel.Size = UDim2.new(1, -60, 0, 15)
+    DisplayLabel.Size = UDim2.new(1, -20, 0, 15)
     DisplayLabel.Position = UDim2.new(0, 10, 1, -18)
     DisplayLabel.BackgroundTransparency = 1
     DisplayLabel.Font = Enum.Font.Gotham
@@ -1521,25 +1193,6 @@ local function CreatePlayerButton(player)
     DisplayLabel.TextXAlignment = Enum.TextXAlignment.Left
     DisplayLabel.TextTruncate = Enum.TextTruncate.AtEnd
     DisplayLabel.Parent = Button
-    
-    -- Ping индикатор
-    local PingFrame = Instance.new("Frame")
-    PingFrame.Size = UDim2.new(0, 50, 0, 25)
-    PingFrame.Position = UDim2.new(1, -55, 0, 5)
-    PingFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    PingFrame.BorderSizePixel = 0
-    PingFrame.Parent = Button
-    
-    local PingCorner = Instance.new("UICorner")
-    PingCorner.CornerRadius = UDim.new(0, 8)
-    PingCorner.Parent = PingFrame
-    
-    local PingLabel = Instance.new("TextLabel")
-    PingLabel.Size = UDim2.new(1, 0, 1, 0)
-    PingLabel.BackgroundTransparency = 1
-    PingLabel.Font = Enum.Font.GothamBold
-    PingLabel.TextSize = 11
-    PingLabel.Parent = PingFrame
     
     -- Индикатор состояния
     local StatusIndicator = Instance.new("Frame")
@@ -1552,27 +1205,9 @@ local function CreatePlayerButton(player)
     StatusCorner.CornerRadius = UDim.new(1, 0)
     StatusCorner.Parent = StatusIndicator
     
-    -- Обновление пинга и статуса
+    -- Обновление статуса
     RunService.Heartbeat:Connect(function()
         if player and player.Parent then
-            local ping = GetRealPing(player)
-            PingLabel.Text = ping .. "ms"
-            
-            if ping < 50 then
-                PingLabel.TextColor3 = Color3.fromRGB(40, 255, 40)
-                PingFrame.BackgroundColor3 = Color3.fromRGB(20, 80, 20)
-            elseif ping < 100 then
-                PingLabel.TextColor3 = Color3.fromRGB(255, 255, 40)
-                PingFrame.BackgroundColor3 = Color3.fromRGB(80, 80, 20)
-            elseif ping < 200 then
-                PingLabel.TextColor3 = Color3.fromRGB(255, 150, 40)
-                PingFrame.BackgroundColor3 = Color3.fromRGB(80, 50, 20)
-            else
-                PingLabel.TextColor3 = Color3.fromRGB(255, 40, 40)
-                PingFrame.BackgroundColor3 = Color3.fromRGB(80, 20, 20)
-            end
-            
-            -- Статус персонажа
             if player.Character and player.Character:FindFirstChild("Humanoid") then
                 local health = player.Character.Humanoid.Health
                 if health > 75 then
@@ -1590,27 +1225,15 @@ local function CreatePlayerButton(player)
     
     Button.MouseButton1Click:Connect(function()
         selectedPlayer = player
-        UpdatePlayerInfo(player)
+        ShowPlayerInfo(player)
         
-        -- Подсветка выбранной кнопки
+        -- Подсветка
         for _, btn in pairs(PlayerListFrame:GetChildren()) do
             if btn:IsA("TextButton") then
                 btn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
-                local grad = btn:FindFirstChild("UIGradient")
-                if grad then
-                    grad.Color = ColorSequence.new{
-                        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 35, 45)),
-                        ColorSequenceKeypoint.new(1, Color3.fromRGB(45, 45, 55))
-                    }
-                end
             end
         end
-        
         Button.BackgroundColor3 = Color3.fromRGB(60, 140, 255)
-        ButtonGradient.Color = ColorSequence.new{
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 120, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(70, 160, 255))
-        }
     end)
     
     Button.MouseEnter:Connect(function()
@@ -1624,8 +1247,6 @@ local function CreatePlayerButton(player)
             Button.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
         end
     end)
-    
-    return Button
 end
 
 -- Обновление списка игроков
@@ -1640,7 +1261,9 @@ local function UpdatePlayerList(searchQuery)
     searchQuery = searchQuery:lower()
     
     for _, player in pairs(Players:GetPlayers()) do
-        if searchQuery == "" or player.Name:lower():find(searchQuery) or player.DisplayName:lower():find(searchQuery) then
+        if searchQuery == "" or 
+           player.Name:lower():find(searchQuery) or 
+           player.DisplayName:lower():find(searchQuery) then
             CreatePlayerButton(player)
         end
     end
@@ -1657,7 +1280,7 @@ end)
 Players.PlayerRemoving:Connect(function(player)
     if selectedPlayer == player then
         selectedPlayer = nil
-        ContentText.Text = "Игрок покинул сервер. Выберите другого игрока."
+        ContentText.Text = "❌ Игрок покинул сервер"
     end
     UpdatePlayerList(SearchBox.Text)
 end)
@@ -1669,12 +1292,10 @@ end)
 RefreshButton.MouseButton1Click:Connect(function()
     UpdatePlayerList(SearchBox.Text)
     if selectedPlayer and selectedPlayer.Parent then
-        UpdatePlayerInfo(selectedPlayer)
+        ShowPlayerInfo(selectedPlayer)
     end
-    
-    -- Анимация кнопки
     RefreshButton.BackgroundColor3 = Color3.fromRGB(60, 255, 100)
-    wait(0.1)
+    wait(0.2)
     RefreshButton.BackgroundColor3 = Color3.fromRGB(40, 200, 80)
 end)
 
@@ -1687,11 +1308,11 @@ CopyButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Автообновление информации
+-- Автообновление
 spawn(function()
-    while wait(0.5) do
+    while wait(1) do
         if selectedPlayer and selectedPlayer.Parent and MainFrame.Visible then
-            UpdatePlayerInfo(selectedPlayer)
+            ShowPlayerInfo(selectedPlayer)
         end
     end
 end)
@@ -1711,69 +1332,9 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- Нотификация о загрузке
-local function CreateNotification(text, duration)
-    local Notification = Instance.new("Frame")
-    Notification.Size = UDim2.new(0, 300, 0, 60)
-    Notification.Position = UDim2.new(1, -310, 1, -70)
-    Notification.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-    Notification.BorderSizePixel = 0
-    Notification.Parent = ScreenGui
-    
-    local NotifCorner = Instance.new("UICorner")
-    NotifCorner.CornerRadius = UDim.new(0, 10)
-    NotifCorner.Parent = Notification
-    
-    local NotifText = Instance.new("TextLabel")
-    NotifText.Size = UDim2.new(1, -20, 1, -20)
-    NotifText.Position = UDim2.new(0, 10, 0, 10)
-    NotifText.BackgroundTransparency = 1
-    NotifText.Font = Enum.Font.GothamBold
-    NotifText.Text = text
-    NotifText.TextColor3 = Color3.fromRGB(255, 255, 255)
-    NotifText.TextSize = 14
-    NotifText.TextWrapped = true
-    NotifText.Parent = Notification
-    
-    Notification:TweenPosition(
-        UDim2.new(1, -310, 1, -70),
-        Enum.EasingDirection.Out,
-        Enum.EasingStyle.Back,
-        0.5,
-        true
-    )
-    
-    wait(duration or 3)
-    
-    Notification:TweenPosition(
-        UDim2.new(1, 10, 1, -70),
-        Enum.EasingDirection.In,
-        Enum.EasingStyle.Back,
-        0.5,
-        true
-    )
-    
-    wait(0.5)
-    Notification:Destroy()
-end
-
-CreateNotification("🎯 Ultimate Player Info v3.0 загружен!\nНажмите INSERT для открытия", 5)
-
-print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-print("🎯 ULTIMATE PLAYER INFO CHEAT v3.0 Successfully Loaded!")
-print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-print("📌 Controls:")
-print("   ├─ Press INSERT to toggle menu")
-print("   ├─ Click player name to view info")
-print("   ├─ Use tabs to filter information")
-print("   └─ 🔄 Refresh button to update data")
-print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-print("✅ Features:")
-print("   ├─ 100+ параметров отслеживания")
-print("   ├─ Реальный Ping с историей")
-print("   ├─ FPS мониторинг")
-print("   ├─ 6 вкладок информации")
-print("   ├─ Поиск игроков")
-print("   ├─ Автообновление данных")
-print("   └─ Копирование информации")
-print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+print("🎯 Ultimate Player Info v3.1 LOADED!")
+print("📌 Press INSERT to open")
+print("✅ 100+ Parameters (NO Ping/FPS)")
+print("🔧 FIXED: Info display working!")
+print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
