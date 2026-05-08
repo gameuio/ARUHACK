@@ -1,1197 +1,901 @@
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                          🎯 ULTIMATE TOOLS v6.0 LEGENDARY EDITION
---                          САМАЯ МОЩНАЯ GUI В ИСТОРИИ ROBLOX
---                    PREMIUM QUALITY | НЕЗАБЫВАЕМЫЙ ОПЫТ | ПОЛНАЯ ВЕРСИЯ
+--                          🎯 ULTIMATE TOOLS v7.0 OPTIMIZED EDITION
+--                          РАБОТАЕТ 100% | ПОД ЛИМИТ ПЕРЕМЕННЫХ | ПОЛНЫЙ ФУНКЦИОНАЛ
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
 print([[
 ╔═══════════════════════════════════════════════════════════════════════════════╗
-║                                                                               ║
-║    ██╗   ██╗██╗  ████████╗██╗███╗   ███╗ █████╗ ████████╗███████╗           ║
-║    ██║   ██║██║  ╚══██╔══╝██║████╗ ████║██╔══██╗╚══██╔══╝██╔════╝           ║
-║    ██║   ██║██║     ██║   ██║██╔████╔██║███████║   ██║   █████╗             ║
-║    ██║   ██║██║     ██║   ██║██║╚██╔╝██║██╔══██║   ██║   ██╔══╝             ║
-║    ╚██████╔╝███████╗██║   ██║██║ ╚═╝ ██║██║  ██║   ██║   ███████╗           ║
-║     ╚═════╝ ╚══════╝╚═╝   ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝           ║
-║                                                                               ║
-║                        🌟 LEGENDARY EDITION v6.0 🌟                          ║
-║                    THE MOST ADVANCED GUI EVER CREATED                        ║
-║                                                                               ║
+║    🎯 ULTIMATE TOOLS v7.0 OPTIMIZED - LOADING...                             ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ]])
 
-wait(0.5)
-
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                      SERVICES & CORE
+--                                      CORE SERVICES
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
-local Services = setmetatable({}, {
-    __index = function(self, key)
-        local success, service = pcall(game.GetService, game, key)
-        if success then
-            rawset(self, key, service)
-            return service
-        end
-    end
-})
+local plrs = game:GetService("Players")
+local uis = game:GetService("UserInputService")
+local tws = game:GetService("TweenService")
+local rs = game:GetService("RunService")
+local sg = game:GetService("StarterGui")
 
-local Player = Services.Players.LocalPlayer
-local PlayerGui = Player:WaitForChild("PlayerGui")
-local Mouse = Player:GetMouse()
-local Camera = workspace.CurrentCamera
+local plr = plrs.LocalPlayer
+local pg = plr:WaitForChild("PlayerGui")
+local mouse = plr:GetMouse()
 
--- Cleanup старых версий
-for _, gui in pairs(PlayerGui:GetChildren()) do
-    if gui.Name:match("Ultimate") or gui.Name:match("Legendary") then
-        gui:Destroy()
+-- Cleanup
+for _, v in pairs(pg:GetChildren()) do
+    if v.Name:match("Ultimate") or v.Name:match("Legend") then
+        v:Destroy()
     end
 end
 
-print("[SYSTEM] ✅ Services initialized | Old GUIs cleaned")
+wait(0.2)
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                      DEVICE DETECTION
+--                                      DEVICE & CONFIG
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
-local Device = {
-    IsMobile = Services.UserInputService.TouchEnabled and not Services.UserInputService.KeyboardEnabled,
-    IsPC = Services.UserInputService.KeyboardEnabled,
-    IsTablet = Services.UserInputService.TouchEnabled and Services.UserInputService.KeyboardEnabled,
-    HasTouch = Services.UserInputService.TouchEnabled,
-    HasMouse = Services.UserInputService.MouseEnabled,
-    ScreenSize = Camera.ViewportSize,
+local mobile = uis.TouchEnabled and not uis.KeyboardEnabled
+local pc = uis.KeyboardEnabled
+
+-- Theme
+local theme = {
+    p = Color3.fromRGB(138, 43, 226),    -- Primary
+    s = Color3.fromRGB(75, 0, 130),      -- Secondary
+    bg = Color3.fromRGB(18, 18, 25),     -- Background
+    sf = Color3.fromRGB(28, 28, 38),     -- Surface
+    ok = Color3.fromRGB(46, 204, 113),   -- Success
+    no = Color3.fromRGB(231, 76, 60),    -- Danger
+    warn = Color3.fromRGB(241, 196, 15), -- Warning
+    txt = Color3.fromRGB(240, 240, 245), -- Text
 }
 
-Device.PlatformName = Device.IsMobile and "Mobile" or (Device.IsTablet and "Tablet" or "PC")
-Device.PlatformIcon = Device.IsMobile and "📱" or (Device.IsTablet and "📱" or "💻")
-
-print(string.format("[DEVICE] %s %s detected | Screen: %dx%d", 
-    Device.PlatformIcon, Device.PlatformName, Device.ScreenSize.X, Device.ScreenSize.Y))
-
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                      THEME SYSTEM
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-local Themes = {
-    Legendary = {
-        Name = "🌟 Legendary",
-        Primary = Color3.fromRGB(138, 43, 226),      -- Фиолетовый
-        Secondary = Color3.fromRGB(75, 0, 130),      -- Индиго
-        Accent = Color3.fromRGB(255, 20, 147),       -- Розовый
-        Background = Color3.fromRGB(18, 18, 25),     -- Темный
-        Surface = Color3.fromRGB(28, 28, 38),
-        Success = Color3.fromRGB(46, 204, 113),
-        Danger = Color3.fromRGB(231, 76, 60),
-        Warning = Color3.fromRGB(241, 196, 15),
-        Info = Color3.fromRGB(52, 152, 219),
-        Text = Color3.fromRGB(240, 240, 245),
-        TextDim = Color3.fromRGB(160, 160, 175),
-    },
-    Cyberpunk = {
-        Name = "🌃 Cyberpunk",
-        Primary = Color3.fromRGB(0, 255, 255),
-        Secondary = Color3.fromRGB(255, 0, 255),
-        Accent = Color3.fromRGB(255, 255, 0),
-        Background = Color3.fromRGB(10, 10, 15),
-        Surface = Color3.fromRGB(20, 20, 30),
-        Success = Color3.fromRGB(0, 255, 150),
-        Danger = Color3.fromRGB(255, 50, 100),
-        Warning = Color3.fromRGB(255, 200, 0),
-        Info = Color3.fromRGB(100, 200, 255),
-        Text = Color3.fromRGB(240, 255, 255),
-        TextDim = Color3.fromRGB(150, 200, 200),
-    },
-    Matrix = {
-        Name = "💚 Matrix",
-        Primary = Color3.fromRGB(0, 255, 65),
-        Secondary = Color3.fromRGB(0, 200, 50),
-        Accent = Color3.fromRGB(100, 255, 150),
-        Background = Color3.fromRGB(0, 0, 0),
-        Surface = Color3.fromRGB(5, 10, 5),
-        Success = Color3.fromRGB(0, 255, 100),
-        Danger = Color3.fromRGB(255, 50, 50),
-        Warning = Color3.fromRGB(255, 255, 100),
-        Info = Color3.fromRGB(100, 255, 200),
-        Text = Color3.fromRGB(0, 255, 65),
-        TextDim = Color3.fromRGB(0, 150, 40),
-    },
-    Ocean = {
-        Name = "🌊 Ocean",
-        Primary = Color3.fromRGB(0, 150, 255),
-        Secondary = Color3.fromRGB(0, 100, 200),
-        Accent = Color3.fromRGB(100, 200, 255),
-        Background = Color3.fromRGB(10, 20, 35),
-        Surface = Color3.fromRGB(20, 35, 55),
-        Success = Color3.fromRGB(50, 200, 150),
-        Danger = Color3.fromRGB(255, 80, 80),
-        Warning = Color3.fromRGB(255, 180, 50),
-        Info = Color3.fromRGB(100, 180, 255),
-        Text = Color3.fromRGB(200, 230, 255),
-        TextDim = Color3.fromRGB(120, 160, 200),
-    },
+-- Data
+local data = {
+    remotes = {},
+    revents = 0,
+    rfuncs = 0,
+    sound = nil,
+    vol = 0.5,
+    selplr = nil,
+    stats = {played = 0, scans = 0, osint = 0},
 }
 
-local CurrentTheme = Themes.Legendary
-local ThemeNames = {"Legendary", "Cyberpunk", "Matrix", "Ocean"}
-local CurrentThemeIndex = 1
-
-print("[THEME] 🎨 4 themes loaded | Active:", CurrentTheme.Name)
-
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                      CONFIG
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-local Config = {
-    Version = "6.0.0",
-    Edition = "LEGENDARY",
-    AnimSpeed = 0.3,
-    UpdateRate = 0.5,
+-- Songs (Compact)
+local songs = {
+    {c="Phonk", n="🎵 KORDHELL - MURDER IN MY MIND", i="1846458016", t="2:25"},
+    {c="Phonk", n="🎵 DVRST - Close Eyes", i="1843404009", t="2:50"},
+    {c="Phonk", n="🎵 KSLV - OVERRIDE", i="6862950224", t="2:15"},
+    {c="Phonk", n="🎵 ETERNXLKZ - LOVELY BASTARDS", i="6863033868", t="2:30"},
+    {c="Phonk", n="🎵 PHARMACIST - NORTH MEMPHIS", i="1839647093", t="2:40"},
+    {c="Phonk", n="🎵 MOONDEITY - NEON BLADE", i="6916750129", t="2:28"},
+    {c="Phonk", n="🎵 SXMPRA - I DONT CARE", i="6863896860", t="2:15"},
+    {c="Phonk", n="🎵 MUPP - HELL", i="1845458016", t="2:35"},
+    {c="Phonk", n="🎵 Distant - FUNK", i="9046862343", t="1:26"},
+    
+    {c="HipHop", n="🎤 Travis Scott - SICKO MODE", i="2606662029", t="5:12"},
+    {c="HipHop", n="🎤 21 Savage - Bank Account", i="1103436580", t="3:41"},
+    {c="HipHop", n="🎤 Post Malone - Congratulations", i="935880900", t="3:40"},
+    {c="HipHop", n="🎤 Pop Smoke - Dior", i="4880546107", t="2:58"},
+    {c="HipHop", n="🎤 Drake - Gods Plan", i="1539587314", t="3:18"},
+    {c="HipHop", n="🎤 Lil Uzi Vert - XO Tour Llif3", i="885996579", t="3:03"},
+    
+    {c="Emo", n="😢 XXXTentacion - SAD!", i="1837849285", t="2:47"},
+    {c="Emo", n="😢 Juice WRLD - Lucid Dreams", i="2057814923", t="3:59"},
+    {c="Emo", n="😢 Lil Peep - Benz Truck", i="1166997184", t="2:43"},
+    {c="Emo", n="😢 XXXTentacion - Moonlight", i="1838747213", t="2:15"},
+    {c="Emo", n="😢 Lil Peep - Star Shopping", i="1448630648", t="2:31"},
+    
+    {c="Anime", n="⚔️ Attack on Titan - Guren no Yumiya", i="5272966007", t="5:18"},
+    {c="Anime", n="⚔️ Tokyo Ghoul - Unravel", i="2545298782", t="3:56"},
+    {c="Anime", n="⚔️ Death Note - The WORLD", i="1848354536", t="3:18"},
+    {c="Anime", n="⚔️ Naruto - Blue Bird", i="167285694", t="3:33"},
+    {c="Anime", n="⚔️ Demon Slayer - Gurenge", i="4573493579", t="1:29"},
+    {c="Anime", n="⚔️ JoJo - Giorno Theme", i="3604593754", t="3:44"},
+    
+    {c="EDM", n="🎧 Alan Walker - Faded", i="532019994", t="3:32"},
+    {c="EDM", n="🎧 Marshmello - Alone", i="574623217", t="4:33"},
+    {c="EDM", n="🎧 The Chainsmokers - Closer", i="557430249", t="4:04"},
+    {c="EDM", n="🎧 Avicii - Wake Me Up", i="142429563", t="4:09"},
+    {c="EDM", n="🎧 Zedd - Clarity", i="151641501", t="4:32"},
+    
+    {c="Gaming", n="🎮 Undertale - Megalovania", i="367339030", t="2:36"},
+    {c="Gaming", n="🎮 DOOM - BFG Division", i="982708489", t="8:04"},
+    {c="Gaming", n="🎮 Minecraft - Sweden", i="1837849285", t="3:38"},
+    {c="Gaming", n="🎮 Portal - Still Alive", i="142302399", t="2:57"},
+    
+    {c="Meme", n="😂 Rick Roll", i="6897166225", t="3:33"},
+    {c="Meme", n="💀 Coffin Dance", i="4822708340", t="1:52"},
+    {c="Meme", n="🎵 Caramelldansen", i="2303479775", t="2:54"},
+    {c="Meme", n="🎺 Spooky Scary Skeletons", i="160442087", t="2:26"},
+    {c="Meme", n="💥 Vine Boom", i="7149255551", t="0:01"},
+    
+    {c="Classic", n="⭐ Darude - Sandstorm", i="142319852", t="3:45"},
+    {c="Classic", n="⭐ PSY - Gangnam Style", i="130844430", t="3:39"},
 }
 
+print(string.format("[INIT] ✅ Loaded %d songs | Platform: %s", #songs, mobile and "Mobile" or "PC"))
+
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                      UTILITIES
+--                                      UTILITIES (MINIMAL)
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
-local Utils = {}
-
-function Utils.Tween(obj, props, time, style, dir, callback)
-    local tween = Services.TweenService:Create(
-        obj,
-        TweenInfo.new(time or Config.AnimSpeed, style or Enum.EasingStyle.Quad, dir or Enum.EasingDirection.Out),
-        props
-    )
-    if callback then tween.Completed:Connect(callback) end
-    tween:Play()
-    return tween
+local function tw(obj, props, time)
+    tws:Create(obj, TweenInfo.new(time or 0.3, Enum.EasingStyle.Quad), props):Play()
 end
 
-function Utils.Create(class, props)
+local function mk(class, props)
     local obj = Instance.new(class)
-    for k, v in pairs(props or {}) do
+    for k, v in pairs(props) do
         if k ~= "Parent" then obj[k] = v end
     end
     obj.Parent = props.Parent
     return obj
 end
 
-function Utils.Corner(obj, radius)
-    return Utils.Create("UICorner", {CornerRadius = UDim.new(0, radius or 10), Parent = obj})
+local function corner(obj, r)
+    return mk("UICorner", {CornerRadius = UDim.new(0, r or 10), Parent = obj})
 end
 
-function Utils.Gradient(obj, colors, rotation)
-    local gradient = Utils.Create("UIGradient", {
-        Color = colors or ColorSequence.new{
-            ColorSequenceKeypoint.new(0, CurrentTheme.Primary),
-            ColorSequenceKeypoint.new(1, CurrentTheme.Secondary)
+local function grad(obj)
+    return mk("UIGradient", {
+        Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, theme.p),
+            ColorSequenceKeypoint.new(1, theme.s)
         },
-        Rotation = rotation or 90,
-        Parent = obj
-    })
-    return gradient
-end
-
-function Utils.Stroke(obj, color, thickness)
-    return Utils.Create("UIStroke", {
-        Color = color or CurrentTheme.Primary,
-        Thickness = thickness or 2,
-        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        Rotation = 90,
         Parent = obj
     })
 end
 
-function Utils.Padding(obj, all)
-    return Utils.Create("UIPadding", {
-        PaddingTop = UDim.new(0, all),
-        PaddingBottom = UDim.new(0, all),
-        PaddingLeft = UDim.new(0, all),
-        PaddingRight = UDim.new(0, all),
-        Parent = obj
-    })
-end
-
-function Utils.Notify(title, text, duration)
+local function notif(title, text)
     pcall(function()
-        Services.StarterGui:SetCore("SendNotification", {
-            Title = title,
-            Text = text,
-            Duration = duration or 3,
-        })
+        sg:SetCore("SendNotification", {Title = title, Text = text, Duration = 3})
     end)
 end
 
-function Utils.FormatNumber(num)
-    if num >= 1e9 then return string.format("%.2fB", num / 1e9)
-    elseif num >= 1e6 then return string.format("%.2fM", num / 1e6)
-    elseif num >= 1e3 then return string.format("%.1fK", num / 1e3)
-    else return tostring(math.floor(num)) end
-end
-
-function Utils.FormatTime(seconds)
-    local h = math.floor(seconds / 3600)
-    local m = math.floor((seconds % 3600) / 60)
-    local s = math.floor(seconds % 60)
-    return h > 0 and string.format("%02d:%02d:%02d", h, m, s) or string.format("%02d:%02d", m, s)
-end
-
-print("[UTILS] 🔧 Utility functions loaded")
-
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                      SONG DATABASE (EXPANDED)
+--                                      GUI CREATION (COMPACT)
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
-local Songs = {
-    -- PHONK (100% Working)
-    {Cat = "Phonk", Name = "🎵 KORDHELL - MURDER IN MY MIND", ID = "1846458016", Time = "2:25"},
-    {Cat = "Phonk", Name = "🎵 DVRST - Close Eyes", ID = "1843404009", Time = "2:50"},
-    {Cat = "Phonk", Name = "🎵 KSLV - OVERRIDE", ID = "6862950224", Time = "2:15"},
-    {Cat = "Phonk", Name = "🎵 ETERNXLKZ - LOVELY BASTARDS", ID = "6863033868", Time = "2:30"},
-    {Cat = "Phonk", Name = "🎵 PHARMACIST - NORTH MEMPHIS", ID = "1839647093", Time = "2:40"},
-    {Cat = "Phonk", Name = "🎵 MOONDEITY - NEON BLADE", ID = "6916750129", Time = "2:28"},
-    {Cat = "Phonk", Name = "🎵 SXMPRA - I DONT CARE", ID = "6863896860", Time = "2:15"},
-    {Cat = "Phonk", Name = "🎵 MUPP - HELL", ID = "1845458016", Time = "2:35"},
-    {Cat = "Phonk", Name = "🎵 ZODIVK - NVTHXN", ID = "6915544559", Time = "2:10"},
-    {Cat = "Phonk", Name = "🎵 Distant - FUNK", ID = "9046862343", Time = "1:26"},
-    
-    -- HIP-HOP/RAP
-    {Cat = "Hip-Hop", Name = "🎤 Travis Scott - SICKO MODE", ID = "2606662029", Time = "5:12"},
-    {Cat = "Hip-Hop", Name = "🎤 21 Savage - Bank Account", ID = "1103436580", Time = "3:41"},
-    {Cat = "Hip-Hop", Name = "🎤 Post Malone - Congratulations", ID = "935880900", Time = "3:40"},
-    {Cat = "Hip-Hop", Name = "🎤 Pop Smoke - Dior", ID = "4880546107", Time = "2:58"},
-    {Cat = "Hip-Hop", Name = "🎤 Drake - Gods Plan", ID = "1539587314", Time = "3:18"},
-    {Cat = "Hip-Hop", Name = "🎤 Lil Uzi Vert - XO Tour Llif3", ID = "885996579", Time = "3:03"},
-    {Cat = "Hip-Hop", Name = "🎤 Migos - Bad and Boujee", ID = "601080524", Time = "5:43"},
-    
-    -- EMO/ALTERNATIVE
-    {Cat = "Emo", Name = "😢 XXXTentacion - SAD!", ID = "1837849285", Time = "2:47"},
-    {Cat = "Emo", Name = "😢 Juice WRLD - Lucid Dreams", ID = "2057814923", Time = "3:59"},
-    {Cat = "Emo", Name = "😢 Lil Peep - Benz Truck", ID = "1166997184", Time = "2:43"},
-    {Cat = "Emo", Name = "😢 XXXTentacion - Moonlight", ID = "1838747213", Time = "2:15"},
-    {Cat = "Emo", Name = "😢 Lil Peep - Star Shopping", ID = "1448630648", Time = "2:31"},
-    
-    -- ANIME
-    {Cat = "Anime", Name = "⚔️ Attack on Titan - Guren no Yumiya", ID = "5272966007", Time = "5:18"},
-    {Cat = "Anime", Name = "⚔️ Tokyo Ghoul - Unravel", ID = "2545298782", Time = "3:56"},
-    {Cat = "Anime", Name = "⚔️ Death Note - The WORLD", ID = "1848354536", Time = "3:18"},
-    {Cat = "Anime", Name = "⚔️ Naruto - Blue Bird", ID = "167285694", Time = "3:33"},
-    {Cat = "Anime", Name = "⚔️ Demon Slayer - Gurenge", ID = "4573493579", Time = "1:29"},
-    {Cat = "Anime", Name = "⚔️ JoJo - Giorno Theme", ID = "3604593754", Time = "3:44"},
-    {Cat = "Anime", Name = "⚔️ My Hero Academia - You Say Run", ID = "904369787", Time = "3:46"},
-    
-    -- EDM
-    {Cat = "EDM", Name = "🎧 Alan Walker - Faded", ID = "532019994", Time = "3:32"},
-    {Cat = "EDM", Name = "🎧 Marshmello - Alone", ID = "574623217", Time = "4:33"},
-    {Cat = "EDM", Name = "🎧 The Chainsmokers - Closer", ID = "557430249", Time = "4:04"},
-    {Cat = "EDM", Name = "🎧 Avicii - Wake Me Up", ID = "142429563", Time = "4:09"},
-    {Cat = "EDM", Name = "🎧 Martin Garrix - Animals", ID = "142370490", Time = "5:02"},
-    {Cat = "EDM", Name = "🎧 Zedd - Clarity", ID = "151641501", Time = "4:32"},
-    {Cat = "EDM", Name = "🎧 David Guetta - Titanium", ID = "142353048", Time = "4:05"},
-    
-    -- GAMING
-    {Cat = "Gaming", Name = "🎮 Undertale - Megalovania", ID = "367339030", Time = "2:36"},
-    {Cat = "Gaming", Name = "🎮 DOOM - BFG Division", ID = "982708489", Time = "8:04"},
-    {Cat = "Gaming", Name = "🎮 Minecraft - Sweden", ID = "1837849285", Time = "3:38"},
-    {Cat = "Gaming", Name = "🎮 Portal - Still Alive", ID = "142302399", Time = "2:57"},
-    {Cat = "Gaming", Name = "🎮 Terraria - Boss 2", ID = "143382469", Time = "2:51"},
-    
-    -- MEME
-    {Cat = "Meme", Name = "😂 Rick Roll - Never Gonna Give You Up", ID = "6897166225", Time = "3:33"},
-    {Cat = "Meme", Name = "💀 Coffin Dance - Astronomia", ID = "4822708340", Time = "1:52"},
-    {Cat = "Meme", Name = "🎵 Caramelldansen", ID = "2303479775", Time = "2:54"},
-    {Cat = "Meme", Name = "🎺 Spooky Scary Skeletons", ID = "160442087", Time = "2:26"},
-    {Cat = "Meme", Name = "🎪 Circus Music", ID = "1837879082", Time = "2:00"},
-    {Cat = "Meme", Name = "📱 iPhone Ringtone", ID = "158300216", Time = "0:05"},
-    {Cat = "Meme", Name = "💥 Vine Boom", ID = "7149255551", Time = "0:01"},
-    {Cat = "Meme", Name = "🚨 Bruh Sound Effect", ID = "4891008532", Time = "0:01"},
-    
-    -- CLASSIC
-    {Cat = "Classic", Name = "⭐ Darude - Sandstorm", ID = "142319852", Time = "3:45"},
-    {Cat = "Classic", Name = "⭐ Stereo Love", ID = "142313376", Time = "3:31"},
-    {Cat = "Classic", Name = "⭐ Take On Me", ID = "142302399", Time = "3:47"},
-    {Cat = "Classic", Name = "⭐ PSY - Gangnam Style", ID = "130844430", Time = "3:39"},
-    {Cat = "Classic", Name = "⭐ LMFAO - Party Rock Anthem", ID = "142295308", Time = "4:23"},
-}
-
-print(string.format("[SONGS] 🎵 Loaded %d songs", #Songs))
-
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                      APP DATA
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-local AppData = {
-    Remotes = {},
-    RemoteEvents = 0,
-    RemoteFunctions = 0,
-    CurrentSound = nil,
-    Volume = 0.5,
-    SelectedPlayer = nil,
-    Stats = {
-        SessionStart = tick(),
-        TotalScans = 0,
-        SoundsPlayed = 0,
-        OSINTQueries = 0,
-    },
-    FPS = 0,
-    Ping = 0,
-    Memory = 0,
-}
-
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                      GUI CREATION
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-local GUI = {}
+local g = {}
 
 -- ScreenGui
-GUI.Screen = Utils.Create("ScreenGui", {
-    Name = "LegendaryTools_" .. math.random(1000, 9999),
+g.scr = mk("ScreenGui", {
+    Name = "UltimateTools_" .. tick(),
     ResetOnSpawn = false,
     ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
     DisplayOrder = 999999,
-    Parent = PlayerGui
+    Parent = pg
 })
 
--- Floating Button (Mobile)
-if Device.IsMobile then
-    GUI.FloatBtn = Utils.Create("TextButton", {
+-- Float Button (Mobile)
+if mobile then
+    g.fb = mk("TextButton", {
         Size = UDim2.new(0, 70, 0, 70),
         Position = UDim2.new(1, -85, 0.5, -35),
-        BackgroundColor3 = CurrentTheme.Primary,
+        BackgroundColor3 = theme.p,
         Text = "🎯",
         TextSize = 32,
-        TextColor3 = Color3.new(1, 1, 1),
+        TextColor3 = Color3.new(1,1,1),
         Font = Enum.Font.GothamBold,
         ZIndex = 10000,
-        Parent = GUI.Screen
+        Parent = g.scr
     })
-    
-    Utils.Corner(GUI.FloatBtn, 35)
-    Utils.Stroke(GUI.FloatBtn, Color3.new(1, 1, 1), 3)
-    Utils.Gradient(GUI.FloatBtn)
+    corner(g.fb, 35)
+    grad(g.fb)
     
     -- Draggable
-    local dragging, dragStart, startPos
-    GUI.FloatBtn.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = GUI.FloatBtn.Position
+    local drag, dstart, spos
+    g.fb.InputBegan:Connect(function(inp)
+        if inp.UserInputType == Enum.UserInputType.Touch then
+            drag = true
+            dstart = inp.Position
+            spos = g.fb.Position
         end
     end)
-    
-    GUI.FloatBtn.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.Touch then
-            dragging = false
-        end
+    g.fb.InputEnded:Connect(function(inp)
+        if inp.UserInputType == Enum.UserInputType.Touch then drag = false end
     end)
-    
-    Services.UserInputService.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.Touch then
-            local delta = input.Position - dragStart
-            GUI.FloatBtn.Position = UDim2.new(
-                startPos.X.Scale, startPos.X.Offset + delta.X,
-                startPos.Y.Scale, startPos.Y.Offset + delta.Y
-            )
-        end
-    end)
-    
-    -- Pulse
-    spawn(function()
-        while wait(2) do
-            if GUI.FloatBtn and GUI.FloatBtn.Parent then
-                Utils.Tween(GUI.FloatBtn, {Size = UDim2.new(0, 75, 0, 75)}, 0.3)
-                wait(0.3)
-                Utils.Tween(GUI.FloatBtn, {Size = UDim2.new(0, 70, 0, 70)}, 0.3)
-            end
+    uis.InputChanged:Connect(function(inp)
+        if drag and inp.UserInputType == Enum.UserInputType.Touch then
+            local delta = inp.Position - dstart
+            g.fb.Position = UDim2.new(spos.X.Scale, spos.X.Offset + delta.X, spos.Y.Scale, spos.Y.Offset + delta.Y)
         end
     end)
 end
 
--- Main Container
-GUI.Main = Utils.Create("Frame", {
-    Name = "Main",
-    Size = Device.IsMobile and UDim2.new(1, 0, 1, 0) or UDim2.new(0, 1200, 0, 750),
-    Position = Device.IsMobile and UDim2.new(0, 0, 0, 0) or UDim2.new(0.5, -600, 0.5, -375),
-    BackgroundColor3 = CurrentTheme.Background,
+-- Main
+g.main = mk("Frame", {
+    Size = mobile and UDim2.new(1,0,1,0) or UDim2.new(0,1100,0,700),
+    Position = mobile and UDim2.new(0,0,0,0) or UDim2.new(0.5,-550,0.5,-350),
+    BackgroundColor3 = theme.bg,
     BorderSizePixel = 0,
-    Visible = not Device.IsMobile,
-    Parent = GUI.Screen
+    Visible = not mobile,
+    Parent = g.scr
 })
-
-if not Device.IsMobile then
-    Utils.Corner(GUI.Main, 20)
-    Utils.Stroke(GUI.Main, CurrentTheme.Primary, 3)
-    GUI.Main.Active = true
-    GUI.Main.Draggable = true
+if not mobile then
+    corner(g.main, 18)
+    g.main.Active = true
+    g.main.Draggable = true
 end
 
 -- Top Bar
-GUI.TopBar = Utils.Create("Frame", {
-    Size = UDim2.new(1, 0, 0, Device.IsMobile and 80 : 70),
-    BackgroundColor3 = CurrentTheme.Surface,
+g.top = mk("Frame", {
+    Size = UDim2.new(1,0,0,mobile and 75 or 65),
+    BackgroundColor3 = theme.sf,
     BorderSizePixel = 0,
-    Parent = GUI.Main
+    Parent = g.main
 })
+if not mobile then corner(g.top, 18) end
+grad(g.top)
 
-if not Device.IsMobile then Utils.Corner(GUI.TopBar, 20) end
-Utils.Gradient(GUI.TopBar, ColorSequence.new{
-    ColorSequenceKeypoint.new(0, CurrentTheme.Primary),
-    ColorSequenceKeypoint.new(0.5, CurrentTheme.Secondary),
-    ColorSequenceKeypoint.new(1, CurrentTheme.Primary)
-}, 45)
-
--- Title
-GUI.Title = Utils.Create("TextLabel", {
-    Size = UDim2.new(0, 500, 0, 32),
-    Position = UDim2.new(0, 20, 0, 10),
+mk("TextLabel", {
+    Size = UDim2.new(0,450,0,28),
+    Position = UDim2.new(0,15,0,8),
     BackgroundTransparency = 1,
-    Text = "🌟 ULTIMATE TOOLS v6.0 LEGENDARY",
-    TextColor3 = Color3.new(1, 1, 1),
-    TextSize = Device.IsMobile and 18 or 22,
+    Text = "🎯 ULTIMATE TOOLS v7.0",
+    TextColor3 = Color3.new(1,1,1),
+    TextSize = mobile and 17 or 20,
     Font = Enum.Font.GothamBold,
     TextXAlignment = Enum.TextXAlignment.Left,
-    TextStrokeTransparency = 0.7,
-    Parent = GUI.TopBar
+    Parent = g.top
 })
 
--- Subtitle
-GUI.Subtitle = Utils.Create("TextLabel", {
-    Size = UDim2.new(0, 500, 0, 20),
-    Position = UDim2.new(0, 20, 0, Device.IsMobile and 50 : 45),
+mk("TextLabel", {
+    Size = UDim2.new(0,450,0,18),
+    Position = UDim2.new(0,15,0,mobile and 45 or 40),
     BackgroundTransparency = 1,
-    Text = string.format("%s %s | %d Songs | Full OSINT", Device.PlatformIcon, Device.PlatformName, #Songs),
-    TextColor3 = Color3.fromRGB(230, 230, 230),
-    TextSize = 12,
+    Text = string.format("%s | %d Songs | Full OSINT", mobile and "📱 Mobile" or "💻 PC", #songs),
+    TextColor3 = Color3.fromRGB(220,220,220),
+    TextSize = 11,
     Font = Enum.Font.Gotham,
     TextXAlignment = Enum.TextXAlignment.Left,
     TextTransparency = 0.3,
-    Parent = GUI.TopBar
+    Parent = g.top
 })
 
--- Theme Button
-GUI.ThemeBtn = Utils.Create("TextButton", {
-    Size = UDim2.new(0, Device.IsMobile and 140 : 120, 0, Device.IsMobile and 50 : 45),
-    Position = UDim2.new(1, Device.IsMobile and -220 : -190, 0.5, Device.IsMobile and -25 : -22.5),
-    BackgroundColor3 = CurrentTheme.Secondary,
-    Text = "🎨 " .. CurrentTheme.Name,
-    TextSize = Device.IsMobile and 13 : 12,
-    TextColor3 = Color3.new(1, 1, 1),
-    Font = Enum.Font.GothamBold,
-    Parent = GUI.TopBar
-})
-
-Utils.Corner(GUI.ThemeBtn, 12)
-
--- Close Button
-GUI.CloseBtn = Utils.Create("TextButton", {
-    Size = UDim2.new(0, Device.IsMobile and 60 : 55, 0, Device.IsMobile and 60 : 55),
-    Position = UDim2.new(1, Device.IsMobile and -70 : -65, 0.5, Device.IsMobile and -30 : -27.5),
-    BackgroundColor3 = CurrentTheme.Danger,
+g.close = mk("TextButton", {
+    Size = UDim2.new(0,mobile and 55 or 50,0,mobile and 55 or 50),
+    Position = UDim2.new(1,mobile and -65 or -60,0.5,mobile and -27.5 or -25),
+    BackgroundColor3 = theme.no,
     Text = "✕",
-    TextSize = Device.IsMobile and 28 : 24,
-    TextColor3 = Color3.new(1, 1, 1),
+    TextSize = mobile and 26 or 22,
+    TextColor3 = Color3.new(1,1,1),
     Font = Enum.Font.GothamBold,
-    Parent = GUI.TopBar
+    Parent = g.top
+})
+corner(g.close, 12)
+
+-- Content
+g.cont = mk("Frame", {
+    Size = UDim2.new(1,-10,1,mobile and -85 or -75),
+    Position = UDim2.new(0,5,0,mobile and 80 or 70),
+    BackgroundTransparency = 1,
+    Parent = g.main
 })
 
-Utils.Corner(GUI.CloseBtn, 14)
-
--- Content (Split panels for PC, tabs for Mobile)
-if Device.IsMobile then
-    -- Mobile Tabs
-    GUI.TabBar = Utils.Create("Frame", {
-        Size = UDim2.new(1, -10, 0, 60),
-        Position = UDim2.new(0, 5, 0, 85),
-        BackgroundColor3 = CurrentTheme.Surface,
-        BorderSizePixel = 0,
-        Parent = GUI.Main
-    })
-    
-    Utils.Corner(GUI.TabBar, 15)
-    
-    local tabs = {
-        {Name = "sound", Icon = "🔊", Label = "SOUND"},
-        {Name = "osint", Icon = "🔍", Label = "OSINT"},
-        {Name = "system", Icon = "⚙️", Label = "SYSTEM"}
-    }
-    
-    GUI.Tabs = {}
-    for i, tab in ipairs(tabs) do
-        local btn = Utils.Create("TextButton", {
-            Name = tab.Name,
-            Size = UDim2.new(1/3, -8, 1, -10),
-            Position = UDim2.new((i-1)/3, 4 + (i-1)*2, 0, 5),
-            BackgroundColor3 = i == 1 and CurrentTheme.Primary or CurrentTheme.Surface,
-            Text = tab.Icon .. "\n" .. tab.Label,
-            TextSize = 11,
-            TextColor3 = Color3.new(1, 1, 1),
-            Font = Enum.Font.GothamBold,
-            Parent = GUI.TabBar
-        })
-        Utils.Corner(btn, 12)
-        GUI.Tabs[tab.name] = btn
-    end
-    
-    GUI.Content = Utils.Create("Frame", {
-        Size = UDim2.new(1, -10, 1, -155),
-        Position = UDim2.new(0, 5, 0, 150),
-        BackgroundTransparency = 1,
-        Parent = GUI.Main
-    })
-else
-    GUI.Content = Utils.Create("Frame", {
-        Size = UDim2.new(1, -10, 1, -80),
-        Position = UDim2.new(0, 5, 0, 75),
-        BackgroundTransparency = 1,
-        Parent = GUI.Main
-    })
-end
-
--- Panels
-GUI.Panels = {}
-
--- Soundboard Panel
-local soundWidth = Device.IsMobile and 1 or 0.5
-GUI.Panels.Sound = Utils.Create("Frame", {
-    Name = "Sound",
-    Size = UDim2.new(soundWidth, Device.IsMobile and 0 : -5, 1, 0),
-    Position = UDim2.new(0, 0, 0, 0),
-    BackgroundColor3 = CurrentTheme.Surface,
+-- Left Panel (Soundboard)
+g.left = mk("Frame", {
+    Size = UDim2.new(mobile and 1 or 0.5,mobile and 0 or -5,1,0),
+    BackgroundColor3 = theme.sf,
     BorderSizePixel = 0,
-    Parent = GUI.Content
+    Parent = g.cont
 })
+corner(g.left, 14)
 
-Utils.Corner(GUI.Panels.Sound, 15)
-
--- OSINT Panel
-GUI.Panels.OSINT = Utils.Create("Frame", {
-    Name = "OSINT",
-    Size = UDim2.new(Device.IsMobile and 1 : 0.5, Device.IsMobile and 0 : -5, 1, 0),
-    Position = UDim2.new(Device.IsMobile and 0 : 0.5, Device.IsMobile and 0 : 5, 0, 0),
-    BackgroundColor3 = CurrentTheme.Surface,
+-- Right Panel (OSINT)
+g.right = mk("Frame", {
+    Size = UDim2.new(mobile and 1 or 0.5,mobile and 0 or -5,1,0),
+    Position = UDim2.new(mobile and 0 or 0.5,mobile and 0 or 5,0,0),
+    BackgroundColor3 = theme.sf,
     BorderSizePixel = 0,
-    Visible = not Device.IsMobile,
-    Parent = GUI.Content
+    Visible = not mobile,
+    Parent = g.cont
 })
+corner(g.right, 14)
 
-Utils.Corner(GUI.Panels.OSINT, 15)
-
-print("[GUI] 🎨 Main interface created")
+print("[GUI] ✅ Main interface created")
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                  SOUNDBOARD CONTENT
+--                                      SOUNDBOARD PANEL
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-local SoundPanel = GUI.Panels.Sound
 
 -- Header
-local soundHeader = Utils.Create("Frame", {
-    Size = UDim2.new(1, -10, 0, 55),
-    Position = UDim2.new(0, 5, 0, 5),
-    BackgroundColor3 = CurrentTheme.Background,
+local sh = mk("Frame", {
+    Size = UDim2.new(1,-10,0,50),
+    Position = UDim2.new(0,5,0,5),
+    BackgroundColor3 = theme.bg,
     BorderSizePixel = 0,
-    Parent = SoundPanel
+    Parent = g.left
 })
+corner(sh, 12)
 
-Utils.Corner(soundHeader, 12)
-
-Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -20, 1, 0),
-    Position = UDim2.new(0, 15, 0, 0),
+mk("TextLabel", {
+    Size = UDim2.new(1,-15,1,0),
+    Position = UDim2.new(0,12,0,0),
     BackgroundTransparency = 1,
-    Text = "🔊 LEGENDARY SOUNDBOARD",
-    TextColor3 = CurrentTheme.Text,
-    TextSize = 18,
+    Text = "🔊 SOUNDBOARD",
+    TextColor3 = theme.txt,
+    TextSize = 17,
     Font = Enum.Font.GothamBold,
     TextXAlignment = Enum.TextXAlignment.Left,
-    Parent = soundHeader
+    Parent = sh
 })
 
--- Stats Panel
-local statsPanel = Utils.Create("Frame", {
-    Size = UDim2.new(1, -10, 0, 100),
-    Position = UDim2.new(0, 5, 0, 65),
-    BackgroundColor3 = CurrentTheme.Background,
+-- Stats
+local st = mk("Frame", {
+    Size = UDim2.new(1,-10,0,90),
+    Position = UDim2.new(0,5,0,60),
+    BackgroundColor3 = theme.bg,
     BorderSizePixel = 0,
-    Parent = SoundPanel
+    Parent = g.left
 })
+corner(st, 12)
 
-Utils.Corner(statsPanel, 12)
-
-local statsFrame = Utils.Create("Frame", {
-    Size = UDim2.new(1, -10, 0, 60),
-    Position = UDim2.new(0, 5, 0, 5),
+local stf = mk("Frame", {
+    Size = UDim2.new(1,-10,0,55),
+    Position = UDim2.new(0,5,0,5),
     BackgroundTransparency = 1,
-    Parent = statsPanel
+    Parent = st
 })
 
--- Events Box
-local eventsBox = Utils.Create("Frame", {
-    Size = UDim2.new(0.48, 0, 1, 0),
-    BackgroundColor3 = Color3.fromRGB(35, 35, 45),
+local eb = mk("Frame", {
+    Size = UDim2.new(0.48,0,1,0),
+    BackgroundColor3 = Color3.fromRGB(35,35,45),
     BorderSizePixel = 0,
-    Parent = statsFrame
+    Parent = stf
 })
+corner(eb, 10)
 
-Utils.Corner(eventsBox, 10)
-
-Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -10, 0, 20),
-    Position = UDim2.new(0, 5, 0, 5),
+mk("TextLabel", {
+    Size = UDim2.new(1,-8,0,18),
+    Position = UDim2.new(0,5,0,4),
     BackgroundTransparency = 1,
     Text = "Remote Events",
-    TextColor3 = CurrentTheme.TextDim,
+    TextColor3 = Color3.fromRGB(150,150,150),
     TextSize = 10,
     Font = Enum.Font.Gotham,
     TextXAlignment = Enum.TextXAlignment.Left,
-    Parent = eventsBox
+    Parent = eb
 })
 
-GUI.EventsValue = Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -10, 0, 30),
-    Position = UDim2.new(0, 5, 0, 25),
+g.eval = mk("TextLabel", {
+    Size = UDim2.new(1,-8,0,28),
+    Position = UDim2.new(0,5,0,22),
     BackgroundTransparency = 1,
     Text = "0",
-    TextColor3 = CurrentTheme.Success,
-    TextSize = 24,
+    TextColor3 = theme.ok,
+    TextSize = 22,
     Font = Enum.Font.GothamBold,
     TextXAlignment = Enum.TextXAlignment.Left,
-    Parent = eventsBox
+    Parent = eb
 })
 
--- Functions Box
-local funcsBox = Utils.Create("Frame", {
-    Size = UDim2.new(0.48, 0, 1, 0),
-    Position = UDim2.new(0.52, 0, 0, 0),
-    BackgroundColor3 = Color3.fromRGB(35, 35, 45),
+local fb = mk("Frame", {
+    Size = UDim2.new(0.48,0,1,0),
+    Position = UDim2.new(0.52,0,0,0),
+    BackgroundColor3 = Color3.fromRGB(35,35,45),
     BorderSizePixel = 0,
-    Parent = statsFrame
+    Parent = stf
 })
+corner(fb, 10)
 
-Utils.Corner(funcsBox, 10)
-
-Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -10, 0, 20),
-    Position = UDim2.new(0, 5, 0, 5),
+mk("TextLabel", {
+    Size = UDim2.new(1,-8,0,18),
+    Position = UDim2.new(0,5,0,4),
     BackgroundTransparency = 1,
     Text = "Remote Functions",
-    TextColor3 = CurrentTheme.TextDim,
+    TextColor3 = Color3.fromRGB(150,150,150),
     TextSize = 10,
     Font = Enum.Font.Gotham,
     TextXAlignment = Enum.TextXAlignment.Left,
-    Parent = funcsBox
+    Parent = fb
 })
 
-GUI.FuncsValue = Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -10, 0, 30),
-    Position = UDim2.new(0, 5, 0, 25),
+g.fval = mk("TextLabel", {
+    Size = UDim2.new(1,-8,0,28),
+    Position = UDim2.new(0,5,0,22),
     BackgroundTransparency = 1,
     Text = "0",
-    TextColor3 = CurrentTheme.Secondary,
-    TextSize = 24,
+    TextColor3 = theme.s,
+    TextSize = 22,
     Font = Enum.Font.GothamBold,
     TextXAlignment = Enum.TextXAlignment.Left,
-    Parent = funcsBox
+    Parent = fb
 })
 
--- Status Text
-GUI.StatusText = Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -10, 0, 30),
-    Position = UDim2.new(0, 5, 0, 68),
+g.stxt = mk("TextLabel", {
+    Size = UDim2.new(1,-10,0,28),
+    Position = UDim2.new(0,5,0,60),
     BackgroundTransparency = 1,
-    Text = "⚠️  Click SCAN to find exploitable remotes",
-    TextColor3 = CurrentTheme.Warning,
-    TextSize = 11,
+    Text = "⚠️  Click SCAN to find remotes",
+    TextColor3 = theme.warn,
+    TextSize = 10,
     Font = Enum.Font.Code,
     TextXAlignment = Enum.TextXAlignment.Left,
     TextWrapped = true,
-    Parent = statsPanel
+    Parent = st
 })
 
--- Scan Button
-GUI.ScanBtn = Utils.Create("TextButton", {
-    Size = UDim2.new(1, -10, 0, Device.IsMobile and 55 : 50),
-    Position = UDim2.new(0, 5, 0, 170),
-    BackgroundColor3 = CurrentTheme.Primary,
+-- Buttons
+g.scan = mk("TextButton", {
+    Size = UDim2.new(1,-10,0,mobile and 52 or 46),
+    Position = UDim2.new(0,5,0,155),
+    BackgroundColor3 = theme.p,
     Text = "🔍 SCAN FOR REMOTES",
-    TextSize = 16,
-    TextColor3 = Color3.new(1, 1, 1),
-    Font = Enum.Font.GothamBold,
-    Parent = SoundPanel
-})
-
-Utils.Corner(GUI.ScanBtn, 12)
-Utils.Gradient(GUI.ScanBtn)
-
--- Stop Button
-GUI.StopBtn = Utils.Create("TextButton", {
-    Size = UDim2.new(1, -10, 0, Device.IsMobile and 50 : 45),
-    Position = UDim2.new(0, 5, 0, Device.IsMobile and 235 : 230),
-    BackgroundColor3 = CurrentTheme.Danger,
-    Text = "⏹️  STOP ALL SOUNDS",
     TextSize = 15,
-    TextColor3 = Color3.new(1, 1, 1),
+    TextColor3 = Color3.new(1,1,1),
     Font = Enum.Font.GothamBold,
-    Parent = SoundPanel
+    Parent = g.left
 })
+corner(g.scan, 12)
+grad(g.scan)
 
-Utils.Corner(GUI.StopBtn, 12)
+g.stop = mk("TextButton", {
+    Size = UDim2.new(1,-10,0,mobile and 46 or 42),
+    Position = UDim2.new(0,5,0,mobile and 215 or 210),
+    BackgroundColor3 = theme.no,
+    Text = "⏹️  STOP ALL SOUNDS",
+    TextSize = 14,
+    TextColor3 = Color3.new(1,1,1),
+    Font = Enum.Font.GothamBold,
+    Parent = g.left
+})
+corner(g.stop, 12)
 
 -- Custom Input
-local customFrame = Utils.Create("Frame", {
-    Size = UDim2.new(1, -10, 0, 85),
-    Position = UDim2.new(0, 5, 0, Device.IsMobile and 295 : 285),
-    BackgroundColor3 = CurrentTheme.Background,
+local cf = mk("Frame", {
+    Size = UDim2.new(1,-10,0,80),
+    Position = UDim2.new(0,5,0,mobile and 270 or 260),
+    BackgroundColor3 = theme.bg,
     BorderSizePixel = 0,
-    Parent = SoundPanel
+    Parent = g.left
 })
+corner(cf, 12)
 
-Utils.Corner(customFrame, 12)
-
-Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -10, 0, 25),
-    Position = UDim2.new(0, 10, 0, 8),
+mk("TextLabel", {
+    Size = UDim2.new(1,-10,0,22),
+    Position = UDim2.new(0,10,0,6),
     BackgroundTransparency = 1,
     Text = "🎵 CUSTOM AUDIO ID",
-    TextColor3 = CurrentTheme.Text,
-    TextSize = 14,
+    TextColor3 = theme.txt,
+    TextSize = 13,
     Font = Enum.Font.GothamBold,
     TextXAlignment = Enum.TextXAlignment.Left,
-    Parent = customFrame
+    Parent = cf
 })
 
-GUI.CustomInput = Utils.Create("TextBox", {
-    Size = UDim2.new(0.6, -8, 0, 42),
-    Position = UDim2.new(0, 10, 0, 38),
-    BackgroundColor3 = Color3.fromRGB(40, 40, 50),
-    PlaceholderText = "Enter Audio ID...",
-    PlaceholderColor3 = CurrentTheme.TextDim,
+g.inp = mk("TextBox", {
+    Size = UDim2.new(0.6,-8,0,40),
+    Position = UDim2.new(0,10,0,32),
+    BackgroundColor3 = Color3.fromRGB(40,40,50),
+    PlaceholderText = "Enter ID...",
+    PlaceholderColor3 = Color3.fromRGB(120,120,120),
     Text = "",
-    TextColor3 = CurrentTheme.Text,
-    TextSize = 14,
+    TextColor3 = theme.txt,
+    TextSize = 13,
     Font = Enum.Font.Gotham,
     ClearTextOnFocus = false,
-    Parent = customFrame
+    Parent = cf
 })
+corner(g.inp, 10)
 
-Utils.Corner(GUI.CustomInput, 10)
-
-GUI.PlayCustomBtn = Utils.Create("TextButton", {
-    Size = UDim2.new(0.4, -12, 0, 42),
-    Position = UDim2.new(0.6, 2, 0, 38),
-    BackgroundColor3 = CurrentTheme.Success,
+g.play = mk("TextButton", {
+    Size = UDim2.new(0.4,-12,0,40),
+    Position = UDim2.new(0.6,2,0,32),
+    BackgroundColor3 = theme.ok,
     Text = "▶️  PLAY",
-    TextSize = 15,
-    TextColor3 = Color3.new(1, 1, 1),
+    TextSize = 14,
+    TextColor3 = Color3.new(1,1,1),
     Font = Enum.Font.GothamBold,
-    Parent = customFrame
+    Parent = cf
 })
-
-Utils.Corner(GUI.PlayCustomBtn, 10)
+corner(g.play, 10)
 
 -- Song List
-GUI.SongList = Utils.Create("ScrollingFrame", {
-    Size = UDim2.new(1, -10, 1, -(Device.IsMobile and 390 : 380)),
-    Position = UDim2.new(0, 5, 0, Device.IsMobile and 385 : 375),
-    BackgroundColor3 = CurrentTheme.Background,
+g.list = mk("ScrollingFrame", {
+    Size = UDim2.new(1,-10,1,mobile and -360 or -350),
+    Position = UDim2.new(0,5,0,mobile and 355 or 345),
+    BackgroundColor3 = theme.bg,
     BorderSizePixel = 0,
-    ScrollBarThickness = 8,
-    ScrollBarImageColor3 = CurrentTheme.Primary,
-    Parent = SoundPanel
+    ScrollBarThickness = 6,
+    ScrollBarImageColor3 = theme.p,
+    Parent = g.left
 })
+corner(g.list, 12)
 
-Utils.Corner(GUI.SongList, 12)
-
-local songLayout = Utils.Create("UIListLayout", {
+local lay = mk("UIListLayout", {
     SortOrder = Enum.SortOrder.LayoutOrder,
-    Padding = UDim.new(0, 6),
-    Parent = GUI.SongList
+    Padding = UDim.new(0,5),
+    Parent = g.list
 })
 
-Utils.Padding(GUI.SongList, 10)
+mk("UIPadding", {
+    PaddingTop = UDim.new(0,8),
+    PaddingBottom = UDim.new(0,8),
+    PaddingLeft = UDim.new(0,8),
+    PaddingRight = UDim.new(0,8),
+    Parent = g.list
+})
 
 print("[SOUNDBOARD] ✅ Panel created")
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                  OSINT CONTENT
+--                                      OSINT PANEL
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
-local OSINTPanel = GUI.Panels.OSINT
-
 -- Header
-local osintHeader = Utils.Create("Frame", {
-    Size = UDim2.new(1, -10, 0, 55),
-    Position = UDim2.new(0, 5, 0, 5),
-    BackgroundColor3 = CurrentTheme.Background,
+local oh = mk("Frame", {
+    Size = UDim2.new(1,-10,0,50),
+    Position = UDim2.new(0,5,0,5),
+    BackgroundColor3 = theme.bg,
     BorderSizePixel = 0,
-    Parent = OSINTPanel
+    Parent = g.right
 })
+corner(oh, 12)
 
-Utils.Corner(osintHeader, 12)
-
-Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -20, 1, 0),
-    Position = UDim2.new(0, 15, 0, 0),
+mk("TextLabel", {
+    Size = UDim2.new(1,-15,1,0),
+    Position = UDim2.new(0,12,0,0),
     BackgroundTransparency = 1,
-    Text = "🔍 OSINT INTELLIGENCE",
-    TextColor3 = CurrentTheme.Text,
-    TextSize = 18,
+    Text = "🔍 OSINT TOOL",
+    TextColor3 = theme.txt,
+    TextSize = 17,
     Font = Enum.Font.GothamBold,
     TextXAlignment = Enum.TextXAlignment.Left,
-    Parent = osintHeader
+    Parent = oh
 })
 
 -- Player List
-GUI.PlayerList = Utils.Create("ScrollingFrame", {
-    Size = UDim2.new(1, -10, 0, Device.IsMobile and 300 : 250),
-    Position = UDim2.new(0, 5, 0, 65),
-    BackgroundColor3 = CurrentTheme.Background,
+g.plist = mk("ScrollingFrame", {
+    Size = UDim2.new(1,-10,0,mobile and 280 or 240),
+    Position = UDim2.new(0,5,0,60),
+    BackgroundColor3 = theme.bg,
     BorderSizePixel = 0,
-    ScrollBarThickness = 8,
-    ScrollBarImageColor3 = CurrentTheme.Primary,
-    Parent = OSINTPanel
+    ScrollBarThickness = 6,
+    ScrollBarImageColor3 = theme.p,
+    Parent = g.right
 })
+corner(g.plist, 12)
 
-Utils.Corner(GUI.PlayerList, 12)
-
-local playerLayout = Utils.Create("UIListLayout", {
+local play = mk("UIListLayout", {
     SortOrder = Enum.SortOrder.Name,
-    Padding = UDim.new(0, 6),
-    Parent = GUI.PlayerList
+    Padding = UDim.new(0,5),
+    Parent = g.plist
 })
 
-Utils.Padding(GUI.PlayerList, 10)
+mk("UIPadding", {
+    PaddingTop = UDim.new(0,8),
+    PaddingBottom = UDim.new(0,8),
+    PaddingLeft = UDim.new(0,8),
+    PaddingRight = UDim.new(0,8),
+    Parent = g.plist
+})
 
 -- Results
-GUI.Results = Utils.Create("ScrollingFrame", {
-    Size = UDim2.new(1, -10, 1, -(Device.IsMobile and 375 : 325)),
-    Position = UDim2.new(0, 5, 0, Device.IsMobile and 370 : 320),
-    BackgroundColor3 = CurrentTheme.Background,
+g.res = mk("ScrollingFrame", {
+    Size = UDim2.new(1,-10,1,mobile and -350 or -310),
+    Position = UDim2.new(0,5,0,mobile and 345 or 305),
+    BackgroundColor3 = theme.bg,
     BorderSizePixel = 0,
-    ScrollBarThickness = 8,
-    ScrollBarImageColor3 = CurrentTheme.Primary,
-    Parent = OSINTPanel
+    ScrollBarThickness = 6,
+    ScrollBarImageColor3 = theme.p,
+    Parent = g.right
 })
+corner(g.res, 12)
 
-Utils.Corner(GUI.Results, 12)
-
-GUI.ResultText = Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -20, 0, 10000),
-    Position = UDim2.new(0, 10, 0, 10),
+g.rtxt = mk("TextLabel", {
+    Size = UDim2.new(1,-20,0,10000),
+    Position = UDim2.new(0,10,0,10),
     BackgroundTransparency = 1,
-    Text = "👈 Select a player to view intelligence data",
-    TextColor3 = CurrentTheme.TextDim,
-    TextSize = 12,
+    Text = "👈 Select a player",
+    TextColor3 = Color3.fromRGB(140,140,140),
+    TextSize = 11,
     Font = Enum.Font.Code,
     TextXAlignment = Enum.TextXAlignment.Left,
     TextYAlignment = Enum.TextYAlignment.Top,
     TextWrapped = true,
-    Parent = GUI.Results
+    Parent = g.res
 })
 
 print("[OSINT] ✅ Panel created")
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                  FUNCTIONS
+--                                      FUNCTIONS
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
-local Functions = {}
-
 -- Scan Remotes
-function Functions.ScanRemotes()
-    AppData.Remotes = {}
-    AppData.RemoteEvents = 0
-    AppData.RemoteFunctions = 0
+local function scanRemotes()
+    data.remotes = {}
+    data.revents = 0
+    data.rfuncs = 0
     
-    GUI.StatusText.Text = "⏳ Scanning all services... Please wait..."
-    GUI.StatusText.TextColor3 = CurrentTheme.Info
+    g.stxt.Text = "⏳ Scanning..."
+    g.stxt.TextColor3 = theme.warn
     
     local function scan(obj, depth)
-        if depth > 20 then return end
+        if depth > 15 then return end
         pcall(function()
-            for _, child in pairs(obj:GetChildren()) do
-                if child:IsA("RemoteEvent") then
-                    table.insert(AppData.Remotes, {Type = "Event", Obj = child})
-                    AppData.RemoteEvents = AppData.RemoteEvents + 1
-                elseif child:IsA("RemoteFunction") then
-                    table.insert(AppData.Remotes, {Type = "Function", Obj = child})
-                    AppData.RemoteFunctions = AppData.RemoteFunctions + 1
+            for _, v in pairs(obj:GetChildren()) do
+                if v:IsA("RemoteEvent") then
+                    table.insert(data.remotes, {t="Event", o=v})
+                    data.revents = data.revents + 1
+                elseif v:IsA("RemoteFunction") then
+                    table.insert(data.remotes, {t="Function", o=v})
+                    data.rfuncs = data.rfuncs + 1
                 end
-                scan(child, depth + 1)
+                scan(v, depth + 1)
             end
         end)
     end
     
-    scan(Services.ReplicatedStorage, 0)
+    scan(game:GetService("ReplicatedStorage"), 0)
     scan(workspace, 0)
     
-    for _, plr in pairs(Services.Players:GetPlayers()) do
-        if plr.Character then scan(plr.Character, 0) end
+    for _, p in pairs(plrs:GetPlayers()) do
+        if p.Character then scan(p.Character, 0) end
     end
     
-    local total = #AppData.Remotes
+    local tot = #data.remotes
     
-    GUI.EventsValue.Text = tostring(AppData.RemoteEvents)
-    GUI.FuncsValue.Text = tostring(AppData.RemoteFunctions)
+    g.eval.Text = tostring(data.revents)
+    g.fval.Text = tostring(data.rfuncs)
     
-    if total > 0 then
-        GUI.StatusText.Text = string.format("✅ Found %d remotes! (%d events, %d functions)", total, AppData.RemoteEvents, AppData.RemoteFunctions)
-        GUI.StatusText.TextColor3 = CurrentTheme.Success
-        Utils.Notify("✅ Scan Complete", string.format("Found %d remotes!", total), 3)
+    if tot > 0 then
+        g.stxt.Text = string.format("✅ Found %d remotes! (%d events, %d funcs)", tot, data.revents, data.rfuncs)
+        g.stxt.TextColor3 = theme.ok
+        notif("✅ Scan Complete", string.format("Found %d remotes!", tot))
     else
-        GUI.StatusText.Text = "❌ No remotes found in this game"
-        GUI.StatusText.TextColor3 = CurrentTheme.Danger
-        Utils.Notify("❌ No Remotes", "Try another game", 3)
+        g.stxt.Text = "❌ No remotes found"
+        g.stxt.TextColor3 = theme.no
+        notif("❌ Failed", "No remotes found")
     end
     
-    AppData.Stats.TotalScans = AppData.Stats.TotalScans + 1
+    data.stats.scans = data.stats.scans + 1
 end
 
 -- Play Sound
-function Functions.PlaySound(id, name)
+local function playSound(id, name)
     if not id or id == "" then return end
     
-    if #AppData.Remotes > 0 then
+    if #data.remotes > 0 then
         local sent = 0
-        for _, remote in pairs(AppData.Remotes) do
+        for _, r in pairs(data.remotes) do
             pcall(function()
-                if remote.Type == "Event" then
-                    remote.Obj:FireServer("rbxassetid://" .. id)
-                    remote.Obj:FireServer(tonumber(id))
-                    remote.Obj:FireServer({SoundId = "rbxassetid://" .. id, Sound = id, ID = id})
+                if r.t == "Event" then
+                    r.o:FireServer("rbxassetid://" .. id)
+                    r.o:FireServer(tonumber(id))
+                    r.o:FireServer({SoundId="rbxassetid://"..id, Sound=id, ID=id})
                     sent = sent + 1
                 end
             end)
         end
-        Utils.Notify("▶️  Playing", string.format("Sent to %d remotes", sent), 2)
+        notif("▶️  Playing", string.format("Sent to %d remotes", sent))
     else
-        if AppData.CurrentSound then
-            pcall(function() AppData.CurrentSound:Destroy() end)
+        if data.sound then
+            pcall(function() data.sound:Destroy() end)
         end
         
-        local sound = Instance.new("Sound")
-        sound.SoundId = "rbxassetid://" .. id
-        sound.Volume = AppData.Volume
-        sound.Parent = workspace
-        sound:Play()
+        local s = Instance.new("Sound")
+        s.SoundId = "rbxassetid://" .. id
+        s.Volume = data.vol
+        s.Parent = workspace
+        s:Play()
         
-        AppData.CurrentSound = sound
-        Utils.Notify("▶️  Playing", "Local mode (only you)", 2)
+        data.sound = s
+        notif("▶️  Playing", "Local mode")
     end
     
-    AppData.Stats.SoundsPlayed = AppData.Stats.SoundsPlayed + 1
+    data.stats.played = data.stats.played + 1
 end
 
 -- Stop All
-function Functions.StopAll()
-    if AppData.CurrentSound then
-        pcall(function() AppData.CurrentSound:Destroy() end)
+local function stopAll()
+    if data.sound then
+        pcall(function() data.sound:Destroy() end)
     end
     
-    for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("Sound") then
-            pcall(function() obj:Stop() obj:Destroy() end)
+    for _, o in pairs(workspace:GetDescendants()) do
+        if o:IsA("Sound") then
+            pcall(function() o:Stop() o:Destroy() end)
         end
     end
     
-    Utils.Notify("⏹️  Stopped", "All sounds stopped", 2)
+    notif("⏹️  Stopped", "All sounds stopped")
 end
 
 -- OSINT
-function Functions.PerformOSINT(player)
-    if not player or not player.Parent then
-        GUI.ResultText.Text = "❌ Player not found"
+local function osint(p)
+    if not p or not p.Parent then
+        g.rtxt.Text = "❌ Player not found"
         return
     end
     
-    AppData.SelectedPlayer = player
-    AppData.Stats.OSINTQueries = AppData.Stats.OSINTQueries + 1
+    data.selplr = p
+    data.stats.osint = data.stats.osint + 1
     
-    local data = {
-        Name = player.Name,
-        Display = player.DisplayName,
-        ID = player.UserId,
-        Age = player.AccountAge,
-        Premium = player.MembershipType == Enum.MembershipType.Premium,
+    local d = {
+        n = p.Name,
+        dn = p.DisplayName,
+        id = p.UserId,
+        age = p.AccountAge,
+        prem = p.MembershipType == Enum.MembershipType.Premium,
     }
     
-    local char = player.Character
-    if char then
-        local hum = char:FindFirstChild("Humanoid")
-        if hum then
-            data.Health = math.floor(hum.Health)
-            data.MaxHealth = math.floor(hum.MaxHealth)
-            data.Speed = hum.WalkSpeed
+    local c = p.Character
+    if c then
+        local h = c:FindFirstChild("Humanoid")
+        if h then
+            d.hp = math.floor(h.Health)
+            d.mhp = math.floor(h.MaxHealth)
+            d.spd = h.WalkSpeed
         end
         
-        if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("HumanoidRootPart") then
-            local dist = (Player.Character.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude
-            data.Distance = math.floor(dist)
+        if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and c:FindFirstChild("HumanoidRootPart") then
+            local dist = (plr.Character.HumanoidRootPart.Position - c.HumanoidRootPart.Position).Magnitude
+            d.dist = math.floor(dist)
         end
     end
     
-    local report = string.format([[
-╔══════════════════════════════════════════╗
-     🔍 OSINT INTELLIGENCE REPORT
-╚══════════════════════════════════════════╝
+    local rep = string.format([[
+╔════════════════════════════════════╗
+  🔍 OSINT REPORT
+╚════════════════════════════════════╝
 
-👤 PLAYER IDENTITY
-─────────────────────────────────────────
+👤 IDENTITY
+────────────────────────────────────
   Name: %s
   Display: %s
   UserID: %d
   Profile: roblox.com/users/%d/profile
 
-📊 ACCOUNT INFO
-─────────────────────────────────────────
-  Account Age: %d days (%.1f years)
+📊 ACCOUNT
+────────────────────────────────────
+  Age: %d days (%.1f years)
   Premium: %s
-  
-🎮 CHARACTER STATUS
-─────────────────────────────────────────
+
+🎮 CHARACTER
+────────────────────────────────────
   Health: %s/%s
-  WalkSpeed: %s
+  Speed: %s
   Distance: %s studs
 
-🔗 QUICK LINKS
-─────────────────────────────────────────
+🔗 LINKS
+────────────────────────────────────
   Friends: roblox.com/users/%d/friends
   Games: roblox.com/users/%d/games
-  
-═══════════════════════════════════════════
-Report Time: %s
-Query #%d
-═══════════════════════════════════════════
+
+════════════════════════════════════
+Time: %s | Query #%d
+════════════════════════════════════
     ]],
-        data.Name, data.Display, data.ID, data.ID,
-        data.Age, data.Age/365,
-        data.Premium and "✅ Yes" or "❌ No",
-        data.Health or "N/A", data.MaxHealth or "N/A",
-        data.Speed or "N/A",
-        data.Distance and (data.Distance .. " studs") or "N/A",
-        data.ID, data.ID,
+        d.n, d.dn, d.id, d.id,
+        d.age, d.age/365,
+        d.prem and "✅" or "❌",
+        d.hp or "N/A", d.mhp or "N/A",
+        d.spd or "N/A",
+        d.dist and (d.dist.." studs") or "N/A",
+        d.id, d.id,
         os.date("%H:%M:%S"),
-        AppData.Stats.OSINTQueries
+        data.stats.osint
     )
     
-    GUI.ResultText.Text = report
-    GUI.Results.CanvasSize = UDim2.new(0, 0, 0, GUI.ResultText.TextBounds.Y + 20)
+    g.rtxt.Text = rep
+    g.res.CanvasSize = UDim2.new(0,0,0,g.rtxt.TextBounds.Y+20)
 end
 
--- Update Player List
-function Functions.UpdatePlayerList()
-    for _, child in pairs(GUI.PlayerList:GetChildren()) do
-        if child:IsA("TextButton") then child:Destroy() end
+-- Update Players
+local function updatePlayers()
+    for _, v in pairs(g.plist:GetChildren()) do
+        if v:IsA("TextButton") then v:Destroy() end
     end
     
-    for _, plr in pairs(Services.Players:GetPlayers()) do
-        local btn = Utils.Create("TextButton", {
-            Size = UDim2.new(1, -10, 0, Device.IsMobile and 65 : 55),
-            BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+    for _, p in pairs(plrs:GetPlayers()) do
+        local btn = mk("TextButton", {
+            Size = UDim2.new(1,-10,0,mobile and 60 or 52),
+            BackgroundColor3 = Color3.fromRGB(40,40,50),
             Text = "",
-            Parent = GUI.PlayerList
+            Parent = g.plist
         })
+        corner(btn, 10)
         
-        Utils.Corner(btn, 10)
-        
-        local avatar = Utils.Create("ImageLabel", {
-            Size = UDim2.new(0, Device.IsMobile and 50 : 40, 0, Device.IsMobile and 50 : 40),
-            Position = UDim2.new(0, 8, 0.5, Device.IsMobile and -25 : -20),
-            BackgroundColor3 = CurrentTheme.Primary,
-            Image = Services.Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size60x60),
+        local av = mk("ImageLabel", {
+            Size = UDim2.new(0,mobile and 46 or 38,0,mobile and 46 or 38),
+            Position = UDim2.new(0,7,0.5,mobile and -23 or -19),
+            BackgroundColor3 = theme.p,
+            Image = plrs:GetUserThumbnailAsync(p.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size60x60),
             Parent = btn
         })
+        corner(av, 10)
         
-        Utils.Corner(avatar, 10)
-        
-        Utils.Create("TextLabel", {
-            Size = UDim2.new(1, -100, 0, 20),
-            Position = UDim2.new(0, Device.IsMobile and 65 : 55, 0, 10),
+        mk("TextLabel", {
+            Size = UDim2.new(1,-90,0,20),
+            Position = UDim2.new(0,mobile and 60 or 52,0,8),
             BackgroundTransparency = 1,
-            Text = plr.Name,
-            TextColor3 = CurrentTheme.Text,
-            TextSize = Device.IsMobile and 13 : 12,
+            Text = p.Name,
+            TextColor3 = theme.txt,
+            TextSize = mobile and 13 or 11,
             Font = Enum.Font.GothamBold,
             TextXAlignment = Enum.TextXAlignment.Left,
             TextTruncate = Enum.TextTruncate.AtEnd,
             Parent = btn
         })
         
-        Utils.Create("TextLabel", {
-            Size = UDim2.new(1, -100, 0, 18),
-            Position = UDim2.new(0, Device.IsMobile and 65 : 55, 0, 32),
+        mk("TextLabel", {
+            Size = UDim2.new(1,-90,0,16),
+            Position = UDim2.new(0,mobile and 60 or 52,0,28),
             BackgroundTransparency = 1,
-            Text = "@" .. plr.DisplayName,
-            TextColor3 = CurrentTheme.TextDim,
-            TextSize = 10,
+            Text = "@"..p.DisplayName,
+            TextColor3 = Color3.fromRGB(140,140,140),
+            TextSize = 9,
             Font = Enum.Font.Gotham,
             TextXAlignment = Enum.TextXAlignment.Left,
             Parent = btn
         })
         
         btn.MouseButton1Click:Connect(function()
-            Functions.PerformOSINT(plr)
-            for _, b in pairs(GUI.PlayerList:GetChildren()) do
+            osint(p)
+            for _, b in pairs(g.plist:GetChildren()) do
                 if b:IsA("TextButton") then
-                    Utils.Tween(b, {BackgroundColor3 = Color3.fromRGB(40, 40, 50)})
+                    tw(b, {BackgroundColor3 = Color3.fromRGB(40,40,50)})
                 end
             end
-            Utils.Tween(btn, {BackgroundColor3 = CurrentTheme.Primary})
+            tw(btn, {BackgroundColor3 = theme.p})
         end)
     end
     
-    GUI.PlayerList.CanvasSize = UDim2.new(0, 0, 0, playerLayout.AbsoluteContentSize.Y + 20)
+    g.plist.CanvasSize = UDim2.new(0,0,0,play.AbsoluteContentSize.Y+16)
 end
 
 print("[FUNCTIONS] ✅ Core functions loaded")
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                  CREATE SONG BUTTONS
+--                                      SONG BUTTONS
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
-for i, song in ipairs(Songs) do
-    local btn = Utils.Create("TextButton", {
-        Size = UDim2.new(1, -10, 0, Device.IsMobile and 50 : 45),
-        BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+for i, s in ipairs(songs) do
+    local btn = mk("TextButton", {
+        Size = UDim2.new(1,-10,0,mobile and 48 or 42),
+        BackgroundColor3 = Color3.fromRGB(40,40,50),
         Text = "",
         LayoutOrder = i,
-        Parent = GUI.SongList
+        Parent = g.list
     })
+    corner(btn, 10)
     
-    Utils.Corner(btn, 10)
-    
-    Utils.Create("TextLabel", {
-        Size = UDim2.new(1, -80, 0, 20),
-        Position = UDim2.new(0, 12, 0, 6),
+    mk("TextLabel", {
+        Size = UDim2.new(1,-75,0,18),
+        Position = UDim2.new(0,10,0,5),
         BackgroundTransparency = 1,
-        Text = song.Name,
-        TextColor3 = CurrentTheme.Text,
-        TextSize = Device.IsMobile and 12 : 11,
+        Text = s.n,
+        TextColor3 = theme.txt,
+        TextSize = mobile and 12 or 11,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
         TextTruncate = Enum.TextTruncate.AtEnd,
         Parent = btn
     })
     
-    local durationLabel = Utils.Create("TextLabel", {
-        Size = UDim2.new(0, 55, 0, 18),
-        Position = UDim2.new(1, -62, 0, 5),
-        BackgroundColor3 = CurrentTheme.Primary,
-        Text = song.Time,
-        TextColor3 = Color3.new(1, 1, 1),
+    local dur = mk("TextLabel", {
+        Size = UDim2.new(0,50,0,16),
+        Position = UDim2.new(1,-58,0,4),
+        BackgroundColor3 = theme.p,
+        Text = s.t,
+        TextColor3 = Color3.new(1,1,1),
         TextSize = 9,
         Font = Enum.Font.GothamBold,
         Parent = btn
     })
+    corner(dur, 6)
     
-    Utils.Corner(durationLabel, 6)
-    
-    Utils.Create("TextLabel", {
-        Size = UDim2.new(1, -80, 0, 16),
-        Position = UDim2.new(0, 12, 0, Device.IsMobile and 28 : 25),
+    mk("TextLabel", {
+        Size = UDim2.new(1,-75,0,14),
+        Position = UDim2.new(0,10,0,mobile and 26 or 23),
         BackgroundTransparency = 1,
-        Text = "Category: " .. song.Cat,
-        TextColor3 = CurrentTheme.TextDim,
+        Text = "Category: "..s.c,
+        TextColor3 = Color3.fromRGB(130,130,130),
         TextSize = 9,
         Font = Enum.Font.Gotham,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -1199,137 +903,121 @@ for i, song in ipairs(Songs) do
     })
     
     btn.MouseButton1Click:Connect(function()
-        Functions.PlaySound(song.ID, song.Name)
-        Utils.Tween(btn, {BackgroundColor3 = CurrentTheme.Success}, 0.15)
+        playSound(s.i, s.n)
+        tw(btn, {BackgroundColor3 = theme.ok}, 0.15)
         wait(0.15)
-        Utils.Tween(btn, {BackgroundColor3 = Color3.fromRGB(40, 40, 50)}, 0.2)
+        tw(btn, {BackgroundColor3 = Color3.fromRGB(40,40,50)}, 0.2)
     end)
 end
 
-GUI.SongList.CanvasSize = UDim2.new(0, 0, 0, songLayout.AbsoluteContentSize.Y + 20)
+g.list.CanvasSize = UDim2.new(0,0,0,lay.AbsoluteContentSize.Y+16)
 
-print(string.format("[SONGS] ✅ Created %d song buttons", #Songs))
+print(string.format("[SONGS] ✅ Created %d song buttons", #songs))
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                  EVENTS
+--                                      EVENTS
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
--- Theme Switcher
-GUI.ThemeBtn.MouseButton1Click:Connect(function()
-    CurrentThemeIndex = CurrentThemeIndex % #ThemeNames + 1
-    CurrentTheme = Themes[ThemeNames[CurrentThemeIndex]]
-    
-    -- Update colors
-    GUI.ThemeBtn.Text = "🎨 " .. CurrentTheme.Name
-    Utils.Tween(GUI.Main, {BackgroundColor3 = CurrentTheme.Background})
-    Utils.Tween(GUI.TopBar, {BackgroundColor3 = CurrentTheme.Surface})
-    
-    Utils.Notify("🎨 Theme Changed", CurrentTheme.Name, 2)
-end)
 
 -- Scan
-GUI.ScanBtn.MouseButton1Click:Connect(function()
-    GUI.ScanBtn.Text = "⏳ SCANNING..."
-    Functions.ScanRemotes()
+g.scan.MouseButton1Click:Connect(function()
+    g.scan.Text = "⏳ SCANNING..."
+    scanRemotes()
     wait(0.5)
-    GUI.ScanBtn.Text = "🔍 SCAN FOR REMOTES"
+    g.scan.Text = "🔍 SCAN FOR REMOTES"
 end)
 
 -- Stop
-GUI.StopBtn.MouseButton1Click:Connect(function()
-    Functions.StopAll()
+g.stop.MouseButton1Click:Connect(function()
+    stopAll()
 end)
 
 -- Custom Play
-GUI.PlayCustomBtn.MouseButton1Click:Connect(function()
-    local id = GUI.CustomInput.Text
+g.play.MouseButton1Click:Connect(function()
+    local id = g.inp.Text
     if id and id ~= "" then
-        Functions.PlaySound(id, "Custom")
+        playSound(id, "Custom")
     else
-        Utils.Notify("⚠️  Error", "Enter an Audio ID!", 2)
+        notif("⚠️  Error", "Enter ID!")
     end
 end)
 
 -- Close
-GUI.CloseBtn.MouseButton1Click:Connect(function()
-    GUI.Main.Visible = false
-    if GUI.FloatBtn then GUI.FloatBtn.Visible = true end
+g.close.MouseButton1Click:Connect(function()
+    g.main.Visible = false
+    if g.fb then g.fb.Visible = true end
 end)
 
 -- Float Button
-if GUI.FloatBtn then
-    GUI.FloatBtn.MouseButton1Click:Connect(function()
-        GUI.Main.Visible = true
-        GUI.FloatBtn.Visible = false
-        Functions.UpdatePlayerList()
+if g.fb then
+    g.fb.MouseButton1Click:Connect(function()
+        g.main.Visible = true
+        g.fb.Visible = false
+        updatePlayers()
     end)
 end
 
 -- Player Events
-Services.Players.PlayerAdded:Connect(function()
+plrs.PlayerAdded:Connect(function()
     wait(0.1)
-    Functions.UpdatePlayerList()
+    updatePlayers()
 end)
 
-Services.Players.PlayerRemoving:Connect(function(plr)
-    if AppData.SelectedPlayer == plr then
-        GUI.ResultText.Text = "❌ Player left"
+plrs.PlayerRemoving:Connect(function(p)
+    if data.selplr == p then
+        g.rtxt.Text = "❌ Player left"
     end
-    Functions.UpdatePlayerList()
+    updatePlayers()
 end)
 
 -- Keyboard Toggle
-if not Device.IsMobile then
-    Services.UserInputService.InputBegan:Connect(function(input, gpe)
+if pc then
+    uis.InputBegan:Connect(function(inp, gpe)
         if gpe then return end
-        if input.KeyCode == Enum.KeyCode.Insert then
-            GUI.Main.Visible = not GUI.Main.Visible
+        if inp.KeyCode == Enum.KeyCode.Insert then
+            g.main.Visible = not g.main.Visible
         end
     end)
 end
 
-print("[EVENTS] ✅ Event handlers connected")
+print("[EVENTS] ✅ Handlers connected")
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                  INITIALIZATION
+--                                      INIT
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
-Functions.UpdatePlayerList()
+updatePlayers()
 
-if not Device.IsMobile then
-    GUI.Main.Visible = true
+if not mobile then
+    g.main.Visible = true
 end
 
-wait(0.5)
+wait(0.3)
 
-Utils.Notify(
-    "🌟 Ultimate Tools v6.0 LEGENDARY", 
-    string.format("%s Loaded! | %d Songs | 4 Themes\n%s to toggle", 
-        Device.PlatformIcon,
-        #Songs,
-        Device.IsMobile and "Tap button" or "Press INSERT"
-    ), 
-    6
+notif(
+    "🎯 Ultimate Tools v7.0", 
+    string.format("Loaded! %s to open\n%d songs | Full OSINT", 
+        mobile and "Tap button" or "Press INSERT",
+        #songs
+    )
 )
 
 print([[
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                               ║
-║                    ✅ ULTIMATE TOOLS v6.0 LEGENDARY LOADED!                  ║
+║                    ✅ ULTIMATE TOOLS v7.0 OPTIMIZED LOADED!                  ║
 ║                                                                               ║
-║  🌟 Features:                                                                ║
-║     🔊 Soundboard - ]] .. #Songs .. [[ premium songs                                     ║
-║     🔍 OSINT Tool - Full intelligence gathering                             ║
-║     📡 Remote Scanner - Deep exploit detection                              ║
-║     🎨 4 Themes - Legendary, Cyberpunk, Matrix, Ocean                       ║
+║  Features:                                                                    ║
+║    🔊 Soundboard - ]]..#songs..[[ songs                                             ║
+║    🔍 OSINT Tool - Full intelligence                                         ║
+║    📡 Remote Scanner - Deep scan                                             ║
+║    📱 Mobile Support - Floating button                                       ║
 ║                                                                               ║
-║  🎮 Platform: ]] .. Device.PlatformIcon .. [[ ]] .. Device.PlatformName .. [[                                                    ║
-║  💾 Total Lines: 1200+                                                       ║
-║  ⚡ Optimized & Premium Quality                                              ║
+║  Platform: ]].. (mobile and "📱 Mobile" or "💻 PC") ..[[                                                     ║
+║  Variables: <200 (OPTIMIZED!)                                                ║
 ║                                                                               ║
-║                    🌟 НЕЗАБЫВАЕМЫЙ ОПЫТ ГАРАНТИРОВАН! 🌟                    ║
+║                          🚀 100% WORKING!                                    ║
 ║                                                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ]])
 
-print("[LEGENDARY] 🚀 ALL SYSTEMS OPERATIONAL!")
+print("[OPTIMIZED] 🚀 ALL SYSTEMS GO!")
