@@ -1,716 +1,1952 @@
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                    🔥 ULTIMATE TOOLS v14.0 FINAL ULTIMATE EDITION 🔥
---              БЕЗ ПРОВЕРОК | БЕЗ ОЖИДАНИЙ | ЧИСТЫЙ КОД | 100% РАБОТАЕТ
---                    4 ПАНЕЛИ | ПОЛНАЯ ВЕРСИЯ | ДРУЗЬЯ ОБЗАВИДУЮТСЯ
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
+--[[
+════════════════════════════════════════════════════════════════════════════════════
+                    🔥 ULTIMATE TOOLS v16.0 PROFESSIONAL EDITION 🔥
+                          ПОЛНАЯ ВЕРСИЯ | ВСЕ ФУНКЦИИ
+                    5 ПАНЕЛЕЙ | HUB СКРИПТОВ | ЧИСТЫЙ КОД
+════════════════════════════════════════════════════════════════════════════════════
+]]--
 
 print([[
 ╔═══════════════════════════════════════════════════════════════════════════════╗
-║    🔥 ULTIMATE TOOLS v14.0 FINAL ULTIMATE - БЕЗ ПРОВЕРОК!                   ║
-║    ЧИСТЫЙ КОД | БЕЗ ОЖИДАНИЙ | БЕЗ ЛАГОВ | МАКСИМАЛЬНАЯ СКОРОСТЬ           ║
+║         🔥 ULTIMATE TOOLS v16.0 PROFESSIONAL EDITION                        ║
+║              5 PANELS | SCRIPT HUB | CLEAN CODE                             ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ]])
 
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                    БЫСТРАЯ ИНИЦИАЛИЗАЦИЯ
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
+wait(0.5)
 
-local p = game:GetService("Players")
-local u = game:GetService("UserInputService")
-local t = game:GetService("TweenService")
-local r = game:GetService("RunService")
-local s = game:GetService("StarterGui")
-local l = game:GetService("Lighting")
-local w = game:GetService("Workspace")
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                                    SERVICES
+-- ════════════════════════════════════════════════════════════════════════════════════
 
-local pl = p.LocalPlayer
-local pg = pl:WaitForChild("PlayerGui")
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+local Lighting = game:GetService("Lighting")
+local Workspace = game:GetService("Workspace")
+local VirtualUser = game:GetService("VirtualUser")
+local Stats = game:GetService("Stats")
+local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- Быстрый cleanup БЕЗ ПРОВЕРОК
-for _, v in pairs(pg:GetChildren()) do
-    v:Destroy()
-end
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local Mouse = LocalPlayer:GetMouse()
 
-local m = u.TouchEnabled and not u.KeyboardEnabled
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                                    CLEANUP
+-- ════════════════════════════════════════════════════════════════════════════════════
 
--- Тема
-local c = {
-    p = Color3.fromRGB(138,43,226),
-    s = Color3.fromRGB(75,0,130),
-    bg = Color3.fromRGB(15,15,20),
-    sf = Color3.fromRGB(25,25,35),
-    ok = Color3.fromRGB(46,204,113),
-    no = Color3.fromRGB(231,76,60),
-    w = Color3.fromRGB(241,196,15),
-    txt = Color3.fromRGB(255,255,255),
-    b = Color3.fromRGB(52,152,219),
-    o = Color3.fromRGB(230,126,34),
-    cy = Color3.fromRGB(26,188,156),
-}
-
--- Данные
-local d = {
-    rem = {},
-    snd = nil,
-    sp = nil,
-    tab = "s",
-    spd = 16,
-    jmp = 50,
-    grv = 196.2,
-    fly = false,
-    noc = false,
-    esp = false,
-    fb = false,
-    afk = false,
-    ac = false,
-    fps = 0,
-}
-
--- Песни
-local songs = {
-    {"🔥 KORDHELL - MURDER", "1846458016"},
-    {"🔥 DVRST - Close Eyes", "1843404009"},
-    {"🔥 KSLV - OVERRIDE", "6862950224"},
-    {"🔥 PHARMACIST", "1839647093"},
-    {"🔥 MOONDEITY - BLADE", "6916750129"},
-    {"🔥 SXMPRA", "6863896860"},
-    {"🔥 Distant - FUNK", "9046862343"},
-    {"🎤 Travis - SICKO", "2606662029"},
-    {"🎤 21 Savage", "1103436580"},
-    {"🎤 Post Malone", "935880900"},
-    {"🎤 Pop Smoke", "4880546107"},
-    {"🎤 Drake", "1539587314"},
-    {"😢 XXX - SAD", "1837849285"},
-    {"😢 Juice WRLD", "2057814923"},
-    {"😢 Lil Peep", "1166997184"},
-    {"⚔️ AOT", "5272966007"},
-    {"⚔️ Tokyo Ghoul", "2545298782"},
-    {"⚔️ Death Note", "1848354536"},
-    {"⚔️ Naruto", "167285694"},
-    {"🎧 Alan Walker", "532019994"},
-    {"🎧 Marshmello", "574623217"},
-    {"🎧 Chainsmokers", "557430249"},
-    {"🎧 Avicii", "142429563"},
-    {"🎮 Undertale", "367339030"},
-    {"🎮 DOOM", "982708489"},
-    {"🎮 Minecraft", "1837849285"},
-    {"😂 Rick Roll", "6897166225"},
-    {"💀 Coffin Dance", "4822708340"},
-    {"🎵 Caramelldansen", "2303479775"},
-    {"💥 Vine Boom", "7149255551"},
-    {"⭐ Sandstorm", "142319852"},
-    {"⭐ Gangnam", "130844430"},
-}
-
-print("[INIT] OK")
-
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                    БЫСТРЫЕ УТИЛИТЫ
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-local function tw(o, pr, ti)
-    t:Create(o, TweenInfo.new(ti or 0.3), pr):Play()
-end
-
-local function mk(cl, pr)
-    local o = Instance.new(cl)
-    for k, v in pairs(pr) do
-        if k ~= "Parent" then o[k] = v end
+pcall(function()
+    for _, gui in pairs(PlayerGui:GetChildren()) do
+        if gui.Name:match("Ultimate") or gui.Name:match("UT_") then
+            gui:Destroy()
+        end
     end
-    o.Parent = pr.Parent
-    return o
-end
+end)
 
-local function co(o, ra)
-    mk("UICorner", {CornerRadius = UDim.new(0, ra or 12), Parent = o})
-end
+wait(0.3)
 
-local function gr(o)
-    mk("UIGradient", {Color = ColorSequence.new{ColorSequenceKeypoint.new(0, c.p), ColorSequenceKeypoint.new(1, c.s)}, Rotation = 90, Parent = o})
-end
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                                DEVICE DETECTION
+-- ════════════════════════════════════════════════════════════════════════════════════
 
-local function no(ti, te)
-    s:SetCore("SendNotification", {Title = ti, Text = te, Duration = 2})
-end
+local IsMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+local IsPC = UserInputService.KeyboardEnabled
 
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                    GUI БЕЗ ЛИШНИХ ПРОВЕРОК
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
+print("[DEVICE] " .. (IsMobile and "📱 Mobile" or "💻 PC"))
 
-local g = {}
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                                  COLOR THEME
+-- ════════════════════════════════════════════════════════════════════════════════════
 
-g.sc = mk("ScreenGui", {Name = "UT_"..tick(), ResetOnSpawn = false, DisplayOrder = 999999, Parent = pg})
-
--- Плавающая кнопка
-if m then
-    g.fb = mk("TextButton", {Size = UDim2.new(0,80,0,80), Position = UDim2.new(1,-95,0.5,-40), BackgroundColor3 = c.p, Text = "🔥", TextSize = 40, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, ZIndex = 10000, Parent = g.sc})
-    co(g.fb, 40)
-    gr(g.fb)
-    
-    local dr, ds, sp
-    g.fb.InputBegan:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.Touch then
-            dr = true
-            ds = i.Position
-            sp = g.fb.Position
-        end
-    end)
-    g.fb.InputEnded:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.Touch then dr = false end
-    end)
-    u.InputChanged:Connect(function(i)
-        if dr and i.UserInputType == Enum.UserInputType.Touch then
-            local de = i.Position - ds
-            g.fb.Position = UDim2.new(sp.X.Scale, sp.X.Offset + de.X, sp.Y.Scale, sp.Y.Offset + de.Y)
-        end
-    end)
-end
-
--- Главное окно
-g.m = mk("Frame", {Size = m and UDim2.new(1,0,1,0) or UDim2.new(0,1100,0,700), Position = m and UDim2.new(0,0,0,0) or UDim2.new(0.5,-550,0.5,-350), BackgroundColor3 = c.bg, BorderSizePixel = 0, Visible = not m, Parent = g.sc})
-
-if not m then
-    co(g.m, 20)
-    g.m.Active = true
-    g.m.Draggable = true
-end
-
--- Топ бар
-g.tp = mk("Frame", {Size = UDim2.new(1,0,0,m and 75 or 65), BackgroundColor3 = c.sf, BorderSizePixel = 0, Parent = g.m})
-if not m then co(g.tp, 20) end
-gr(g.tp)
-
-mk("TextLabel", {Size = UDim2.new(0,550,0,28), Position = UDim2.new(0,15,0,8), BackgroundTransparency = 1, Text = "🔥 ULTIMATE v14 FINAL", TextColor3 = Color3.new(1,1,1), TextSize = m and 17 or 20, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = g.tp})
-
-mk("TextLabel", {Size = UDim2.new(0,550,0,18), Position = UDim2.new(0,15,0,m and 45 or 40), BackgroundTransparency = 1, Text = (m and "📱" or "💻").." | 4 PANELS | "..#songs.." SONGS", TextColor3 = Color3.fromRGB(220,220,230), TextSize = 11, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, TextTransparency = 0.3, Parent = g.tp})
-
-g.cb = mk("TextButton", {Size = UDim2.new(0,m and 55 or 50,0,m and 55 or 50), Position = UDim2.new(1,m and -65 or -60,0.5,m and -27.5 or -25), BackgroundColor3 = c.no, Text = "✕", TextSize = m and 26 or 22, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = g.tp})
-co(g.cb, 14)
-
--- Табы
-g.tb = mk("Frame", {Size = UDim2.new(1,-10,0,m and 65 or 55), Position = UDim2.new(0,5,0,m and 80 or 70), BackgroundColor3 = c.sf, BorderSizePixel = 0, Parent = g.m})
-co(g.tb, 15)
-
-local tabs = {
-    {n="s", i="🔊", l="SOUND"},
-    {n="o", i="🔍", l="OSINT"},
-    {n="w", i="⚔️", l="WEAPON"},
-    {n="u", i="🛠️", l="UTILITY"},
+local Colors = {
+    Primary = Color3.fromRGB(138, 43, 226),      -- Purple
+    Secondary = Color3.fromRGB(75, 0, 130),      -- Dark Purple
+    Background = Color3.fromRGB(15, 15, 20),     -- Dark Background
+    Surface = Color3.fromRGB(25, 25, 35),        -- Surface
+    SurfaceLight = Color3.fromRGB(35, 35, 50),   -- Light Surface
+    Success = Color3.fromRGB(46, 204, 113),      -- Green
+    Danger = Color3.fromRGB(231, 76, 60),        -- Red
+    Warning = Color3.fromRGB(241, 196, 15),      -- Yellow
+    Info = Color3.fromRGB(52, 152, 219),         -- Blue
+    Cyan = Color3.fromRGB(26, 188, 156),         -- Cyan
+    Orange = Color3.fromRGB(230, 126, 34),       -- Orange
+    Text = Color3.fromRGB(255, 255, 255),        -- White
+    TextDim = Color3.fromRGB(180, 180, 200),     -- Dim White
 }
 
-g.t = {}
-for x, ta in ipairs(tabs) do
-    local bt = mk("TextButton", {Name = ta.n, Size = UDim2.new(1/4,-8,1,-10), Position = UDim2.new((x-1)/4,4+(x-1)*2,0,5), BackgroundColor3 = x == 1 and c.p or c.bg, Text = ta.i..(m and "\n" or " ")..ta.l, TextSize = m and 10 : 12, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = g.tb})
-    co(bt, 12)
-    if x == 1 then gr(bt) end
-    g.t[ta.n] = bt
-end
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                                  MUSIC DATABASE
+-- ════════════════════════════════════════════════════════════════════════════════════
 
--- Контент
-g.cn = mk("Frame", {Size = UDim2.new(1,-10,1,m and -155 or -135), Position = UDim2.new(0,5,0,m and 150 or 130), BackgroundTransparency = 1, Parent = g.m})
-
--- Панели
-g.p = {}
-for _, ta in ipairs(tabs) do
-    local pa = mk("Frame", {Name = ta.n, Size = UDim2.new(1,0,1,0), BackgroundTransparency = 1, Visible = ta.n == "s", Parent = g.cn})
-    g.p[ta.n] = pa
-end
-
-print("[GUI] OK")
-
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                              🔊 SOUNDBOARD - БЕЗ ПРОВЕРОК
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-local sp = g.p.s
-
-mk("TextLabel", {Size = UDim2.new(1,0,0,45), BackgroundColor3 = c.sf, Text = "🔊 SOUNDBOARD", TextColor3 = c.txt, TextSize = 16, Font = Enum.Font.GothamBold, Parent = sp})
-
-g.sc1 = mk("TextButton", {Size = UDim2.new(0.48,0,0,40), Position = UDim2.new(0,0,0,50), BackgroundColor3 = c.p, Text = "🔍 SCAN", TextSize = 13, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = sp})
-co(g.sc1, 12)
-gr(g.sc1)
-
-g.st = mk("TextButton", {Size = UDim2.new(0.48,0,0,40), Position = UDim2.new(0.52,0,0,50), BackgroundColor3 = c.no, Text = "⏹ STOP", TextSize = 13, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = sp})
-co(g.st, 12)
-
-g.ls = mk("ScrollingFrame", {Size = UDim2.new(1,0,1,-100), Position = UDim2.new(0,0,0,95), BackgroundColor3 = c.sf, BorderSizePixel = 0, ScrollBarThickness = 6, ScrollBarImageColor3 = c.p, Parent = sp})
-co(g.ls, 14)
-
-local ly = mk("UIListLayout", {SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,5), Parent = g.ls})
-mk("UIPadding", {PaddingTop = UDim.new(0,8), PaddingBottom = UDim.new(0,8), PaddingLeft = UDim.new(0,8), PaddingRight = UDim.new(0,8), Parent = g.ls})
-
-for i, so in ipairs(songs) do
-    local bt = mk("TextButton", {Size = UDim2.new(1,-10,0,38), BackgroundColor3 = Color3.fromRGB(40,40,55), Text = so[1], TextSize = 11, TextColor3 = c.txt, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, LayoutOrder = i, Parent = g.ls})
-    co(bt, 10)
-    mk("UIPadding", {PaddingLeft = UDim.new(0,10), Parent = bt})
+local MusicDatabase = {
+    -- Phonk
+    {Name = "🔥 KORDHELL - MURDER IN MY MIND", ID = "1846458016", Category = "Phonk"},
+    {Name = "🔥 DVRST - Close Eyes", ID = "1843404009", Category = "Phonk"},
+    {Name = "🔥 KSLV - OVERRIDE", ID = "6862950224", Category = "Phonk"},
+    {Name = "🔥 PHARMACIST - NORTH MEMPHIS", ID = "1839647093", Category = "Phonk"},
+    {Name = "🔥 MOONDEITY - NEON BLADE", ID = "6916750129", Category = "Phonk"},
+    {Name = "🔥 SXMPRA - DEMON", ID = "6863896860", Category = "Phonk"},
+    {Name = "🔥 Distant - FUNK ESTRANHO", ID = "9046862343", Category = "Phonk"},
     
-    bt.MouseButton1Click:Connect(function()
-        if #d.rem > 0 then
-            for _, re in pairs(d.rem) do
-                re.o:FireServer("rbxassetid://"..so[2])
-                re.o:FireServer(tonumber(so[2]))
-            end
-            no("▶️ Playing", #d.rem.." remotes")
-        else
-            if d.snd then d.snd:Destroy() end
-            local sn = Instance.new("Sound")
-            sn.SoundId = "rbxassetid://"..so[2]
-            sn.Volume = 0.5
-            sn.Parent = w
-            sn:Play()
-            d.snd = sn
-            no("▶️ Playing", "Local")
-        end
-        tw(bt, {BackgroundColor3 = c.ok}, 0.15)
-        wait(0.15)
-        tw(bt, {BackgroundColor3 = Color3.fromRGB(40,40,55)}, 0.2)
+    -- Hip-Hop
+    {Name = "🎤 Travis Scott - SICKO MODE", ID = "2606662029", Category = "Hip-Hop"},
+    {Name = "🎤 21 Savage - a lot", ID = "1103436580", Category = "Hip-Hop"},
+    {Name = "🎤 Post Malone - Rockstar", ID = "935880900", Category = "Hip-Hop"},
+    {Name = "🎤 Pop Smoke - Dior", ID = "4880546107", Category = "Hip-Hop"},
+    {Name = "🎤 Drake - God's Plan", ID = "1539587314", Category = "Hip-Hop"},
+    
+    -- Sad
+    {Name = "😢 XXXTentacion - SAD!", ID = "1837849285", Category = "Sad"},
+    {Name = "😢 Juice WRLD - Lucid Dreams", ID = "2057814923", Category = "Sad"},
+    {Name = "😢 Lil Peep - Star Shopping", ID = "1166997184", Category = "Sad"},
+    
+    -- Anime
+    {Name = "⚔️ Attack on Titan - Rumbling", ID = "5272966007", Category = "Anime"},
+    {Name = "⚔️ Tokyo Ghoul - Unravel", ID = "2545298782", Category = "Anime"},
+    {Name = "⚔️ Death Note - L's Theme", ID = "1848354536", Category = "Anime"},
+    {Name = "⚔️ Naruto - Silhouette", ID = "167285694", Category = "Anime"},
+    
+    -- EDM
+    {Name = "🎧 Alan Walker - Faded", ID = "532019994", Category = "EDM"},
+    {Name = "🎧 Marshmello - Alone", ID = "574623217", Category = "EDM"},
+    {Name = "🎧 The Chainsmokers - Closer", ID = "557430249", Category = "EDM"},
+    {Name = "🎧 Avicii - Wake Me Up", ID = "142429563", Category = "EDM"},
+    
+    -- Gaming
+    {Name = "🎮 Undertale - Megalovania", ID = "367339030", Category = "Gaming"},
+    {Name = "🎮 DOOM - BFG Division", ID = "982708489", Category = "Gaming"},
+    {Name = "🎮 Minecraft - Sweden", ID = "1837849285", Category = "Gaming"},
+    
+    -- Meme
+    {Name = "😂 Rick Astley - Never Gonna Give You Up", ID = "6897166225", Category = "Meme"},
+    {Name = "💀 Coffin Dance", ID = "4822708340", Category = "Meme"},
+    {Name = "🎵 Caramelldansen", ID = "2303479775", Category = "Meme"},
+    {Name = "💥 Vine Boom", ID = "7149255551", Category = "Meme"},
+    
+    -- Classic
+    {Name = "⭐ Darude - Sandstorm", ID = "142319852", Category = "Classic"},
+    {Name = "⭐ PSY - Gangnam Style", ID = "130844430", Category = "Classic"},
+}
+
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                                  SCRIPT HUB DATABASE
+-- ════════════════════════════════════════════════════════════════════════════════════
+
+local ScriptHub = {
+    -- Popular Scripts
+    {
+        Name = "Infinite Yield",
+        Description = "Most popular admin script",
+        Icon = "👑",
+        Category = "Admin",
+        Code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()'
+    },
+    {
+        Name = "Dex Explorer V4",
+        Description = "Game explorer and debugger",
+        Icon = "🔍",
+        Category = "Dev",
+        Code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))()'
+    },
+    {
+        Name = "Unnamed ESP",
+        Description = "Best ESP script",
+        Icon = "👁️",
+        Category = "Visual",
+        Code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/ic3w0lf22/Unnamed-ESP/master/UnnamedESP.lua"))()'
+    },
+    {
+        Name = "Orca",
+        Description = "Advanced admin commands",
+        Icon = "🐋",
+        Category = "Admin",
+        Code = 'loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/richie0866/orca/master/public/snapshot.lua"))()'
+    },
+    {
+        Name = "Dark Dex",
+        Description = "Dark themed explorer",
+        Icon = "🌙",
+        Category = "Dev",
+        Code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/Babyhamsta/RBLX_Scripts/main/Universal/BypassedDarkDexV3.lua"))()'
+    },
+    {
+        Name = "Simple Spy",
+        Description = "Remote spy tool",
+        Icon = "🕵️",
+        Category = "Dev",
+        Code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/exxtremestuffs/SimpleSpySource/master/SimpleSpy.lua"))()'
+    },
+    {
+        Name = "Hydroxide",
+        Description = "Advanced remote spy",
+        Icon = "💉",
+        Category = "Dev",
+        Code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/Upbolt/Hydroxide/revision/init.lua"))()'
+    },
+    {
+        Name = "Universal ESP",
+        Description = "Works on all games",
+        Icon = "🌐",
+        Category = "Visual",
+        Code = [[
+local players = game:GetService("Players")
+local localPlayer = players.LocalPlayer
+
+for _, player in pairs(players:GetPlayers()) do
+    if player ~= localPlayer and player.Character then
+        local highlight = Instance.new("Highlight")
+        highlight.FillColor = Color3.fromRGB(255, 0, 0)
+        highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+        highlight.FillTransparency = 0.5
+        highlight.Parent = player.Character
+    end
+end
+        ]]
+    },
+    {
+        Name = "FPS Booster",
+        Description = "Increase game performance",
+        Icon = "⚡",
+        Category = "Utility",
+        Code = [[
+local decalsyeeted = true
+local g = game
+local w = g.Workspace
+local l = g.Lighting
+local t = w.Terrain
+
+t.WaterWaveSize = 0
+t.WaterWaveSpeed = 0
+t.WaterReflectance = 0
+t.WaterTransparency = 0
+l.GlobalShadows = false
+l.FogEnd = 9e9
+l.Brightness = 0
+
+settings().Rendering.QualityLevel = "Level01"
+
+for i, v in pairs(g:GetDescendants()) do
+    if v:IsA("Part") or v:IsA("Union") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+    elseif v:IsA("Decal") or v:IsA("Texture") and decalsyeeted then
+        v.Transparency = 1
+    elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+        v.Lifetime = NumberRange.new(0)
+    elseif v:IsA("Explosion") then
+        v.BlastPressure = 1
+        v.BlastRadius = 1
+    elseif v:IsA("Fire") or v:IsA("SpotLight") or v:IsA("Smoke") or v:IsA("Sparkles") then
+        v.Enabled = false
+    elseif v:IsA("MeshPart") then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+    end
+end
+
+print("FPS Boost Applied!")
+        ]]
+    },
+    {
+        Name = "Anti-AFK",
+        Description = "Prevents being kicked for AFK",
+        Icon = "💤",
+        Category = "Utility",
+        Code = [[
+local VirtualUser = game:GetService("VirtualUser")
+game:GetService("Players").LocalPlayer.Idled:connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+print("Anti-AFK Enabled!")
+        ]]
+    },
+    {
+        Name = "Chat Spy",
+        Description = "See all chat messages",
+        Icon = "💬",
+        Category = "Utility",
+        Code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/Lucasfin000/SpaceHub/main/CHATSPY"))()'
+    },
+    {
+        Name = "Fly Script V3",
+        Description = "Advanced flying script",
+        Icon = "🚀",
+        Category = "Movement",
+        Code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()'
+    },
+}
+
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                                  DATA STORAGE
+-- ════════════════════════════════════════════════════════════════════════════════════
+
+local Data = {
+    -- Soundboard
+    Remotes = {},
+    CurrentSound = nil,
+    SoundParent = nil,
+    
+    -- Stats
+    WalkSpeed = 16,
+    JumpPower = 50,
+    Gravity = 196.2,
+    
+    -- Toggles
+    Flying = false,
+    Noclip = false,
+    ESP = false,
+    Fullbright = false,
+    AntiAFK = false,
+    AutoRespawn = false,
+    AutoClick = false,
+    AutoFarm = false,
+    
+    -- UI
+    CurrentTab = "sound",
+    
+    -- Performance
+    FPS = 0,
+    Ping = 0,
+}
+
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                                  UTILITY FUNCTIONS
+-- ════════════════════════════════════════════════════════════════════════════════════
+
+local Utils = {}
+
+-- Tween Function
+function Utils.Tween(object, properties, duration)
+    pcall(function()
+        TweenService:Create(
+            object,
+            TweenInfo.new(duration or 0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            properties
+        ):Play()
     end)
 end
 
-g.ls.CanvasSize = UDim2.new(0,0,0,ly.AbsoluteContentSize.Y+16)
+-- Create Instance
+function Utils.Create(className, properties)
+    local object = Instance.new(className)
+    for property, value in pairs(properties) do
+        if property ~= "Parent" then
+            pcall(function()
+                object[property] = value
+            end)
+        end
+    end
+    object.Parent = properties.Parent
+    return object
+end
 
-print("[SOUND] OK")
+-- Add Corner
+function Utils.AddCorner(object, radius)
+    Utils.Create("UICorner", {
+        CornerRadius = UDim.new(0, radius or 12),
+        Parent = object
+    })
+end
 
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                              🔍 OSINT - ПРОСТАЯ ВЕРСИЯ
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
+-- Add Gradient
+function Utils.AddGradient(object, rotation)
+    Utils.Create("UIGradient", {
+        Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Colors.Primary),
+            ColorSequenceKeypoint.new(1, Colors.Secondary)
+        },
+        Rotation = rotation or 90,
+        Parent = object
+    })
+end
 
-local op = g.p.o
+-- Add Padding
+function Utils.AddPadding(object, padding)
+    Utils.Create("UIPadding", {
+        PaddingTop = UDim.new(0, padding),
+        PaddingBottom = UDim.new(0, padding),
+        PaddingLeft = UDim.new(0, padding),
+        PaddingRight = UDim.new(0, padding),
+        Parent = object
+    })
+end
 
-mk("TextLabel", {Size = UDim2.new(1,0,0,45), BackgroundColor3 = c.sf, Text = "🔍 OSINT", TextColor3 = c.txt, TextSize = 16, Font = Enum.Font.GothamBold, Parent = op})
+-- Notification
+function Utils.Notify(title, text, duration)
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = title,
+            Text = text,
+            Duration = duration or 3
+        })
+    end)
+end
 
-g.pl = mk("ScrollingFrame", {Size = UDim2.new(1,0,0,220), Position = UDim2.new(0,0,0,50), BackgroundColor3 = c.sf, BorderSizePixel = 0, ScrollBarThickness = 6, ScrollBarImageColor3 = c.b, Parent = op})
-co(g.pl, 14)
+print("[UTILS] ✅ Loaded")
 
-local pll = mk("UIListLayout", {SortOrder = Enum.SortOrder.Name, Padding = UDim.new(0,5), Parent = g.pl})
-mk("UIPadding", {PaddingTop = UDim.new(0,8), PaddingBottom = UDim.new(0,8), PaddingLeft = UDim.new(0,8), PaddingRight = UDim.new(0,8), Parent = g.pl})
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                                  GUI CREATION
+-- ════════════════════════════════════════════════════════════════════════════════════
 
-g.rs = mk("ScrollingFrame", {Size = UDim2.new(1,0,1,-280), Position = UDim2.new(0,0,0,275), BackgroundColor3 = c.sf, BorderSizePixel = 0, ScrollBarThickness = 6, ScrollBarImageColor3 = c.b, Parent = op})
-co(g.rs, 14)
+local GUI = {}
 
-g.rt = mk("TextLabel", {Size = UDim2.new(1,-20,0,5000), Position = UDim2.new(0,10,0,10), BackgroundTransparency = 1, Text = "👆 Select player", TextColor3 = Color3.fromRGB(140,140,140), TextSize = 11, Font = Enum.Font.Code, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextWrapped = true, Parent = g.rs})
+-- Main ScreenGui
+GUI.Screen = Utils.Create("ScreenGui", {
+    Name = "UT_" .. tick(),
+    ResetOnSpawn = false,
+    DisplayOrder = 999999,
+    Parent = PlayerGui
+})
 
-print("[OSINT] OK")
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                              FLOATING BUTTON (MOBILE)
+-- ════════════════════════════════════════════════════════════════════════════════════
 
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                              ⚔️ WEAPONIZER - ПРОСТАЯ ВЕРСИЯ
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
+if IsMobile then
+    GUI.FloatButton = Utils.Create("TextButton", {
+        Size = UDim2.new(0, 80, 0, 80),
+        Position = UDim2.new(1, -95, 0.5, -40),
+        BackgroundColor3 = Colors.Primary,
+        Text = "🔥",
+        TextSize = 40,
+        TextColor3 = Color3.new(1, 1, 1),
+        Font = Enum.Font.GothamBold,
+        ZIndex = 10000,
+        Parent = GUI.Screen
+    })
+    
+    Utils.AddCorner(GUI.FloatButton, 40)
+    Utils.AddGradient(GUI.FloatButton, 45)
+    
+    -- Draggable
+    local dragging = false
+    local dragStart = nil
+    local startPos = nil
+    
+    GUI.FloatButton.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = GUI.FloatButton.Position
+        end
+    end)
+    
+    GUI.FloatButton.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.Touch then
+            local delta = input.Position - dragStart
+            GUI.FloatButton.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+    
+    -- Pulse Animation
+    spawn(function()
+        while wait(2) do
+            if GUI.FloatButton and GUI.FloatButton.Parent then
+                Utils.Tween(GUI.FloatButton, {Size = UDim2.new(0, 85, 0, 85)}, 0.3)
+                wait(0.3)
+                Utils.Tween(GUI.FloatButton, {Size = UDim2.new(0, 80, 0, 80)}, 0.3)
+            end
+        end
+    end)
+end
 
-local wp = g.p.w
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                                  MAIN FRAME
+-- ════════════════════════════════════════════════════════════════════════════════════
 
-mk("TextLabel", {Size = UDim2.new(1,0,0,45), BackgroundColor3 = c.sf, Text = "⚔️ WEAPONIZER", TextColor3 = c.txt, TextSize = 16, Font = Enum.Font.GothamBold, Parent = wp})
+GUI.Main = Utils.Create("Frame", {
+    Size = IsMobile and UDim2.new(1, 0, 1, 0) or UDim2.new(0, 1100, 0, 700),
+    Position = IsMobile and UDim2.new(0, 0, 0, 0) or UDim2.new(0.5, -550, 0.5, -350),
+    BackgroundColor3 = Colors.Background,
+    BorderSizePixel = 0,
+    Visible = not IsMobile,
+    Parent = GUI.Screen
+})
 
--- Speed
-mk("TextLabel", {Size = UDim2.new(0.3,0,0,18), Position = UDim2.new(0,10,0,55), BackgroundTransparency = 1, Text = "🏃 Speed:", TextColor3 = c.txt, TextSize = 11, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = wp})
+if not IsMobile then
+    Utils.AddCorner(GUI.Main, 20)
+    GUI.Main.Active = true
+    GUI.Main.Draggable = true
+end
 
-g.spv = mk("TextButton", {Size = UDim2.new(0.35,0,0,30), Position = UDim2.new(0.3,0,0,52), BackgroundColor3 = c.bg, Text = tostring(d.spd), TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = wp})
-co(g.spv, 8)
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                                  TOP BAR
+-- ════════════════════════════════════════════════════════════════════════════════════
 
-g.spm = mk("TextButton", {Size = UDim2.new(0.15,0,0,30), Position = UDim2.new(0.67,0,0,52), BackgroundColor3 = c.no, Text = "-", TextSize = 16, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = wp})
-co(g.spm, 8)
+GUI.TopBar = Utils.Create("Frame", {
+    Size = UDim2.new(1, 0, 0, IsMobile and 75 or 65),
+    BackgroundColor3 = Colors.Surface,
+    BorderSizePixel = 0,
+    Parent = GUI.Main
+})
 
-g.spp = mk("TextButton", {Size = UDim2.new(0.15,0,0,30), Position = UDim2.new(0.84,0,0,52), BackgroundColor3 = c.ok, Text = "+", TextSize = 16, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = wp})
-co(g.spp, 8)
+if not IsMobile then
+    Utils.AddCorner(GUI.TopBar, 20)
+end
+Utils.AddGradient(GUI.TopBar, 45)
 
--- Jump
-mk("TextLabel", {Size = UDim2.new(0.3,0,0,18), Position = UDim2.new(0,10,0,90), BackgroundTransparency = 1, Text = "🦘 Jump:", TextColor3 = c.txt, TextSize = 11, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = wp})
+-- Title
+Utils.Create("TextLabel", {
+    Size = UDim2.new(0, 600, 0, 28),
+    Position = UDim2.new(0, 15, 0, 8),
+    BackgroundTransparency = 1,
+    Text = "🔥 ULTIMATE TOOLS v16.0 PRO",
+    TextColor3 = Colors.Text,
+    TextSize = IsMobile and 17 or 20,
+    Font = Enum.Font.GothamBold,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    Parent = GUI.TopBar
+})
 
-g.jpv = mk("TextButton", {Size = UDim2.new(0.35,0,0,30), Position = UDim2.new(0.3,0,0,87), BackgroundColor3 = c.bg, Text = tostring(d.jmp), TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = wp})
-co(g.jpv, 8)
+-- Subtitle
+Utils.Create("TextLabel", {
+    Size = UDim2.new(0, 600, 0, 18),
+    Position = UDim2.new(0, 15, 0, IsMobile and 45 or 40),
+    BackgroundTransparency = 1,
+    Text = (IsMobile and "📱" or "💻") .. " | 5 PANELS | " .. #MusicDatabase .. " SONGS | " .. #ScriptHub .. " SCRIPTS",
+    TextColor3 = Colors.TextDim,
+    TextSize = 11,
+    Font = Enum.Font.Gotham,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextTransparency = 0.3,
+    Parent = GUI.TopBar
+})
 
-g.jpm = mk("TextButton", {Size = UDim2.new(0.15,0,0,30), Position = UDim2.new(0.67,0,0,87), BackgroundColor3 = c.no, Text = "-", TextSize = 16, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = wp})
-co(g.jpm, 8)
+-- Close Button
+GUI.CloseButton = Utils.Create("TextButton", {
+    Size = UDim2.new(0, IsMobile and 55 or 50, 0, IsMobile and 55 or 50),
+    Position = UDim2.new(1, IsMobile and -65 or -60, 0.5, IsMobile and -27.5 or -25),
+    BackgroundColor3 = Colors.Danger,
+    Text = "✕",
+    TextSize = IsMobile and 26 or 22,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = GUI.TopBar
+})
+Utils.AddCorner(GUI.CloseButton, 14)
 
-g.jpp = mk("TextButton", {Size = UDim2.new(0.15,0,0,30), Position = UDim2.new(0.84,0,0,87), BackgroundColor3 = c.ok, Text = "+", TextSize = 16, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = wp})
-co(g.jpp, 8)
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                                  TAB BAR
+-- ════════════════════════════════════════════════════════════════════════════════════
 
-g.ap = mk("TextButton", {Size = UDim2.new(1,-20,0,32), Position = UDim2.new(0,10,0,125), BackgroundColor3 = c.o, Text = "✅ APPLY", TextSize = 13, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = wp})
-co(g.ap, 10)
+GUI.TabBar = Utils.Create("Frame", {
+    Size = UDim2.new(1, -10, 0, IsMobile and 65 or 55),
+    Position = UDim2.new(0, 5, 0, IsMobile and 80 or 70),
+    BackgroundColor3 = Colors.Surface,
+    BorderSizePixel = 0,
+    Parent = GUI.Main
+})
+Utils.AddCorner(GUI.TabBar, 15)
 
--- Exploits
-local ex = mk("Frame", {Size = UDim2.new(1,0,0,145), Position = UDim2.new(0,0,0,165), BackgroundColor3 = c.sf, BorderSizePixel = 0, Parent = wp})
-co(ex, 14)
+local Tabs = {
+    {ID = "sound", Icon = "🔊", Name = "SOUND"},
+    {ID = "scripts", Icon = "📜", Name = "SCRIPTS"},
+    {ID = "osint", Icon = "🔍", Name = "OSINT"},
+    {ID = "weapon", Icon = "⚔️", Name = "WEAPON"},
+    {ID = "utility", Icon = "🛠️", Name = "UTILITY"},
+}
 
-mk("TextLabel", {Size = UDim2.new(1,0,0,22), Position = UDim2.new(0,10,0,5), BackgroundTransparency = 1, Text = "⚡ EXPLOITS", TextColor3 = Color3.fromRGB(255,50,50), TextSize = 13, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = ex})
+GUI.TabButtons = {}
 
-g.fly = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0,10,0,30), BackgroundColor3 = c.bg, Text = "🚀 FLY: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = ex})
-co(g.fly, 10)
+for index, tab in ipairs(Tabs) do
+    local button = Utils.Create("TextButton", {
+        Name = tab.ID,
+        Size = UDim2.new(1/5, -8, 1, -10),
+        Position = UDim2.new((index-1)/5, 4+(index-1)*2, 0, 5),
+        BackgroundColor3 = index == 1 and Colors.Primary or Colors.Background,
+        Text = tab.Icon .. (IsMobile and "\n" or " ") .. tab.Name,
+        TextSize = IsMobile and 10 or 12,
+        TextColor3 = Colors.Text,
+        Font = Enum.Font.GothamBold,
+        Parent = GUI.TabBar
+    })
+    
+    Utils.AddCorner(button, 12)
+    if index == 1 then
+        Utils.AddGradient(button)
+    end
+    
+    GUI.TabButtons[tab.ID] = button
+end
 
-g.noc = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0.52,0,0,30), BackgroundColor3 = c.bg, Text = "👻 NOCLIP: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = ex})
-co(g.noc, 10)
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                                  CONTENT FRAME
+-- ════════════════════════════════════════════════════════════════════════════════════
 
-g.esp = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0,10,0,73), BackgroundColor3 = c.bg, Text = "👁 ESP: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = ex})
-co(g.esp, 10)
+GUI.Content = Utils.Create("Frame", {
+    Size = UDim2.new(1, -10, 1, IsMobile and -155 or -135),
+    Position = UDim2.new(0, 5, 0, IsMobile and 150 or 130),
+    BackgroundTransparency = 1,
+    Parent = GUI.Main
+})
 
-g.fbb = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0.52,0,0,73), BackgroundColor3 = c.bg, Text = "💡 FULL: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = ex})
-co(g.fbb, 10)
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                                  PANELS
+-- ════════════════════════════════════════════════════════════════════════════════════
 
-print("[WEAPON] OK")
+GUI.Panels = {}
 
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                              🛠️ UTILITY - БЕЗ ОЖИДАНИЙ
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
+for _, tab in ipairs(Tabs) do
+    local panel = Utils.Create("Frame", {
+        Name = tab.ID,
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Visible = tab.ID == "sound",
+        Parent = GUI.Content
+    })
+    
+    GUI.Panels[tab.ID] = panel
+end
 
-local up = g.p.u
+print("[GUI] ✅ Created")
 
-mk("TextLabel", {Size = UDim2.new(1,0,0,45), BackgroundColor3 = c.sf, Text = "🛠️ UTILITY", TextColor3 = c.txt, TextSize = 16, Font = Enum.Font.GothamBold, Parent = up})
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                              SOUNDBOARD PANEL
+-- ════════════════════════════════════════════════════════════════════════════════════
 
--- Performance
-local pf = mk("Frame", {Size = UDim2.new(1,0,0,120), Position = UDim2.new(0,0,0,50), BackgroundColor3 = c.sf, BorderSizePixel = 0, Parent = up})
-co(pf, 14)
+local SoundPanel = GUI.Panels.sound
 
-mk("TextLabel", {Size = UDim2.new(1,0,0,22), Position = UDim2.new(0,10,0,5), BackgroundTransparency = 1, Text = "⚡ PERFORMANCE", TextColor3 = c.w, TextSize = 13, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = pf})
+-- Header
+Utils.Create("TextLabel", {
+    Size = UDim2.new(1, 0, 0, 45),
+    BackgroundColor3 = Colors.Surface,
+    Text = "🔊 SOUNDBOARD PANEL",
+    TextColor3 = Colors.Text,
+    TextSize = 16,
+    Font = Enum.Font.GothamBold,
+    Parent = SoundPanel
+})
 
-g.fps = mk("TextLabel", {Size = UDim2.new(0.48,0,0,40), Position = UDim2.new(0,10,0,30), BackgroundColor3 = Color3.fromRGB(35,35,50), Text = "FPS: 0", TextColor3 = c.ok, TextSize = 14, Font = Enum.Font.GothamBold, Parent = pf})
-co(g.fps, 10)
+-- Scan Button
+GUI.ScanButton = Utils.Create("TextButton", {
+    Size = UDim2.new(0.48, 0, 0, 40),
+    Position = UDim2.new(0, 0, 0, 50),
+    BackgroundColor3 = Colors.Primary,
+    Text = "🔍 SCAN REMOTES",
+    TextSize = 13,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = SoundPanel
+})
+Utils.AddCorner(GUI.ScanButton, 12)
+Utils.AddGradient(GUI.ScanButton)
 
-g.png = mk("TextLabel", {Size = UDim2.new(0.48,0,0,40), Position = UDim2.new(0.52,0,0,30), BackgroundColor3 = Color3.fromRGB(35,35,50), Text = "PING: 0ms", TextColor3 = c.b, TextSize = 14, Font = Enum.Font.GothamBold, Parent = pf})
-co(g.png, 10)
+-- Stop Button
+GUI.StopButton = Utils.Create("TextButton", {
+    Size = UDim2.new(0.48, 0, 0, 40),
+    Position = UDim2.new(0.52, 0, 0, 50),
+    BackgroundColor3 = Colors.Danger,
+    Text = "⏹ STOP ALL",
+    TextSize = 13,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = SoundPanel
+})
+Utils.AddCorner(GUI.StopButton, 12)
 
-g.pla = mk("TextLabel", {Size = UDim2.new(1,-20,0,35), Position = UDim2.new(0,10,0,75), BackgroundColor3 = Color3.fromRGB(35,35,50), Text = "PLAYERS: 0", TextColor3 = c.cy, TextSize = 13, Font = Enum.Font.GothamBold, Parent = pf})
-co(g.pla, 10)
+-- Song List
+GUI.SongList = Utils.Create("ScrollingFrame", {
+    Size = UDim2.new(1, 0, 1, -100),
+    Position = UDim2.new(0, 0, 0, 95),
+    BackgroundColor3 = Colors.Surface,
+    BorderSizePixel = 0,
+    ScrollBarThickness = 6,
+    ScrollBarImageColor3 = Colors.Primary,
+    Parent = SoundPanel
+})
+Utils.AddCorner(GUI.SongList, 14)
+
+local listLayout = Utils.Create("UIListLayout", {
+    SortOrder = Enum.SortOrder.LayoutOrder,
+    Padding = UDim.new(0, 5),
+    Parent = GUI.SongList
+})
+Utils.AddPadding(GUI.SongList, 8)
+
+-- Populate Songs
+for index, song in ipairs(MusicDatabase) do
+    local button = Utils.Create("TextButton", {
+        Size = UDim2.new(1, -10, 0, 38),
+        BackgroundColor3 = Colors.SurfaceLight,
+        Text = song.Name,
+        TextSize = 11,
+        TextColor3 = Colors.Text,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        LayoutOrder = index,
+        Parent = GUI.SongList
+    })
+    
+    Utils.AddCorner(button, 10)
+    Utils.AddPadding(button, 10)
+    
+    button.MouseButton1Click:Connect(function()
+        -- Will implement later
+    end)
+end
+
+GUI.SongList.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 16)
+
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                              SCRIPT HUB PANEL
+-- ════════════════════════════════════════════════════════════════════════════════════
+
+local ScriptPanel = GUI.Panels.scripts
+
+-- Header
+Utils.Create("TextLabel", {
+    Size = UDim2.new(1, 0, 0, 45),
+    BackgroundColor3 = Colors.Surface,
+    Text = "📜 SCRIPT HUB - " .. #ScriptHub .. " SCRIPTS",
+    TextColor3 = Colors.Text,
+    TextSize = 16,
+    Font = Enum.Font.GothamBold,
+    Parent = ScriptPanel
+})
+
+-- Category Filter
+local categories = {"All", "Admin", "Dev", "Visual", "Utility", "Movement"}
+local currentCategory = "All"
+
+local categoryFrame = Utils.Create("Frame", {
+    Size = UDim2.new(1, 0, 0, 40),
+    Position = UDim2.new(0, 0, 0, 50),
+    BackgroundTransparency = 1,
+    Parent = ScriptPanel
+})
+
+local categoryButtons = {}
+
+for index, category in ipairs(categories) do
+    local button = Utils.Create("TextButton", {
+        Size = UDim2.new(1/6, -5, 1, 0),
+        Position = UDim2.new((index-1)/6, 2, 0, 0),
+        BackgroundColor3 = category == "All" and Colors.Primary or Colors.Background,
+        Text = category,
+        TextSize = 10,
+        TextColor3 = Colors.Text,
+        Font = Enum.Font.GothamBold,
+        Parent = categoryFrame
+    })
+    
+    Utils.AddCorner(button, 10)
+    categoryButtons[category] = button
+end
+
+-- Script List
+GUI.ScriptList = Utils.Create("ScrollingFrame", {
+    Size = UDim2.new(1, 0, 1, -100),
+    Position = UDim2.new(0, 0, 0, 95),
+    BackgroundColor3 = Colors.Surface,
+    BorderSizePixel = 0,
+    ScrollBarThickness = 6,
+    ScrollBarImageColor3 = Colors.Info,
+    Parent = ScriptPanel
+})
+Utils.AddCorner(GUI.ScriptList, 14)
+
+local scriptLayout = Utils.Create("UIListLayout", {
+    SortOrder = Enum.SortOrder.LayoutOrder,
+    Padding = UDim.new(0, 8),
+    Parent = GUI.ScriptList
+})
+Utils.AddPadding(GUI.ScriptList, 10)
+
+-- Populate Scripts
+for index, script in ipairs(ScriptHub) do
+    local container = Utils.Create("Frame", {
+        Size = UDim2.new(1, -15, 0, 80),
+        BackgroundColor3 = Colors.SurfaceLight,
+        LayoutOrder = index,
+        Parent = GUI.ScriptList
+    })
+    Utils.AddCorner(container, 12)
+    
+    -- Icon
+    Utils.Create("TextLabel", {
+        Size = UDim2.new(0, 50, 0, 50),
+        Position = UDim2.new(0, 10, 0, 15),
+        BackgroundColor3 = Colors.Primary,
+        Text = script.Icon,
+        TextSize = 30,
+        TextColor3 = Colors.Text,
+        Font = Enum.Font.GothamBold,
+        Parent = container
+    })
+    Utils.AddCorner(container:GetChildren()[1], 10)
+    
+    -- Name
+    Utils.Create("TextLabel", {
+        Size = UDim2.new(0, 300, 0, 20),
+        Position = UDim2.new(0, 70, 0, 12),
+        BackgroundTransparency = 1,
+        Text = script.Name,
+        TextColor3 = Colors.Text,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = container
+    })
+    
+    -- Description
+    Utils.Create("TextLabel", {
+        Size = UDim2.new(0, 300, 0, 15),
+        Position = UDim2.new(0, 70, 0, 35),
+        BackgroundTransparency = 1,
+        Text = script.Description,
+        TextColor3 = Colors.TextDim,
+        TextSize = 10,
+        Font = Enum.Font.Gotham,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = container
+    })
+    
+    -- Category Badge
+    local badge = Utils.Create("TextLabel", {
+        Size = UDim2.new(0, 60, 0, 18),
+        Position = UDim2.new(0, 70, 0, 53),
+        BackgroundColor3 = Colors.Info,
+        Text = script.Category,
+        TextColor3 = Colors.Text,
+        TextSize = 9,
+        Font = Enum.Font.GothamBold,
+        Parent = container
+    })
+    Utils.AddCorner(badge, 6)
+    
+    -- Execute Button
+    local executeBtn = Utils.Create("TextButton", {
+        Size = UDim2.new(0, 100, 0, 35),
+        Position = UDim2.new(1, -110, 0.5, -17.5),
+        BackgroundColor3 = Colors.Success,
+        Text = "▶ EXECUTE",
+        TextSize = 11,
+        TextColor3 = Colors.Text,
+        Font = Enum.Font.GothamBold,
+        Parent = container
+    })
+    Utils.AddCorner(executeBtn, 10)
+    
+    executeBtn.MouseButton1Click:Connect(function()
+        executeBtn.Text = "⏳ LOADING..."
+        executeBtn.BackgroundColor3 = Colors.Warning
+        
+        task.spawn(function()
+            local success, err = pcall(function()
+                loadstring(script.Code)()
+            end)
+            
+            wait(0.5)
+            
+            if success then
+                executeBtn.Text = "✅ SUCCESS"
+                executeBtn.BackgroundColor3 = Colors.Success
+                Utils.Notify("✅ Script Loaded", script.Name .. " executed successfully!")
+            else
+                executeBtn.Text = "❌ FAILED"
+                executeBtn.BackgroundColor3 = Colors.Danger
+                Utils.Notify("❌ Error", "Failed to execute " .. script.Name)
+                warn(err)
+            end
+            
+            wait(2)
+            executeBtn.Text = "▶ EXECUTE"
+            executeBtn.BackgroundColor3 = Colors.Success
+        end)
+    end)
+end
+
+GUI.ScriptList.CanvasSize = UDim2.new(0, 0, 0, scriptLayout.AbsoluteContentSize.Y + 20)
+
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                              OSINT PANEL
+-- ════════════════════════════════════════════════════════════════════════════════════
+
+local OSINTPanel = GUI.Panels.osint
+
+-- Header
+Utils.Create("TextLabel", {
+    Size = UDim2.new(1, 0, 0, 45),
+    BackgroundColor3 = Colors.Surface,
+    Text = "🔍 OSINT - PLAYER INTELLIGENCE",
+    TextColor3 = Colors.Text,
+    TextSize = 16,
+    Font = Enum.Font.GothamBold,
+    Parent = OSINTPanel
+})
+
+-- Player List
+GUI.PlayerList = Utils.Create("ScrollingFrame", {
+    Size = UDim2.new(1, 0, 0, 220),
+    Position = UDim2.new(0, 0, 0, 50),
+    BackgroundColor3 = Colors.Surface,
+    BorderSizePixel = 0,
+    ScrollBarThickness = 6,
+    ScrollBarImageColor3 = Colors.Info,
+    Parent = OSINTPanel
+})
+Utils.AddCorner(GUI.PlayerList, 14)
+
+local playerLayout = Utils.Create("UIListLayout", {
+    SortOrder = Enum.SortOrder.Name,
+    Padding = UDim.new(0, 5),
+    Parent = GUI.PlayerList
+})
+Utils.AddPadding(GUI.PlayerList, 8)
+
+-- Results Frame
+GUI.ResultsFrame = Utils.Create("ScrollingFrame", {
+    Size = UDim2.new(1, 0, 1, -280),
+    Position = UDim2.new(0, 0, 0, 275),
+    BackgroundColor3 = Colors.Surface,
+    BorderSizePixel = 0,
+    ScrollBarThickness = 6,
+    ScrollBarImageColor3 = Colors.Info,
+    Parent = OSINTPanel
+})
+Utils.AddCorner(GUI.ResultsFrame, 14)
+
+GUI.ResultsText = Utils.Create("TextLabel", {
+    Size = UDim2.new(1, -20, 0, 5000),
+    Position = UDim2.new(0, 10, 0, 10),
+    BackgroundTransparency = 1,
+    Text = "👆 Select a player to view detailed information",
+    TextColor3 = Colors.TextDim,
+    TextSize = 12,
+    Font = Enum.Font.Code,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextYAlignment = Enum.TextYAlignment.Top,
+    TextWrapped = true,
+    Parent = GUI.ResultsFrame
+})
+
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                              WEAPON PANEL
+-- ════════════════════════════════════════════════════════════════════════════════════
+
+local WeaponPanel = GUI.Panels.weapon
+
+-- Header
+Utils.Create("TextLabel", {
+    Size = UDim2.new(1, 0, 0, 45),
+    BackgroundColor3 = Colors.Surface,
+    Text = "⚔️ WEAPONIZER - CHARACTER MODS",
+    TextColor3 = Colors.Text,
+    TextSize = 16,
+    Font = Enum.Font.GothamBold,
+    Parent = WeaponPanel
+})
+
+-- Speed Control
+Utils.Create("TextLabel", {
+    Size = UDim2.new(0.3, 0, 0, 18),
+    Position = UDim2.new(0, 10, 0, 55),
+    BackgroundTransparency = 1,
+    Text = "🏃 WalkSpeed:",
+    TextColor3 = Colors.Text,
+    TextSize = 12,
+    Font = Enum.Font.Gotham,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    Parent = WeaponPanel
+})
+
+GUI.SpeedValue = Utils.Create("TextButton", {
+    Size = UDim2.new(0.35, 0, 0, 32),
+    Position = UDim2.new(0.3, 0, 0, 52),
+    BackgroundColor3 = Colors.Background,
+    Text = tostring(Data.WalkSpeed),
+    TextSize = 13,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = WeaponPanel
+})
+Utils.AddCorner(GUI.SpeedValue, 8)
+
+GUI.SpeedMinus = Utils.Create("TextButton", {
+    Size = UDim2.new(0.15, 0, 0, 32),
+    Position = UDim2.new(0.67, 0, 0, 52),
+    BackgroundColor3 = Colors.Danger,
+    Text = "−",
+    TextSize = 18,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = WeaponPanel
+})
+Utils.AddCorner(GUI.SpeedMinus, 8)
+
+GUI.SpeedPlus = Utils.Create("TextButton", {
+    Size = UDim2.new(0.15, 0, 0, 32),
+    Position = UDim2.new(0.84, 0, 0, 52),
+    BackgroundColor3 = Colors.Success,
+    Text = "+",
+    TextSize = 18,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = WeaponPanel
+})
+Utils.AddCorner(GUI.SpeedPlus, 8)
+
+-- Jump Control
+Utils.Create("TextLabel", {
+    Size = UDim2.new(0.3, 0, 0, 18),
+    Position = UDim2.new(0, 10, 0, 92),
+    BackgroundTransparency = 1,
+    Text = "🦘 JumpPower:",
+    TextColor3 = Colors.Text,
+    TextSize = 12,
+    Font = Enum.Font.Gotham,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    Parent = WeaponPanel
+})
+
+GUI.JumpValue = Utils.Create("TextButton", {
+    Size = UDim2.new(0.35, 0, 0, 32),
+    Position = UDim2.new(0.3, 0, 0, 89),
+    BackgroundColor3 = Colors.Background,
+    Text = tostring(Data.JumpPower),
+    TextSize = 13,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = WeaponPanel
+})
+Utils.AddCorner(GUI.JumpValue, 8)
+
+GUI.JumpMinus = Utils.Create("TextButton", {
+    Size = UDim2.new(0.15, 0, 0, 32),
+    Position = UDim2.new(0.67, 0, 0, 89),
+    BackgroundColor3 = Colors.Danger,
+    Text = "−",
+    TextSize = 18,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = WeaponPanel
+})
+Utils.AddCorner(GUI.JumpMinus, 8)
+
+GUI.JumpPlus = Utils.Create("TextButton", {
+    Size = UDim2.new(0.15, 0, 0, 32),
+    Position = UDim2.new(0.84, 0, 0, 89),
+    BackgroundColor3 = Colors.Success,
+    Text = "+",
+    TextSize = 18,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = WeaponPanel
+})
+Utils.AddCorner(GUI.JumpPlus, 8)
+
+-- Apply Button
+GUI.ApplyButton = Utils.Create("TextButton", {
+    Size = UDim2.new(1, -20, 0, 35),
+    Position = UDim2.new(0, 10, 0, 129),
+    BackgroundColor3 = Colors.Orange,
+    Text = "✅ APPLY CHANGES",
+    TextSize = 14,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = WeaponPanel
+})
+Utils.AddCorner(GUI.ApplyButton, 10)
+
+-- Exploits Section
+local exploitsFrame = Utils.Create("Frame", {
+    Size = UDim2.new(1, 0, 0, 150),
+    Position = UDim2.new(0, 0, 0, 172),
+    BackgroundColor3 = Colors.Surface,
+    BorderSizePixel = 0,
+    Parent = WeaponPanel
+})
+Utils.AddCorner(exploitsFrame, 14)
+
+Utils.Create("TextLabel", {
+    Size = UDim2.new(1, 0, 0, 25),
+    Position = UDim2.new(0, 10, 0, 5),
+    BackgroundTransparency = 1,
+    Text = "⚡ EXPLOITS",
+    TextColor3 = Colors.Danger,
+    TextSize = 14,
+    Font = Enum.Font.GothamBold,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    Parent = exploitsFrame
+})
+
+-- Fly Toggle
+GUI.FlyToggle = Utils.Create("TextButton", {
+    Size = UDim2.new(0.48, 0, 0, 40),
+    Position = UDim2.new(0, 10, 0, 35),
+    BackgroundColor3 = Colors.Background,
+    Text = "🚀 FLY: OFF",
+    TextSize = 12,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = exploitsFrame
+})
+Utils.AddCorner(GUI.FlyToggle, 10)
+
+-- Noclip Toggle
+GUI.NoclipToggle = Utils.Create("TextButton", {
+    Size = UDim2.new(0.48, 0, 0, 40),
+    Position = UDim2.new(0.52, 0, 0, 35),
+    BackgroundColor3 = Colors.Background,
+    Text = "👻 NOCLIP: OFF",
+    TextSize = 12,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = exploitsFrame
+})
+Utils.AddCorner(GUI.NoclipToggle, 10)
+
+-- ESP Toggle
+GUI.ESPToggle = Utils.Create("TextButton", {
+    Size = UDim2.new(0.48, 0, 0, 40),
+    Position = UDim2.new(0, 10, 0, 80),
+    BackgroundColor3 = Colors.Background,
+    Text = "👁️ ESP: OFF",
+    TextSize = 12,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = exploitsFrame
+})
+Utils.AddCorner(GUI.ESPToggle, 10)
+
+-- Fullbright Toggle
+GUI.FullbrightToggle = Utils.Create("TextButton", {
+    Size = UDim2.new(0.48, 0, 0, 40),
+    Position = UDim2.new(0.52, 0, 0, 80),
+    BackgroundColor3 = Colors.Background,
+    Text = "💡 FULLBRIGHT: OFF",
+    TextSize = 12,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = exploitsFrame
+})
+Utils.AddCorner(GUI.FullbrightToggle, 10)
+
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                              UTILITY PANEL
+-- ════════════════════════════════════════════════════════════════════════════════════
+
+local UtilityPanel = GUI.Panels.utility
+
+-- Header
+Utils.Create("TextLabel", {
+    Size = UDim2.new(1, 0, 0, 45),
+    BackgroundColor3 = Colors.Surface,
+    Text = "🛠️ UTILITY - TOOLS & PERFORMANCE",
+    TextColor3 = Colors.Text,
+    TextSize = 16,
+    Font = Enum.Font.GothamBold,
+    Parent = UtilityPanel
+})
+
+-- Performance Monitor
+local perfFrame = Utils.Create("Frame", {
+    Size = UDim2.new(1, 0, 0, 125),
+    Position = UDim2.new(0, 0, 0, 50),
+    BackgroundColor3 = Colors.Surface,
+    BorderSizePixel = 0,
+    Parent = UtilityPanel
+})
+Utils.AddCorner(perfFrame, 14)
+
+Utils.Create("TextLabel", {
+    Size = UDim2.new(1, 0, 0, 25),
+    Position = UDim2.new(0, 10, 0, 5),
+    BackgroundTransparency = 1,
+    Text = "⚡ PERFORMANCE MONITOR",
+    TextColor3 = Colors.Warning,
+    TextSize = 14,
+    Font = Enum.Font.GothamBold,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    Parent = perfFrame
+})
+
+-- FPS Display
+GUI.FPSDisplay = Utils.Create("TextLabel", {
+    Size = UDim2.new(0.48, 0, 0, 42),
+    Position = UDim2.new(0, 10, 0, 35),
+    BackgroundColor3 = Colors.SurfaceLight,
+    Text = "FPS: 0",
+    TextColor3 = Colors.Success,
+    TextSize = 16,
+    Font = Enum.Font.GothamBold,
+    Parent = perfFrame
+})
+Utils.AddCorner(GUI.FPSDisplay, 10)
+
+-- Ping Display
+GUI.PingDisplay = Utils.Create("TextLabel", {
+    Size = UDim2.new(0.48, 0, 0, 42),
+    Position = UDim2.new(0.52, 0, 0, 35),
+    BackgroundColor3 = Colors.SurfaceLight,
+    Text = "PING: 0ms",
+    TextColor3 = Colors.Info,
+    TextSize = 16,
+    Font = Enum.Font.GothamBold,
+    Parent = perfFrame
+})
+Utils.AddCorner(GUI.PingDisplay, 10)
+
+-- Players Display
+GUI.PlayersDisplay = Utils.Create("TextLabel", {
+    Size = UDim2.new(1, -20, 0, 38),
+    Position = UDim2.new(0, 10, 0, 82),
+    BackgroundColor3 = Colors.SurfaceLight,
+    Text = "PLAYERS: 0/0",
+    TextColor3 = Colors.Cyan,
+    TextSize = 14,
+    Font = Enum.Font.GothamBold,
+    Parent = perfFrame
+})
+Utils.AddCorner(GUI.PlayersDisplay, 10)
 
 -- Auto Features
-local af = mk("Frame", {Size = UDim2.new(1,0,0,145), Position = UDim2.new(0,0,0,175), BackgroundColor3 = c.sf, BorderSizePixel = 0, Parent = up})
-co(af, 14)
+local autoFrame = Utils.Create("Frame", {
+    Size = UDim2.new(1, 0, 0, 150),
+    Position = UDim2.new(0, 0, 0, 182),
+    BackgroundColor3 = Colors.Surface,
+    BorderSizePixel = 0,
+    Parent = UtilityPanel
+})
+Utils.AddCorner(autoFrame, 14)
 
-mk("TextLabel", {Size = UDim2.new(1,0,0,22), Position = UDim2.new(0,10,0,5), BackgroundTransparency = 1, Text = "🤖 AUTO", TextColor3 = c.b, TextSize = 13, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = af})
+Utils.Create("TextLabel", {
+    Size = UDim2.new(1, 0, 0, 25),
+    Position = UDim2.new(0, 10, 0, 5),
+    BackgroundTransparency = 1,
+    Text = "🤖 AUTO FEATURES",
+    TextColor3 = Colors.Info,
+    TextSize = 14,
+    Font = Enum.Font.GothamBold,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    Parent = autoFrame
+})
 
-g.afk = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0,10,0,30), BackgroundColor3 = c.bg, Text = "💤 ANTI-AFK: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = af})
-co(g.afk, 10)
+-- Anti-AFK
+GUI.AntiAFKToggle = Utils.Create("TextButton", {
+    Size = UDim2.new(0.48, 0, 0, 40),
+    Position = UDim2.new(0, 10, 0, 35),
+    BackgroundColor3 = Colors.Background,
+    Text = "💤 ANTI-AFK: OFF",
+    TextSize = 12,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = autoFrame
+})
+Utils.AddCorner(GUI.AntiAFKToggle, 10)
 
-g.ar = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0.52,0,0,30), BackgroundColor3 = c.bg, Text = "♻️ AUTO RESP: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = af})
-co(g.ar, 10)
+-- Auto Respawn
+GUI.AutoRespawnToggle = Utils.Create("TextButton", {
+    Size = UDim2.new(0.48, 0, 0, 40),
+    Position = UDim2.new(0.52, 0, 0, 35),
+    BackgroundColor3 = Colors.Background,
+    Text = "♻️ AUTO RESPAWN: OFF",
+    TextSize = 12,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = autoFrame
+})
+Utils.AddCorner(GUI.AutoRespawnToggle, 10)
 
-g.acl = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0,10,0,73), BackgroundColor3 = c.bg, Text = "🖱️ CLICK: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = af})
-co(g.acl, 10)
+-- Auto Click
+GUI.AutoClickToggle = Utils.Create("TextButton", {
+    Size = UDim2.new(0.48, 0, 0, 40),
+    Position = UDim2.new(0, 10, 0, 80),
+    BackgroundColor3 = Colors.Background,
+    Text = "🖱️ AUTO CLICK: OFF",
+    TextSize = 12,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = autoFrame
+})
+Utils.AddCorner(GUI.AutoClickToggle, 10)
 
-g.afc = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0.52,0,0,73), BackgroundColor3 = c.bg, Text = "🌾 FARM: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = af})
-co(g.afc, 10)
+-- Auto Farm
+GUI.AutoFarmToggle = Utils.Create("TextButton", {
+    Size = UDim2.new(0.48, 0, 0, 40),
+    Position = UDim2.new(0.52, 0, 0, 80),
+    BackgroundColor3 = Colors.Background,
+    Text = "🌾 AUTO FARM: OFF",
+    TextSize = 12,
+    TextColor3 = Colors.Text,
+    Font = Enum.Font.GothamBold,
+    Parent = autoFrame
+})
+Utils.AddCorner(GUI.AutoFarmToggle, 10)
 
-print("[UTILITY] OK")
+print("[PANELS] ✅ Created")
 
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                              ФУНКЦИИ БЕЗ ОЖИДАНИЙ И ПРОВЕРОК
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                              FUNCTIONALITY
+-- ════════════════════════════════════════════════════════════════════════════════════
 
--- Scan БЕЗ ОЖИДАНИЙ
-local function scan()
-    d.rem = {}
-    local function sc(o, de)
-        if de > 10 then return end
-        for _, v in pairs(o:GetChildren()) do
-            if v:IsA("RemoteEvent") or v:IsA("RemoteFunction") then
-                table.insert(d.rem, {t = v.ClassName, o = v})
-            end
-            sc(v, de + 1)
-        end
-    end
-    sc(game:GetService("ReplicatedStorage"), 0)
-    sc(w, 0)
-    no("✅ Scan Done", #d.rem.." remotes")
-end
+local Functions = {}
 
--- Play - БЕЗ ПРОВЕРОК
-local function play(id)
-    if #d.rem > 0 then
-        for _, re in pairs(d.rem) do
-            re.o:FireServer("rbxassetid://"..id)
-            re.o:FireServer(tonumber(id))
-        end
-    else
-        if d.snd then d.snd:Destroy() end
-        local sn = Instance.new("Sound")
-        sn.SoundId = "rbxassetid://"..id
-        sn.Volume = 0.5
-        sn.Parent = w
-        sn:Play()
-        d.snd = sn
-    end
-end
-
--- Stop
-local function stop()
-    if d.snd then d.snd:Destroy() end
-    for _, o in pairs(w:GetDescendants()) do
-        if o:IsA("Sound") then
-            o:Stop()
-            o:Destroy()
-        end
-    end
-    no("⏹ Stopped", "All stopped")
-end
-
--- OSINT
-local function osint(pla)
-    local da = {n = pla.Name, d = pla.DisplayName, i = pla.UserId, a = pla.AccountAge}
-    local ch = pla.Character
-    if ch then
-        local hm = ch:FindFirstChild("Humanoid")
-        if hm then
-            da.hp = math.floor(hm.Health)
-            da.mh = math.floor(hm.MaxHealth)
-            da.sp = hm.WalkSpeed
-        end
-    end
+-- Scan for Remotes
+function Functions.ScanRemotes()
+    Data.Remotes = {}
     
-    g.rt.Text = string.format([[
-🔍 OSINT
-%s (@%s)
-ID: %d | Age: %d days
-HP: %s/%s | Speed: %s
-roblox.com/users/%d
-    ]], da.n, da.d, da.i, da.a, da.hp or "N/A", da.mh or "N/A", da.sp or "N/A", da.i)
-    
-    g.rs.CanvasSize = UDim2.new(0,0,0,g.rt.TextBounds.Y+20)
-end
-
--- Update Players
-local function upp()
-    for _, v in pairs(g.pl:GetChildren()) do
-        if v:IsA("TextButton") then v:Destroy() end
-    end
-    
-    for _, pla in pairs(p:GetPlayers()) do
-        local bt = mk("TextButton", {Size = UDim2.new(1,-10,0,40), BackgroundColor3 = Color3.fromRGB(40,40,50), Text = pla.Name, TextSize = 11, TextColor3 = c.txt, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = g.pl})
-        co(bt, 10)
-        mk("UIPadding", {PaddingLeft = UDim.new(0,10), Parent = bt})
+    local function scanObject(object, depth)
+        if depth > 10 then return end
         
-        bt.MouseButton1Click:Connect(function()
-            osint(pla)
+        pcall(function()
+            for _, child in pairs(object:GetChildren()) do
+                if child:IsA("RemoteEvent") or child:IsA("RemoteFunction") then
+                    table.insert(Data.Remotes, {
+                        Type = child.ClassName,
+                        Object = child,
+                        Path = child:GetFullName()
+                    })
+                end
+                scanObject(child, depth + 1)
+            end
         end)
     end
     
-    g.pl.CanvasSize = UDim2.new(0,0,0,pll.AbsoluteContentSize.Y+16)
+    scanObject(ReplicatedStorage, 0)
+    scanObject(Workspace, 0)
+    
+    Utils.Notify("✅ Scan Complete", "Found " .. #Data.Remotes .. " remotes!")
+    print("[SCAN] Found " .. #Data.Remotes .. " remotes")
+end
+
+-- Play Sound
+function Functions.PlaySound(soundId)
+    pcall(function()
+        if #Data.Remotes > 0 then
+            -- Try to fire remotes
+            for _, remote in pairs(Data.Remotes) do
+                pcall(function()
+                    remote.Object:FireServer("rbxassetid://" .. soundId)
+                    remote.Object:FireServer(tonumber(soundId))
+                end)
+            end
+            Utils.Notify("🔊 Playing", "Attempting to play via remotes...")
+        else
+            -- Play locally
+            if Data.CurrentSound then
+                Data.CurrentSound:Destroy()
+            end
+            
+            local sound = Instance.new("Sound")
+            sound.SoundId = "rbxassetid://" .. soundId
+            sound.Volume = 0.5
+            sound.Parent = Workspace
+            sound:Play()
+            
+            Data.CurrentSound = sound
+            Utils.Notify("🔊 Playing", "Playing locally...")
+        end
+    end)
+end
+
+-- Stop All Sounds
+function Functions.StopAllSounds()
+    pcall(function()
+        if Data.CurrentSound then
+            Data.CurrentSound:Destroy()
+        end
+        
+        for _, sound in pairs(Workspace:GetDescendants()) do
+            if sound:IsA("Sound") then
+                sound:Stop()
+                sound:Destroy()
+            end
+        end
+    end)
+    
+    Utils.Notify("⏹ Stopped", "All sounds stopped")
+end
+
+-- Update Player List
+function Functions.UpdatePlayerList()
+    pcall(function()
+        for _, child in pairs(GUI.PlayerList:GetChildren()) do
+            if child:IsA("TextButton") then
+                child:Destroy()
+            end
+        end
+        
+        for _, player in pairs(Players:GetPlayers()) do
+            local button = Utils.Create("TextButton", {
+                Size = UDim2.new(1, -10, 0, 42),
+                BackgroundColor3 = Colors.SurfaceLight,
+                Text = "👤 " .. player.Name,
+                TextSize = 12,
+                TextColor3 = Colors.Text,
+                Font = Enum.Font.GothamBold,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Parent = GUI.PlayerList
+            })
+            
+            Utils.AddCorner(button, 10)
+            Utils.AddPadding(button, 10)
+            
+            button.MouseButton1Click:Connect(function()
+                Functions.ShowOSINT(player)
+            end)
+        end
+        
+        GUI.PlayerList.CanvasSize = UDim2.new(0, 0, 0, playerLayout.AbsoluteContentSize.Y + 16)
+    end)
+end
+
+-- Show OSINT
+function Functions.ShowOSINT(player)
+    pcall(function()
+        local data = {
+            Name = player.Name,
+            DisplayName = player.DisplayName,
+            UserID = player.UserId,
+            AccountAge = player.AccountAge,
+        }
+        
+        local character = player.Character
+        if character then
+            local humanoid = character:FindFirstChild("Humanoid")
+            if humanoid then
+                data.Health = math.floor(humanoid.Health)
+                data.MaxHealth = math.floor(humanoid.MaxHealth)
+                data.WalkSpeed = humanoid.WalkSpeed
+                data.JumpPower = humanoid.UseJumpPower and humanoid.JumpPower or humanoid.JumpHeight * 4
+            end
+            
+            local rootPart = character:FindFirstChild("HumanoidRootPart")
+            if rootPart then
+                local position = rootPart.Position
+                data.Position = string.format("%.1f, %.1f, %.1f", position.X, position.Y, position.Z)
+            end
+        end
+        
+        local reportText = string.format([[
+🔍 OSINT INTELLIGENCE REPORT
+═══════════════════════════════════════════
+
+👤 IDENTITY
+Name: %s
+Display: %s
+User ID: %d
+Account Age: %d days (%s)
+
+❤️ CHARACTER STATUS
+Health: %s / %s
+Walk Speed: %s
+Jump Power: %s
+Position: %s
+
+🔗 PROFILE LINKS
+https://www.roblox.com/users/%d/profile
+
+📊 STATISTICS
+Created: %s ago
+Status: %s
+
+⚠️ This information is publicly available
+        ]],
+            data.Name or "N/A",
+            data.DisplayName or "N/A",
+            data.UserID or 0,
+            data.AccountAge or 0,
+            data.AccountAge and (data.AccountAge < 30 and "NEW ACCOUNT ⚠️" or data.AccountAge < 365 and "Established" or "Veteran ⭐") or "N/A",
+            data.Health or "N/A",
+            data.MaxHealth or "N/A",
+            data.WalkSpeed or "N/A",
+            data.JumpPower or "N/A",
+            data.Position or "N/A",
+            data.UserID or 0,
+            data.AccountAge and math.floor(data.AccountAge / 365) .. " years " .. (data.AccountAge % 365) .. " days" or "N/A",
+            character and "Online ✅" or "Offline/Loading ⏳"
+        )
+        
+        GUI.ResultsText.Text = reportText
+        GUI.ResultsFrame.CanvasSize = UDim2.new(0, 0, 0, GUI.ResultsText.TextBounds.Y + 20)
+    end)
 end
 
 -- Apply Stats
-local function aps()
-    local ch = pl.Character
-    if ch then
-        local hu = ch:FindFirstChild("Humanoid")
-        if hu then
-            hu.WalkSpeed = d.spd
-            if hu.UseJumpPower then hu.JumpPower = d.jmp else hu.JumpHeight = d.jmp/4 end
+function Functions.ApplyStats()
+    pcall(function()
+        local character = LocalPlayer.Character
+        if character then
+            local humanoid = character:FindFirstChild("Humanoid")
+            if humanoid then
+                humanoid.WalkSpeed = Data.WalkSpeed
+                
+                if humanoid.UseJumpPower then
+                    humanoid.JumpPower = Data.JumpPower
+                else
+                    humanoid.JumpHeight = Data.JumpPower / 4
+                end
+            end
         end
-    end
-    w.Gravity = d.grv
-    no("✅ Applied", string.format("S:%d J:%d", d.spd, d.jmp))
+        
+        Workspace.Gravity = Data.Gravity
+        
+        Utils.Notify("✅ Applied", string.format("Speed: %d | Jump: %d", Data.WalkSpeed, Data.JumpPower))
+    end)
 end
 
--- Toggles БЕЗ ПРОВЕРОК
-local function tfly()
-    d.fly = not d.fly
-    g.fly.BackgroundColor3 = d.fly and c.ok or c.bg
-    g.fly.Text = d.fly and "🚀 FLY: ON" or "🚀 FLY: OFF"
-    if d.fly then
+-- Toggle Fly
+function Functions.ToggleFly()
+    Data.Flying = not Data.Flying
+    
+    GUI.FlyToggle.BackgroundColor3 = Data.Flying and Colors.Success or Colors.Background
+    GUI.FlyToggle.Text = Data.Flying and "🚀 FLY: ON" or "🚀 FLY: OFF"
+    
+    if Data.Flying then
         spawn(function()
-            while d.fly do
-                local ch = pl.Character
-                if ch and ch:FindFirstChild("HumanoidRootPart") then
-                    local bg = ch.HumanoidRootPart:FindFirstChild("FBG") or Instance.new("BodyGyro")
-                    local bv = ch.HumanoidRootPart:FindFirstChild("FBV") or Instance.new("BodyVelocity")
-                    bg.Name = "FBG"
-                    bv.Name = "FBV"
-                    bg.P = 9e4
-                    bg.maxTorque = Vector3.new(9e9,9e9,9e9)
-                    bv.velocity = Vector3.new(0,0,0)
-                    bv.maxForce = Vector3.new(9e9,9e9,9e9)
-                    bg.Parent = ch.HumanoidRootPart
-                    bv.Parent = ch.HumanoidRootPart
-                end
+            while Data.Flying do
+                pcall(function()
+                    local character = LocalPlayer.Character
+                    if character and character:FindFirstChild("HumanoidRootPart") then
+                        local rootPart = character.HumanoidRootPart
+                        
+                        local bodyGyro = rootPart:FindFirstChild("FlyGyro") or Instance.new("BodyGyro")
+                        local bodyVelocity = rootPart:FindFirstChild("FlyVelocity") or Instance.new("BodyVelocity")
+                        
+                        bodyGyro.Name = "FlyGyro"
+                        bodyGyro.P = 9e4
+                        bodyGyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+                        bodyGyro.cframe = rootPart.CFrame
+                        bodyGyro.Parent = rootPart
+                        
+                        bodyVelocity.Name = "FlyVelocity"
+                        bodyVelocity.velocity = Vector3.new(0, 0, 0)
+                        bodyVelocity.maxForce = Vector3.new(9e9, 9e9, 9e9)
+                        bodyVelocity.Parent = rootPart
+                        
+                        local speed = 50
+                        local direction = Vector3.new(0, 0, 0)
+                        
+                        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                            direction = direction + (Workspace.CurrentCamera.CFrame.LookVector * speed)
+                        end
+                        if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                            direction = direction - (Workspace.CurrentCamera.CFrame.LookVector * speed)
+                        end
+                        if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                            direction = direction - (Workspace.CurrentCamera.CFrame.RightVector * speed)
+                        end
+                        if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                            direction = direction + (Workspace.CurrentCamera.CFrame.RightVector * speed)
+                        end
+                        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                            direction = direction + Vector3.new(0, speed, 0)
+                        end
+                        if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+                            direction = direction - Vector3.new(0, speed, 0)
+                        end
+                        
+                        bodyVelocity.velocity = direction
+                    end
+                end)
                 wait()
             end
-        end)
-    end
-end
-
-local function tnoc()
-    d.noc = not d.noc
-    g.noc.BackgroundColor3 = d.noc and c.ok or c.bg
-    g.noc.Text = d.noc and "👻 NOCLIP: ON" or "👻 NOCLIP: OFF"
-    if d.noc then
-        spawn(function()
-            while d.noc do
-                local ch = pl.Character
-                if ch then
-                    for _, v in pairs(ch:GetDescendants()) do
-                        if v:IsA("BasePart") then v.CanCollide = false end
-                    end
+            
+            pcall(function()
+                local character = LocalPlayer.Character
+                if character and character:FindFirstChild("HumanoidRootPart") then
+                    local rootPart = character.HumanoidRootPart
+                    if rootPart:FindFirstChild("FlyGyro") then rootPart.FlyGyro:Destroy() end
+                    if rootPart:FindFirstChild("FlyVelocity") then rootPart.FlyVelocity:Destroy() end
                 end
+            end)
+        end)
+    end
+end
+
+-- Toggle Noclip
+function Functions.ToggleNoclip()
+    Data.Noclip = not Data.Noclip
+    
+    GUI.NoclipToggle.BackgroundColor3 = Data.Noclip and Colors.Success or Colors.Background
+    GUI.NoclipToggle.Text = Data.Noclip and "👻 NOCLIP: ON" or "👻 NOCLIP: OFF"
+    
+    if Data.Noclip then
+        spawn(function()
+            while Data.Noclip do
+                pcall(function()
+                    local character = LocalPlayer.Character
+                    if character then
+                        for _, part in pairs(character:GetDescendants()) do
+                            if part:IsA("BasePart") then
+                                part.CanCollide = false
+                            end
+                        end
+                    end
+                end)
                 wait(0.1)
             end
         end)
     end
 end
 
-local function tesp()
-    d.esp = not d.esp
-    g.esp.BackgroundColor3 = d.esp and c.ok or c.bg
-    g.esp.Text = d.esp and "👁 ESP: ON" or "👁 ESP: OFF"
-    if d.esp then
-        for _, pla in pairs(p:GetPlayers()) do
-            if pla ~= pl and pla.Character then
-                local hi = Instance.new("Highlight")
-                hi.Name = "ESP_H"
-                hi.FillColor = Color3.fromRGB(255,0,0)
-                hi.FillTransparency = 0.5
-                hi.Parent = pla.Character
+-- Toggle ESP
+function Functions.ToggleESP()
+    Data.ESP = not Data.ESP
+    
+    GUI.ESPToggle.BackgroundColor3 = Data.ESP and Colors.Success or Colors.Background
+    GUI.ESPToggle.Text = Data.ESP and "👁️ ESP: ON" or "👁️ ESP: OFF"
+    
+    if Data.ESP then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character then
+                pcall(function()
+                    local highlight = Instance.new("Highlight")
+                    highlight.Name = "ESP_Highlight"
+                    highlight.FillColor = Color3.fromRGB(255, 0, 0)
+                    highlight.FillTransparency = 0.5
+                    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+                    highlight.OutlineTransparency = 0
+                    highlight.Parent = player.Character
+                end)
             end
         end
     else
-        for _, pla in pairs(p:GetPlayers()) do
-            if pla.Character then
-                local hi = pla.Character:FindFirstChild("ESP_H")
-                if hi then hi:Destroy() end
+        for _, player in pairs(Players:GetPlayers()) do
+            if player.Character then
+                pcall(function()
+                    local highlight = player.Character:FindFirstChild("ESP_Highlight")
+                    if highlight then
+                        highlight:Destroy()
+                    end
+                end)
             end
         end
     end
 end
 
-local function tfb()
-    d.fb = not d.fb
-    g.fbb.BackgroundColor3 = d.fb and c.ok or c.bg
-    g.fbb.Text = d.fb and "💡 FULL: ON" or "💡 FULL: OFF"
-    if d.fb then
-        l.Ambient = Color3.new(1,1,1)
-        l.Brightness = 2
-        l.OutdoorAmbient = Color3.new(1,1,1)
+-- Toggle Fullbright
+function Functions.ToggleFullbright()
+    Data.Fullbright = not Data.Fullbright
+    
+    GUI.FullbrightToggle.BackgroundColor3 = Data.Fullbright and Colors.Success or Colors.Background
+    GUI.FullbrightToggle.Text = Data.Fullbright and "💡 FULLBRIGHT: ON" or "💡 FULLBRIGHT: OFF"
+    
+    if Data.Fullbright then
+        Lighting.Ambient = Color3.new(1, 1, 1)
+        Lighting.Brightness = 2
+        Lighting.OutdoorAmbient = Color3.new(1, 1, 1)
+        Lighting.ClockTime = 12
+        Lighting.FogEnd = 1e10
     else
-        l.Ambient = Color3.fromRGB(127,127,127)
-        l.Brightness = 1
-        l.OutdoorAmbient = Color3.fromRGB(127,127,127)
+        Lighting.Ambient = Color3.fromRGB(127, 127, 127)
+        Lighting.Brightness = 1
+        Lighting.OutdoorAmbient = Color3.fromRGB(127, 127, 127)
     end
 end
 
-local function tafk()
-    d.afk = not d.afk
-    g.afk.BackgroundColor3 = d.afk and c.ok or c.bg
-    g.afk.Text = d.afk and "💤 ANTI-AFK: ON" or "💤 ANTI-AFK: OFF"
-    if d.afk then
+-- Toggle Anti-AFK
+function Functions.ToggleAntiAFK()
+    Data.AntiAFK = not Data.AntiAFK
+    
+    GUI.AntiAFKToggle.BackgroundColor3 = Data.AntiAFK and Colors.Success or Colors.Background
+    GUI.AntiAFKToggle.Text = Data.AntiAFK and "💤 ANTI-AFK: ON" or "💤 ANTI-AFK: OFF"
+    
+    if Data.AntiAFK then
         spawn(function()
-            while d.afk do
-                game:GetService("VirtualUser"):CaptureController()
-                game:GetService("VirtualUser"):ClickButton2(Vector2.new())
-                wait(300)
+            while Data.AntiAFK do
+                pcall(function()
+                    VirtualUser:CaptureController()
+                    VirtualUser:ClickButton2(Vector2.new())
+                end)
+                wait(300) -- Every 5 minutes
             end
         end)
     end
 end
 
-local function tacl()
-    d.ac = not d.ac
-    g.acl.BackgroundColor3 = d.ac and c.ok or c.bg
-    g.acl.Text = d.ac and "🖱️ CLICK: ON" or "🖱️ CLICK: OFF"
-    if d.ac then
+-- Toggle Auto Respawn
+function Functions.ToggleAutoRespawn()
+    Data.AutoRespawn = not Data.AutoRespawn
+    
+    GUI.AutoRespawnToggle.BackgroundColor3 = Data.AutoRespawn and Colors.Success or Colors.Background
+    GUI.AutoRespawnToggle.Text = Data.AutoRespawn and "♻️ AUTO RESPAWN: ON" or "♻️ AUTO RESPAWN: OFF"
+    
+    if Data.AutoRespawn then
         spawn(function()
-            while d.ac do
-                mouse1click()
+            while Data.AutoRespawn do
+                pcall(function()
+                    local character = LocalPlayer.Character
+                    if character then
+                        local humanoid = character:FindFirstChild("Humanoid")
+                        if humanoid and humanoid.Health <= 0 then
+                            LocalPlayer:LoadCharacter()
+                        end
+                    end
+                end)
+                wait(1)
+            end
+        end)
+    end
+end
+
+-- Toggle Auto Click
+function Functions.ToggleAutoClick()
+    Data.AutoClick = not Data.AutoClick
+    
+    GUI.AutoClickToggle.BackgroundColor3 = Data.AutoClick and Colors.Success or Colors.Background
+    GUI.AutoClickToggle.Text = Data.AutoClick and "🖱️ AUTO CLICK: ON" or "🖱️ AUTO CLICK: OFF"
+    
+    if Data.AutoClick then
+        spawn(function()
+            while Data.AutoClick do
+                pcall(function()
+                    mouse1click()
+                end)
                 wait(0.1)
             end
         end)
     end
 end
 
--- Performance Monitor БЕЗ ПРОВЕРОК
-local fps = 0
-local lf = tick()
-local fc = 0
+print("[FUNCTIONS] ✅ Loaded")
 
-r.RenderStepped:Connect(function()
-    fc = fc + 1
-    local ct = tick()
-    if ct - lf >= 1 then
-        fps = fc
-        fc = 0
-        lf = ct
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                              EVENT CONNECTIONS
+-- ════════════════════════════════════════════════════════════════════════════════════
+
+-- Tab Switching
+for tabID, button in pairs(GUI.TabButtons) do
+    button.MouseButton1Click:Connect(function()
+        Data.CurrentTab = tabID
+        
+        -- Update buttons
+        for id, btn in pairs(GUI.TabButtons) do
+            btn.BackgroundColor3 = Colors.Background
+            for _, child in pairs(btn:GetChildren()) do
+                if child:IsA("UIGradient") then
+                    child:Destroy()
+                end
+            end
+        end
+        
+        button.BackgroundColor3 = Colors.Primary
+        Utils.AddGradient(button)
+        
+        -- Update panels
+        for id, panel in pairs(GUI.Panels) do
+            panel.Visible = false
+        end
+        GUI.Panels[tabID].Visible = true
+        
+        -- Special actions
+        if tabID == "osint" then
+            Functions.UpdatePlayerList()
+        end
+    end)
+end
+
+-- Soundboard Events
+GUI.ScanButton.MouseButton1Click:Connect(function()
+    GUI.ScanButton.Text = "⏳ SCANNING..."
+    Functions.ScanRemotes()
+    wait(0.5)
+    GUI.ScanButton.Text = "🔍 SCAN REMOTES"
+end)
+
+GUI.StopButton.MouseButton1Click:Connect(Functions.StopAllSounds)
+
+-- Song Buttons
+for _, button in pairs(GUI.SongList:GetChildren()) do
+    if button:IsA("TextButton") then
+        button.MouseButton1Click:Connect(function()
+            local songData = MusicDatabase[button.LayoutOrder]
+            if songData then
+                Functions.PlaySound(songData.ID)
+                Utils.Tween(button, {BackgroundColor3 = Colors.Success}, 0.15)
+                wait(0.15)
+                Utils.Tween(button, {BackgroundColor3 = Colors.SurfaceLight}, 0.2)
+            end
+        end)
+    end
+end
+
+-- Category Filter
+for category, button in pairs(categoryButtons) do
+    button.MouseButton1Click:Connect(function()
+        currentCategory = category
+        
+        for cat, btn in pairs(categoryButtons) do
+            btn.BackgroundColor3 = Colors.Background
+        end
+        button.BackgroundColor3 = Colors.Primary
+        
+        -- Filter scripts
+        for _, child in pairs(GUI.ScriptList:GetChildren()) do
+            if child:IsA("Frame") then
+                child.Visible = (currentCategory == "All") or 
+                                (ScriptHub[child.LayoutOrder] and ScriptHub[child.LayoutOrder].Category == currentCategory)
+            end
+        end
+    end)
+end
+
+-- Weapon Events
+GUI.SpeedMinus.MouseButton1Click:Connect(function()
+    Data.WalkSpeed = math.max(0, Data.WalkSpeed - 5)
+    GUI.SpeedValue.Text = tostring(Data.WalkSpeed)
+end)
+
+GUI.SpeedPlus.MouseButton1Click:Connect(function()
+    Data.WalkSpeed = math.min(500, Data.WalkSpeed + 5)
+    GUI.SpeedValue.Text = tostring(Data.WalkSpeed)
+end)
+
+GUI.JumpMinus.MouseButton1Click:Connect(function()
+    Data.JumpPower = math.max(0, Data.JumpPower - 5)
+    GUI.JumpValue.Text = tostring(Data.JumpPower)
+end)
+
+GUI.JumpPlus.MouseButton1Click:Connect(function()
+    Data.JumpPower = math.min(500, Data.JumpPower + 5)
+    GUI.JumpValue.Text = tostring(Data.JumpPower)
+end)
+
+GUI.ApplyButton.MouseButton1Click:Connect(Functions.ApplyStats)
+
+-- Exploit Toggles
+GUI.FlyToggle.MouseButton1Click:Connect(Functions.ToggleFly)
+GUI.NoclipToggle.MouseButton1Click:Connect(Functions.ToggleNoclip)
+GUI.ESPToggle.MouseButton1Click:Connect(Functions.ToggleESP)
+GUI.FullbrightToggle.MouseButton1Click:Connect(Functions.ToggleFullbright)
+
+-- Utility Toggles
+GUI.AntiAFKToggle.MouseButton1Click:Connect(Functions.ToggleAntiAFK)
+GUI.AutoRespawnToggle.MouseButton1Click:Connect(Functions.ToggleAutoRespawn)
+GUI.AutoClickToggle.MouseButton1Click:Connect(Functions.ToggleAutoClick)
+
+-- Close Button
+GUI.CloseButton.MouseButton1Click:Connect(function()
+    GUI.Main.Visible = false
+    if GUI.FloatButton then
+        GUI.FloatButton.Visible = true
     end
 end)
 
+-- Float Button (Mobile)
+if GUI.FloatButton then
+    GUI.FloatButton.MouseButton1Click:Connect(function()
+        GUI.Main.Visible = true
+        GUI.FloatButton.Visible = false
+        Functions.UpdatePlayerList()
+    end)
+end
+
+-- Player Events
+Players.PlayerAdded:Connect(function()
+    wait(0.1)
+    Functions.UpdatePlayerList()
+end)
+
+Players.PlayerRemoving:Connect(Functions.UpdatePlayerList)
+
+-- Keyboard Shortcuts (PC)
+if not IsMobile then
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        
+        if input.KeyCode == Enum.KeyCode.Insert then
+            GUI.Main.Visible = not GUI.Main.Visible
+        end
+    end)
+end
+
+print("[EVENTS] ✅ Connected")
+
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                              PERFORMANCE MONITOR
+-- ════════════════════════════════════════════════════════════════════════════════════
+
+-- FPS Counter
+local fps = 0
+local lastFrame = tick()
+local frameCount = 0
+
+RunService.RenderStepped:Connect(function()
+    frameCount = frameCount + 1
+    local currentTime = tick()
+    
+    if currentTime - lastFrame >= 1 then
+        fps = frameCount
+        frameCount = 0
+        lastFrame = currentTime
+    end
+end)
+
+-- Update Performance Display
 spawn(function()
     while wait(1) do
-        g.fps.Text = "FPS: "..fps
-        g.png.Text = "PING: "..math.floor(game:GetService("Stats").PerformanceStats.Ping:GetValue()).."ms"
-        g.pla.Text = "PLAYERS: "..#p:GetPlayers().."/"..p.MaxPlayers
+        pcall(function()
+            -- Update FPS
+            GUI.FPSDisplay.Text = "FPS: " .. fps
+            GUI.FPSDisplay.TextColor3 = fps >= 60 and Colors.Success or fps >= 30 and Colors.Warning or Colors.Danger
+            
+            -- Update Ping
+            local ping = math.floor(Stats.PerformanceStats.Ping:GetValue())
+            GUI.PingDisplay.Text = "PING: " .. ping .. "ms"
+            GUI.PingDisplay.TextColor3 = ping <= 100 and Colors.Success or ping <= 200 and Colors.Warning or Colors.Danger
+            
+            -- Update Players
+            local current = #Players:GetPlayers()
+            local max = Players.MaxPlayers
+            GUI.PlayersDisplay.Text = "PLAYERS: " .. current .. "/" .. max
+        end)
     end
 end)
 
-print("[FUNCTIONS] OK")
+print("[PERFORMANCE] ✅ Monitoring")
 
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                              СОБЫТИЯ БЕЗ ПРОВЕРОК
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
+-- ════════════════════════════════════════════════════════════════════════════════════
+--                              INITIALIZATION
+-- ════════════════════════════════════════════════════════════════════════════════════
 
--- Tabs
-for na, bt in pairs(g.t) do
-    bt.MouseButton1Click:Connect(function()
-        d.tab = na
-        for n, b in pairs(g.t) do b.BackgroundColor3 = c.bg end
-        bt.BackgroundColor3 = c.p
-        gr(bt)
-        for n, pa in pairs(g.p) do pa.Visible = false end
-        g.p[na].Visible = true
-        if na == "o" then upp() end
-    end)
+-- Initial Setup
+Functions.UpdatePlayerList()
+
+if not IsMobile then
+    GUI.Main.Visible = true
 end
 
--- Sound
-g.sc1.MouseButton1Click:Connect(function() g.sc1.Text = "⏳..." scan() wait(0.5) g.sc1.Text = "🔍 SCAN" end)
-g.st.MouseButton1Click:Connect(stop)
-
--- Weapon
-g.spm.MouseButton1Click:Connect(function() d.spd = math.max(0, d.spd - 5) g.spv.Text = tostring(d.spd) end)
-g.spp.MouseButton1Click:Connect(function() d.spd = math.min(500, d.spd + 5) g.spv.Text = tostring(d.spd) end)
-g.jpm.MouseButton1Click:Connect(function() d.jmp = math.max(0, d.jmp - 5) g.jpv.Text = tostring(d.jmp) end)
-g.jpp.MouseButton1Click:Connect(function() d.jmp = math.min(500, d.jmp + 5) g.jpv.Text = tostring(d.jmp) end)
-g.ap.MouseButton1Click:Connect(aps)
-
-g.fly.MouseButton1Click:Connect(tfly)
-g.noc.MouseButton1Click:Connect(tnoc)
-g.esp.MouseButton1Click:Connect(tesp)
-g.fbb.MouseButton1Click:Connect(tfb)
-
--- Utility
-g.afk.MouseButton1Click:Connect(tafk)
-g.acl.MouseButton1Click:Connect(tacl)
-
--- Close
-g.cb.MouseButton1Click:Connect(function() g.m.Visible = false if g.fb then g.fb.Visible = true end end)
-
--- Float
-if g.fb then
-    g.fb.MouseButton1Click:Connect(function() g.m.Visible = true g.fb.Visible = false upp() end)
-end
-
--- Players
-p.PlayerAdded:Connect(function() wait(0.1) upp() end)
-p.PlayerRemoving:Connect(function() upp() end)
-
--- Keyboard
-if not m then
-    u.InputBegan:Connect(function(i, gp)
-        if gp then return end
-        if i.KeyCode == Enum.KeyCode.Insert then g.m.Visible = not g.m.Visible end
-    end)
-end
-
-print("[EVENTS] OK")
-
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                              INIT БЕЗ ОЖИДАНИЙ
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-upp()
-if not m then g.m.Visible = true end
-
-no("🔥 Ultimate v14", "4 PANELS | "..#songs.." SONGS")
+Utils.Notify(
+    "🔥 Ultimate Tools v16.0",
+    "5 PANELS | " .. #MusicDatabase .. " SONGS | " .. #ScriptHub .. " SCRIPTS\n" ..
+    (IsMobile and "📱 Mobile Mode" or "💻 PC Mode - Press INSERT to toggle")
+)
 
 print([[
 ╔═══════════════════════════════════════════════════════════════════════════════╗
-║         ✅ ULTIMATE v14 FINAL LOADED! ✅                                     ║
-║  БЕЗ ПРОВЕРОК | БЕЗ ОЖИДАНИЙ | БЕЗ ЛАГОВ                                    ║
-║  4 PANELS | ]]..#songs..[[ SONGS | 100% CLEAN CODE                                   ║
+║                  ✅ ULTIMATE TOOLS v16.0 LOADED SUCCESSFULLY                 ║
+║                                                                               ║
+║  📊 STATUS:                                                                   ║
+║  ├─ 5 Panels: ✅ Sound | Scripts | OSINT | Weapon | Utility                 ║
+║  ├─ ]] .. #MusicDatabase .. [[ Songs in Database                                                    ║
+║  ├─ ]] .. #ScriptHub .. [[ Scripts Available                                                  ║
+║  └─ Device: ]] .. (IsMobile and "📱 Mobile" or "💻 PC") .. [[                                                        ║
+║                                                                               ║
+║  🎮 CONTROLS:                                                                 ║
+]] .. (IsMobile and 
+[[║  └─ Tap floating button to open                                             ║]] or 
+[[║  └─ Press INSERT to toggle menu                                             ║]]) .. [[
+║                                                                               ║
+║  💡 Features: Soundboard | Script Hub | OSINT | Fly | Noclip | ESP           ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ]])
 
-print("[FINAL] 🚀 LOADED!")
+print("[INIT] 🚀 READY!")
