@@ -318,7 +318,7 @@ local SongDatabase = {
     {Category = "Bass", Name = "🔊 Loud Nigra", ID = "5567523008", Duration = "0:10", Rating = 2},
     {Category = "Bass", Name = "🔊 Troll Face Song", ID = "5410084532", Duration = "0:20", Rating = 2},
     {Category = "Bass", Name = "🚨 Loud Emergency Alert", ID = "8683380188", Duration = "0:30", Rating = 2},
-    {Categore = "Phonk", Name = "Distant FUNK", ID = "139597768443427", Duration = "1:26", Rating = 5}
+    {Categore = "Phonk", Name = "Distant FUNK", ID = "139597768443427", Duration = "1:26", Rating = 5},
 }
 
 local categoryCount = {}
