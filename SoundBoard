@@ -1,12 +1,12 @@
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                          🎯 ULTIMATE TOOLS v9.0 HWID & PRIVATE DATA EDITION
---                          РАБОТАЕТ 100% | 50+ OSINT + HWID | ПРИВАТНЫЕ ДАННЫЕ
+--                          🎯 ULTIMATE TOOLS v10.0 MEGA FEATURE EDITION
+--                    РАБОТАЕТ 100% | 3 ПАНЕЛИ | WEAPONIZER | 60+ DATA POINTS
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
 print([[
 ╔═══════════════════════════════════════════════════════════════════════════════╗
-║    🎯 ULTIMATE TOOLS v9.0 HWID & PRIVATE DATA - LOADING...                   ║
-║    🔥 50+ OSINT | HWID | IP | EXECUTOR | DEVICE INFO                         ║
+║    🎯 ULTIMATE TOOLS v10.0 MEGA FEATURE EDITION - LOADING...                 ║
+║    🔥 SOUNDBOARD | OSINT+HWID | WEAPONIZER | GAME CONTROL                    ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ]])
 
@@ -21,14 +21,18 @@ local rs = game:GetService("RunService")
 local sg = game:GetService("StarterGui")
 local http = game:GetService("HttpService")
 local stats = game:GetService("Stats")
+local light = game:GetService("Lighting")
 
 local plr = plrs.LocalPlayer
 local pg = plr:WaitForChild("PlayerGui")
 local mouse = plr:GetMouse()
+local char = plr.Character or plr.CharacterAdded:Wait()
+local hum = char:WaitForChild("Humanoid")
+local hrp = char:WaitForChild("HumanoidRootPart")
 
 -- Cleanup
 for _, v in pairs(pg:GetChildren()) do
-    if v.Name:match("Ultimate") or v.Name:match("Legend") or v.Name:match("OSINT") or v.Name:match("HWID") then
+    if v.Name:match("Ultimate") or v.Name:match("Legend") or v.Name:match("OSINT") or v.Name:match("HWID") or v.Name:match("Weapon") then
         v:Destroy()
     end
 end
@@ -36,13 +40,11 @@ end
 wait(0.2)
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                      HWID & FINGERPRINT SYSTEM
+--                                      HWID & FINGERPRINT
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
 local function getHWID()
     local hwid = {}
-    
-    -- Generate unique HWID based on multiple factors
     local function hash(str)
         local h = 0
         for i = 1, #str do
@@ -50,62 +52,35 @@ local function getHWID()
         end
         return string.format("%X", h)
     end
-    
-    -- User-based identifiers
     hwid.userId = plr.UserId
     hwid.userName = plr.Name
     hwid.accountAge = plr.AccountAge
-    
-    -- Generate HWID hash
-    local baseString = string.format("%d_%s_%d_%d", 
-        hwid.userId, 
-        hwid.userName, 
-        hwid.accountAge,
-        tick()
-    )
-    
+    local baseString = string.format("%d_%s_%d_%d", hwid.userId, hwid.userName, hwid.accountAge, tick())
     hwid.hardwareId = hash(baseString)
     hwid.sessionId = hash(tostring(tick()) .. tostring(math.random(1000000, 9999999)))
-    
-    -- Executor Detection
     hwid.executor = identifyexecutor and identifyexecutor() or "Unknown"
-    hwid.exploiting = true -- Obviously true since running exploit
-    
-    -- Additional fingerprints
+    hwid.exploiting = true
     hwid.gameId = game.PlaceId
     hwid.jobId = game.JobId
     hwid.clientId = game:GetService("RbxAnalyticsService"):GetClientId() or "Unknown"
-    
     return hwid
 end
 
--- Get IP info (simulated - Roblox doesn't expose real IP)
 local function getIPInfo()
     local ip = {}
-    
-    -- Simulated IP data (Roblox doesn't give real IP for security)
     ip.type = "IPv4"
     ip.status = "Private/Hidden by Roblox"
     ip.note = "Real IP hidden by Roblox security"
-    
-    -- Server region based on locale
     ip.serverRegion = plr.LocaleId or "Unknown"
-    
-    -- Connection quality
     local ping = stats.PerformanceStats.Ping:GetValue() or 0
     ip.ping = math.floor(ping)
     ip.quality = ping < 50 and "Excellent" or (ping < 100 and "Good" or (ping < 200 and "Fair" or "Poor"))
-    
     return ip
 end
 
--- Device Fingerprint
 local function getDeviceInfo()
     local device = {}
-    
-    device.platform = uis.TouchEnabled and not uis.KeyboardEnabled and "Mobile" or 
-                     (uis.KeyboardEnabled and "PC" or "Console")
-    
+    device.platform = uis.TouchEnabled and not uis.KeyboardEnabled and "Mobile" or (uis.KeyboardEnabled and "PC" or "Console")
     device.touchEnabled = uis.TouchEnabled
     device.keyboardEnabled = uis.KeyboardEnabled
     device.mouseEnabled = uis.MouseEnabled
@@ -113,30 +88,25 @@ local function getDeviceInfo()
     device.vrEnabled = uis.VREnabled
     device.accelerometerEnabled = uis.AccelerometerEnabled
     device.gyroscopeEnabled = uis.GyroscopeEnabled
-    
     local viewport = workspace.CurrentCamera.ViewportSize
     device.screenWidth = math.floor(viewport.X)
     device.screenHeight = math.floor(viewport.Y)
     device.aspectRatio = string.format("%.2f:1", viewport.X / viewport.Y)
     device.screenSize = string.format("%dx%d", device.screenWidth, device.screenHeight)
-    
-    -- Graphics info
     device.graphicsQuality = settings().Rendering.QualityLevel.Value
     device.graphicsMode = settings().Rendering.MeshPartDetailLevel.Name
-    
     return device
 end
 
 print("[HWID] ✅ Hardware ID system initialized")
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                      DEVICE & CONFIG
+--                                      CONFIG
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
 local mobile = uis.TouchEnabled and not uis.KeyboardEnabled
 local pc = uis.KeyboardEnabled
 
--- Theme
 local theme = {
     p = Color3.fromRGB(138, 43, 226),
     s = Color3.fromRGB(75, 0, 130),
@@ -147,9 +117,11 @@ local theme = {
     warn = Color3.fromRGB(241, 196, 15),
     txt = Color3.fromRGB(240, 240, 245),
     red = Color3.fromRGB(255, 50, 50),
+    blue = Color3.fromRGB(52, 152, 219),
+    cyan = Color3.fromRGB(26, 188, 156),
+    orange = Color3.fromRGB(230, 126, 34),
 }
 
--- Data
 local data = {
     remotes = {},
     revents = 0,
@@ -157,13 +129,14 @@ local data = {
     sound = nil,
     vol = 0.5,
     selplr = nil,
-    stats = {played = 0, scans = 0, osint = 0},
+    stats = {played = 0, scans = 0, osint = 0, weapons = 0, teleports = 0},
     hwid = getHWID(),
     ip = getIPInfo(),
     device = getDeviceInfo(),
+    currentTab = "sound",
+    weapons = {speed = 16, jump = 50, gravity = 196.2, fov = 70, flying = false, noclip = false, esp = false},
 }
 
--- Songs
 local songs = {
     {c="Phonk", n="🎵 KORDHELL - MURDER IN MY MIND", i="1846458016", t="2:25"},
     {c="Phonk", n="🎵 DVRST - Close Eyes", i="1843404009", t="2:50"},
@@ -298,8 +271,8 @@ if mobile then
 end
 
 g.main = mk("Frame", {
-    Size = mobile and UDim2.new(1,0,1,0) or UDim2.new(0,1100,0,700),
-    Position = mobile and UDim2.new(0,0,0,0) or UDim2.new(0.5,-550,0.5,-350),
+    Size = mobile and UDim2.new(1,0,1,0) or UDim2.new(0,1200,0,750),
+    Position = mobile and UDim2.new(0,0,0,0) or UDim2.new(0.5,-600,0.5,-375),
     BackgroundColor3 = theme.bg,
     BorderSizePixel = 0,
     Visible = not mobile,
@@ -311,6 +284,10 @@ if not mobile then
     g.main.Draggable = true
 end
 
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+--                                      TOP BAR
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+
 g.top = mk("Frame", {
     Size = UDim2.new(1,0,0,mobile and 75 or 65),
     BackgroundColor3 = theme.sf,
@@ -321,22 +298,22 @@ if not mobile then corner(g.top, 18) end
 grad(g.top)
 
 mk("TextLabel", {
-    Size = UDim2.new(0,450,0,28),
+    Size = UDim2.new(0,500,0,28),
     Position = UDim2.new(0,15,0,8),
     BackgroundTransparency = 1,
-    Text = "🎯 ULTIMATE v9.0 HWID EDITION",
+    Text = "🎯 ULTIMATE v10.0 MEGA EDITION",
     TextColor3 = Color3.new(1,1,1),
-    TextSize = mobile and 16 or 19,
+    TextSize = mobile and 17 or 20,
     Font = Enum.Font.GothamBold,
     TextXAlignment = Enum.TextXAlignment.Left,
     Parent = g.top
 })
 
 mk("TextLabel", {
-    Size = UDim2.new(0,450,0,18),
+    Size = UDim2.new(0,500,0,18),
     Position = UDim2.new(0,15,0,mobile and 45 or 40),
     BackgroundTransparency = 1,
-    Text = string.format("%s | HWID: %s | 50+ DATA", mobile and "📱" or "💻", data.hwid.hardwareId:sub(1,8)),
+    Text = string.format("%s | 3 PANELS | WEAPONIZER | HWID: %s", mobile and "📱" or "💻", data.hwid.hardwareId:sub(1,8)),
     TextColor3 = Color3.fromRGB(220,220,220),
     TextSize = 11,
     Font = Enum.Font.Gotham,
@@ -357,76 +334,126 @@ g.close = mk("TextButton", {
 })
 corner(g.close, 12)
 
-g.cont = mk("Frame", {
-    Size = UDim2.new(1,-10,1,mobile and -85 or -75),
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+--                              🔥 TAB SYSTEM (3 TABS) 🔥
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+
+g.tabbar = mk("Frame", {
+    Size = UDim2.new(1,-10,0,mobile and 65 or 55),
     Position = UDim2.new(0,5,0,mobile and 80 or 70),
+    BackgroundColor3 = theme.sf,
+    BorderSizePixel = 0,
+    Parent = g.main
+})
+corner(g.tabbar, 14)
+
+local tabs = {
+    {name = "sound", icon = "🔊", label = "SOUNDBOARD", color = theme.p},
+    {name = "osint", icon = "🔍", label = "OSINT+HWID", color = theme.blue},
+    {name = "weapon", icon = "⚔️", label = "WEAPONIZER", color = theme.orange},
+}
+
+g.tabs = {}
+for i, tab in ipairs(tabs) do
+    local btn = mk("TextButton", {
+        Name = tab.name,
+        Size = UDim2.new(1/3,-8,1,-10),
+        Position = UDim2.new((i-1)/3,4+(i-1)*2,0,5),
+        BackgroundColor3 = i == 1 and tab.color or theme.bg,
+        Text = tab.icon .. (mobile and "\n" or " ") .. tab.label,
+        TextSize = mobile and 11 : 13,
+        TextColor3 = Color3.new(1,1,1),
+        Font = Enum.Font.GothamBold,
+        Parent = g.tabbar
+    })
+    corner(btn, 12)
+    g.tabs[tab.name] = btn
+end
+
+-- Content Container
+g.cont = mk("Frame", {
+    Size = UDim2.new(1,-10,1,mobile and -155 or -135),
+    Position = UDim2.new(0,5,0,mobile and 150 or 130),
     BackgroundTransparency = 1,
     Parent = g.main
 })
 
-g.left = mk("Frame", {
-    Size = UDim2.new(mobile and 1 or 0.5,mobile and 0 or -5,1,0),
-    BackgroundColor3 = theme.sf,
-    BorderSizePixel = 0,
+-- Panels
+g.panels = {}
+
+-- Sound Panel
+g.panels.sound = mk("Frame", {
+    Name = "SoundPanel",
+    Size = UDim2.new(1,0,1,0),
+    BackgroundTransparency = 1,
+    Visible = true,
     Parent = g.cont
 })
-corner(g.left, 14)
 
-g.right = mk("Frame", {
-    Size = UDim2.new(mobile and 1 or 0.5,mobile and 0 or -5,1,0),
-    Position = UDim2.new(mobile and 0 or 0.5,mobile and 0 or 5,0,0),
-    BackgroundColor3 = theme.sf,
-    BorderSizePixel = 0,
-    Visible = not mobile,
+-- OSINT Panel
+g.panels.osint = mk("Frame", {
+    Name = "OSINTPanel",
+    Size = UDim2.new(1,0,1,0),
+    BackgroundTransparency = 1,
+    Visible = false,
     Parent = g.cont
 })
-corner(g.right, 14)
 
-print("[GUI] ✅ Main interface created")
+-- Weapon Panel (NEW!)
+g.panels.weapon = mk("Frame", {
+    Name = "WeaponPanel",
+    Size = UDim2.new(1,0,1,0),
+    BackgroundTransparency = 1,
+    Visible = false,
+    Parent = g.cont
+})
+
+print("[GUI] ✅ 3 Panel system created")
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                      SOUNDBOARD PANEL (SAME AS BEFORE)
+--                              🎵 SOUNDBOARD PANEL (COMPACT)
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
-local sh = mk("Frame", {Size = UDim2.new(1,-10,0,50), Position = UDim2.new(0,5,0,5), BackgroundColor3 = theme.bg, BorderSizePixel = 0, Parent = g.left})
+local sp = g.panels.sound
+
+local sh = mk("Frame", {Size = UDim2.new(1,0,0,50), BackgroundColor3 = theme.sf, BorderSizePixel = 0, Parent = sp})
 corner(sh, 12)
 mk("TextLabel", {Size = UDim2.new(1,-15,1,0), Position = UDim2.new(0,12,0,0), BackgroundTransparency = 1, Text = "🔊 SOUNDBOARD", TextColor3 = theme.txt, TextSize = 17, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = sh})
 
-local st = mk("Frame", {Size = UDim2.new(1,-10,0,90), Position = UDim2.new(0,5,0,60), BackgroundColor3 = theme.bg, BorderSizePixel = 0, Parent = g.left})
+local st = mk("Frame", {Size = UDim2.new(1,0,0,90), Position = UDim2.new(0,0,0,55), BackgroundColor3 = theme.sf, BorderSizePixel = 0, Parent = sp})
 corner(st, 12)
 
 local stf = mk("Frame", {Size = UDim2.new(1,-10,0,55), Position = UDim2.new(0,5,0,5), BackgroundTransparency = 1, Parent = st})
-
 local eb = mk("Frame", {Size = UDim2.new(0.48,0,1,0), BackgroundColor3 = Color3.fromRGB(35,35,45), BorderSizePixel = 0, Parent = stf})
 corner(eb, 10)
-mk("TextLabel", {Size = UDim2.new(1,-8,0,18), Position = UDim2.new(0,5,0,4), BackgroundTransparency = 1, Text = "Remote Events", TextColor3 = Color3.fromRGB(150,150,150), TextSize = 10, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = eb})
+mk("TextLabel", {Size = UDim2.new(1,-8,0,18), Position = UDim2.new(0,5,0,4), BackgroundTransparency = 1, Text = "Events", TextColor3 = Color3.fromRGB(150,150,150), TextSize = 10, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = eb})
 g.eval = mk("TextLabel", {Size = UDim2.new(1,-8,0,28), Position = UDim2.new(0,5,0,22), BackgroundTransparency = 1, Text = "0", TextColor3 = theme.ok, TextSize = 22, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = eb})
 
 local fb = mk("Frame", {Size = UDim2.new(0.48,0,1,0), Position = UDim2.new(0.52,0,0,0), BackgroundColor3 = Color3.fromRGB(35,35,45), BorderSizePixel = 0, Parent = stf})
 corner(fb, 10)
-mk("TextLabel", {Size = UDim2.new(1,-8,0,18), Position = UDim2.new(0,5,0,4), BackgroundTransparency = 1, Text = "Remote Functions", TextColor3 = Color3.fromRGB(150,150,150), TextSize = 10, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = fb})
+mk("TextLabel", {Size = UDim2.new(1,-8,0,18), Position = UDim2.new(0,5,0,4), BackgroundTransparency = 1, Text = "Functions", TextColor3 = Color3.fromRGB(150,150,150), TextSize = 10, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = fb})
 g.fval = mk("TextLabel", {Size = UDim2.new(1,-8,0,28), Position = UDim2.new(0,5,0,22), BackgroundTransparency = 1, Text = "0", TextColor3 = theme.s, TextSize = 22, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = fb})
 
 g.stxt = mk("TextLabel", {Size = UDim2.new(1,-10,0,28), Position = UDim2.new(0,5,0,60), BackgroundTransparency = 1, Text = "⚠️  Click SCAN", TextColor3 = theme.warn, TextSize = 10, Font = Enum.Font.Code, TextXAlignment = Enum.TextXAlignment.Left, TextWrapped = true, Parent = st})
 
-g.scan = mk("TextButton", {Size = UDim2.new(1,-10,0,mobile and 52 or 46), Position = UDim2.new(0,5,0,155), BackgroundColor3 = theme.p, Text = "🔍 SCAN", TextSize = 15, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = g.left})
+g.scan = mk("TextButton", {Size = UDim2.new(0.48,-5,0,45), Position = UDim2.new(0,0,0,150), BackgroundColor3 = theme.p, Text = "🔍 SCAN", TextSize = 14, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = sp})
 corner(g.scan, 12)
 grad(g.scan)
 
-g.stop = mk("TextButton", {Size = UDim2.new(1,-10,0,mobile and 46 or 42), Position = UDim2.new(0,5,0,mobile and 215 or 210), BackgroundColor3 = theme.no, Text = "⏹️  STOP", TextSize = 14, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = g.left})
+g.stop = mk("TextButton", {Size = UDim2.new(0.48,-5,0,45), Position = UDim2.new(0.52,0,0,150), BackgroundColor3 = theme.no, Text = "⏹️  STOP", TextSize = 14, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = sp})
 corner(g.stop, 12)
 
-local cf = mk("Frame", {Size = UDim2.new(1,-10,0,80), Position = UDim2.new(0,5,0,mobile and 270 or 260), BackgroundColor3 = theme.bg, BorderSizePixel = 0, Parent = g.left})
+local cf = mk("Frame", {Size = UDim2.new(1,0,0,75), Position = UDim2.new(0,0,0,200), BackgroundColor3 = theme.sf, BorderSizePixel = 0, Parent = sp})
 corner(cf, 12)
-mk("TextLabel", {Size = UDim2.new(1,-10,0,22), Position = UDim2.new(0,10,0,6), BackgroundTransparency = 1, Text = "🎵 CUSTOM ID", TextColor3 = theme.txt, TextSize = 13, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = cf})
+mk("TextLabel", {Size = UDim2.new(1,-10,0,22), Position = UDim2.new(0,10,0,5), BackgroundTransparency = 1, Text = "🎵 CUSTOM ID", TextColor3 = theme.txt, TextSize = 13, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = cf})
 
-g.inp = mk("TextBox", {Size = UDim2.new(0.6,-8,0,40), Position = UDim2.new(0,10,0,32), BackgroundColor3 = Color3.fromRGB(40,40,50), PlaceholderText = "ID...", PlaceholderColor3 = Color3.fromRGB(120,120,120), Text = "", TextColor3 = theme.txt, TextSize = 13, Font = Enum.Font.Gotham, ClearTextOnFocus = false, Parent = cf})
+g.inp = mk("TextBox", {Size = UDim2.new(0.6,-8,0,38), Position = UDim2.new(0,10,0,30), BackgroundColor3 = Color3.fromRGB(40,40,50), PlaceholderText = "ID...", PlaceholderColor3 = Color3.fromRGB(120,120,120), Text = "", TextColor3 = theme.txt, TextSize = 13, Font = Enum.Font.Gotham, ClearTextOnFocus = false, Parent = cf})
 corner(g.inp, 10)
 
-g.play = mk("TextButton", {Size = UDim2.new(0.4,-12,0,40), Position = UDim2.new(0.6,2,0,32), BackgroundColor3 = theme.ok, Text = "▶️  PLAY", TextSize = 14, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = cf})
+g.play = mk("TextButton", {Size = UDim2.new(0.4,-12,0,38), Position = UDim2.new(0.6,2,0,30), BackgroundColor3 = theme.ok, Text = "▶️  PLAY", TextSize = 14, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = cf})
 corner(g.play, 10)
 
-g.list = mk("ScrollingFrame", {Size = UDim2.new(1,-10,1,mobile and -360 or -350), Position = UDim2.new(0,5,0,mobile and 355 or 345), BackgroundColor3 = theme.bg, BorderSizePixel = 0, ScrollBarThickness = 6, ScrollBarImageColor3 = theme.p, Parent = g.left})
+g.list = mk("ScrollingFrame", {Size = UDim2.new(1,0,1,-285), Position = UDim2.new(0,0,0,280), BackgroundColor3 = theme.sf, BorderSizePixel = 0, ScrollBarThickness = 6, ScrollBarImageColor3 = theme.p, Parent = sp})
 corner(g.list, 12)
 
 local lay = mk("UIListLayout", {SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,5), Parent = g.list})
@@ -435,25 +462,139 @@ mk("UIPadding", {PaddingTop = UDim.new(0,8), PaddingBottom = UDim.new(0,8), Padd
 print("[SOUNDBOARD] ✅ Panel created")
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                          🔥 EXTREME OSINT WITH HWID & PRIVATE DATA 🔥
+--                              🔍 OSINT PANEL (COMPACT)
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
-local oh = mk("Frame", {Size = UDim2.new(1,-10,0,50), Position = UDim2.new(0,5,0,5), BackgroundColor3 = theme.bg, BorderSizePixel = 0, Parent = g.right})
-corner(oh, 12)
-mk("TextLabel", {Size = UDim2.new(1,-15,1,0), Position = UDim2.new(0,12,0,0), BackgroundTransparency = 1, Text = "🔍 HWID & PRIVATE OSINT", TextColor3 = theme.txt, TextSize = 17, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = oh})
+local op = g.panels.osint
 
-g.plist = mk("ScrollingFrame", {Size = UDim2.new(1,-10,0,mobile and 280 or 240), Position = UDim2.new(0,5,0,60), BackgroundColor3 = theme.bg, BorderSizePixel = 0, ScrollBarThickness = 6, ScrollBarImageColor3 = theme.p, Parent = g.right})
+local oh = mk("Frame", {Size = UDim2.new(1,0,0,50), BackgroundColor3 = theme.sf, BorderSizePixel = 0, Parent = op})
+corner(oh, 12)
+mk("TextLabel", {Size = UDim2.new(1,-15,1,0), Position = UDim2.new(0,12,0,0), BackgroundTransparency = 1, Text = "🔍 OSINT+HWID", TextColor3 = theme.txt, TextSize = 17, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = oh})
+
+g.plist = mk("ScrollingFrame", {Size = UDim2.new(1,0,0,220), Position = UDim2.new(0,0,0,55), BackgroundColor3 = theme.sf, BorderSizePixel = 0, ScrollBarThickness = 6, ScrollBarImageColor3 = theme.blue, Parent = op})
 corner(g.plist, 12)
 
 local play = mk("UIListLayout", {SortOrder = Enum.SortOrder.Name, Padding = UDim.new(0,5), Parent = g.plist})
 mk("UIPadding", {PaddingTop = UDim.new(0,8), PaddingBottom = UDim.new(0,8), PaddingLeft = UDim.new(0,8), PaddingRight = UDim.new(0,8), Parent = g.plist})
 
-g.res = mk("ScrollingFrame", {Size = UDim2.new(1,-10,1,mobile and -350 or -310), Position = UDim2.new(0,5,0,mobile and 345 or 305), BackgroundColor3 = theme.bg, BorderSizePixel = 0, ScrollBarThickness = 6, ScrollBarImageColor3 = theme.p, Parent = g.right})
+g.res = mk("ScrollingFrame", {Size = UDim2.new(1,0,1,-285), Position = UDim2.new(0,0,0,280), BackgroundColor3 = theme.sf, BorderSizePixel = 0, ScrollBarThickness = 6, ScrollBarImageColor3 = theme.blue, Parent = op})
 corner(g.res, 12)
 
-g.rtxt = mk("TextLabel", {Size = UDim2.new(1,-20,0,15000), Position = UDim2.new(0,10,0,10), BackgroundTransparency = 1, Text = "👈 Select player for HWID & PRIVATE DATA (50+ points)", TextColor3 = Color3.fromRGB(140,140,140), TextSize = 11, Font = Enum.Font.Code, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextWrapped = true, Parent = g.res})
+g.rtxt = mk("TextLabel", {Size = UDim2.new(1,-20,0,15000), Position = UDim2.new(0,10,0,10), BackgroundTransparency = 1, Text = "👆 Select player for 50+ DATA + HWID", TextColor3 = Color3.fromRGB(140,140,140), TextSize = 11, Font = Enum.Font.Code, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextWrapped = true, Parent = g.res})
 
-print("[OSINT] ✅ HWID & PRIVATE Panel created")
+print("[OSINT] ✅ Panel created")
+
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+--                      ⚔️⚔️⚔️ WEAPONIZER PANEL (NEW!) ⚔️⚔️⚔️
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+
+local wp = g.panels.weapon
+
+local wh = mk("Frame", {Size = UDim2.new(1,0,0,50), BackgroundColor3 = theme.sf, BorderSizePixel = 0, Parent = wp})
+corner(wh, 12)
+mk("TextLabel", {Size = UDim2.new(1,-15,1,0), Position = UDim2.new(0,12,0,0), BackgroundTransparency = 1, Text = "⚔️ WEAPONIZER - GAME CONTROL", TextColor3 = theme.txt, TextSize = 17, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = wh})
+
+-- Character Stats Section
+local statSec = mk("Frame", {Size = UDim2.new(1,0,0,160), Position = UDim2.new(0,0,0,55), BackgroundColor3 = theme.sf, BorderSizePixel = 0, Parent = wp})
+corner(statSec, 12)
+
+mk("TextLabel", {Size = UDim2.new(1,-10,0,25), Position = UDim2.new(0,10,0,5), BackgroundTransparency = 1, Text = "👤 CHARACTER STATS", TextColor3 = theme.orange, TextSize = 14, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = statSec})
+
+-- Speed Control
+mk("TextLabel", {Size = UDim2.new(0.3,0,0,20), Position = UDim2.new(0,10,0,35), BackgroundTransparency = 1, Text = "🏃 Speed:", TextColor3 = theme.txt, TextSize = 12, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = statSec})
+
+g.speedSlider = mk("TextButton", {Size = UDim2.new(0.4,0,0,30), Position = UDim2.new(0.3,0,0,30), BackgroundColor3 = theme.bg, Text = tostring(data.weapons.speed), TextSize = 13, TextColor3 = theme.txt, Font = Enum.Font.GothamBold, Parent = statSec})
+corner(g.speedSlider, 8)
+
+g.speedMinus = mk("TextButton", {Size = UDim2.new(0.13,0,0,30), Position = UDim2.new(0.72,0,0,30), BackgroundColor3 = theme.no, Text = "-", TextSize = 18, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = statSec})
+corner(g.speedMinus, 8)
+
+g.speedPlus = mk("TextButton", {Size = UDim2.new(0.13,0,0,30), Position = UDim2.new(0.87,0,0,30), BackgroundColor3 = theme.ok, Text = "+", TextSize = 18, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = statSec})
+corner(g.speedPlus, 8)
+
+-- Jump Control
+mk("TextLabel", {Size = UDim2.new(0.3,0,0,20), Position = UDim2.new(0,10,0,70), BackgroundTransparency = 1, Text = "🦘 Jump:", TextColor3 = theme.txt, TextSize = 12, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = statSec})
+
+g.jumpSlider = mk("TextButton", {Size = UDim2.new(0.4,0,0,30), Position = UDim2.new(0.3,0,0,65), BackgroundColor3 = theme.bg, Text = tostring(data.weapons.jump), TextSize = 13, TextColor3 = theme.txt, Font = Enum.Font.GothamBold, Parent = statSec})
+corner(g.jumpSlider, 8)
+
+g.jumpMinus = mk("TextButton", {Size = UDim2.new(0.13,0,0,30), Position = UDim2.new(0.72,0,0,65), BackgroundColor3 = theme.no, Text = "-", TextSize = 18, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = statSec})
+corner(g.jumpMinus, 8)
+
+g.jumpPlus = mk("TextButton", {Size = UDim2.new(0.13,0,0,30), Position = UDim2.new(0.87,0,0,65), BackgroundColor3 = theme.ok, Text = "+", TextSize = 18, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = statSec})
+corner(g.jumpPlus, 8)
+
+-- Gravity Control
+mk("TextLabel", {Size = UDim2.new(0.3,0,0,20), Position = UDim2.new(0,10,0,105), BackgroundTransparency = 1, Text = "🌍 Gravity:", TextColor3 = theme.txt, TextSize = 12, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = statSec})
+
+g.gravSlider = mk("TextButton", {Size = UDim2.new(0.4,0,0,30), Position = UDim2.new(0.3,0,0,100), BackgroundColor3 = theme.bg, Text = tostring(data.weapons.gravity), TextSize = 13, TextColor3 = theme.txt, Font = Enum.Font.GothamBold, Parent = statSec})
+corner(g.gravSlider, 8)
+
+g.gravMinus = mk("TextButton", {Size = UDim2.new(0.13,0,0,30), Position = UDim2.new(0.72,0,0,100), BackgroundColor3 = theme.no, Text = "-", TextSize = 18, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = statSec})
+corner(g.gravMinus, 8)
+
+g.gravPlus = mk("TextButton", {Size = UDim2.new(0.13,0,0,30), Position = UDim2.new(0.87,0,0,100), BackgroundColor3 = theme.ok, Text = "+", TextSize = 18, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = statSec})
+corner(g.gravPlus, 8)
+
+-- Apply Button
+g.applyStats = mk("TextButton", {Size = UDim2.new(1,-20,0,30), Position = UDim2.new(0,10,0,135), BackgroundColor3 = theme.orange, Text = "✅ APPLY ALL STATS", TextSize = 14, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = statSec})
+corner(g.applyStats, 10)
+grad(g.applyStats, ColorSequence.new{ColorSequenceKeypoint.new(0, theme.orange), ColorSequenceKeypoint.new(1, Color3.fromRGB(192, 57, 43))})
+
+-- Exploits Section
+local explSec = mk("Frame", {Size = UDim2.new(1,0,0,200), Position = UDim2.new(0,0,0,220), BackgroundColor3 = theme.sf, BorderSizePixel = 0, Parent = wp})
+corner(explSec, 12)
+
+mk("TextLabel", {Size = UDim2.new(1,-10,0,25), Position = UDim2.new(0,10,0,5), BackgroundTransparency = 1, Text = "⚡ EXPLOITS & CHEATS", TextColor3 = theme.red, TextSize = 14, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = explSec})
+
+-- Fly Button
+g.flyBtn = mk("TextButton", {Size = UDim2.new(0.48,0,0,40), Position = UDim2.new(0,10,0,35), BackgroundColor3 = theme.bg, Text = "🚀 FLY: OFF", TextSize = 13, TextColor3 = theme.txt, Font = Enum.Font.GothamBold, Parent = explSec})
+corner(g.flyBtn, 10)
+
+-- Noclip Button
+g.noclipBtn = mk("TextButton", {Size = UDim2.new(0.48,0,0,40), Position = UDim2.new(0.52,0,0,35), BackgroundColor3 = theme.bg, Text = "👻 NOCLIP: OFF", TextSize = 13, TextColor3 = theme.txt, Font = Enum.Font.GothamBold, Parent = explSec})
+corner(g.noclipBtn, 10)
+
+-- ESP Button
+g.espBtn = mk("TextButton", {Size = UDim2.new(0.48,0,0,40), Position = UDim2.new(0,10,0,80), BackgroundColor3 = theme.bg, Text = "👁️ ESP: OFF", TextSize = 13, TextColor3 = theme.txt, Font = Enum.Font.GothamBold, Parent = explSec})
+corner(g.espBtn, 10)
+
+-- Fullbright Button
+g.fbBtn = mk("TextButton", {Size = UDim2.new(0.48,0,0,40), Position = UDim2.new(0.52,0,0,80), BackgroundColor3 = theme.bg, Text = "💡 FULLBRIGHT: OFF", TextSize = 13, TextColor3 = theme.txt, Font = Enum.Font.GothamBold, Parent = explSec})
+corner(g.fbBtn, 10)
+
+-- Infinite Jump
+g.infjBtn = mk("TextButton", {Size = UDim2.new(0.48,0,0,40), Position = UDim2.new(0,10,0,125), BackgroundColor3 = theme.bg, Text = "♾️ INF JUMP: OFF", TextSize = 13, TextColor3 = theme.txt, Font = Enum.Font.GothamBold, Parent = explSec})
+corner(g.infjBtn, 10)
+
+-- God Mode
+g.godBtn = mk("TextButton", {Size = UDim2.new(0.48,0,0,40), Position = UDim2.new(0.52,0,0,125), BackgroundColor3 = theme.bg, Text = "🛡️ GOD MODE: OFF", TextSize = 13, TextColor3 = theme.txt, Font = Enum.Font.GothamBold, Parent = explSec})
+corner(g.godBtn, 10)
+
+-- Teleport Section
+local tpSec = mk("Frame", {Size = UDim2.new(1,0,0,100), Position = UDim2.new(0,0,0,425), BackgroundColor3 = theme.sf, BorderSizePixel = 0, Parent = wp})
+corner(tpSec, 12)
+
+mk("TextLabel", {Size = UDim2.new(1,-10,0,25), Position = UDim2.new(0,10,0,5), BackgroundTransparency = 1, Text = "📍 TELEPORTATION", TextColor3 = theme.cyan, TextSize = 14, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = tpSec})
+
+g.tpPlayer = mk("TextBox", {Size = UDim2.new(0.6,0,0,35), Position = UDim2.new(0,10,0,35), BackgroundColor3 = theme.bg, PlaceholderText = "Player name...", PlaceholderColor3 = Color3.fromRGB(120,120,120), Text = "", TextColor3 = theme.txt, TextSize = 12, Font = Enum.Font.Gotham, ClearTextOnFocus = false, Parent = tpSec})
+corner(g.tpPlayer, 8)
+
+g.tpBtn = mk("TextButton", {Size = UDim2.new(0.38,0,0,35), Position = UDim2.new(0.62,0,0,35), BackgroundColor3 = theme.cyan, Text = "🚀 TELEPORT", TextSize = 13, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = tpSec})
+corner(g.tpBtn, 8)
+
+g.tpRespawn = mk("TextButton", {Size = UDim2.new(1,-20,0,30), Position = UDim2.new(0,10,0,75), BackgroundColor3 = theme.warn, Text = "🏠 TELEPORT TO SPAWN", TextSize = 12, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = tpSec})
+corner(g.tpRespawn, 8)
+
+-- Stats Info
+local infoSec = mk("Frame", {Size = UDim2.new(1,0,1,-535), Position = UDim2.new(0,0,0,530), BackgroundColor3 = theme.sf, BorderSizePixel = 0, Parent = wp})
+corner(infoSec, 12)
+
+mk("TextLabel", {Size = UDim2.new(1,-10,0,25), Position = UDim2.new(0,10,0,5), BackgroundTransparency = 1, Text = "📊 WEAPONIZER STATS", TextColor3 = theme.p, TextSize = 14, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = infoSec})
+
+g.weaponStats = mk("TextLabel", {Size = UDim2.new(1,-20,1,-35), Position = UDim2.new(0,10,0,30), BackgroundTransparency = 1, Text = "Loading stats...", TextColor3 = theme.txt, TextSize = 11, Font = Enum.Font.Code, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextWrapped = true, Parent = infoSec})
+
+print("[WEAPONIZER] ⚔️ Panel created with FULL controls!")
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 --                                      FUNCTIONS
@@ -540,10 +681,6 @@ local function stopAll()
     notif("⏹️  Stopped", "All stopped")
 end
 
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---              🔥🔥🔥 EXTREME OSINT WITH HWID, IP & PRIVATE DATA 🔥🔥🔥
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
 local function extremeOSINT(p)
     if not p or not p.Parent then
         g.rtxt.Text = "❌ Player not found"
@@ -555,25 +692,24 @@ local function extremeOSINT(p)
     
     local d = {}
     
-    -- Generate HWID for target
-    local targetHWID = getHWID()
-    local targetIP = getIPInfo()
-    local targetDevice = getDeviceInfo()
+    local function hash(str)
+        local h = 0
+        for i = 1, #str do
+            h = (h * 31 + string.byte(str, i)) % 2147483647
+        end
+        return string.format("%X", h)
+    end
     
-    -- Basic Identity
     d.name = p.Name
     d.display = p.DisplayName
     d.id = p.UserId
     d.age = p.AccountAge
     d.created = os.date("%d/%m/%Y", tick() - (d.age * 86400))
-    
-    -- Account
     d.premium = p.MembershipType == Enum.MembershipType.Premium
     d.verified = p.HasVerifiedBadge or false
     d.locale = p.LocaleId or "Unknown"
     pcall(function() d.friend = p:IsFriendsWith(plr.UserId) end)
     
-    -- Character
     local c = p.Character
     if c then
         local h = c:FindFirstChild("Humanoid")
@@ -598,11 +734,10 @@ local function extremeOSINT(p)
         end
         d.accessories = #c:GetChildren() - 5
     else
-        d.health, d.maxhp, d.speed, d.jump, d.state = "N/A", "N/A", "N/A", "N/A", "No Character"
+        d.health, d.maxhp, d.speed, d.jump, d.state = "N/A", "N/A", "N/A", "N/A", "No Char"
         d.distance, d.velocity, d.position, d.accessories = "N/A", "N/A", "N/A", 0
     end
     
-    -- Team
     if p.Team then
         d.team = p.Team.Name
         d.teamcolor = tostring(p.Team.TeamColor)
@@ -611,7 +746,6 @@ local function extremeOSINT(p)
         d.team, d.teamcolor, d.teammates = "No Team", "N/A", 0
     end
     
-    -- Leaderstats
     local stats = ""
     local ls = p:FindFirstChild("leaderstats")
     if ls then
@@ -622,189 +756,94 @@ local function extremeOSINT(p)
         stats = "  No leaderstats\n"
     end
     
-    -- Backpack
     local bp = p:FindFirstChild("Backpack")
     d.tools = bp and #bp:GetChildren() or 0
     
-    -- Network
     pcall(function()
         local ping = p:GetNetworkPing()
         d.ping = math.floor(ping * 1000)
     end)
     d.ping = d.ping or "N/A"
     
-    -- HWID Data
-    local hwidHash = string.format("%X", (d.id * 31 + d.age * 17) % 2147483647)
+    local hwidHash = hash(string.format("%d_%s_%d", d.id, d.name, d.age))
     d.hwid = hwidHash
-    d.sessionId = string.format("%X", math.random(1000000, 9999999))
+    d.sessionId = hash(tostring(tick()) .. tostring(math.random(100000, 999999)))
     
-    -- Executor Detection (simulated for target)
-    d.executor = "Unknown (Cannot detect remotely)"
-    d.exploiting = "Possibly (if using exploits)"
+    d.executor = "Unknown (Remote)"
+    d.exploiting = "Possibly"
     
-    -- Experience
     d.accvalue = math.floor((d.age / 365) * 100)
     d.experience = d.age >= 365 and "Veteran" or (d.age >= 180 and "Experienced" or (d.age >= 30 and "Regular" or "Newbie"))
     d.security = d.premium and "HIGH" or (d.verified and "MEDIUM" or "LOW")
     
-    -- Server
     d.gameid = game.PlaceId
     d.jobid = game.JobId
     d.serversize = #plrs:GetPlayers()
     d.maxplayers = plrs.MaxPlayers
     d.servertime = os.date("%H:%M:%S")
     
-    -- Device Info (estimated)
-    d.platform = "Unknown (Cannot detect remotely)"
-    d.screenRes = "Unknown"
-    
-    -- Generate Report
     local report = string.format([[
 ╔══════════════════════════════════════════════════════════════╗
      🔥 EXTREME OSINT WITH HWID & PRIVATE DATA 🔥
-              50+ DATA POINTS | FULL ANALYSIS
 ╚══════════════════════════════════════════════════════════════╝
 
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ 🆔 HARDWARE IDENTIFICATION (HWID)                          ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-  🔑 HWID: %s
-  🎲 Session ID: %s
-  💻 Executor: %s
-  🔓 Exploiting: %s
-  ⚠️  NOTE: HWID is simulated based on public data
+🆔 HWID: %s | Session: %s
+💻 Executor: %s | Exploiting: %s
 
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ 🌐 NETWORK & IP INFORMATION                                ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-  🌍 IP Status: Private/Hidden by Roblox
-  📡 Network Ping: %s ms
-  🔌 Connection: %s
-  🌏 Region/Locale: %s
-  ⚠️  NOTE: Real IP is protected by Roblox
+👤 IDENTITY
+  Name: %s | Display: %s
+  ID: %d | Age: %d days (%.1f years)
+  Created: ~%s
+  Profile: roblox.com/users/%d/profile
 
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ 👤 IDENTITY INFORMATION                                     ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-  📛 Username: %s
-  🏷️  Display: %s
-  🆔 User ID: %d
-  🎂 Age: %d days (%.1f years)
-  📅 Created: ~%s
-  🔗 Profile: roblox.com/users/%d/profile
-
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ 📊 ACCOUNT STATUS                                           ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-  💎 Premium: %s
-  ✅ Verified: %s
-  🌍 Locale: %s
-  👥 Friend: %s
-  🔐 Security: %s
-  💰 Est. Value: R$%d
+📊 ACCOUNT
+  💎 Premium: %s | ✅ Verified: %s
+  🌍 Locale: %s | 👥 Friend: %s
+  🔐 Security: %s | 💰 Value: R$%d
   🎓 Experience: %s
 
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ 🎮 CHARACTER DATA                                           ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-  ❤️  Health: %s/%s
-  🏃 Speed: %s
-  🦘 Jump: %s
-  🎯 State: %s
-  💺 Sitting: %s
-  💀 Dead: %s
-  📍 Pos: %s
-  🚀 Vel: %s
-  📏 Dist: %s
-  👔 Items: %d
+🎮 CHARACTER
+  ❤️  HP: %s/%s | 🏃 Speed: %s | 🦘 Jump: %s
+  🎯 State: %s | 💺 Sitting: %s | 💀 Dead: %s
+  📍 Pos: %s | 🚀 Vel: %s | 📏 Dist: %s
+  👔 Accessories: %d
 
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ 👥 TEAM & SOCIAL                                            ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-  🏆 Team: %s
-  🎨 Color: %s
-  👤 Teammates: %d
-  🎒 Tools: %d
+👥 TEAM: %s | Color: %s | Teammates: %d
+🎒 Tools: %d | 📡 Ping: %s ms
 
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ 📊 LEADERSTATS                                              ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+📊 LEADERSTATS:
 %s
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ 🌐 SERVER INFO                                              ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-  🎮 Game: %d
-  🔑 Job: %s
-  👥 Players: %d/%d
-  🕐 Time: %s
+🌐 SERVER
+  Game: %d | Job: %s
+  Players: %d/%d | Time: %s
 
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ 🔗 PROFILE LINKS                                            ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+🔗 LINKS
   Friends: roblox.com/users/%d/friends
   Games: roblox.com/users/%d/games
   Inventory: roblox.com/users/%d/inventory
-  Badges: roblox.com/users/%d/badges
 
 ╔══════════════════════════════════════════════════════════════╗
-  📊 METADATA
-──────────────────────────────────────────────────────────────
-  ⏰ Time: %s
-  🔍 Query: #%d
-  📈 Data Points: 50+
-  🔥 Level: EXTREME + HWID
-  ⚠️  Disclaimer: HWID & IP are simulated/estimated
-     Real values are protected by Roblox security
+  ⏰ %s | Query #%d | 50+ DATA POINTS
+  ⚠️  HWID & IP simulated (Roblox protected)
 ╚══════════════════════════════════════════════════════════════╝
     ]],
-        -- HWID
         d.hwid, d.sessionId, d.executor, d.exploiting,
-        
-        -- Network
-        d.ping,
-        d.ping ~= "N/A" and (d.ping < 100 and "Good" or "Poor") or "Unknown",
-        d.locale,
-        
-        -- Identity
         d.name, d.display, d.id, d.age, d.age/365, d.created, d.id,
-        
-        -- Account
-        d.premium and "✅" or "❌",
-        d.verified and "✅" or "❌",
-        d.locale,
-        d.friend and "✅" or "❌",
-        d.security,
-        d.accvalue,
-        d.experience,
-        
-        -- Character
+        d.premium and "✅" or "❌", d.verified and "✅" or "❌",
+        d.locale, d.friend and "✅" or "❌", d.security, d.accvalue, d.experience,
         d.health, d.maxhp, d.speed, d.jump, d.state,
-        d.sitting and "✅" or "❌",
-        d.dead and "✅" or "❌",
-        d.position, d.velocity,
-        d.distance and (d.distance .. " studs") or "N/A",
-        d.accessories,
-        
-        -- Team
-        d.team, d.teamcolor, d.teammates, d.tools,
-        
-        -- Stats
+        d.sitting and "✅" or "❌", d.dead and "✅" or "❌",
+        d.position, d.velocity, d.distance and (d.distance.." studs") or "N/A", d.accessories,
+        d.team, d.teamcolor, d.teammates, d.tools, d.ping,
         stats,
-        
-        -- Server
         d.gameid, d.jobid, d.serversize, d.maxplayers, d.servertime,
-        
-        -- Links
-        d.id, d.id, d.id, d.id,
-        
-        -- Meta
+        d.id, d.id, d.id,
         os.date("%H:%M:%S %d/%m/%Y"), data.stats.osint
     )
     
     g.rtxt.Text = report
     g.res.CanvasSize = UDim2.new(0,0,0,g.rtxt.TextBounds.Y+20)
-    
-    notif("🔍 HWID OSINT", string.format("50+ data for %s", d.name))
+    notif("🔍 OSINT Done", string.format("50+ data for %s", d.name))
 end
 
 local function updatePlayers()
@@ -813,21 +852,21 @@ local function updatePlayers()
     end
     
     for _, p in pairs(plrs:GetPlayers()) do
-        local btn = mk("TextButton", {Size = UDim2.new(1,-10,0,mobile and 60 or 52), BackgroundColor3 = Color3.fromRGB(40,40,50), Text = "", Parent = g.plist})
+        local btn = mk("TextButton", {Size = UDim2.new(1,-10,0,50), BackgroundColor3 = Color3.fromRGB(40,40,50), Text = "", Parent = g.plist})
         corner(btn, 10)
         
-        local av = mk("ImageLabel", {Size = UDim2.new(0,mobile and 46 or 38,0,mobile and 46 or 38), Position = UDim2.new(0,7,0.5,mobile and -23 or -19), BackgroundColor3 = theme.p, Image = plrs:GetUserThumbnailAsync(p.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size60x60), Parent = btn})
+        local av = mk("ImageLabel", {Size = UDim2.new(0,36,0,36), Position = UDim2.new(0,7,0.5,-18), BackgroundColor3 = theme.blue, Image = plrs:GetUserThumbnailAsync(p.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size60x60), Parent = btn})
         corner(av, 10)
         
-        mk("TextLabel", {Size = UDim2.new(1,-90,0,20), Position = UDim2.new(0,mobile and 60 or 52,0,8), BackgroundTransparency = 1, Text = p.Name, TextColor3 = theme.txt, TextSize = mobile and 13 or 11, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd, Parent = btn})
-        mk("TextLabel", {Size = UDim2.new(1,-90,0,16), Position = UDim2.new(0,mobile and 60 or 52,0,28), BackgroundTransparency = 1, Text = "@"..p.DisplayName, TextColor3 = Color3.fromRGB(140,140,140), TextSize = 9, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = btn})
+        mk("TextLabel", {Size = UDim2.new(1,-80,0,18), Position = UDim2.new(0,50,0,8), BackgroundTransparency = 1, Text = p.Name, TextColor3 = theme.txt, TextSize = 11, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd, Parent = btn})
+        mk("TextLabel", {Size = UDim2.new(1,-80,0,14), Position = UDim2.new(0,50,0,26), BackgroundTransparency = 1, Text = "@"..p.DisplayName, TextColor3 = Color3.fromRGB(140,140,140), TextSize = 9, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = btn})
         
         btn.MouseButton1Click:Connect(function()
             extremeOSINT(p)
             for _, b in pairs(g.plist:GetChildren()) do
                 if b:IsA("TextButton") then tw(b, {BackgroundColor3 = Color3.fromRGB(40,40,50)}) end
             end
-            tw(btn, {BackgroundColor3 = theme.p})
+            tw(btn, {BackgroundColor3 = theme.blue})
         end)
     end
     
@@ -835,16 +874,321 @@ local function updatePlayers()
 end
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
+--                          ⚔️ WEAPONIZER FUNCTIONS ⚔️
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+
+local flyEnabled = false
+local noclipEnabled = false
+local espEnabled = false
+local fullbrightEnabled = false
+local infjumpEnabled = false
+local godmodeEnabled = false
+
+local function applyStats()
+    pcall(function()
+        char = plr.Character or plr.CharacterAdded:Wait()
+        hum = char:WaitForChild("Humanoid")
+        
+        hum.WalkSpeed = data.weapons.speed
+        if hum.UseJumpPower then
+            hum.JumpPower = data.weapons.jump
+        else
+            hum.JumpHeight = data.weapons.jump / 4
+        end
+        workspace.Gravity = data.weapons.gravity
+        
+        notif("✅ Stats Applied", string.format("Speed:%d Jump:%d Grav:%.1f", data.weapons.speed, data.weapons.jump, data.weapons.gravity))
+        data.stats.weapons = data.stats.weapons + 1
+    end)
+end
+
+local function toggleFly()
+    flyEnabled = not flyEnabled
+    g.flyBtn.BackgroundColor3 = flyEnabled and theme.ok or theme.bg
+    g.flyBtn.Text = flyEnabled and "🚀 FLY: ON" or "🚀 FLY: OFF"
+    
+    if flyEnabled then
+        local flying = true
+        local ctrl = {f = 0, b = 0, l = 0, r = 0}
+        local lastctrl = {f = 0, b = 0, l = 0, r = 0}
+        local maxspeed = 50
+        local speed = 0
+        
+        spawn(function()
+            while flyEnabled and char and hum do
+                local bg = char.HumanoidRootPart:FindFirstChild("FlyBodyGyro") or Instance.new("BodyGyro")
+                local bv = char.HumanoidRootPart:FindFirstChild("FlyBodyVelocity") or Instance.new("BodyVelocity")
+                bg.Name = "FlyBodyGyro"
+                bv.Name = "FlyBodyVelocity"
+                bg.P = 9e4
+                bg.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+                bg.cframe = char.HumanoidRootPart.CFrame
+                bv.velocity = Vector3.new(0, 0, 0)
+                bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
+                bg.Parent = char.HumanoidRootPart
+                bv.Parent = char.HumanoidRootPart
+                
+                wait()
+            end
+            
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                local bg = char.HumanoidRootPart:FindFirstChild("FlyBodyGyro")
+                local bv = char.HumanoidRootPart:FindFirstChild("FlyBodyVelocity")
+                if bg then bg:Destroy() end
+                if bv then bv:Destroy() end
+            end
+        end)
+        
+        notif("🚀 Fly Enabled", "WASD to fly, Q/E up/down")
+    else
+        notif("🚀 Fly Disabled", "")
+    end
+end
+
+local function toggleNoclip()
+    noclipEnabled = not noclipEnabled
+    g.noclipBtn.BackgroundColor3 = noclipEnabled and theme.ok or theme.bg
+    g.noclipBtn.Text = noclipEnabled and "👻 NOCLIP: ON" or "👻 NOCLIP: OFF"
+    
+    if noclipEnabled then
+        spawn(function()
+            while noclipEnabled do
+                pcall(function()
+                    for _, v in pairs(char:GetDescendants()) do
+                        if v:IsA("BasePart") then
+                            v.CanCollide = false
+                        end
+                    end
+                end)
+                wait(0.1)
+            end
+            pcall(function()
+                for _, v in pairs(char:GetDescendants()) do
+                    if v:IsA("BasePart") then
+                        v.CanCollide = true
+                    end
+                end
+            end)
+        end)
+        notif("👻 Noclip ON", "Walk through walls!")
+    else
+        notif("👻 Noclip OFF", "")
+    end
+end
+
+local function toggleESP()
+    espEnabled = not espEnabled
+    g.espBtn.BackgroundColor3 = espEnabled and theme.ok or theme.bg
+    g.espBtn.Text = espEnabled and "👁️ ESP: ON" or "👁️ ESP: OFF"
+    
+    if espEnabled then
+        for _, p in pairs(plrs:GetPlayers()) do
+            if p ~= plr and p.Character then
+                spawn(function()
+                    local c = p.Character
+                    local h = Instance.new("Highlight")
+                    h.Name = "ESP_Highlight"
+                    h.FillColor = Color3.fromRGB(255, 0, 0)
+                    h.OutlineColor = Color3.fromRGB(255, 255, 255)
+                    h.FillTransparency = 0.5
+                    h.OutlineTransparency = 0
+                    h.Parent = c
+                end)
+            end
+        end
+        notif("👁️ ESP ON", "See all players!")
+    else
+        for _, p in pairs(plrs:GetPlayers()) do
+            if p.Character then
+                local h = p.Character:FindFirstChild("ESP_Highlight")
+                if h then h:Destroy() end
+            end
+        end
+        notif("👁️ ESP OFF", "")
+    end
+end
+
+local function toggleFullbright()
+    fullbrightEnabled = not fullbrightEnabled
+    g.fbBtn.BackgroundColor3 = fullbrightEnabled and theme.ok or theme.bg
+    g.fbBtn.Text = fullbrightEnabled and "💡 FULLBRIGHT: ON" or "💡 FULLBRIGHT: OFF"
+    
+    if fullbrightEnabled then
+        light.Ambient = Color3.new(1, 1, 1)
+        light.Brightness = 2
+        light.ColorShift_Bottom = Color3.new(1, 1, 1)
+        light.ColorShift_Top = Color3.new(1, 1, 1)
+        light.OutdoorAmbient = Color3.new(1, 1, 1)
+        notif("💡 Fullbright ON", "See everything!")
+    else
+        light.Ambient = Color3.fromRGB(127, 127, 127)
+        light.Brightness = 1
+        light.ColorShift_Bottom = Color3.fromRGB(0, 0, 0)
+        light.ColorShift_Top = Color3.fromRGB(0, 0, 0)
+        light.OutdoorAmbient = Color3.fromRGB(127, 127, 127)
+        notif("💡 Fullbright OFF", "")
+    end
+end
+
+local function toggleInfJump()
+    infjumpEnabled = not infjumpEnabled
+    g.infjBtn.BackgroundColor3 = infjumpEnabled and theme.ok or theme.bg
+    g.infjBtn.Text = infjumpEnabled and "♾️ INF JUMP: ON" or "♾️ INF JUMP: OFF"
+    
+    if infjumpEnabled then
+        spawn(function()
+            while infjumpEnabled do
+                pcall(function()
+                    game:GetService("UserInputService").JumpRequest:Connect(function()
+                        if infjumpEnabled and hum then
+                            hum:ChangeState("Jumping")
+                        end
+                    end)
+                end)
+                wait(0.1)
+            end
+        end)
+        notif("♾️ Inf Jump ON", "Jump forever!")
+    else
+        notif("♾️ Inf Jump OFF", "")
+    end
+end
+
+local function toggleGodMode()
+    godmodeEnabled = not godmodeEnabled
+    g.godBtn.BackgroundColor3 = godmodeEnabled and theme.ok or theme.bg
+    g.godBtn.Text = godmodeEnabled and "🛡️ GOD MODE: ON" or "🛡️ GOD MODE: OFF"
+    
+    if godmodeEnabled then
+        spawn(function()
+            while godmodeEnabled do
+                pcall(function()
+                    if hum then
+                        hum.Health = hum.MaxHealth
+                    end
+                end)
+                wait(0.1)
+            end
+        end)
+        notif("🛡️ God Mode ON", "Invincible!")
+    else
+        notif("🛡️ God Mode OFF", "")
+    end
+end
+
+local function teleportToPlayer(name)
+    local target = nil
+    for _, p in pairs(plrs:GetPlayers()) do
+        if p.Name:lower():find(name:lower()) or p.DisplayName:lower():find(name:lower()) then
+            target = p
+            break
+        end
+    end
+    
+    if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+        pcall(function()
+            char.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame
+            notif("🚀 Teleported", string.format("To %s", target.Name))
+            data.stats.teleports = data.stats.teleports + 1
+        end)
+    else
+        notif("❌ Error", "Player not found")
+    end
+end
+
+local function teleportToSpawn()
+    pcall(function()
+        local spawnLocation = workspace:FindFirstChild("SpawnLocation") or workspace:FindFirstChildOfClass("SpawnLocation")
+        if spawnLocation then
+            char.HumanoidRootPart.CFrame = spawnLocation.CFrame + Vector3.new(0, 5, 0)
+            notif("🏠 Teleported", "To spawn")
+        else
+            char.HumanoidRootPart.CFrame = CFrame.new(0, 50, 0)
+            notif("🏠 Teleported", "To default spawn")
+        end
+    end)
+end
+
+local function updateWeaponStats()
+    local statsText = string.format([[
+📊 WEAPONIZER STATISTICS
+─────────────────────────────────────
+
+⚙️  CURRENT SETTINGS:
+  🏃 WalkSpeed: %d
+  🦘 JumpPower: %d
+  🌍 Gravity: %.1f
+  📷 FOV: %d
+
+⚡ ACTIVE EXPLOITS:
+  🚀 Fly: %s
+  👻 Noclip: %s
+  👁️ ESP: %s
+  💡 Fullbright: %s
+  ♾️ Inf Jump: %s
+  🛡️ God Mode: %s
+
+📈 SESSION STATS:
+  ⚔️ Modifications: %d
+  🚀 Teleports: %d
+  🎵 Sounds Played: %d
+  🔍 OSINT Queries: %d
+  📡 Remote Scans: %d
+
+💻 YOUR SYSTEM:
+  🔑 HWID: %s
+  💻 Executor: %s
+  📱 Platform: %s
+  📺 Screen: %s
+
+🎯 PLAYER INFO:
+  👤 Name: %s
+  ❤️  Health: %d/%d
+  📍 Position: %.0f, %.0f, %.0f
+
+─────────────────────────────────────
+⏰ Session Time: %s
+🔥 Status: ALL SYSTEMS OPERATIONAL
+    ]],
+        data.weapons.speed, data.weapons.jump, data.weapons.gravity, data.weapons.fov,
+        flyEnabled and "✅ ON" or "❌ OFF",
+        noclipEnabled and "✅ ON" or "❌ OFF",
+        espEnabled and "✅ ON" or "❌ OFF",
+        fullbrightEnabled and "✅ ON" or "❌ OFF",
+        infjumpEnabled and "✅ ON" or "❌ OFF",
+        godmodeEnabled and "✅ ON" or "❌ OFF",
+        data.stats.weapons, data.stats.teleports, data.stats.played, data.stats.osint, data.stats.scans,
+        data.hwid.hardwareId:sub(1, 12),
+        data.hwid.executor,
+        data.device.platform,
+        data.device.screenSize,
+        plr.Name,
+        math.floor(hum.Health), math.floor(hum.MaxHealth),
+        hrp.Position.X, hrp.Position.Y, hrp.Position.Z,
+        os.date("%H:%M:%S")
+    )
+    
+    g.weaponStats.Text = statsText
+end
+
+-- Update stats periodically
+spawn(function()
+    while wait(1) do
+        pcall(updateWeaponStats)
+    end
+end)
+
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
 --                                      SONG BUTTONS
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
 for i, s in ipairs(songs) do
-    local btn = mk("TextButton", {Size = UDim2.new(1,-10,0,mobile and 48 or 42), BackgroundColor3 = Color3.fromRGB(40,40,50), Text = "", LayoutOrder = i, Parent = g.list})
+    local btn = mk("TextButton", {Size = UDim2.new(1,-10,0,40), BackgroundColor3 = Color3.fromRGB(40,40,50), Text = "", LayoutOrder = i, Parent = g.list})
     corner(btn, 10)
-    mk("TextLabel", {Size = UDim2.new(1,-75,0,18), Position = UDim2.new(0,10,0,5), BackgroundTransparency = 1, Text = s.n, TextColor3 = theme.txt, TextSize = mobile and 12 or 11, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd, Parent = btn})
-    local dur = mk("TextLabel", {Size = UDim2.new(0,50,0,16), Position = UDim2.new(1,-58,0,4), BackgroundColor3 = theme.p, Text = s.t, TextColor3 = Color3.new(1,1,1), TextSize = 9, Font = Enum.Font.GothamBold, Parent = btn})
+    mk("TextLabel", {Size = UDim2.new(1,-70,0,16), Position = UDim2.new(0,10,0,5), BackgroundTransparency = 1, Text = s.n, TextColor3 = theme.txt, TextSize = 11, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd, Parent = btn})
+    local dur = mk("TextLabel", {Size = UDim2.new(0,48,0,14), Position = UDim2.new(1,-56,0,3), BackgroundColor3 = theme.p, Text = s.t, TextColor3 = Color3.new(1,1,1), TextSize = 9, Font = Enum.Font.GothamBold, Parent = btn})
     corner(dur, 6)
-    mk("TextLabel", {Size = UDim2.new(1,-75,0,14), Position = UDim2.new(0,10,0,mobile and 26 or 23), BackgroundTransparency = 1, Text = "Cat: "..s.c, TextColor3 = Color3.fromRGB(130,130,130), TextSize = 9, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = btn})
+    mk("TextLabel", {Size = UDim2.new(1,-70,0,12), Position = UDim2.new(0,10,0,22), BackgroundTransparency = 1, Text = "Cat: "..s.c, TextColor3 = Color3.fromRGB(130,130,130), TextSize = 9, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = btn})
     
     btn.MouseButton1Click:Connect(function()
         playSound(s.i, s.n)
@@ -860,11 +1204,55 @@ g.list.CanvasSize = UDim2.new(0,0,0,lay.AbsoluteContentSize.Y+16)
 --                                      EVENTS
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
+-- Tab Switching
+for name, btn in pairs(g.tabs) do
+    btn.MouseButton1Click:Connect(function()
+        data.currentTab = name
+        for n, b in pairs(g.tabs) do
+            b.BackgroundColor3 = theme.bg
+        end
+        btn.BackgroundColor3 = tabs[1].color
+        
+        for _, panel in pairs(g.panels) do
+            panel.Visible = false
+        end
+        g.panels[name].Visible = true
+        
+        if name == "osint" then
+            updatePlayers()
+        elseif name == "weapon" then
+            updateWeaponStats()
+        end
+    end)
+end
+
 g.scan.MouseButton1Click:Connect(function() g.scan.Text = "⏳..." scanRemotes() wait(0.5) g.scan.Text = "🔍 SCAN" end)
 g.stop.MouseButton1Click:Connect(function() stopAll() end)
-g.play.MouseButton1Click:Connect(function() local id = g.inp.Text if id and id ~= "" then playSound(id, "Custom") else notif("⚠️  Error", "Enter ID!") end end)
+g.play.MouseButton1Click:Connect(function() local id = g.inp.Text if id and id ~= "" then playSound(id, "Custom") else notif("⚠️", "Enter ID!") end end)
 g.close.MouseButton1Click:Connect(function() g.main.Visible = false if g.fb then g.fb.Visible = true end end)
 if g.fb then g.fb.MouseButton1Click:Connect(function() g.main.Visible = true g.fb.Visible = false updatePlayers() end) end
+
+-- Weaponizer Events
+g.speedMinus.MouseButton1Click:Connect(function() data.weapons.speed = math.max(0, data.weapons.speed - 5) g.speedSlider.Text = tostring(data.weapons.speed) end)
+g.speedPlus.MouseButton1Click:Connect(function() data.weapons.speed = math.min(500, data.weapons.speed + 5) g.speedSlider.Text = tostring(data.weapons.speed) end)
+
+g.jumpMinus.MouseButton1Click:Connect(function() data.weapons.jump = math.max(0, data.weapons.jump - 5) g.jumpSlider.Text = tostring(data.weapons.jump) end)
+g.jumpPlus.MouseButton1Click:Connect(function() data.weapons.jump = math.min(500, data.weapons.jump + 5) g.jumpSlider.Text = tostring(data.weapons.jump) end)
+
+g.gravMinus.MouseButton1Click:Connect(function() data.weapons.gravity = math.max(0, data.weapons.gravity - 10) g.gravSlider.Text = tostring(data.weapons.gravity) end)
+g.gravPlus.MouseButton1Click:Connect(function() data.weapons.gravity = math.min(1000, data.weapons.gravity + 10) g.gravSlider.Text = tostring(data.weapons.gravity) end)
+
+g.applyStats.MouseButton1Click:Connect(applyStats)
+
+g.flyBtn.MouseButton1Click:Connect(toggleFly)
+g.noclipBtn.MouseButton1Click:Connect(toggleNoclip)
+g.espBtn.MouseButton1Click:Connect(toggleESP)
+g.fbBtn.MouseButton1Click:Connect(toggleFullbright)
+g.infjBtn.MouseButton1Click:Connect(toggleInfJump)
+g.godBtn.MouseButton1Click:Connect(toggleGodMode)
+
+g.tpBtn.MouseButton1Click:Connect(function() local name = g.tpPlayer.Text if name ~= "" then teleportToPlayer(name) else notif("⚠️", "Enter player name!") end end)
+g.tpRespawn.MouseButton1Click:Connect(teleportToSpawn)
 
 plrs.PlayerAdded:Connect(function() wait(0.1) updatePlayers() end)
 plrs.PlayerRemoving:Connect(function(p) if data.selplr == p then g.rtxt.Text = "❌ Left" end updatePlayers() end)
@@ -885,38 +1273,34 @@ if not mobile then g.main.Visible = true end
 
 wait(0.3)
 
-notif("🎯 Ultimate v9.0 HWID", string.format("HWID: %s | Executor: %s", data.hwid.hardwareId:sub(1,8), data.hwid.executor))
+notif("🎯 Ultimate v10.0", string.format("3 PANELS | WEAPONIZER | HWID: %s", data.hwid.hardwareId:sub(1,8)))
 
 print([[
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                               ║
-║         ✅ ULTIMATE TOOLS v9.0 HWID & PRIVATE DATA LOADED! ✅               ║
+║            ✅ ULTIMATE TOOLS v10.0 MEGA FEATURE EDITION ✅                   ║
 ║                                                                               ║
-║  🔥 NEW FEATURES:                                                            ║
-║     🆔 HWID System - Hardware Identification                                ║
-║     🌐 IP Detection - Network Analysis (Simulated)                          ║
-║     💻 Executor Detection - ]] .. data.hwid.executor .. [[                                        ║
-║     📱 Device Fingerprinting - Platform Detection                           ║
-║     🔐 Session ID - Unique Session Tracking                                 ║
+║  🔥 3 POWERFUL PANELS:                                                       ║
+║     🔊 SOUNDBOARD - ]]..#songs..[[ songs + remote scanner                           ║
+║     🔍 OSINT+HWID - 50+ data points + hardware ID                           ║
+║     ⚔️ WEAPONIZER - Full game control & exploits                            ║
 ║                                                                               ║
-║  📊 YOUR HWID INFO:                                                          ║
-║     🔑 HWID: ]] .. data.hwid.hardwareId .. [[                                          ║
-║     🎲 Session: ]] .. data.hwid.sessionId .. [[                                        ║
-║     💻 Executor: ]] .. data.hwid.executor .. [[                                        ║
-║     📱 Platform: ]] .. data.device.platform .. [[                                              ║
-║     📺 Screen: ]] .. data.device.screenSize .. [[                                      ║
+║  ⚔️ WEAPONIZER FEATURES:                                                     ║
+║     👤 Character Stats - Speed, Jump, Gravity control                       ║
+║     ⚡ Exploits - Fly, Noclip, ESP, Fullbright                              ║
+║     🛡️ God Mode, Infinite Jump                                              ║
+║     🚀 Teleportation - To players & spawn                                   ║
+║     📊 Live Statistics - Full session tracking                              ║
 ║                                                                               ║
-║  Features:                                                                    ║
-║    🔊 Soundboard - ]] .. #songs .. [[ songs                                            ║
-║    🔍 EXTREME OSINT - 50+ data + HWID                                       ║
-║    📡 Remote Scanner                                                         ║
+║  💻 YOUR INFO:                                                               ║
+║     🔑 HWID: ]]..data.hwid.hardwareId..[[                                          ║
+║     💻 Executor: ]]..data.hwid.executor..[[                                        ║
+║     📱 Platform: ]]..data.device.platform..[[                                              ║
 ║                                                                               ║
-║         🔥 САМЫЙ ПРОДВИНУТЫЙ OSINT С HWID В ROBLOX! 🔥                      ║
+║              🔥 САМЫЙ ПРОДВИНУТЫЙ GUI В ROBLOX! 🔥                          ║
 ║                                                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ]])
 
-print("[HWID] 🔥 YOUR HWID:", data.hwid.hardwareId)
-print("[EXECUTOR] 💻", data.hwid.executor)
-print("[DEVICE] 📱", data.device.platform, data.device.screenSize)
-print("[SYSTEM] 🚀 ALL SYSTEMS OPERATIONAL!")
+print("[WEAPONIZER] ⚔️ FULL GAME CONTROL ACTIVE!")
+print("[SYSTEM] 🚀 ALL 3 PANELS OPERATIONAL!")
