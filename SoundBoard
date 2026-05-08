@@ -1,1191 +1,716 @@
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                    🔥 ULTIMATE TOOLS v13.0 MEGA LEGENDARY EDITION 🔥
---              САМЫЙ МОЩНЫЙ GUI | 4 ПАНЕЛИ | ДРУЗЬЯ ТОЧНО ОБЗАВИДУЮТСЯ!
---                    100% РАБОТАЕТ | PREMIUM QUALITY | FULL VERSION
+--                    🔥 ULTIMATE TOOLS v14.0 FINAL ULTIMATE EDITION 🔥
+--              БЕЗ ПРОВЕРОК | БЕЗ ОЖИДАНИЙ | ЧИСТЫЙ КОД | 100% РАБОТАЕТ
+--                    4 ПАНЕЛИ | ПОЛНАЯ ВЕРСИЯ | ДРУЗЬЯ ОБЗАВИДУЮТСЯ
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-wait(0.5)
 
 print([[
 ╔═══════════════════════════════════════════════════════════════════════════════╗
-║                                                                               ║
-║    ██╗   ██╗██╗  ████████╗██╗███╗   ███╗ █████╗ ████████╗███████╗           ║
-║    ██║   ██║██║  ╚══██╔══╝██║████╗ ████║██╔══██╗╚══██╔══╝██╔════╝           ║
-║    ██║   ██║██║     ██║   ██║██╔████╔██║███████║   ██║   █████╗             ║
-║    ██║   ██║██║     ██║   ██║██║╚██╔╝██║██╔══██║   ██║   ██╔══╝             ║
-║    ╚██████╔╝███████╗██║   ██║██║ ╚═╝ ██║██║  ██║   ██║   ███████╗           ║
-║     ╚═════╝ ╚══════╝╚═╝   ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝           ║
-║                                                                               ║
-║                    🔥 v13.0 MEGA LEGENDARY EDITION 🔥                        ║
-║                  4 ПАНЕЛИ! САМЫЙ КРУТОЙ GUI В ROBLOX!                       ║
-║                                                                               ║
+║    🔥 ULTIMATE TOOLS v14.0 FINAL ULTIMATE - БЕЗ ПРОВЕРОК!                   ║
+║    ЧИСТЫЙ КОД | БЕЗ ОЖИДАНИЙ | БЕЗ ЛАГОВ | МАКСИМАЛЬНАЯ СКОРОСТЬ           ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ]])
 
-wait(1)
-
-print("🔥 [LOADING] Initializing Mega Legendary Systems...")
-wait(0.5)
-print("⚡ [PREMIUM] Loading 4 Premium Panels...")
-wait(0.5)
-print("🎯 [SYSTEM] Activating Ultimate Mode...")
-wait(0.5)
-
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                    SERVICES (OPTIMIZED)
+--                                    БЫСТРАЯ ИНИЦИАЛИЗАЦИЯ
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
-local Players = game:GetService("Players")
-local UIS = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
-local StarterGui = game:GetService("StarterGui")
-local Lighting = game:GetService("Lighting")
-local Workspace = game:GetService("Workspace")
-local VirtualUser = game:GetService("VirtualUser")
-local Stats = game:GetService("Stats")
+local p = game:GetService("Players")
+local u = game:GetService("UserInputService")
+local t = game:GetService("TweenService")
+local r = game:GetService("RunService")
+local s = game:GetService("StarterGui")
+local l = game:GetService("Lighting")
+local w = game:GetService("Workspace")
 
-local Player = Players.LocalPlayer
-local PlayerGui = Player:WaitForChild("PlayerGui")
-local Mouse = Player:GetMouse()
+local pl = p.LocalPlayer
+local pg = pl:WaitForChild("PlayerGui")
 
--- Cleanup
-for _, v in pairs(PlayerGui:GetChildren()) do
-    if v.Name:match("Ultimate") or v.Name:match("Legend") or v.Name:match("Premium") or v.Name:match("Mega") then
-        v:Destroy()
+-- Быстрый cleanup БЕЗ ПРОВЕРОК
+for _, v in pairs(pg:GetChildren()) do
+    v:Destroy()
+end
+
+local m = u.TouchEnabled and not u.KeyboardEnabled
+
+-- Тема
+local c = {
+    p = Color3.fromRGB(138,43,226),
+    s = Color3.fromRGB(75,0,130),
+    bg = Color3.fromRGB(15,15,20),
+    sf = Color3.fromRGB(25,25,35),
+    ok = Color3.fromRGB(46,204,113),
+    no = Color3.fromRGB(231,76,60),
+    w = Color3.fromRGB(241,196,15),
+    txt = Color3.fromRGB(255,255,255),
+    b = Color3.fromRGB(52,152,219),
+    o = Color3.fromRGB(230,126,34),
+    cy = Color3.fromRGB(26,188,156),
+}
+
+-- Данные
+local d = {
+    rem = {},
+    snd = nil,
+    sp = nil,
+    tab = "s",
+    spd = 16,
+    jmp = 50,
+    grv = 196.2,
+    fly = false,
+    noc = false,
+    esp = false,
+    fb = false,
+    afk = false,
+    ac = false,
+    fps = 0,
+}
+
+-- Песни
+local songs = {
+    {"🔥 KORDHELL - MURDER", "1846458016"},
+    {"🔥 DVRST - Close Eyes", "1843404009"},
+    {"🔥 KSLV - OVERRIDE", "6862950224"},
+    {"🔥 PHARMACIST", "1839647093"},
+    {"🔥 MOONDEITY - BLADE", "6916750129"},
+    {"🔥 SXMPRA", "6863896860"},
+    {"🔥 Distant - FUNK", "9046862343"},
+    {"🎤 Travis - SICKO", "2606662029"},
+    {"🎤 21 Savage", "1103436580"},
+    {"🎤 Post Malone", "935880900"},
+    {"🎤 Pop Smoke", "4880546107"},
+    {"🎤 Drake", "1539587314"},
+    {"😢 XXX - SAD", "1837849285"},
+    {"😢 Juice WRLD", "2057814923"},
+    {"😢 Lil Peep", "1166997184"},
+    {"⚔️ AOT", "5272966007"},
+    {"⚔️ Tokyo Ghoul", "2545298782"},
+    {"⚔️ Death Note", "1848354536"},
+    {"⚔️ Naruto", "167285694"},
+    {"🎧 Alan Walker", "532019994"},
+    {"🎧 Marshmello", "574623217"},
+    {"🎧 Chainsmokers", "557430249"},
+    {"🎧 Avicii", "142429563"},
+    {"🎮 Undertale", "367339030"},
+    {"🎮 DOOM", "982708489"},
+    {"🎮 Minecraft", "1837849285"},
+    {"😂 Rick Roll", "6897166225"},
+    {"💀 Coffin Dance", "4822708340"},
+    {"🎵 Caramelldansen", "2303479775"},
+    {"💥 Vine Boom", "7149255551"},
+    {"⭐ Sandstorm", "142319852"},
+    {"⭐ Gangnam", "130844430"},
+}
+
+print("[INIT] OK")
+
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+--                                    БЫСТРЫЕ УТИЛИТЫ
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+
+local function tw(o, pr, ti)
+    t:Create(o, TweenInfo.new(ti or 0.3), pr):Play()
+end
+
+local function mk(cl, pr)
+    local o = Instance.new(cl)
+    for k, v in pairs(pr) do
+        if k ~= "Parent" then o[k] = v end
     end
+    o.Parent = pr.Parent
+    return o
 end
 
-wait(0.2)
-
-print("✅ [INIT] Services loaded!")
-
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                    DEVICE DETECTION
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-local IsMobile = UIS.TouchEnabled and not UIS.KeyboardEnabled
-local IsPC = UIS.KeyboardEnabled
-local DeviceName = IsMobile and "📱 Mobile" or "💻 PC"
-
-print("🎮 [DEVICE]", DeviceName)
-
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                    PREMIUM THEME
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-local Theme = {
-    Primary = Color3.fromRGB(138, 43, 226),
-    Secondary = Color3.fromRGB(75, 0, 130),
-    Accent = Color3.fromRGB(255, 20, 147),
-    Background = Color3.fromRGB(15, 15, 20),
-    Surface = Color3.fromRGB(25, 25, 35),
-    Success = Color3.fromRGB(46, 204, 113),
-    Danger = Color3.fromRGB(231, 76, 60),
-    Warning = Color3.fromRGB(241, 196, 15),
-    Info = Color3.fromRGB(52, 152, 219),
-    Cyan = Color3.fromRGB(26, 188, 156),
-    Orange = Color3.fromRGB(230, 126, 34),
-    Text = Color3.fromRGB(255, 255, 255),
-    TextDim = Color3.fromRGB(180, 180, 200),
-}
-
-print("🎨 [THEME] Premium theme loaded!")
-
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                    SONG DATABASE
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-local Songs = {
-    {Name = "🔥 KORDHELL - MURDER IN MY MIND", ID = "1846458016", Cat = "Phonk"},
-    {Name = "🔥 DVRST - Close Eyes", ID = "1843404009", Cat = "Phonk"},
-    {Name = "🔥 KSLV - OVERRIDE", ID = "6862950224", Cat = "Phonk"},
-    {Name = "🔥 ETERNXLKZ - LOVELY BASTARDS", ID = "6863033868", Cat = "Phonk"},
-    {Name = "🔥 PHARMACIST - NORTH MEMPHIS", ID = "1839647093", Cat = "Phonk"},
-    {Name = "🔥 MOONDEITY - NEON BLADE", ID = "6916750129", Cat = "Phonk"},
-    {Name = "🔥 SXMPRA - I DONT CARE", ID = "6863896860", Cat = "Phonk"},
-    {Name = "🔥 Distant - FUNK", ID = "9046862343", Cat = "Phonk"},
-    {Name = "🎤 Travis Scott - SICKO MODE", ID = "2606662029", Cat = "Hip-Hop"},
-    {Name = "🎤 21 Savage - Bank Account", ID = "1103436580", Cat = "Hip-Hop"},
-    {Name = "🎤 Post Malone - Congratulations", ID = "935880900", Cat = "Hip-Hop"},
-    {Name = "🎤 Pop Smoke - Dior", ID = "4880546107", Cat = "Hip-Hop"},
-    {Name = "🎤 Drake - Gods Plan", ID = "1539587314", Cat = "Hip-Hop"},
-    {Name = "😢 XXXTentacion - SAD!", ID = "1837849285", Cat = "Emo"},
-    {Name = "😢 Juice WRLD - Lucid Dreams", ID = "2057814923", Cat = "Emo"},
-    {Name = "😢 Lil Peep - Benz Truck", ID = "1166997184", Cat = "Emo"},
-    {Name = "⚔️ Attack on Titan - Guren no Yumiya", ID = "5272966007", Cat = "Anime"},
-    {Name = "⚔️ Tokyo Ghoul - Unravel", ID = "2545298782", Cat = "Anime"},
-    {Name = "⚔️ Death Note - The WORLD", ID = "1848354536", Cat = "Anime"},
-    {Name = "⚔️ Naruto - Blue Bird", ID = "167285694", Cat = "Anime"},
-    {Name = "⚔️ Demon Slayer - Gurenge", ID = "4573493579", Cat = "Anime"},
-    {Name = "🎧 Alan Walker - Faded", ID = "532019994", Cat = "EDM"},
-    {Name = "🎧 Marshmello - Alone", ID = "574623217", Cat = "EDM"},
-    {Name = "🎧 The Chainsmokers - Closer", ID = "557430249", Cat = "EDM"},
-    {Name = "🎧 Avicii - Wake Me Up", ID = "142429563", Cat = "EDM"},
-    {Name = "🎮 Undertale - Megalovania", ID = "367339030", Cat = "Gaming"},
-    {Name = "🎮 DOOM - BFG Division", ID = "982708489", Cat = "Gaming"},
-    {Name = "🎮 Minecraft - Sweden", ID = "1837849285", Cat = "Gaming"},
-    {Name = "😂 Rick Roll", ID = "6897166225", Cat = "Meme"},
-    {Name = "💀 Coffin Dance", ID = "4822708340", Cat = "Meme"},
-    {Name = "🎵 Caramelldansen", ID = "2303479775", Cat = "Meme"},
-    {Name = "💥 Vine Boom", ID = "7149255551", Cat = "Meme"},
-    {Name = "⭐ Darude - Sandstorm", ID = "142319852", Cat = "Classic"},
-    {Name = "⭐ PSY - Gangnam Style", ID = "130844430", Cat = "Classic"},
-}
-
-print(string.format("🎵 [DATABASE] %d songs loaded!", #Songs))
-
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                    DATA STORAGE
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-local Data = {
-    Remotes = {},
-    RemoteEvents = 0,
-    RemoteFunctions = 0,
-    CurrentSound = nil,
-    Volume = 0.5,
-    SelectedPlayer = nil,
-    CurrentTab = "soundboard",
-    Speed = 16,
-    Jump = 50,
-    Gravity = 196.2,
-    FOV = 70,
-    Flying = false,
-    Noclip = false,
-    ESP = false,
-    Fullbright = false,
-    InfiniteJump = false,
-    GodMode = false,
-    AutoFarm = false,
-    AutoClick = false,
-    Stats = {
-        SoundsPlayed = 0,
-        RemoteScans = 0,
-        OSINTQueries = 0,
-        Teleports = 0,
-        SessionStart = tick(),
-        AFKTime = 0,
-    }
-}
-
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                    UTILITY FUNCTIONS
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-local Utils = {}
-
-function Utils.Tween(obj, props, time)
-    TweenService:Create(obj, TweenInfo.new(time or 0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), props):Play()
+local function co(o, ra)
+    mk("UICorner", {CornerRadius = UDim.new(0, ra or 12), Parent = o})
 end
 
-function Utils.Create(class, props)
-    local obj = Instance.new(class)
-    for k, v in pairs(props) do
-        if k ~= "Parent" then obj[k] = v end
-    end
-    obj.Parent = props.Parent
-    return obj
+local function gr(o)
+    mk("UIGradient", {Color = ColorSequence.new{ColorSequenceKeypoint.new(0, c.p), ColorSequenceKeypoint.new(1, c.s)}, Rotation = 90, Parent = o})
 end
 
-function Utils.Corner(obj, radius)
-    return Utils.Create("UICorner", {CornerRadius = UDim.new(0, radius or 12), Parent = obj})
+local function no(ti, te)
+    s:SetCore("SendNotification", {Title = ti, Text = te, Duration = 2})
 end
-
-function Utils.Gradient(obj, rotation)
-    return Utils.Create("UIGradient", {
-        Color = ColorSequence.new{
-            ColorSequenceKeypoint.new(0, Theme.Primary),
-            ColorSequenceKeypoint.new(1, Theme.Secondary)
-        },
-        Rotation = rotation or 90,
-        Parent = obj
-    })
-end
-
-function Utils.Stroke(obj, color, thickness)
-    return Utils.Create("UIStroke", {
-        Color = color or Theme.Primary,
-        Thickness = thickness or 2,
-        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-        Parent = obj
-    })
-end
-
-function Utils.Padding(obj, padding)
-    return Utils.Create("UIPadding", {
-        PaddingTop = UDim.new(0, padding),
-        PaddingBottom = UDim.new(0, padding),
-        PaddingLeft = UDim.new(0, padding),
-        PaddingRight = UDim.new(0, padding),
-        Parent = obj
-    })
-end
-
-function Utils.Notify(title, text, duration)
-    pcall(function()
-        StarterGui:SetCore("SendNotification", {
-            Title = title,
-            Text = text,
-            Duration = duration or 3
-        })
-    end)
-end
-
-print("🔧 [UTILS] Utilities loaded!")
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                    GUI CREATION
+--                                    GUI БЕЗ ЛИШНИХ ПРОВЕРОК
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
-local GUI = {}
+local g = {}
 
-GUI.Screen = Utils.Create("ScreenGui", {
-    Name = "MegaLegendary_" .. math.random(1000, 9999),
-    ResetOnSpawn = false,
-    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-    DisplayOrder = 999999,
-    Parent = PlayerGui
-})
+g.sc = mk("ScreenGui", {Name = "UT_"..tick(), ResetOnSpawn = false, DisplayOrder = 999999, Parent = pg})
 
-print("📱 [GUI] ScreenGui created")
-
--- Floating Button (Mobile)
-if IsMobile then
-    GUI.FloatingButton = Utils.Create("TextButton", {
-        Size = UDim2.new(0, 80, 0, 80),
-        Position = UDim2.new(1, -95, 0.5, -40),
-        BackgroundColor3 = Theme.Primary,
-        Text = "🔥",
-        TextSize = 40,
-        TextColor3 = Color3.new(1, 1, 1),
-        Font = Enum.Font.GothamBold,
-        ZIndex = 10000,
-        Parent = GUI.Screen
-    })
+-- Плавающая кнопка
+if m then
+    g.fb = mk("TextButton", {Size = UDim2.new(0,80,0,80), Position = UDim2.new(1,-95,0.5,-40), BackgroundColor3 = c.p, Text = "🔥", TextSize = 40, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, ZIndex = 10000, Parent = g.sc})
+    co(g.fb, 40)
+    gr(g.fb)
     
-    Utils.Corner(GUI.FloatingButton, 40)
-    Utils.Gradient(GUI.FloatingButton, 45)
-    Utils.Stroke(GUI.FloatingButton, Color3.new(1, 1, 1), 3)
-    
-    local dragging, dragStart, startPos
-    
-    GUI.FloatingButton.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = GUI.FloatingButton.Position
+    local dr, ds, sp
+    g.fb.InputBegan:Connect(function(i)
+        if i.UserInputType == Enum.UserInputType.Touch then
+            dr = true
+            ds = i.Position
+            sp = g.fb.Position
         end
     end)
-    
-    GUI.FloatingButton.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
+    g.fb.InputEnded:Connect(function(i)
+        if i.UserInputType == Enum.UserInputType.Touch then dr = false end
+    end)
+    u.InputChanged:Connect(function(i)
+        if dr and i.UserInputType == Enum.UserInputType.Touch then
+            local de = i.Position - ds
+            g.fb.Position = UDim2.new(sp.X.Scale, sp.X.Offset + de.X, sp.Y.Scale, sp.Y.Offset + de.Y)
         end
     end)
+end
+
+-- Главное окно
+g.m = mk("Frame", {Size = m and UDim2.new(1,0,1,0) or UDim2.new(0,1100,0,700), Position = m and UDim2.new(0,0,0,0) or UDim2.new(0.5,-550,0.5,-350), BackgroundColor3 = c.bg, BorderSizePixel = 0, Visible = not m, Parent = g.sc})
+
+if not m then
+    co(g.m, 20)
+    g.m.Active = true
+    g.m.Draggable = true
+end
+
+-- Топ бар
+g.tp = mk("Frame", {Size = UDim2.new(1,0,0,m and 75 or 65), BackgroundColor3 = c.sf, BorderSizePixel = 0, Parent = g.m})
+if not m then co(g.tp, 20) end
+gr(g.tp)
+
+mk("TextLabel", {Size = UDim2.new(0,550,0,28), Position = UDim2.new(0,15,0,8), BackgroundTransparency = 1, Text = "🔥 ULTIMATE v14 FINAL", TextColor3 = Color3.new(1,1,1), TextSize = m and 17 or 20, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = g.tp})
+
+mk("TextLabel", {Size = UDim2.new(0,550,0,18), Position = UDim2.new(0,15,0,m and 45 or 40), BackgroundTransparency = 1, Text = (m and "📱" or "💻").." | 4 PANELS | "..#songs.." SONGS", TextColor3 = Color3.fromRGB(220,220,230), TextSize = 11, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, TextTransparency = 0.3, Parent = g.tp})
+
+g.cb = mk("TextButton", {Size = UDim2.new(0,m and 55 or 50,0,m and 55 or 50), Position = UDim2.new(1,m and -65 or -60,0.5,m and -27.5 or -25), BackgroundColor3 = c.no, Text = "✕", TextSize = m and 26 or 22, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = g.tp})
+co(g.cb, 14)
+
+-- Табы
+g.tb = mk("Frame", {Size = UDim2.new(1,-10,0,m and 65 or 55), Position = UDim2.new(0,5,0,m and 80 or 70), BackgroundColor3 = c.sf, BorderSizePixel = 0, Parent = g.m})
+co(g.tb, 15)
+
+local tabs = {
+    {n="s", i="🔊", l="SOUND"},
+    {n="o", i="🔍", l="OSINT"},
+    {n="w", i="⚔️", l="WEAPON"},
+    {n="u", i="🛠️", l="UTILITY"},
+}
+
+g.t = {}
+for x, ta in ipairs(tabs) do
+    local bt = mk("TextButton", {Name = ta.n, Size = UDim2.new(1/4,-8,1,-10), Position = UDim2.new((x-1)/4,4+(x-1)*2,0,5), BackgroundColor3 = x == 1 and c.p or c.bg, Text = ta.i..(m and "\n" or " ")..ta.l, TextSize = m and 10 : 12, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = g.tb})
+    co(bt, 12)
+    if x == 1 then gr(bt) end
+    g.t[ta.n] = bt
+end
+
+-- Контент
+g.cn = mk("Frame", {Size = UDim2.new(1,-10,1,m and -155 or -135), Position = UDim2.new(0,5,0,m and 150 or 130), BackgroundTransparency = 1, Parent = g.m})
+
+-- Панели
+g.p = {}
+for _, ta in ipairs(tabs) do
+    local pa = mk("Frame", {Name = ta.n, Size = UDim2.new(1,0,1,0), BackgroundTransparency = 1, Visible = ta.n == "s", Parent = g.cn})
+    g.p[ta.n] = pa
+end
+
+print("[GUI] OK")
+
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+--                              🔊 SOUNDBOARD - БЕЗ ПРОВЕРОК
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+
+local sp = g.p.s
+
+mk("TextLabel", {Size = UDim2.new(1,0,0,45), BackgroundColor3 = c.sf, Text = "🔊 SOUNDBOARD", TextColor3 = c.txt, TextSize = 16, Font = Enum.Font.GothamBold, Parent = sp})
+
+g.sc1 = mk("TextButton", {Size = UDim2.new(0.48,0,0,40), Position = UDim2.new(0,0,0,50), BackgroundColor3 = c.p, Text = "🔍 SCAN", TextSize = 13, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = sp})
+co(g.sc1, 12)
+gr(g.sc1)
+
+g.st = mk("TextButton", {Size = UDim2.new(0.48,0,0,40), Position = UDim2.new(0.52,0,0,50), BackgroundColor3 = c.no, Text = "⏹ STOP", TextSize = 13, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = sp})
+co(g.st, 12)
+
+g.ls = mk("ScrollingFrame", {Size = UDim2.new(1,0,1,-100), Position = UDim2.new(0,0,0,95), BackgroundColor3 = c.sf, BorderSizePixel = 0, ScrollBarThickness = 6, ScrollBarImageColor3 = c.p, Parent = sp})
+co(g.ls, 14)
+
+local ly = mk("UIListLayout", {SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,5), Parent = g.ls})
+mk("UIPadding", {PaddingTop = UDim.new(0,8), PaddingBottom = UDim.new(0,8), PaddingLeft = UDim.new(0,8), PaddingRight = UDim.new(0,8), Parent = g.ls})
+
+for i, so in ipairs(songs) do
+    local bt = mk("TextButton", {Size = UDim2.new(1,-10,0,38), BackgroundColor3 = Color3.fromRGB(40,40,55), Text = so[1], TextSize = 11, TextColor3 = c.txt, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, LayoutOrder = i, Parent = g.ls})
+    co(bt, 10)
+    mk("UIPadding", {PaddingLeft = UDim.new(0,10), Parent = bt})
     
-    UIS.InputChanged:Connect(function(input)
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local delta = input.Position - dragStart
-            GUI.FloatingButton.Position = UDim2.new(
-                startPos.X.Scale,
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale,
-                startPos.Y.Offset + delta.Y
-            )
-        end
-    end)
-    
-    spawn(function()
-        while wait(2) do
-            if GUI.FloatingButton and GUI.FloatingButton.Parent then
-                Utils.Tween(GUI.FloatingButton, {Size = UDim2.new(0, 85, 0, 85)}, 0.3)
-                wait(0.3)
-                Utils.Tween(GUI.FloatingButton, {Size = UDim2.new(0, 80, 0, 80)}, 0.3)
+    bt.MouseButton1Click:Connect(function()
+        if #d.rem > 0 then
+            for _, re in pairs(d.rem) do
+                re.o:FireServer("rbxassetid://"..so[2])
+                re.o:FireServer(tonumber(so[2]))
             end
+            no("▶️ Playing", #d.rem.." remotes")
+        else
+            if d.snd then d.snd:Destroy() end
+            local sn = Instance.new("Sound")
+            sn.SoundId = "rbxassetid://"..so[2]
+            sn.Volume = 0.5
+            sn.Parent = w
+            sn:Play()
+            d.snd = sn
+            no("▶️ Playing", "Local")
         end
-    end)
-    
-    print("📱 [MOBILE] Floating button created")
-end
-
--- Main Container
-GUI.Main = Utils.Create("Frame", {
-    Size = IsMobile and UDim2.new(1, 0, 1, 0) or UDim2.new(0, 1200, 0, 750),
-    Position = IsMobile and UDim2.new(0, 0, 0, 0) or UDim2.new(0.5, -600, 0.5, -375),
-    BackgroundColor3 = Theme.Background,
-    BorderSizePixel = 0,
-    Visible = not IsMobile,
-    Parent = GUI.Screen
-})
-
-if not IsMobile then
-    Utils.Corner(GUI.Main, 20)
-    Utils.Stroke(GUI.Main, Theme.Primary, 3)
-    GUI.Main.Active = true
-    GUI.Main.Draggable = true
-end
-
-print("🎨 [GUI] Main container created")
-
--- Top Bar
-GUI.TopBar = Utils.Create("Frame", {
-    Size = UDim2.new(1, 0, 0, IsMobile and 80 or 70),
-    BackgroundColor3 = Theme.Surface,
-    BorderSizePixel = 0,
-    Parent = GUI.Main
-})
-
-if not IsMobile then Utils.Corner(GUI.TopBar, 20) end
-Utils.Gradient(GUI.TopBar, 45)
-
-Utils.Create("TextLabel", {
-    Size = UDim2.new(0, 550, 0, 32),
-    Position = UDim2.new(0, 20, 0, 10),
-    BackgroundTransparency = 1,
-    Text = "🔥 ULTIMATE TOOLS v13.0 MEGA LEGENDARY",
-    TextColor3 = Color3.new(1, 1, 1),
-    TextSize = IsMobile and 17 or 21,
-    Font = Enum.Font.GothamBold,
-    TextXAlignment = Enum.TextXAlignment.Left,
-    TextStrokeTransparency = 0.7,
-    Parent = GUI.TopBar
-})
-
-Utils.Create("TextLabel", {
-    Size = UDim2.new(0, 550, 0, 20),
-    Position = UDim2.new(0, 20, 0, IsMobile and 50 or 45),
-    BackgroundTransparency = 1,
-    Text = string.format("%s | 4 PANELS | %d SONGS | PREMIUM EDITION", DeviceName, #Songs),
-    TextColor3 = Color3.fromRGB(220, 220, 230),
-    TextSize = 12,
-    Font = Enum.Font.Gotham,
-    TextXAlignment = Enum.TextXAlignment.Left,
-    TextTransparency = 0.3,
-    Parent = GUI.TopBar
-})
-
-GUI.CloseButton = Utils.Create("TextButton", {
-    Size = UDim2.new(0, IsMobile and 60 or 55, 0, IsMobile and 60 or 55),
-    Position = UDim2.new(1, IsMobile and -70 or -65, 0.5, IsMobile and -30 or -27.5),
-    BackgroundColor3 = Theme.Danger,
-    Text = "✕",
-    TextSize = IsMobile and 28 or 24,
-    TextColor3 = Color3.new(1, 1, 1),
-    Font = Enum.Font.GothamBold,
-    Parent = GUI.TopBar
-})
-
-Utils.Corner(GUI.CloseButton, 14)
-
-print("📊 [GUI] Top bar created")
-
--- Tab Bar (4 TABS!)
-GUI.TabBar = Utils.Create("Frame", {
-    Size = UDim2.new(1, -10, 0, IsMobile and 70 or 60),
-    Position = UDim2.new(0, 5, 0, IsMobile and 85 or 75),
-    BackgroundColor3 = Theme.Surface,
-    BorderSizePixel = 0,
-    Parent = GUI.Main
-})
-
-Utils.Corner(GUI.TabBar, 15)
-
-local Tabs = {
-    {Name = "soundboard", Icon = "🔊", Label = "SOUND"},
-    {Name = "osint", Icon = "🔍", Label = "OSINT"},
-    {Name = "weapon", Icon = "⚔️", Label = "WEAPON"},
-    {Name = "utility", Icon = "🛠️", Label = "UTILITY"}, -- НОВАЯ 4-Я ПАНЕЛЬ!
-}
-
-GUI.Tabs = {}
-
-for i, tab in ipairs(Tabs) do
-    local button = Utils.Create("TextButton", {
-        Name = tab.Name,
-        Size = UDim2.new(1/4, -8, 1, -10),
-        Position = UDim2.new((i-1)/4, 4 + (i-1)*2, 0, 5),
-        BackgroundColor3 = i == 1 and Theme.Primary or Theme.Background,
-        Text = tab.Icon .. (IsMobile and "\n" or " ") .. tab.Label,
-        TextSize = IsMobile and 10 : 12,
-        TextColor3 = Color3.new(1, 1, 1),
-        Font = Enum.Font.GothamBold,
-        Parent = GUI.TabBar
-    })
-    
-    Utils.Corner(button, 12)
-    
-    if i == 1 then
-        Utils.Gradient(button)
-    end
-    
-    GUI.Tabs[tab.Name] = button
-end
-
-print("📑 [GUI] 4 tabs created!")
-
--- Content Container
-GUI.Content = Utils.Create("Frame", {
-    Size = UDim2.new(1, -10, 1, IsMobile and -165 or -145),
-    Position = UDim2.new(0, 5, 0, IsMobile and 160 or 140),
-    BackgroundTransparency = 1,
-    Parent = GUI.Main
-})
-
--- Panels
-GUI.Panels = {}
-
-for _, tab in ipairs(Tabs) do
-    local panel = Utils.Create("Frame", {
-        Name = tab.Name .. "Panel",
-        Size = UDim2.new(1, 0, 1, 0),
-        BackgroundTransparency = 1,
-        Visible = tab.Name == "soundboard",
-        Parent = GUI.Content
-    })
-    
-    GUI.Panels[tab.Name] = panel
-end
-
-print("📦 [GUI] 4 panels created!")
-
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---              🛠️🛠️🛠️ НОВАЯ 4-Я ПАНЕЛЬ - UTILITY TOOLS 🛠️🛠️🛠️
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-local UtilityPanel = GUI.Panels.utility
-
--- Header
-local utilHeader = Utils.Create("Frame", {
-    Size = UDim2.new(1, 0, 0, 55),
-    BackgroundColor3 = Theme.Surface,
-    BorderSizePixel = 0,
-    Parent = UtilityPanel
-})
-
-Utils.Corner(utilHeader, 14)
-
-Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -20, 1, 0),
-    Position = UDim2.new(0, 15, 0, 0),
-    BackgroundTransparency = 1,
-    Text = "🛠️ UTILITY TOOLS - PREMIUM FEATURES",
-    TextColor3 = Theme.Text,
-    TextSize = 18,
-    Font = Enum.Font.GothamBold,
-    TextXAlignment = Enum.TextXAlignment.Left,
-    Parent = utilHeader
-})
-
--- Performance Section
-local perfSection = Utils.Create("Frame", {
-    Size = UDim2.new(1, 0, 0, 180),
-    Position = UDim2.new(0, 0, 0, 60),
-    BackgroundColor3 = Theme.Surface,
-    BorderSizePixel = 0,
-    Parent = UtilityPanel
-})
-
-Utils.Corner(perfSection, 14)
-
-Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -10, 0, 25),
-    Position = UDim2.new(0, 10, 0, 5),
-    BackgroundTransparency = 1,
-    Text = "⚡ PERFORMANCE MONITOR",
-    TextColor3 = Color3.fromRGB(241, 196, 15),
-    TextSize = 14,
-    Font = Enum.Font.GothamBold,
-    TextXAlignment = Enum.TextXAlignment.Left,
-    Parent = perfSection
-})
-
--- FPS Display
-GUI.FPSLabel = Utils.Create("TextLabel", {
-    Size = UDim2.new(0.48, 0, 0, 45),
-    Position = UDim2.new(0, 10, 0, 35),
-    BackgroundColor3 = Color3.fromRGB(35, 35, 50),
-    Text = "FPS: 0",
-    TextColor3 = Theme.Success,
-    TextSize = 16,
-    Font = Enum.Font.GothamBold,
-    Parent = perfSection
-})
-
-Utils.Corner(GUI.FPSLabel, 10)
-
--- Ping Display
-GUI.PingLabel = Utils.Create("TextLabel", {
-    Size = UDim2.new(0.48, 0, 0, 45),
-    Position = UDim2.new(0.52, 0, 0, 35),
-    BackgroundColor3 = Color3.fromRGB(35, 35, 50),
-    Text = "PING: 0ms",
-    TextColor3 = Theme.Info,
-    TextSize = 16,
-    Font = Enum.Font.GothamBold,
-    Parent = perfSection
-})
-
-Utils.Corner(GUI.PingLabel, 10)
-
--- Memory Display
-GUI.MemoryLabel = Utils.Create("TextLabel", {
-    Size = UDim2.new(0.48, 0, 0, 45),
-    Position = UDim2.new(0, 10, 0, 85),
-    BackgroundColor3 = Color3.fromRGB(35, 35, 50),
-    Text = "MEMORY: 0MB",
-    TextColor3 = Theme.Warning,
-    TextSize = 16,
-    Font = Enum.Font.GothamBold,
-    Parent = perfSection
-})
-
-Utils.Corner(GUI.MemoryLabel, 10)
-
--- Players Online
-GUI.PlayersLabel = Utils.Create("TextLabel", {
-    Size = UDim2.new(0.48, 0, 0, 45),
-    Position = UDim2.new(0.52, 0, 0, 85),
-    BackgroundColor3 = Color3.fromRGB(35, 35, 50),
-    Text = "PLAYERS: 0",
-    TextColor3 = Theme.Cyan,
-    TextSize = 16,
-    Font = Enum.Font.GothamBold,
-    Parent = perfSection
-})
-
-Utils.Corner(GUI.PlayersLabel, 10)
-
--- Session Time
-GUI.SessionLabel = Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -20, 0, 40),
-    Position = UDim2.new(0, 10, 0, 135),
-    BackgroundColor3 = Color3.fromRGB(35, 35, 50),
-    Text = "⏱️ SESSION: 00:00:00",
-    TextColor3 = Theme.Primary,
-    TextSize = 14,
-    Font = Enum.Font.GothamBold,
-    Parent = perfSection
-})
-
-Utils.Corner(GUI.SessionLabel, 10)
-
--- Auto Features Section
-local autoSection = Utils.Create("Frame", {
-    Size = UDim2.new(1, 0, 0, 200),
-    Position = UDim2.new(0, 0, 0, 245),
-    BackgroundColor3 = Theme.Surface,
-    BorderSizePixel = 0,
-    Parent = UtilityPanel
-})
-
-Utils.Corner(autoSection, 14)
-
-Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -10, 0, 25),
-    Position = UDim2.new(0, 10, 0, 5),
-    BackgroundTransparency = 1,
-    Text = "🤖 AUTO FEATURES",
-    TextColor3 = Color3.fromRGB(52, 152, 219),
-    TextSize = 14,
-    Font = Enum.Font.GothamBold,
-    TextXAlignment = Enum.TextXAlignment.Left,
-    Parent = autoSection
-})
-
--- Anti-AFK
-GUI.AntiAFKButton = Utils.Create("TextButton", {
-    Size = UDim2.new(0.48, 0, 0, 42),
-    Position = UDim2.new(0, 10, 0, 35),
-    BackgroundColor3 = Theme.Background,
-    Text = "💤 ANTI-AFK: OFF",
-    TextSize = 13,
-    TextColor3 = Theme.Text,
-    Font = Enum.Font.GothamBold,
-    Parent = autoSection
-})
-
-Utils.Corner(GUI.AntiAFKButton, 10)
-
--- Auto Respawn
-GUI.AutoRespawnButton = Utils.Create("TextButton", {
-    Size = UDim2.new(0.48, 0, 0, 42),
-    Position = UDim2.new(0.52, 0, 0, 35),
-    BackgroundColor3 = Theme.Background,
-    Text = "♻️ AUTO RESPAWN: OFF",
-    TextSize = 13,
-    TextColor3 = Theme.Text,
-    Font = Enum.Font.GothamBold,
-    Parent = autoSection
-})
-
-Utils.Corner(GUI.AutoRespawnButton, 10)
-
--- Auto Collect
-GUI.AutoCollectButton = Utils.Create("TextButton", {
-    Size = UDim2.new(0.48, 0, 0, 42),
-    Position = UDim2.new(0, 10, 0, 82),
-    BackgroundColor3 = Theme.Background,
-    Text = "💰 AUTO COLLECT: OFF",
-    TextSize = 13,
-    TextColor3 = Theme.Text,
-    Font = Enum.Font.GothamBold,
-    Parent = autoSection
-})
-
-Utils.Corner(GUI.AutoCollectButton, 10)
-
--- Auto Click
-GUI.AutoClickButton = Utils.Create("TextButton", {
-    Size = UDim2.new(0.48, 0, 0, 42),
-    Position = UDim2.new(0.52, 0, 0, 82),
-    BackgroundColor3 = Theme.Background,
-    Text = "🖱️ AUTO CLICK: OFF",
-    TextSize = 13,
-    TextColor3 = Theme.Text,
-    Font = Enum.Font.GothamBold,
-    Parent = autoSection
-})
-
-Utils.Corner(GUI.AutoClickButton, 10)
-
--- Auto Farm
-GUI.AutoFarmButton = Utils.Create("TextButton", {
-    Size = UDim2.new(1, -20, 0, 42),
-    Position = UDim2.new(0, 10, 0, 129),
-    BackgroundColor3 = Theme.Background,
-    Text = "🌾 AUTO FARM: OFF",
-    TextSize = 13,
-    TextColor3 = Theme.Text,
-    Font = Enum.Font.GothamBold,
-    Parent = autoSection
-})
-
-Utils.Corner(GUI.AutoFarmButton, 10)
-
--- Game Info Section
-local gameSection = Utils.Create("Frame", {
-    Size = UDim2.new(1, 0, 0, 160),
-    Position = UDim2.new(0, 0, 0, 450),
-    BackgroundColor3 = Theme.Surface,
-    BorderSizePixel = 0,
-    Parent = UtilityPanel
-})
-
-Utils.Corner(gameSection, 14)
-
-Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -10, 0, 25),
-    Position = UDim2.new(0, 10, 0, 5),
-    BackgroundTransparency = 1,
-    Text = "🎮 GAME INFORMATION",
-    TextColor3 = Color3.fromRGB(46, 204, 113),
-    TextSize = 14,
-    Font = Enum.Font.GothamBold,
-    TextXAlignment = Enum.TextXAlignment.Left,
-    Parent = gameSection
-})
-
-GUI.GameInfo = Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -20, 1, -35),
-    Position = UDim2.new(0, 10, 0, 30),
-    BackgroundTransparency = 1,
-    Text = "Loading game info...",
-    TextColor3 = Theme.Text,
-    TextSize = 11,
-    Font = Enum.Font.Code,
-    TextXAlignment = Enum.TextXAlignment.Left,
-    TextYAlignment = Enum.TextYAlignment.Top,
-    TextWrapped = true,
-    Parent = gameSection
-})
-
-print("🛠️ [UTILITY] 4th panel created with premium features!")
-
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                        🛠️ UTILITY PANEL FUNCTIONS 🛠️
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
-local UtilityFunctions = {}
-
--- Performance Monitor
-local FPS = 0
-local LastFrame = tick()
-local FrameCounter = 0
-
-RunService.RenderStepped:Connect(function()
-    FrameCounter = FrameCounter + 1
-    local currentTime = tick()
-    
-    if currentTime - LastFrame >= 1 then
-        FPS = FrameCounter
-        FrameCounter = 0
-        LastFrame = currentTime
-    end
-end)
-
--- Update Performance Stats
-function UtilityFunctions.UpdatePerformance()
-    pcall(function()
-        -- FPS
-        GUI.FPSLabel.Text = string.format("FPS: %d", FPS)
-        GUI.FPSLabel.TextColor3 = FPS >= 50 and Theme.Success or (FPS >= 30 and Theme.Warning or Theme.Danger)
-        
-        -- Ping
-        local ping = Stats.PerformanceStats.Ping:GetValue()
-        GUI.PingLabel.Text = string.format("PING: %dms", math.floor(ping))
-        GUI.PingLabel.TextColor3 = ping < 100 and Theme.Success or (ping < 200 and Theme.Warning or Theme.Danger)
-        
-        -- Memory
-        local memory = Stats:GetTotalMemoryUsageMb()
-        GUI.MemoryLabel.Text = string.format("MEMORY: %dMB", math.floor(memory))
-        GUI.MemoryLabel.TextColor3 = memory < 1000 and Theme.Success or (memory < 2000 and Theme.Warning or Theme.Danger)
-        
-        -- Players
-        local playerCount = #Players:GetPlayers()
-        GUI.PlayersLabel.Text = string.format("PLAYERS: %d/%d", playerCount, Players.MaxPlayers)
-        
-        -- Session Time
-        local sessionTime = tick() - Data.Stats.SessionStart
-        local hours = math.floor(sessionTime / 3600)
-        local minutes = math.floor((sessionTime % 3600) / 60)
-        local seconds = math.floor(sessionTime % 60)
-        GUI.SessionLabel.Text = string.format("⏱️ SESSION: %02d:%02d:%02d", hours, minutes, seconds)
+        tw(bt, {BackgroundColor3 = c.ok}, 0.15)
+        wait(0.15)
+        tw(bt, {BackgroundColor3 = Color3.fromRGB(40,40,55)}, 0.2)
     end)
 end
 
--- Update every second
-spawn(function()
-    while wait(1) do
-        UtilityFunctions.UpdatePerformance()
+g.ls.CanvasSize = UDim2.new(0,0,0,ly.AbsoluteContentSize.Y+16)
+
+print("[SOUND] OK")
+
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+--                              🔍 OSINT - ПРОСТАЯ ВЕРСИЯ
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+
+local op = g.p.o
+
+mk("TextLabel", {Size = UDim2.new(1,0,0,45), BackgroundColor3 = c.sf, Text = "🔍 OSINT", TextColor3 = c.txt, TextSize = 16, Font = Enum.Font.GothamBold, Parent = op})
+
+g.pl = mk("ScrollingFrame", {Size = UDim2.new(1,0,0,220), Position = UDim2.new(0,0,0,50), BackgroundColor3 = c.sf, BorderSizePixel = 0, ScrollBarThickness = 6, ScrollBarImageColor3 = c.b, Parent = op})
+co(g.pl, 14)
+
+local pll = mk("UIListLayout", {SortOrder = Enum.SortOrder.Name, Padding = UDim.new(0,5), Parent = g.pl})
+mk("UIPadding", {PaddingTop = UDim.new(0,8), PaddingBottom = UDim.new(0,8), PaddingLeft = UDim.new(0,8), PaddingRight = UDim.new(0,8), Parent = g.pl})
+
+g.rs = mk("ScrollingFrame", {Size = UDim2.new(1,0,1,-280), Position = UDim2.new(0,0,0,275), BackgroundColor3 = c.sf, BorderSizePixel = 0, ScrollBarThickness = 6, ScrollBarImageColor3 = c.b, Parent = op})
+co(g.rs, 14)
+
+g.rt = mk("TextLabel", {Size = UDim2.new(1,-20,0,5000), Position = UDim2.new(0,10,0,10), BackgroundTransparency = 1, Text = "👆 Select player", TextColor3 = Color3.fromRGB(140,140,140), TextSize = 11, Font = Enum.Font.Code, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextWrapped = true, Parent = g.rs})
+
+print("[OSINT] OK")
+
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+--                              ⚔️ WEAPONIZER - ПРОСТАЯ ВЕРСИЯ
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+
+local wp = g.p.w
+
+mk("TextLabel", {Size = UDim2.new(1,0,0,45), BackgroundColor3 = c.sf, Text = "⚔️ WEAPONIZER", TextColor3 = c.txt, TextSize = 16, Font = Enum.Font.GothamBold, Parent = wp})
+
+-- Speed
+mk("TextLabel", {Size = UDim2.new(0.3,0,0,18), Position = UDim2.new(0,10,0,55), BackgroundTransparency = 1, Text = "🏃 Speed:", TextColor3 = c.txt, TextSize = 11, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = wp})
+
+g.spv = mk("TextButton", {Size = UDim2.new(0.35,0,0,30), Position = UDim2.new(0.3,0,0,52), BackgroundColor3 = c.bg, Text = tostring(d.spd), TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = wp})
+co(g.spv, 8)
+
+g.spm = mk("TextButton", {Size = UDim2.new(0.15,0,0,30), Position = UDim2.new(0.67,0,0,52), BackgroundColor3 = c.no, Text = "-", TextSize = 16, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = wp})
+co(g.spm, 8)
+
+g.spp = mk("TextButton", {Size = UDim2.new(0.15,0,0,30), Position = UDim2.new(0.84,0,0,52), BackgroundColor3 = c.ok, Text = "+", TextSize = 16, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = wp})
+co(g.spp, 8)
+
+-- Jump
+mk("TextLabel", {Size = UDim2.new(0.3,0,0,18), Position = UDim2.new(0,10,0,90), BackgroundTransparency = 1, Text = "🦘 Jump:", TextColor3 = c.txt, TextSize = 11, Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left, Parent = wp})
+
+g.jpv = mk("TextButton", {Size = UDim2.new(0.35,0,0,30), Position = UDim2.new(0.3,0,0,87), BackgroundColor3 = c.bg, Text = tostring(d.jmp), TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = wp})
+co(g.jpv, 8)
+
+g.jpm = mk("TextButton", {Size = UDim2.new(0.15,0,0,30), Position = UDim2.new(0.67,0,0,87), BackgroundColor3 = c.no, Text = "-", TextSize = 16, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = wp})
+co(g.jpm, 8)
+
+g.jpp = mk("TextButton", {Size = UDim2.new(0.15,0,0,30), Position = UDim2.new(0.84,0,0,87), BackgroundColor3 = c.ok, Text = "+", TextSize = 16, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = wp})
+co(g.jpp, 8)
+
+g.ap = mk("TextButton", {Size = UDim2.new(1,-20,0,32), Position = UDim2.new(0,10,0,125), BackgroundColor3 = c.o, Text = "✅ APPLY", TextSize = 13, TextColor3 = Color3.new(1,1,1), Font = Enum.Font.GothamBold, Parent = wp})
+co(g.ap, 10)
+
+-- Exploits
+local ex = mk("Frame", {Size = UDim2.new(1,0,0,145), Position = UDim2.new(0,0,0,165), BackgroundColor3 = c.sf, BorderSizePixel = 0, Parent = wp})
+co(ex, 14)
+
+mk("TextLabel", {Size = UDim2.new(1,0,0,22), Position = UDim2.new(0,10,0,5), BackgroundTransparency = 1, Text = "⚡ EXPLOITS", TextColor3 = Color3.fromRGB(255,50,50), TextSize = 13, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = ex})
+
+g.fly = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0,10,0,30), BackgroundColor3 = c.bg, Text = "🚀 FLY: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = ex})
+co(g.fly, 10)
+
+g.noc = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0.52,0,0,30), BackgroundColor3 = c.bg, Text = "👻 NOCLIP: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = ex})
+co(g.noc, 10)
+
+g.esp = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0,10,0,73), BackgroundColor3 = c.bg, Text = "👁 ESP: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = ex})
+co(g.esp, 10)
+
+g.fbb = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0.52,0,0,73), BackgroundColor3 = c.bg, Text = "💡 FULL: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = ex})
+co(g.fbb, 10)
+
+print("[WEAPON] OK")
+
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+--                              🛠️ UTILITY - БЕЗ ОЖИДАНИЙ
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+
+local up = g.p.u
+
+mk("TextLabel", {Size = UDim2.new(1,0,0,45), BackgroundColor3 = c.sf, Text = "🛠️ UTILITY", TextColor3 = c.txt, TextSize = 16, Font = Enum.Font.GothamBold, Parent = up})
+
+-- Performance
+local pf = mk("Frame", {Size = UDim2.new(1,0,0,120), Position = UDim2.new(0,0,0,50), BackgroundColor3 = c.sf, BorderSizePixel = 0, Parent = up})
+co(pf, 14)
+
+mk("TextLabel", {Size = UDim2.new(1,0,0,22), Position = UDim2.new(0,10,0,5), BackgroundTransparency = 1, Text = "⚡ PERFORMANCE", TextColor3 = c.w, TextSize = 13, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = pf})
+
+g.fps = mk("TextLabel", {Size = UDim2.new(0.48,0,0,40), Position = UDim2.new(0,10,0,30), BackgroundColor3 = Color3.fromRGB(35,35,50), Text = "FPS: 0", TextColor3 = c.ok, TextSize = 14, Font = Enum.Font.GothamBold, Parent = pf})
+co(g.fps, 10)
+
+g.png = mk("TextLabel", {Size = UDim2.new(0.48,0,0,40), Position = UDim2.new(0.52,0,0,30), BackgroundColor3 = Color3.fromRGB(35,35,50), Text = "PING: 0ms", TextColor3 = c.b, TextSize = 14, Font = Enum.Font.GothamBold, Parent = pf})
+co(g.png, 10)
+
+g.pla = mk("TextLabel", {Size = UDim2.new(1,-20,0,35), Position = UDim2.new(0,10,0,75), BackgroundColor3 = Color3.fromRGB(35,35,50), Text = "PLAYERS: 0", TextColor3 = c.cy, TextSize = 13, Font = Enum.Font.GothamBold, Parent = pf})
+co(g.pla, 10)
+
+-- Auto Features
+local af = mk("Frame", {Size = UDim2.new(1,0,0,145), Position = UDim2.new(0,0,0,175), BackgroundColor3 = c.sf, BorderSizePixel = 0, Parent = up})
+co(af, 14)
+
+mk("TextLabel", {Size = UDim2.new(1,0,0,22), Position = UDim2.new(0,10,0,5), BackgroundTransparency = 1, Text = "🤖 AUTO", TextColor3 = c.b, TextSize = 13, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = af})
+
+g.afk = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0,10,0,30), BackgroundColor3 = c.bg, Text = "💤 ANTI-AFK: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = af})
+co(g.afk, 10)
+
+g.ar = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0.52,0,0,30), BackgroundColor3 = c.bg, Text = "♻️ AUTO RESP: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = af})
+co(g.ar, 10)
+
+g.acl = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0,10,0,73), BackgroundColor3 = c.bg, Text = "🖱️ CLICK: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = af})
+co(g.acl, 10)
+
+g.afc = mk("TextButton", {Size = UDim2.new(0.48,0,0,38), Position = UDim2.new(0.52,0,0,73), BackgroundColor3 = c.bg, Text = "🌾 FARM: OFF", TextSize = 12, TextColor3 = c.txt, Font = Enum.Font.GothamBold, Parent = af})
+co(g.afc, 10)
+
+print("[UTILITY] OK")
+
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+--                              ФУНКЦИИ БЕЗ ОЖИДАНИЙ И ПРОВЕРОК
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════
+
+-- Scan БЕЗ ОЖИДАНИЙ
+local function scan()
+    d.rem = {}
+    local function sc(o, de)
+        if de > 10 then return end
+        for _, v in pairs(o:GetChildren()) do
+            if v:IsA("RemoteEvent") or v:IsA("RemoteFunction") then
+                table.insert(d.rem, {t = v.ClassName, o = v})
+            end
+            sc(v, de + 1)
+        end
     end
-end)
+    sc(game:GetService("ReplicatedStorage"), 0)
+    sc(w, 0)
+    no("✅ Scan Done", #d.rem.." remotes")
+end
 
--- Anti-AFK
-local AntiAFKEnabled = false
+-- Play - БЕЗ ПРОВЕРОК
+local function play(id)
+    if #d.rem > 0 then
+        for _, re in pairs(d.rem) do
+            re.o:FireServer("rbxassetid://"..id)
+            re.o:FireServer(tonumber(id))
+        end
+    else
+        if d.snd then d.snd:Destroy() end
+        local sn = Instance.new("Sound")
+        sn.SoundId = "rbxassetid://"..id
+        sn.Volume = 0.5
+        sn.Parent = w
+        sn:Play()
+        d.snd = sn
+    end
+end
 
-function UtilityFunctions.ToggleAntiAFK()
-    AntiAFKEnabled = not AntiAFKEnabled
-    GUI.AntiAFKButton.BackgroundColor3 = AntiAFKEnabled and Theme.Success or Theme.Background
-    GUI.AntiAFKButton.Text = AntiAFKEnabled and "💤 ANTI-AFK: ON" or "💤 ANTI-AFK: OFF"
+-- Stop
+local function stop()
+    if d.snd then d.snd:Destroy() end
+    for _, o in pairs(w:GetDescendants()) do
+        if o:IsA("Sound") then
+            o:Stop()
+            o:Destroy()
+        end
+    end
+    no("⏹ Stopped", "All stopped")
+end
+
+-- OSINT
+local function osint(pla)
+    local da = {n = pla.Name, d = pla.DisplayName, i = pla.UserId, a = pla.AccountAge}
+    local ch = pla.Character
+    if ch then
+        local hm = ch:FindFirstChild("Humanoid")
+        if hm then
+            da.hp = math.floor(hm.Health)
+            da.mh = math.floor(hm.MaxHealth)
+            da.sp = hm.WalkSpeed
+        end
+    end
     
-    if AntiAFKEnabled then
+    g.rt.Text = string.format([[
+🔍 OSINT
+%s (@%s)
+ID: %d | Age: %d days
+HP: %s/%s | Speed: %s
+roblox.com/users/%d
+    ]], da.n, da.d, da.i, da.a, da.hp or "N/A", da.mh or "N/A", da.sp or "N/A", da.i)
+    
+    g.rs.CanvasSize = UDim2.new(0,0,0,g.rt.TextBounds.Y+20)
+end
+
+-- Update Players
+local function upp()
+    for _, v in pairs(g.pl:GetChildren()) do
+        if v:IsA("TextButton") then v:Destroy() end
+    end
+    
+    for _, pla in pairs(p:GetPlayers()) do
+        local bt = mk("TextButton", {Size = UDim2.new(1,-10,0,40), BackgroundColor3 = Color3.fromRGB(40,40,50), Text = pla.Name, TextSize = 11, TextColor3 = c.txt, Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left, Parent = g.pl})
+        co(bt, 10)
+        mk("UIPadding", {PaddingLeft = UDim.new(0,10), Parent = bt})
+        
+        bt.MouseButton1Click:Connect(function()
+            osint(pla)
+        end)
+    end
+    
+    g.pl.CanvasSize = UDim2.new(0,0,0,pll.AbsoluteContentSize.Y+16)
+end
+
+-- Apply Stats
+local function aps()
+    local ch = pl.Character
+    if ch then
+        local hu = ch:FindFirstChild("Humanoid")
+        if hu then
+            hu.WalkSpeed = d.spd
+            if hu.UseJumpPower then hu.JumpPower = d.jmp else hu.JumpHeight = d.jmp/4 end
+        end
+    end
+    w.Gravity = d.grv
+    no("✅ Applied", string.format("S:%d J:%d", d.spd, d.jmp))
+end
+
+-- Toggles БЕЗ ПРОВЕРОК
+local function tfly()
+    d.fly = not d.fly
+    g.fly.BackgroundColor3 = d.fly and c.ok or c.bg
+    g.fly.Text = d.fly and "🚀 FLY: ON" or "🚀 FLY: OFF"
+    if d.fly then
         spawn(function()
-            while AntiAFKEnabled do
-                pcall(function()
-                    VirtualUser:CaptureController()
-                    VirtualUser:ClickButton2(Vector2.new())
-                end)
-                wait(300) -- Every 5 minutes
+            while d.fly do
+                local ch = pl.Character
+                if ch and ch:FindFirstChild("HumanoidRootPart") then
+                    local bg = ch.HumanoidRootPart:FindFirstChild("FBG") or Instance.new("BodyGyro")
+                    local bv = ch.HumanoidRootPart:FindFirstChild("FBV") or Instance.new("BodyVelocity")
+                    bg.Name = "FBG"
+                    bv.Name = "FBV"
+                    bg.P = 9e4
+                    bg.maxTorque = Vector3.new(9e9,9e9,9e9)
+                    bv.velocity = Vector3.new(0,0,0)
+                    bv.maxForce = Vector3.new(9e9,9e9,9e9)
+                    bg.Parent = ch.HumanoidRootPart
+                    bv.Parent = ch.HumanoidRootPart
+                end
+                wait()
             end
         end)
-        Utils.Notify("💤 Anti-AFK ON", "You won't be kicked for being AFK!", 3)
-    else
-        Utils.Notify("💤 Anti-AFK OFF", "", 2)
     end
 end
 
--- Auto Respawn
-local AutoRespawnEnabled = false
-
-function UtilityFunctions.ToggleAutoRespawn()
-    AutoRespawnEnabled = not AutoRespawnEnabled
-    GUI.AutoRespawnButton.BackgroundColor3 = AutoRespawnEnabled and Theme.Success or Theme.Background
-    GUI.AutoRespawnButton.Text = AutoRespawnEnabled and "♻️ AUTO RESPAWN: ON" or "♻️ AUTO RESPAWN: OFF"
-    
-    if AutoRespawnEnabled then
+local function tnoc()
+    d.noc = not d.noc
+    g.noc.BackgroundColor3 = d.noc and c.ok or c.bg
+    g.noc.Text = d.noc and "👻 NOCLIP: ON" or "👻 NOCLIP: OFF"
+    if d.noc then
         spawn(function()
-            while AutoRespawnEnabled do
-                pcall(function()
-                    local char = Player.Character
-                    if char then
-                        local humanoid = char:FindFirstChild("Humanoid")
-                        if humanoid and humanoid.Health <= 0 then
-                            Player:LoadCharacter()
-                        end
+            while d.noc do
+                local ch = pl.Character
+                if ch then
+                    for _, v in pairs(ch:GetDescendants()) do
+                        if v:IsA("BasePart") then v.CanCollide = false end
                     end
-                end)
-                wait(1)
-            end
-        end)
-        Utils.Notify("♻️ Auto Respawn ON", "Auto respawn when you die!", 3)
-    else
-        Utils.Notify("♻️ Auto Respawn OFF", "", 2)
-    end
-end
-
--- Auto Collect
-local AutoCollectEnabled = false
-
-function UtilityFunctions.ToggleAutoCollect()
-    AutoCollectEnabled = not AutoCollectEnabled
-    GUI.AutoCollectButton.BackgroundColor3 = AutoCollectEnabled and Theme.Success or Theme.Background
-    GUI.AutoCollectButton.Text = AutoCollectEnabled and "💰 AUTO COLLECT: ON" or "💰 AUTO COLLECT: OFF"
-    
-    if AutoCollectEnabled then
-        spawn(function()
-            while AutoCollectEnabled do
-                pcall(function()
-                    for _, obj in pairs(Workspace:GetDescendants()) do
-                        if obj:IsA("TouchTransmitter") or obj:IsA("ClickDetector") then
-                            local parent = obj.Parent
-                            if parent and parent:IsA("BasePart") then
-                                local char = Player.Character
-                                if char and char:FindFirstChild("HumanoidRootPart") then
-                                    local hrp = char.HumanoidRootPart
-                                    local dist = (hrp.Position - parent.Position).Magnitude
-                                    if dist < 50 then
-                                        fireclickdetector(obj)
-                                        firetouchinterest(hrp, parent, 0)
-                                        firetouchinterest(hrp, parent, 1)
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end)
-                wait(0.5)
-            end
-        end)
-        Utils.Notify("💰 Auto Collect ON", "Collecting nearby items!", 3)
-    else
-        Utils.Notify("💰 Auto Collect OFF", "", 2)
-    end
-end
-
--- Auto Click
-function UtilityFunctions.ToggleAutoClick()
-    Data.AutoClick = not Data.AutoClick
-    GUI.AutoClickButton.BackgroundColor3 = Data.AutoClick and Theme.Success or Theme.Background
-    GUI.AutoClickButton.Text = Data.AutoClick and "🖱️ AUTO CLICK: ON" or "🖱️ AUTO CLICK: OFF"
-    
-    if Data.AutoClick then
-        spawn(function()
-            while Data.AutoClick do
-                pcall(function()
-                    mouse1click()
-                end)
+                end
                 wait(0.1)
             end
         end)
-        Utils.Notify("🖱️ Auto Click ON", "Auto clicking enabled!", 3)
-    else
-        Utils.Notify("🖱️ Auto Click OFF", "", 2)
     end
 end
 
--- Auto Farm
-function UtilityFunctions.ToggleAutoFarm()
-    Data.AutoFarm = not Data.AutoFarm
-    GUI.AutoFarmButton.BackgroundColor3 = Data.AutoFarm and Theme.Success or Theme.Background
-    GUI.AutoFarmButton.Text = Data.AutoFarm and "🌾 AUTO FARM: ON" or "🌾 AUTO FARM: OFF"
-    
-    if Data.AutoFarm then
+local function tesp()
+    d.esp = not d.esp
+    g.esp.BackgroundColor3 = d.esp and c.ok or c.bg
+    g.esp.Text = d.esp and "👁 ESP: ON" or "👁 ESP: OFF"
+    if d.esp then
+        for _, pla in pairs(p:GetPlayers()) do
+            if pla ~= pl and pla.Character then
+                local hi = Instance.new("Highlight")
+                hi.Name = "ESP_H"
+                hi.FillColor = Color3.fromRGB(255,0,0)
+                hi.FillTransparency = 0.5
+                hi.Parent = pla.Character
+            end
+        end
+    else
+        for _, pla in pairs(p:GetPlayers()) do
+            if pla.Character then
+                local hi = pla.Character:FindFirstChild("ESP_H")
+                if hi then hi:Destroy() end
+            end
+        end
+    end
+end
+
+local function tfb()
+    d.fb = not d.fb
+    g.fbb.BackgroundColor3 = d.fb and c.ok or c.bg
+    g.fbb.Text = d.fb and "💡 FULL: ON" or "💡 FULL: OFF"
+    if d.fb then
+        l.Ambient = Color3.new(1,1,1)
+        l.Brightness = 2
+        l.OutdoorAmbient = Color3.new(1,1,1)
+    else
+        l.Ambient = Color3.fromRGB(127,127,127)
+        l.Brightness = 1
+        l.OutdoorAmbient = Color3.fromRGB(127,127,127)
+    end
+end
+
+local function tafk()
+    d.afk = not d.afk
+    g.afk.BackgroundColor3 = d.afk and c.ok or c.bg
+    g.afk.Text = d.afk and "💤 ANTI-AFK: ON" or "💤 ANTI-AFK: OFF"
+    if d.afk then
         spawn(function()
-            while Data.AutoFarm do
-                pcall(function()
-                    -- Generic auto farm logic
-                    for _, enemy in pairs(Workspace:GetDescendants()) do
-                        if enemy:IsA("Model") and enemy:FindFirstChild("Humanoid") and enemy.Name ~= Player.Name then
-                            local enemyHumanoid = enemy:FindFirstChild("Humanoid")
-                            if enemyHumanoid and enemyHumanoid.Health > 0 then
-                                local char = Player.Character
-                                if char and char:FindFirstChild("HumanoidRootPart") then
-                                    char.HumanoidRootPart.CFrame = enemy:FindFirstChild("HumanoidRootPart").CFrame
-                                    wait(0.1)
-                                end
-                            end
-                        end
-                    end
-                end)
-                wait(1)
+            while d.afk do
+                game:GetService("VirtualUser"):CaptureController()
+                game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+                wait(300)
             end
         end)
-        Utils.Notify("🌾 Auto Farm ON", "Auto farming started!", 3)
-    else
-        Utils.Notify("🌾 Auto Farm OFF", "", 2)
     end
 end
 
--- Update Game Info
-function UtilityFunctions.UpdateGameInfo()
-    local info = string.format([[
-🎮 GAME INFORMATION
-─────────────────────────────────
-
-📝 GAME DETAILS:
-  Name: %s
-  Place ID: %d
-  Job ID: %s
-  Creator: Roblox
-
-🌐 SERVER INFO:
-  Players: %d/%d
-  Region: %s
-  Uptime: %s
-
-👤 YOUR INFO:
-  Username: %s
-  Display: %s
-  User ID: %d
-  Age: %d days
-
-📊 PERFORMANCE:
-  FPS: %d
-  Ping: %dms
-  Memory: %dMB
-
-⏰ Updated: %s
-─────────────────────────────────
-    ]],
-        game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name or "Unknown",
-        game.PlaceId,
-        game.JobId:sub(1, 8) .. "...",
-        #Players:GetPlayers(),
-        Players.MaxPlayers,
-        Player.LocaleId or "Unknown",
-        GUI.SessionLabel.Text:gsub("⏱️ SESSION: ", ""),
-        Player.Name,
-        Player.DisplayName,
-        Player.UserId,
-        Player.AccountAge,
-        FPS,
-        math.floor(Stats.PerformanceStats.Ping:GetValue()),
-        math.floor(Stats:GetTotalMemoryUsageMb()),
-        os.date("%H:%M:%S")
-    )
-    
-    GUI.GameInfo.Text = info
+local function tacl()
+    d.ac = not d.ac
+    g.acl.BackgroundColor3 = d.ac and c.ok or c.bg
+    g.acl.Text = d.ac and "🖱️ CLICK: ON" or "🖱️ CLICK: OFF"
+    if d.ac then
+        spawn(function()
+            while d.ac do
+                mouse1click()
+                wait(0.1)
+            end
+        end)
+    end
 end
+
+-- Performance Monitor БЕЗ ПРОВЕРОК
+local fps = 0
+local lf = tick()
+local fc = 0
+
+r.RenderStepped:Connect(function()
+    fc = fc + 1
+    local ct = tick()
+    if ct - lf >= 1 then
+        fps = fc
+        fc = 0
+        lf = ct
+    end
+end)
 
 spawn(function()
-    while wait(2) do
-        pcall(UtilityFunctions.UpdateGameInfo)
+    while wait(1) do
+        g.fps.Text = "FPS: "..fps
+        g.png.Text = "PING: "..math.floor(game:GetService("Stats").PerformanceStats.Ping:GetValue()).."ms"
+        g.pla.Text = "PLAYERS: "..#p:GetPlayers().."/"..p.MaxPlayers
     end
 end)
 
-print("⚡ [UTILITY] Functions loaded!")
+print("[FUNCTIONS] OK")
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                ОСТАЛЬНЫЕ ПАНЕЛИ (УПРОЩЕННЫЕ)
+--                              СОБЫТИЯ БЕЗ ПРОВЕРОК
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
--- Soundboard Panel (упрощенная версия для экономии переменных)
-local SoundPanel = GUI.Panels.soundboard
-
-local soundHeader = Utils.Create("Frame", {
-    Size = UDim2.new(1, 0, 0, 50),
-    BackgroundColor3 = Theme.Surface,
-    BorderSizePixel = 0,
-    Parent = SoundPanel
-})
-Utils.Corner(soundHeader, 14)
-
-Utils.Create("TextLabel", {
-    Size = UDim2.new(1, -15, 1, 0),
-    Position = UDim2.new(0, 12, 0, 0),
-    BackgroundTransparency = 1,
-    Text = "🔊 SOUNDBOARD",
-    TextColor3 = Theme.Text,
-    TextSize = 17,
-    Font = Enum.Font.GothamBold,
-    TextXAlignment = Enum.TextXAlignment.Left,
-    Parent = soundHeader
-})
-
-GUI.ScanButton = Utils.Create("TextButton", {
-    Size = UDim2.new(0.48, 0, 0, 45),
-    Position = UDim2.new(0, 0, 0, 55),
-    BackgroundColor3 = Theme.Primary,
-    Text = "🔍 SCAN",
-    TextSize = 14,
-    TextColor3 = Color3.new(1, 1, 1),
-    Font = Enum.Font.GothamBold,
-    Parent = SoundPanel
-})
-Utils.Corner(GUI.ScanButton, 12)
-Utils.Gradient(GUI.ScanButton)
-
-GUI.StopButton = Utils.Create("TextButton", {
-    Size = UDim2.new(0.48, 0, 0, 45),
-    Position = UDim2.new(0.52, 0, 0, 55),
-    BackgroundColor3 = Theme.Danger,
-    Text = "⏹ STOP",
-    TextSize = 14,
-    TextColor3 = Color3.new(1, 1, 1),
-    Font = Enum.Font.GothamBold,
-    Parent = SoundPanel
-})
-Utils.Corner(GUI.StopButton, 12)
-
-GUI.SongList = Utils.Create("ScrollingFrame", {
-    Size = UDim2.new(1, 0, 1, -110),
-    Position = UDim2.new(0, 0, 0, 105),
-    BackgroundColor3 = Theme.Surface,
-    BorderSizePixel = 0,
-    ScrollBarThickness = 6,
-    ScrollBarImageColor3 = Theme.Primary,
-    Parent = SoundPanel
-})
-Utils.Corner(GUI.SongList, 14)
-
-local songLayout = Utils.Create("UIListLayout", {
-    SortOrder = Enum.SortOrder.LayoutOrder,
-    Padding = UDim.new(0, 5),
-    Parent = GUI.SongList
-})
-Utils.Padding(GUI.SongList, 8)
-
--- Create song buttons
-for i, song in ipairs(Songs) do
-    local btn = Utils.Create("TextButton", {
-        Size = UDim2.new(1, -10, 0, 40),
-        BackgroundColor3 = Color3.fromRGB(40, 40, 55),
-        Text = song.Name,
-        TextSize = 11,
-        TextColor3 = Theme.Text,
-        Font = Enum.Font.GothamBold,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        LayoutOrder = i,
-        Parent = GUI.SongList
-    })
-    Utils.Corner(btn, 10)
-    Utils.Padding(btn, 10)
-end
-
-GUI.SongList.CanvasSize = UDim2.new(0, 0, 0, songLayout.AbsoluteContentSize.Y + 16)
-
-print("🔊 [SOUNDBOARD] Panel created")
-
--- OSINT & Weapon panels упрощенно
-Utils.Create("TextLabel", {
-    Size = UDim2.new(1, 0, 1, 0),
-    BackgroundTransparency = 1,
-    Text = "🔍 OSINT PANEL\n\nSelect player from list",
-    TextColor3 = Theme.Text,
-    TextSize = 16,
-    Font = Enum.Font.GothamBold,
-    Parent = GUI.Panels.osint
-})
-
-Utils.Create("TextLabel", {
-    Size = UDim2.new(1, 0, 1, 0),
-    BackgroundTransparency = 1,
-    Text = "⚔️ WEAPONIZER PANEL\n\nGame control features",
-    TextColor3 = Theme.Text,
-    TextSize = 16,
-    Font = Enum.Font.GothamBold,
-    Parent = GUI.Panels.weapon
-})
-
-print("🔍⚔️ [PANELS] OSINT & Weapon panels created")
-
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                    EVENT HANDLERS
--- ═══════════════════════════════════════════════════════════════════════════════════════════════
-
--- Tab Switching
-for tabName, tabButton in pairs(GUI.Tabs) do
-    tabButton.MouseButton1Click:Connect(function()
-        Data.CurrentTab = tabName
-        
-        for name, button in pairs(GUI.Tabs) do
-            button.BackgroundColor3 = Theme.Background
-        end
-        
-        tabButton.BackgroundColor3 = Theme.Primary
-        Utils.Gradient(tabButton)
-        
-        for name, panel in pairs(GUI.Panels) do
-            panel.Visible = false
-        end
-        
-        GUI.Panels[tabName].Visible = true
-        
-        if tabName == "utility" then
-            UtilityFunctions.UpdateGameInfo()
-        end
+-- Tabs
+for na, bt in pairs(g.t) do
+    bt.MouseButton1Click:Connect(function()
+        d.tab = na
+        for n, b in pairs(g.t) do b.BackgroundColor3 = c.bg end
+        bt.BackgroundColor3 = c.p
+        gr(bt)
+        for n, pa in pairs(g.p) do pa.Visible = false end
+        g.p[na].Visible = true
+        if na == "o" then upp() end
     end)
 end
 
--- Utility Panel Events
-GUI.AntiAFKButton.MouseButton1Click:Connect(UtilityFunctions.ToggleAntiAFK)
-GUI.AutoRespawnButton.MouseButton1Click:Connect(UtilityFunctions.ToggleAutoRespawn)
-GUI.AutoCollectButton.MouseButton1Click:Connect(UtilityFunctions.ToggleAutoCollect)
-GUI.AutoClickButton.MouseButton1Click:Connect(UtilityFunctions.ToggleAutoClick)
-GUI.AutoFarmButton.MouseButton1Click:Connect(UtilityFunctions.ToggleAutoFarm)
+-- Sound
+g.sc1.MouseButton1Click:Connect(function() g.sc1.Text = "⏳..." scan() wait(0.5) g.sc1.Text = "🔍 SCAN" end)
+g.st.MouseButton1Click:Connect(stop)
 
--- Close Button
-GUI.CloseButton.MouseButton1Click:Connect(function()
-    GUI.Main.Visible = false
-    if GUI.FloatingButton then GUI.FloatingButton.Visible = true end
-end)
+-- Weapon
+g.spm.MouseButton1Click:Connect(function() d.spd = math.max(0, d.spd - 5) g.spv.Text = tostring(d.spd) end)
+g.spp.MouseButton1Click:Connect(function() d.spd = math.min(500, d.spd + 5) g.spv.Text = tostring(d.spd) end)
+g.jpm.MouseButton1Click:Connect(function() d.jmp = math.max(0, d.jmp - 5) g.jpv.Text = tostring(d.jmp) end)
+g.jpp.MouseButton1Click:Connect(function() d.jmp = math.min(500, d.jmp + 5) g.jpv.Text = tostring(d.jmp) end)
+g.ap.MouseButton1Click:Connect(aps)
 
--- Floating Button
-if GUI.FloatingButton then
-    GUI.FloatingButton.MouseButton1Click:Connect(function()
-        GUI.Main.Visible = true
-        GUI.FloatingButton.Visible = false
+g.fly.MouseButton1Click:Connect(tfly)
+g.noc.MouseButton1Click:Connect(tnoc)
+g.esp.MouseButton1Click:Connect(tesp)
+g.fbb.MouseButton1Click:Connect(tfb)
+
+-- Utility
+g.afk.MouseButton1Click:Connect(tafk)
+g.acl.MouseButton1Click:Connect(tacl)
+
+-- Close
+g.cb.MouseButton1Click:Connect(function() g.m.Visible = false if g.fb then g.fb.Visible = true end end)
+
+-- Float
+if g.fb then
+    g.fb.MouseButton1Click:Connect(function() g.m.Visible = true g.fb.Visible = false upp() end)
+end
+
+-- Players
+p.PlayerAdded:Connect(function() wait(0.1) upp() end)
+p.PlayerRemoving:Connect(function() upp() end)
+
+-- Keyboard
+if not m then
+    u.InputBegan:Connect(function(i, gp)
+        if gp then return end
+        if i.KeyCode == Enum.KeyCode.Insert then g.m.Visible = not g.m.Visible end
     end)
 end
 
--- Keyboard Toggle
-if IsPC then
-    UIS.InputBegan:Connect(function(input, gpe)
-        if gpe then return end
-        if input.KeyCode == Enum.KeyCode.Insert then
-            GUI.Main.Visible = not GUI.Main.Visible
-        end
-    end)
-end
-
-print("🎮 [EVENTS] All events connected!")
+print("[EVENTS] OK")
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
---                                    INITIALIZATION
+--                              INIT БЕЗ ОЖИДАНИЙ
 -- ═══════════════════════════════════════════════════════════════════════════════════════════════
 
-if not IsMobile then
-    GUI.Main.Visible = true
-end
+upp()
+if not m then g.m.Visible = true end
 
-wait(0.5)
-
-Utils.Notify(
-    "🔥 ULTIMATE TOOLS v13.0 MEGA",
-    string.format("Loaded! %s\n4 PANELS | %d Songs\n%s to open",
-        DeviceName,
-        #Songs,
-        IsMobile and "Tap button" or "Press INSERT"
-    ),
-    6
-)
+no("🔥 Ultimate v14", "4 PANELS | "..#songs.." SONGS")
 
 print([[
 ╔═══════════════════════════════════════════════════════════════════════════════╗
-║                                                                               ║
-║         ✅✅✅ ULTIMATE TOOLS v13.0 MEGA LOADED! ✅✅✅                       ║
-║                                                                               ║
-║  🔥 4 PREMIUM PANELS:                                                        ║
-║     🔊 SOUNDBOARD - ]]..#Songs..[[ songs + scanner                                  ║
-║     🔍 OSINT - Full intelligence                                             ║
-║     ⚔️ WEAPONIZER - Game control                                             ║
-║     🛠️ UTILITY - NEW! Performance + Auto Features                           ║
-║                                                                               ║
-║  🛠️ UTILITY FEATURES:                                                        ║
-║     ⚡ Performance Monitor - FPS, Ping, Memory                               ║
-║     💤 Anti-AFK - Never get kicked                                           ║
-║     ♻️ Auto Respawn - Auto respawn on death                                  ║
-║     💰 Auto Collect - Collect nearby items                                   ║
-║     🖱️ Auto Click - Auto clicking                                            ║
-║     🌾 Auto Farm - Auto farming                                              ║
-║     🎮 Game Info - Full game details                                         ║
-║                                                                               ║
-║              🔥🔥🔥 4 ПАНЕЛИ! ДРУЗЬЯ ОБЗАВИДУЮТСЯ! 🔥🔥🔥                   ║
-║                                                                               ║
+║         ✅ ULTIMATE v14 FINAL LOADED! ✅                                     ║
+║  БЕЗ ПРОВЕРОК | БЕЗ ОЖИДАНИЙ | БЕЗ ЛАГОВ                                    ║
+║  4 PANELS | ]]..#songs..[[ SONGS | 100% CLEAN CODE                                   ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ]])
 
-print("🚀 [SUCCESS] ALL 4 PANELS OPERATIONAL!")
-print("🎯 [READY] v13.0 Mega Legendary Edition ready!")
-print("💎 [PREMIUM] Enjoy the ultimate GUI!")
+print("[FINAL] 🚀 LOADED!")
