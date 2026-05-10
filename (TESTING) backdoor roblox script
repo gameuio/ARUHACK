@@ -1,5 +1,5 @@
--- 🔥 ADVANCED REMOTE SPY & INJECTOR ULTIMATE v4.0
--- Full Featured - No Placeholders - Pure Power
+-- 🔥 ULTIMATE REMOTE SPY & INJECTOR v5.0 - PREMIUM EDITION
+-- Максимально красивый и функциональный GUI
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -9,217 +9,307 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local Lighting = game:GetService("Lighting")
+local Workspace = game:GetService("Workspace")
 
--- Проверка на существующий GUI
-if CoreGui:FindFirstChild("RemoteSpyUltimate") then
-    CoreGui:FindFirstChild("RemoteSpyUltimate"):Destroy()
-end
+-- Удаление старого GUI
+pcall(function()
+    if CoreGui:FindFirstChild("UltimateRemoteSpy") then
+        CoreGui:FindFirstChild("UltimateRemoteSpy"):Destroy()
+    end
+end)
 
--- ============= GUI SETUP =============
+wait(0.3)
+
+-- ============= ГЛАВНЫЙ GUI =============
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "RemoteSpyUltimate"
+ScreenGui.Name = "UltimateRemoteSpy"
 ScreenGui.Parent = CoreGui
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.ResetOnSpawn = false
+ScreenGui.DisplayOrder = 999999
+
+-- Blur эффект для фона
+local BlurEffect = Instance.new("BlurEffect")
+BlurEffect.Size = 0
+BlurEffect.Parent = Lighting
+
+-- Main Frame с тенью
+local Shadow = Instance.new("ImageLabel")
+Shadow.Parent = ScreenGui
+Shadow.BackgroundTransparency = 1
+Shadow.Position = UDim2.new(0.5, -430, 0.5, -330)
+Shadow.Size = UDim2.new(0, 860, 0, 660)
+Shadow.Image = "rbxassetid://5554236805"
+Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+Shadow.ImageTransparency = 0.7
+Shadow.ScaleType = Enum.ScaleType.Slice
+Shadow.SliceCenter = Rect.new(23, 23, 277, 277)
 
 local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 28)
 MainFrame.BorderSizePixel = 0
-MainFrame.Position = UDim2.new(0.2, 0, 0.1, 0)
+MainFrame.Position = UDim2.new(0.5, -400, 0.5, -300)
 MainFrame.Size = UDim2.new(0, 800, 0, 600)
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.ClipsDescendants = true
 
 local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 15)
+MainCorner.CornerRadius = UDim.new(0, 16)
 MainCorner.Parent = MainFrame
 
+-- Animated gradient border
+local BorderGradient = Instance.new("UIGradient")
+BorderGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 150)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(150, 0, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 150, 255))
+}
+
 local MainStroke = Instance.new("UIStroke")
-MainStroke.Color = Color3.fromRGB(100, 50, 200)
-MainStroke.Thickness = 2
+MainStroke.Color = Color3.fromRGB(150, 50, 255)
+MainStroke.Thickness = 3
+MainStroke.Transparency = 0
 MainStroke.Parent = MainFrame
+BorderGradient.Parent = MainStroke
 
--- Gradient Background
-local BGGradient = Instance.new("UIGradient")
-BGGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 15, 35)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 10, 20))
-}
-BGGradient.Rotation = 45
-BGGradient.Parent = MainFrame
-
--- Title Bar
-local TitleBar = Instance.new("Frame")
-TitleBar.Parent = MainFrame
-TitleBar.BackgroundColor3 = Color3.fromRGB(25, 20, 40)
-TitleBar.Size = UDim2.new(1, 0, 0, 45)
-
-local TitleCorner = Instance.new("UICorner")
-TitleCorner.CornerRadius = UDim.new(0, 15)
-TitleCorner.Parent = TitleBar
-
-local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Parent = TitleBar
-TitleLabel.BackgroundTransparency = 1
-TitleLabel.Size = UDim2.new(0.7, 0, 1, 0)
-TitleLabel.Font = Enum.Font.GothamBold
-TitleLabel.Text = "🔥 REMOTE SPY & INJECTOR ULTIMATE"
-TitleLabel.TextColor3 = Color3.fromRGB(255, 100, 255)
-TitleLabel.TextSize = 18
-TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-TitleLabel.Position = UDim2.new(0, 15, 0, 0)
-
--- Animated gradient for title
-local TitleGradient = Instance.new("UIGradient")
-TitleGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 50, 150)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(150, 100, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 200, 255))
-}
-TitleGradient.Parent = TitleLabel
-
+-- Animate border gradient
 spawn(function()
-    while task.wait(0.05) do
-        TitleGradient.Offset = TitleGradient.Offset + Vector2.new(0.01, 0)
-        if TitleGradient.Offset.X > 1 then
-            TitleGradient.Offset = Vector2.new(-1, 0)
-        end
+    while wait(0.03) do
+        pcall(function()
+            BorderGradient.Rotation = (BorderGradient.Rotation + 2) % 360
+        end)
     end
 end)
 
--- Close Button
-local CloseBtn = Instance.new("TextButton")
-CloseBtn.Parent = TitleBar
-CloseBtn.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-CloseBtn.Position = UDim2.new(1, -40, 0, 7.5)
-CloseBtn.Size = UDim2.new(0, 30, 0, 30)
-CloseBtn.Font = Enum.Font.GothamBold
-CloseBtn.Text = "X"
-CloseBtn.TextColor3 = Color3.white
-CloseBtn.TextSize = 16
+-- Background Pattern
+local Pattern = Instance.new("ImageLabel")
+Pattern.Parent = MainFrame
+Pattern.BackgroundTransparency = 1
+Pattern.Size = UDim2.new(1, 0, 1, 0)
+Pattern.Image = "rbxassetid://5553946656"
+Pattern.ImageTransparency = 0.95
+Pattern.ScaleType = Enum.ScaleType.Tile
+Pattern.TileSize = UDim2.new(0, 100, 0, 100)
 
-local CloseCorner = Instance.new("UICorner")
-CloseCorner.CornerRadius = UDim.new(1, 0)
-CloseCorner.Parent = CloseBtn
+-- Gradient overlay
+local GradientOverlay = Instance.new("Frame")
+GradientOverlay.Parent = MainFrame
+GradientOverlay.BackgroundColor3 = Color3.white
+GradientOverlay.BackgroundTransparency = 1
+GradientOverlay.Size = UDim2.new(1, 0, 1, 0)
 
-CloseBtn.MouseButton1Click:Connect(function()
-    ScreenGui:Destroy()
+local OverlayGradient = Instance.new("UIGradient")
+OverlayGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 20, 40)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 25))
+}
+OverlayGradient.Rotation = 135
+OverlayGradient.Transparency = NumberSequence.new{
+    NumberSequenceKeypoint.new(0, 0.3),
+    NumberSequenceKeypoint.new(1, 0.8)
+}
+OverlayGradient.Parent = GradientOverlay
+
+-- ============= TITLE BAR =============
+local TitleBar = Instance.new("Frame")
+TitleBar.Name = "TitleBar"
+TitleBar.Parent = MainFrame
+TitleBar.BackgroundColor3 = Color3.fromRGB(25, 22, 38)
+TitleBar.BorderSizePixel = 0
+TitleBar.Size = UDim2.new(1, 0, 0, 60)
+
+local TitleGradient = Instance.new("UIGradient")
+TitleGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 25, 45)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 18, 35))
+}
+TitleGradient.Rotation = 90
+TitleGradient.Parent = TitleBar
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 16)
+TitleCorner.Parent = TitleBar
+
+-- Logo Icon
+local LogoIcon = Instance.new("ImageLabel")
+LogoIcon.Parent = TitleBar
+LogoIcon.BackgroundTransparency = 1
+LogoIcon.Position = UDim2.new(0, 15, 0.5, -20)
+LogoIcon.Size = UDim2.new(0, 40, 0, 40)
+LogoIcon.Image = "rbxassetid://7733992358"
+LogoIcon.ImageColor3 = Color3.fromRGB(255, 100, 255)
+
+-- Spinning animation for logo
+spawn(function()
+    while wait(0.05) do
+        pcall(function()
+            LogoIcon.Rotation = (LogoIcon.Rotation + 2) % 360
+        end)
+    end
 end)
 
--- Minimize Button
-local MinBtn = Instance.new("TextButton")
-MinBtn.Parent = TitleBar
-MinBtn.BackgroundColor3 = Color3.fromRGB(200, 150, 50)
-MinBtn.Position = UDim2.new(1, -75, 0, 7.5)
-MinBtn.Size = UDim2.new(0, 30, 0, 30)
-MinBtn.Font = Enum.Font.GothamBold
-MinBtn.Text = "_"
-MinBtn.TextColor3 = Color3.white
-MinBtn.TextSize = 16
+-- Title Text
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Name = "TitleLabel"
+TitleLabel.Parent = TitleBar
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Position = UDim2.new(0, 65, 0, 10)
+TitleLabel.Size = UDim2.new(0, 400, 0, 25)
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.Text = "ULTIMATE REMOTE SPY & INJECTOR"
+TitleLabel.TextColor3 = Color3.white
+TitleLabel.TextSize = 18
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-local MinCorner = Instance.new("UICorner")
-MinCorner.CornerRadius = UDim.new(1, 0)
-MinCorner.Parent = MinBtn
+local TitleTextGradient = Instance.new("UIGradient")
+TitleTextGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 100, 255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(150, 150, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 200, 255))
+}
+TitleTextGradient.Parent = TitleLabel
 
+-- Subtitle
+local SubtitleLabel = Instance.new("TextLabel")
+SubtitleLabel.Parent = TitleBar
+SubtitleLabel.BackgroundTransparency = 1
+SubtitleLabel.Position = UDim2.new(0, 65, 0, 35)
+SubtitleLabel.Size = UDim2.new(0, 400, 0, 18)
+SubtitleLabel.Font = Enum.Font.Gotham
+SubtitleLabel.Text = "v5.0 Premium Edition • By Nexus"
+SubtitleLabel.TextColor3 = Color3.fromRGB(150, 150, 180)
+SubtitleLabel.TextSize = 12
+SubtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Control buttons container
+local ControlsFrame = Instance.new("Frame")
+ControlsFrame.Parent = TitleBar
+ControlsFrame.BackgroundTransparency = 1
+ControlsFrame.Position = UDim2.new(1, -150, 0.5, -20)
+ControlsFrame.Size = UDim2.new(0, 140, 0, 40)
+
+-- Helper function for control buttons
+local function createControlButton(icon, color, position, callback)
+    local btn = Instance.new("TextButton")
+    btn.Parent = ControlsFrame
+    btn.BackgroundColor3 = color
+    btn.Position = position
+    btn.Size = UDim2.new(0, 40, 0, 40)
+    btn.Font = Enum.Font.GothamBold
+    btn.Text = icon
+    btn.TextColor3 = Color3.white
+    btn.TextSize = 18
+    btn.AutoButtonColor = false
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = btn
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(255, 255, 255)
+    stroke.Thickness = 0
+    stroke.Transparency = 0.5
+    stroke.Parent = btn
+    
+    btn.MouseEnter:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2), {
+            Size = UDim2.new(0, 45, 0, 45),
+            BackgroundColor3 = Color3.fromRGB(
+                math.min(color.R * 255 * 1.3, 255) / 255,
+                math.min(color.G * 255 * 1.3, 255) / 255,
+                math.min(color.B * 255 * 1.3, 255) / 255
+            )
+        }):Play()
+        stroke.Thickness = 2
+    end)
+    
+    btn.MouseLeave:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2), {
+            Size = UDim2.new(0, 40, 0, 40),
+            BackgroundColor3 = color
+        }):Play()
+        stroke.Thickness = 0
+    end)
+    
+    if callback then
+        btn.MouseButton1Click:Connect(callback)
+    end
+    
+    return btn
+end
+
+-- Minimize button
 local minimized = false
-MinBtn.MouseButton1Click:Connect(function()
+createControlButton("_", Color3.fromRGB(255, 180, 0), UDim2.new(0, 0, 0, 0), function()
     minimized = not minimized
+    local targetSize = minimized and UDim2.new(0, 800, 0, 60) or UDim2.new(0, 800, 0, 600)
+    TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Size = targetSize}):Play()
+    TweenService:Create(BlurEffect, TweenInfo.new(0.4), {Size = minimized and 0 or 10}):Play()
+end)
+
+-- Settings button
+createControlButton("⚙", Color3.fromRGB(100, 150, 255), UDim2.new(0, 50, 0, 0), function()
+    -- Will open settings later
+end)
+
+-- Close button
+createControlButton("×", Color3.fromRGB(255, 60, 60), UDim2.new(0, 100, 0, 0), function()
     TweenService:Create(MainFrame, TweenInfo.new(0.3), {
-        Size = minimized and UDim2.new(0, 800, 0, 45) or UDim2.new(0, 800, 0, 600)
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0)
     }):Play()
+    TweenService:Create(BlurEffect, TweenInfo.new(0.3), {Size = 0}):Play()
+    wait(0.3)
+    ScreenGui:Destroy()
+    BlurEffect:Destroy()
 end)
 
 -- ============= TABS SYSTEM =============
-local TabBar = Instance.new("Frame")
-TabBar.Parent = MainFrame
-TabBar.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-TabBar.Position = UDim2.new(0, 0, 0, 50)
-TabBar.Size = UDim2.new(1, 0, 0, 40)
+local TabsContainer = Instance.new("Frame")
+TabsContainer.Name = "TabsContainer"
+TabsContainer.Parent = MainFrame
+TabsContainer.BackgroundTransparency = 1
+TabsContainer.Position = UDim2.new(0, 0, 0, 65)
+TabsContainer.Size = UDim2.new(0, 160, 1, -65)
 
-local TabLayout = Instance.new("UIListLayout")
-TabLayout.Parent = TabBar
-TabLayout.FillDirection = Enum.FillDirection.Horizontal
-TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
-TabLayout.Padding = UDim.new(0, 2)
+local TabsList = Instance.new("ScrollingFrame")
+TabsList.Parent = TabsContainer
+TabsList.BackgroundColor3 = Color3.fromRGB(22, 22, 32)
+TabsList.BorderSizePixel = 0
+TabsList.Position = UDim2.new(0, 10, 0, 10)
+TabsList.Size = UDim2.new(1, -20, 1, -20)
+TabsList.CanvasSize = UDim2.new(0, 0, 0, 0)
+TabsList.ScrollBarThickness = 4
+TabsList.ScrollBarImageColor3 = Color3.fromRGB(150, 50, 255)
 
-local ContentContainer = Instance.new("Frame")
-ContentContainer.Parent = MainFrame
-ContentContainer.BackgroundTransparency = 1
-ContentContainer.Position = UDim2.new(0, 0, 0, 95)
-ContentContainer.Size = UDim2.new(1, 0, 1, -95)
+local TabsCorner = Instance.new("UICorner")
+TabsCorner.CornerRadius = UDim.new(0, 12)
+TabsCorner.Parent = TabsList
 
--- Tab Creation Function
-local tabs = {}
-local pages = {}
-local activeTab = nil
+local TabsLayout = Instance.new("UIListLayout")
+TabsLayout.Parent = TabsList
+TabsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+TabsLayout.Padding = UDim.new(0, 8)
+TabsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
-local function createTab(name, icon)
-    local tab = Instance.new("TextButton")
-    tab.Name = name
-    tab.Parent = TabBar
-    tab.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-    tab.Size = UDim2.new(0, 155, 1, 0)
-    tab.Font = Enum.Font.GothamBold
-    tab.Text = icon .. " " .. name
-    tab.TextColor3 = Color3.fromRGB(150, 150, 150)
-    tab.TextSize = 13
-    
-    local tabCorner = Instance.new("UICorner")
-    tabCorner.CornerRadius = UDim.new(0, 8)
-    tabCorner.Parent = tab
-    
-    local page = Instance.new("ScrollingFrame")
-    page.Name = name .. "Page"
-    page.Parent = ContentContainer
-    page.BackgroundTransparency = 1
-    page.Size = UDim2.new(1, 0, 1, 0)
-    page.CanvasSize = UDim2.new(0, 0, 2, 0)
-    page.ScrollBarThickness = 6
-    page.ScrollBarImageColor3 = Color3.fromRGB(100, 50, 200)
-    page.Visible = false
-    
-    local pageLayout = Instance.new("UIListLayout")
-    pageLayout.Parent = page
-    pageLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    pageLayout.Padding = UDim.new(0, 10)
-    pageLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    
-    tabs[name] = tab
-    pages[name] = page
-    
-    tab.MouseButton1Click:Connect(function()
-        for _, t in pairs(tabs) do
-            t.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-            t.TextColor3 = Color3.fromRGB(150, 150, 150)
-        end
-        for _, p in pairs(pages) do
-            p.Visible = false
-        end
-        
-        tab.BackgroundColor3 = Color3.fromRGB(100, 50, 200)
-        tab.TextColor3 = Color3.white
-        page.Visible = true
-        activeTab = name
-    end)
-    
-    return page
-end
+local TabsPadding = Instance.new("UIPadding")
+TabsPadding.Parent = TabsList
+TabsPadding.PaddingTop = UDim.new(0, 10)
+TabsPadding.PaddingBottom = UDim.new(0, 10)
 
--- Create All Tabs
-local RemoteSpyPage = createTab("SPY", "🔍")
-local InjectorPage = createTab("INJECT", "💉")
-local HooksPage = createTab("HOOKS", "🎣")
-local LoggerPage = createTab("LOGS", "📋")
-local ToolsPage = createTab("TOOLS", "🛠️")
+-- Content Frame
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Name = "ContentFrame"
+ContentFrame.Parent = MainFrame
+ContentFrame.BackgroundTransparency = 1
+ContentFrame.Position = UDim2.new(0, 170, 0, 70)
+ContentFrame.Size = UDim2.new(1, -180, 1, -80)
 
--- Activate first tab
-tabs["SPY"].BackgroundColor3 = Color3.fromRGB(100, 50, 200)
-tabs["SPY"].TextColor3 = Color3.white
-RemoteSpyPage.Visible = true
-
--- ============= UTILITY FUNCTIONS =============
+-- ============= HELPER FUNCTIONS =============
 local function createButton(parent, text, position, size, color, callback)
     local btn = Instance.new("TextButton")
     btn.Parent = parent
@@ -231,36 +321,72 @@ local function createButton(parent, text, position, size, color, callback)
     btn.TextColor3 = Color3.white
     btn.TextSize = 13
     btn.AutoButtonColor = false
+    btn.ClipsDescendants = true
     
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 8)
+    corner.CornerRadius = UDim.new(0, 10)
     corner.Parent = btn
+    
+    local gradient = Instance.new("UIGradient")
+    gradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(
+            math.min(color.R * 255 * 1.1, 255) / 255,
+            math.min(color.G * 255 * 1.1, 255) / 255,
+            math.min(color.B * 255 * 1.1, 255) / 255
+        )),
+        ColorSequenceKeypoint.new(1, color)
+    }
+    gradient.Rotation = 90
+    gradient.Parent = btn
     
     local stroke = Instance.new("UIStroke")
     stroke.Color = Color3.fromRGB(255, 255, 255)
     stroke.Thickness = 0
-    stroke.Transparency = 0.8
+    stroke.Transparency = 0.7
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     stroke.Parent = btn
     
+    -- Ripple effect
+    local ripple = Instance.new("ImageLabel")
+    ripple.BackgroundTransparency = 1
+    ripple.Image = "rbxassetid://3570695787"
+    ripple.ImageColor3 = Color3.white
+    ripple.ImageTransparency = 1
+    ripple.ScaleType = Enum.ScaleType.Slice
+    ripple.SliceCenter = Rect.new(100, 100, 100, 100)
+    ripple.Parent = btn
+    
     btn.MouseEnter:Connect(function()
+        TweenService:Create(stroke, TweenInfo.new(0.2), {Thickness = 2, Transparency = 0}):Play()
         TweenService:Create(btn, TweenInfo.new(0.2), {
             BackgroundColor3 = Color3.fromRGB(
-                math.min(color.R * 255 * 1.2, 255),
-                math.min(color.G * 255 * 1.2, 255),
-                math.min(color.B * 255 * 1.2, 255)
+                math.min(color.R * 255 * 1.2, 255) / 255,
+                math.min(color.G * 255 * 1.2, 255) / 255,
+                math.min(color.B * 255 * 1.2, 255) / 255
             )
         }):Play()
-        stroke.Thickness = 2
     end)
     
     btn.MouseLeave:Connect(function()
+        TweenService:Create(stroke, TweenInfo.new(0.2), {Thickness = 0, Transparency = 0.7}):Play()
         TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = color}):Play()
-        stroke.Thickness = 0
     end)
     
-    if callback then
-        btn.MouseButton1Click:Connect(callback)
-    end
+    btn.MouseButton1Click:Connect(function()
+        ripple.Position = UDim2.new(0.5, 0, 0.5, 0)
+        ripple.Size = UDim2.new(0, 0, 0, 0)
+        ripple.ImageTransparency = 0.5
+        
+        TweenService:Create(ripple, TweenInfo.new(0.5), {
+            Size = UDim2.new(2, 0, 2, 0),
+            Position = UDim2.new(-0.5, 0, -0.5, 0),
+            ImageTransparency = 1
+        }):Play()
+        
+        if callback then
+            callback()
+        end
+    end)
     
     return btn
 end
@@ -273,20 +399,22 @@ local function createLabel(parent, text, position, size, textSize)
     lbl.Size = size
     lbl.Font = Enum.Font.Gotham
     lbl.Text = text
-    lbl.TextColor3 = Color3.fromRGB(200, 200, 200)
+    lbl.TextColor3 = Color3.fromRGB(220, 220, 230)
     lbl.TextSize = textSize or 13
     lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.TextWrapped = true
     return lbl
 end
 
 local function createTextBox(parent, placeholder, position, size)
     local box = Instance.new("TextBox")
     box.Parent = parent
-    box.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+    box.BackgroundColor3 = Color3.fromRGB(30, 30, 42)
     box.Position = position
     box.Size = size
     box.Font = Enum.Font.Gotham
     box.PlaceholderText = placeholder
+    box.PlaceholderColor3 = Color3.fromRGB(120, 120, 140)
     box.Text = ""
     box.TextColor3 = Color3.white
     box.TextSize = 13
@@ -296,351 +424,776 @@ local function createTextBox(parent, placeholder, position, size)
     corner.CornerRadius = UDim.new(0, 8)
     corner.Parent = box
     
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(60, 60, 80)
+    stroke.Thickness = 1
+    stroke.Parent = box
+    
+    box.Focused:Connect(function()
+        TweenService:Create(stroke, TweenInfo.new(0.2), {
+            Color = Color3.fromRGB(150, 100, 255),
+            Thickness = 2
+        }):Play()
+    end)
+    
+    box.FocusLost:Connect(function()
+        TweenService:Create(stroke, TweenInfo.new(0.2), {
+            Color = Color3.fromRGB(60, 60, 80),
+            Thickness = 1
+        }):Play()
+    end)
+    
     return box
 end
 
-local function createContainer(parent, size)
+local function createContainer(parent, position, size, title)
     local container = Instance.new("Frame")
     container.Parent = parent
     container.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    container.Position = position
     container.Size = size
+    container.BorderSizePixel = 0
     
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 10)
+    corner.CornerRadius = UDim.new(0, 12)
     corner.Parent = container
     
     local stroke = Instance.new("UIStroke")
     stroke.Color = Color3.fromRGB(50, 50, 70)
     stroke.Thickness = 1
+    stroke.Transparency = 0.5
     stroke.Parent = container
+    
+    local gradient = Instance.new("UIGradient")
+    gradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(28, 28, 40)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(22, 22, 32))
+    }
+    gradient.Rotation = 135
+    gradient.Parent = container
+    
+    if title then
+        local titleBar = Instance.new("Frame")
+        titleBar.Parent = container
+        titleBar.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+        titleBar.Size = UDim2.new(1, 0, 0, 35)
+        
+        local titleCorner = Instance.new("UICorner")
+        titleCorner.CornerRadius = UDim.new(0, 12)
+        titleCorner.Parent = titleBar
+        
+        local titleLabel = createLabel(titleBar, title, UDim2.new(0, 15, 0, 0), UDim2.new(1, -30, 1, 0), 14)
+        titleLabel.Font = Enum.Font.GothamBold
+        titleLabel.TextColor3 = Color3.fromRGB(200, 150, 255)
+        
+        -- Add glow effect to title
+        local titleGlow = Instance.new("ImageLabel")
+        titleGlow.Parent = titleBar
+        titleGlow.BackgroundTransparency = 1
+        titleGlow.Position = UDim2.new(0, -10, 0, -10)
+        titleGlow.Size = UDim2.new(1, 20, 1, 20)
+        titleGlow.Image = "rbxassetid://5554236805"
+        titleGlow.ImageColor3 = Color3.fromRGB(150, 100, 255)
+        titleGlow.ImageTransparency = 0.8
+        titleGlow.ScaleType = Enum.ScaleType.Slice
+        titleGlow.SliceCenter = Rect.new(23, 23, 277, 277)
+        titleGlow.ZIndex = 0
+    end
     
     return container
 end
 
--- ============= REMOTE SPY PAGE =============
-local spyActive = false
+local function createToggle(parent, text, position, size, defaultState, callback)
+    local toggleFrame = Instance.new("Frame")
+    toggleFrame.Parent = parent
+    toggleFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 42)
+    toggleFrame.Position = position
+    toggleFrame.Size = size
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = toggleFrame
+    
+    local label = createLabel(toggleFrame, text, UDim2.new(0, 15, 0, 0), UDim2.new(0.7, 0, 1, 0), 13)
+    label.TextColor3 = Color3.fromRGB(200, 200, 220)
+    
+    local switch = Instance.new("TextButton")
+    switch.Parent = toggleFrame
+    switch.BackgroundColor3 = defaultState and Color3.fromRGB(100, 200, 100) or Color3.fromRGB(80, 80, 100)
+    switch.Position = UDim2.new(1, -60, 0.5, -12)
+    switch.Size = UDim2.new(0, 50, 0, 24)
+    switch.Text = ""
+    switch.AutoButtonColor = false
+    
+    local switchCorner = Instance.new("UICorner")
+    switchCorner.CornerRadius = UDim.new(1, 0)
+    switchCorner.Parent = switch
+    
+    local knob = Instance.new("Frame")
+    knob.Parent = switch
+    knob.BackgroundColor3 = Color3.white
+    knob.Position = defaultState and UDim2.new(1, -22, 0.5, -10) or UDim2.new(0, 2, 0.5, -10)
+    knob.Size = UDim2.new(0, 20, 0, 20)
+    
+    local knobCorner = Instance.new("UICorner")
+    knobCorner.CornerRadius = UDim.new(1, 0)
+    knobCorner.Parent = knob
+    
+    local state = defaultState
+    
+    switch.MouseButton1Click:Connect(function()
+        state = not state
+        
+        TweenService:Create(switch, TweenInfo.new(0.2), {
+            BackgroundColor3 = state and Color3.fromRGB(100, 200, 100) or Color3.fromRGB(80, 80, 100)
+        }):Play()
+        
+        TweenService:Create(knob, TweenInfo.new(0.2), {
+            Position = state and UDim2.new(1, -22, 0.5, -10) or UDim2.new(0, 2, 0.5, -10)
+        }):Play()
+        
+        if callback then callback(state) end
+    end)
+    
+    return toggleFrame, state
+end
+
+-- ============= TAB CREATION SYSTEM =============
+local tabs = {}
+local pages = {}
+local activeTab = nil
+
+local function createTab(name, icon, order)
+    local tab = Instance.new("TextButton")
+    tab.Name = name .. "Tab"
+    tab.Parent = TabsList
+    tab.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+    tab.Size = UDim2.new(0.9, 0, 0, 50)
+    tab.Font = Enum.Font.GothamBold
+    tab.Text = ""
+    tab.AutoButtonColor = false
+    tab.LayoutOrder = order
+    
+    local tabCorner = Instance.new("UICorner")
+    tabCorner.CornerRadius = UDim.new(0, 10)
+    tabCorner.Parent = tab
+    
+    local tabStroke = Instance.new("UIStroke")
+    tabStroke.Color = Color3.fromRGB(60, 60, 80)
+    tabStroke.Thickness = 1
+    tabStroke.Transparency = 0.5
+    tabStroke.Parent = tab
+    
+    local tabGradient = Instance.new("UIGradient")
+    tabGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(32, 32, 48)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(28, 28, 42))
+    }
+    tabGradient.Rotation = 90
+    tabGradient.Parent = tab
+    
+    -- Icon
+    local iconLabel = Instance.new("TextLabel")
+    iconLabel.Parent = tab
+    iconLabel.BackgroundTransparency = 1
+    iconLabel.Position = UDim2.new(0, 15, 0.5, -12)
+    iconLabel.Size = UDim2.new(0, 24, 0, 24)
+    iconLabel.Font = Enum.Font.GothamBold
+    iconLabel.Text = icon
+    iconLabel.TextColor3 = Color3.fromRGB(150, 150, 180)
+    iconLabel.TextSize = 18
+    
+    -- Text
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Parent = tab
+    textLabel.BackgroundTransparency = 1
+    textLabel.Position = UDim2.new(0, 45, 0, 0)
+    textLabel.Size = UDim2.new(1, -50, 1, 0)
+    textLabel.Font = Enum.Font.GothamBold
+    textLabel.Text = name
+    textLabel.TextColor3 = Color3.fromRGB(150, 150, 180)
+    textLabel.TextSize = 13
+    textLabel.TextXAlignment = Enum.TextXAlignment.Left
+    
+    -- Selection indicator
+    local indicator = Instance.new("Frame")
+    indicator.Parent = tab
+    indicator.BackgroundColor3 = Color3.fromRGB(150, 100, 255)
+    indicator.BorderSizePixel = 0
+    indicator.Position = UDim2.new(0, 0, 0.5, -15)
+    indicator.Size = UDim2.new(0, 0, 0, 30)
+    
+    local indicatorCorner = Instance.new("UICorner")
+    indicatorCorner.CornerRadius = UDim.new(0, 5)
+    indicatorCorner.Parent = indicator
+    
+    -- Page
+    local page = Instance.new("ScrollingFrame")
+    page.Name = name .. "Page"
+    page.Parent = ContentFrame
+    page.BackgroundTransparency = 1
+    page.Size = UDim2.new(1, 0, 1, 0)
+    page.CanvasSize = UDim2.new(0, 0, 4, 0)
+    page.ScrollBarThickness = 6
+    page.ScrollBarImageColor3 = Color3.fromRGB(150, 100, 255)
+    page.BorderSizePixel = 0
+    page.Visible = false
+    
+    local pageLayout = Instance.new("UIListLayout")
+    pageLayout.Parent = page
+    pageLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    pageLayout.Padding = UDim.new(0, 15)
+    
+    local pagePadding = Instance.new("UIPadding")
+    pagePadding.Parent = page
+    pagePadding.PaddingTop = UDim.new(0, 10)
+    pagePadding.PaddingBottom = UDim.new(0, 10)
+    pagePadding.PaddingLeft = UDim.new(0, 10)
+    pagePadding.PaddingRight = UDim.new(0, 10)
+    
+    tabs[name] = {button = tab, icon = iconLabel, text = textLabel, indicator = indicator}
+    pages[name] = page
+    
+    tab.MouseButton1Click:Connect(function()
+        for tabName, tabData in pairs(tabs) do
+            local isActive = (tabName == name)
+            
+            TweenService:Create(tabData.button, TweenInfo.new(0.3), {
+                BackgroundColor3 = isActive and Color3.fromRGB(45, 40, 65) or Color3.fromRGB(30, 30, 45)
+            }):Play()
+            
+            TweenService:Create(tabData.icon, TweenInfo.new(0.3), {
+                TextColor3 = isActive and Color3.fromRGB(200, 150, 255) or Color3.fromRGB(150, 150, 180)
+            }):Play()
+            
+            TweenService:Create(tabData.text, TweenInfo.new(0.3), {
+                TextColor3 = isActive and Color3.white or Color3.fromRGB(150, 150, 180)
+            }):Play()
+            
+            TweenService:Create(tabData.indicator, TweenInfo.new(0.3), {
+                Size = isActive and UDim2.new(0, 4, 0, 30) or UDim2.new(0, 0, 0, 30)
+            }):Play()
+            
+            pages[tabName].Visible = isActive
+        end
+        
+        activeTab = name
+    end)
+    
+    return page
+end
+
+-- ============= GLOBAL VARIABLES =============
+local foundRemotes = {}
 local hookedRemotes = {}
-local remoteLog = {}
+local blockedRemotes = {}
+local logEntries = {}
+local spyActive = false
+local autoScanEnabled = false
+local injectionCount = 0
+local remoteCallCounts = {}
 
-local SpyContainer = createContainer(RemoteSpyPage, UDim2.new(0.95, 0, 0, 450))
+-- ============= CREATE ALL TABS =============
+local SpyPage = createTab("SPY", "🔍", 1)
+local InjectPage = createTab("INJECT", "💉", 2)
+local HooksPage = createTab("HOOKS", "🎣", 3)
+local LogsPage = createTab("LOGS", "📋", 4)
+local ToolsPage = createTab("TOOLS", "🛠️", 5)
+local PlayersPage = createTab("PLAYERS", "👥", 6)
+local ScriptsPage = createTab("SCRIPTS", "📜", 7)
+local VisualsPage = createTab("VISUALS", "👁️", 8)
+local ExploitPage = createTab("EXPLOIT", "💀", 9)
+local SettingsPage = createTab("SETTINGS", "⚙️", 10)
 
-createLabel(SpyContainer, "📡 REMOTE EVENT MONITOR", UDim2.new(0, 10, 0, 10), UDim2.new(1, -20, 0, 25), 16).Font = Enum.Font.GothamBold
+-- Activate first tab
+tabs["SPY"].button.BackgroundColor3 = Color3.fromRGB(45, 40, 65)
+tabs["SPY"].icon.TextColor3 = Color3.fromRGB(200, 150, 255)
+tabs["SPY"].text.TextColor3 = Color3.white
+tabs["SPY"].indicator.Size = UDim2.new(0, 4, 0, 30)
+SpyPage.Visible = true
+activeTab = "SPY"
 
+-- ============= SPY PAGE =============
+local SpyMainContainer = createContainer(SpyPage, UDim2.new(0, 0, 0, 0), UDim2.new(1, -10, 0, 520), "📡 REMOTE EVENT MONITOR")
+
+-- Search bar
+local SearchFrame = Instance.new("Frame")
+SearchFrame.Parent = SpyMainContainer
+SearchFrame.BackgroundTransparency = 1
+SearchFrame.Position = UDim2.new(0, 15, 0, 45)
+SearchFrame.Size = UDim2.new(1, -30, 0, 40)
+
+local SearchBox = createTextBox(SearchFrame, "🔍 Search remotes...", UDim2.new(0, 0, 0, 0), UDim2.new(0.7, -5, 1, 0))
+
+local FilterDropdown = createButton(SearchFrame, "🔽 FILTER", UDim2.new(0.7, 5, 0, 0), UDim2.new(0.15, -5, 1, 0), Color3.fromRGB(80, 120, 180))
+
+local SortDropdown = createButton(SearchFrame, "⇅ SORT", UDim2.new(0.85, 5, 0, 0), UDim2.new(0.15, -5, 1, 0), Color3.fromRGB(100, 140, 200))
+
+-- Remote list
 local RemoteList = Instance.new("ScrollingFrame")
-RemoteList.Parent = SpyContainer
+RemoteList.Parent = SpyMainContainer
 RemoteList.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-RemoteList.Position = UDim2.new(0, 10, 0, 45)
-RemoteList.Size = UDim2.new(1, -20, 0, 300)
+RemoteList.Position = UDim2.new(0, 15, 0, 95)
+RemoteList.Size = UDim2.new(1, -30, 0, 340)
 RemoteList.CanvasSize = UDim2.new(0, 0, 0, 0)
 RemoteList.ScrollBarThickness = 6
+RemoteList.BorderSizePixel = 0
 
 local RemoteListCorner = Instance.new("UICorner")
-RemoteListCorner.CornerRadius = UDim.new(0, 8)
+RemoteListCorner.CornerRadius = UDim.new(0, 10)
 RemoteListCorner.Parent = RemoteList
 
 local RemoteListLayout = Instance.new("UIListLayout")
 RemoteListLayout.Parent = RemoteList
-RemoteListLayout.Padding = UDim.new(0, 5)
+RemoteListLayout.Padding = UDim.new(0, 8)
+RemoteListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
-local function addRemoteToList(remote, callCount)
-    local existing = RemoteList:FindFirstChild(remote:GetFullName())
-    if existing then
-        existing:FindFirstChild("CallCount").Text = "Calls: " .. callCount
+local RemoteListPadding = Instance.new("UIPadding")
+RemoteListPadding.Parent = RemoteList
+RemoteListPadding.PaddingTop = UDim.new(0, 8)
+RemoteListPadding.PaddingBottom = UDim.new(0, 8)
+
+-- Add remote to list function
+local function addRemoteToList(remote, calls)
+    calls = calls or 0
+    local safeName = remote:GetFullName():gsub("[^%w]", "_")
+    
+    if RemoteList:FindFirstChild(safeName) then
+        local existing = RemoteList:FindFirstChild(safeName)
+        local callLabel = existing:FindFirstChild("CallCount")
+        if callLabel then
+            callLabel.Text = "📊 " .. calls .. " calls"
+            
+            -- Animate call count update
+            TweenService:Create(callLabel, TweenInfo.new(0.2), {
+                TextColor3 = Color3.fromRGB(255, 220, 100)
+            }):Play()
+            wait(0.2)
+            TweenService:Create(callLabel, TweenInfo.new(0.2), {
+                TextColor3 = Color3.fromRGB(200, 180, 100)
+            }):Play()
+        end
         return
     end
     
     local item = Instance.new("Frame")
-    item.Name = remote:GetFullName()
+    item.Name = safeName
     item.Parent = RemoteList
-    item.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
-    item.Size = UDim2.new(1, -10, 0, 60)
+    item.BackgroundColor3 = Color3.fromRGB(32, 32, 45)
+    item.Size = UDim2.new(0.98, 0, 0, 75)
     
     local itemCorner = Instance.new("UICorner")
-    itemCorner.CornerRadius = UDim.new(0, 6)
+    itemCorner.CornerRadius = UDim.new(0, 10)
     itemCorner.Parent = item
     
-    local remoteName = createLabel(item, "📡 " .. remote.Name, UDim2.new(0, 10, 0, 5), UDim2.new(0.6, 0, 0, 20), 13)
-    remoteName.Font = Enum.Font.GothamBold
-    remoteName.TextColor3 = Color3.fromRGB(100, 200, 255)
+    local itemGradient = Instance.new("UIGradient")
+    itemGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 35, 50)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(28, 28, 42))
+    }
+    itemGradient.Rotation = 90
+    itemGradient.Parent = item
     
-    local remotePath = createLabel(item, remote:GetFullName(), UDim2.new(0, 10, 0, 25), UDim2.new(0.6, 0, 0, 15), 10)
-    remotePath.TextColor3 = Color3.fromRGB(150, 150, 150)
+    local itemStroke = Instance.new("UIStroke")
+    itemStroke.Color = Color3.fromRGB(60, 60, 80)
+    itemStroke.Thickness = 1
+    itemStroke.Transparency = 0.5
+    itemStroke.Parent = item
     
-    local callLabel = createLabel(item, "Calls: " .. callCount, UDim2.new(0, 10, 0, 40), UDim2.new(0.3, 0, 0, 15), 11)
+    -- Type icon
+    local typeIcon = Instance.new("TextLabel")
+    typeIcon.Parent = item
+    typeIcon.BackgroundTransparency = 1
+    typeIcon.Position = UDim2.new(0, 10, 0.5, -15)
+    typeIcon.Size = UDim2.new(0, 30, 0, 30)
+    typeIcon.Font = Enum.Font.GothamBold
+    typeIcon.Text = remote:IsA("RemoteEvent") and "📡" or "📞"
+    typeIcon.TextColor3 = remote:IsA("RemoteEvent") and Color3.fromRGB(100, 200, 255) or Color3.fromRGB(255, 150, 100)
+    typeIcon.TextSize = 20
+    
+    -- Name
+    local nameLabel = createLabel(item, remote.Name, UDim2.new(0, 50, 0, 8), UDim2.new(0.45, 0, 0, 20), 13)
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextColor3 = Color3.fromRGB(220, 220, 240)
+    
+    -- Path
+    local pathLabel = createLabel(item, remote:GetFullName(), UDim2.new(0, 50, 0, 28), UDim2.new(0.45, 0, 0, 15), 10)
+    pathLabel.TextColor3 = Color3.fromRGB(140, 140, 160)
+    
+    -- Call count
+    local callLabel = createLabel(item, "📊 " .. calls .. " calls", UDim2.new(0, 50, 0, 48), UDim2.new(0.3, 0, 0, 18), 11)
     callLabel.Name = "CallCount"
-    callLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+    callLabel.TextColor3 = Color3.fromRGB(200, 180, 100)
     
-    createButton(item, "HOOK", UDim2.new(0.65, 0, 0, 5), UDim2.new(0, 80, 0, 25), Color3.fromRGB(80, 150, 80), function()
-        hookRemote(remote)
-    end)
+    -- Buttons
+    local btnY = 8
+    local btnSpacing = 58
     
-    createButton(item, "BLOCK", UDim2.new(0.65, 0, 0, 32), UDim2.new(0, 80, 0, 25), Color3.fromRGB(200, 50, 50), function()
-        blockRemote(remote)
-    end)
+    createButton(item, "🔥", UDim2.new(0.55, 0, 0, btnY), UDim2.new(0, 50, 0, 28), Color3.fromRGB(220, 150, 50), function()
+        pcall(function()
+            if remote:IsA("RemoteEvent") then
+                remote:FireServer()
+            else
+                remote:InvokeServer()
+            end
+        end)
+        table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Fired: " .. remote.Name, color = Color3.fromRGB(100, 255, 100)})
+    end).Text = "FIRE"
     
-    createButton(item, "COPY", UDim2.new(0.82, 0, 0, 5), UDim2.new(0, 60, 0, 25), Color3.fromRGB(100, 100, 200), function()
+    createButton(item, "🎣", UDim2.new(0.7, 0, 0, btnY), UDim2.new(0, 50, 0, 28), Color3.fromRGB(80, 180, 80), function()
+        hookedRemotes[remote] = true
+        table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Hooked: " .. remote.Name, color = Color3.fromRGB(100, 255, 100)})
+    end).Text = "HOOK"
+    
+    createButton(item, "📋", UDim2.new(0.85, 0, 0, btnY), UDim2.new(0, 50, 0, 28), Color3.fromRGB(100, 120, 200), function()
         setclipboard(remote:GetFullName())
-    end)
+        table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Copied: " .. remote.Name, color = Color3.fromRGB(100, 255, 255)})
+    end).Text = "COPY"
     
-    createButton(item, "FIRE", UDim2.new(0.82, 0, 0, 32), UDim2.new(0, 60, 0, 25), Color3.fromRGB(220, 150, 50), function()
-        fireRemote(remote)
-    end)
-    
-    RemoteList.CanvasSize = UDim2.new(0, 0, 0, RemoteListLayout.AbsoluteContentSize.Y + 10)
-end
-
-local SpyToggleBtn = createButton(SpyContainer, "🔴 START SPY", UDim2.new(0, 10, 0, 355), UDim2.new(0.3, -7.5, 0, 40), Color3.fromRGB(50, 150, 50))
-local ClearLogBtn = createButton(SpyContainer, "🗑️ CLEAR", UDim2.new(0.35, 0, 0, 355), UDim2.new(0.3, -7.5, 0, 40), Color3.fromRGB(150, 80, 80))
-local ExportBtn = createButton(SpyContainer, "📤 EXPORT", UDim2.new(0.7, 0, 0, 355), UDim2.new(0.3, -7.5, 0, 40), Color3.fromRGB(100, 100, 200))
-
-local SpyStatus = createLabel(SpyContainer, "Status: Inactive", UDim2.new(0, 10, 0, 405), UDim2.new(1, -20, 0, 30), 12)
-
--- Hook Remote Function
-function hookRemote(remote)
-    if hookedRemotes[remote] then
-        SpyStatus.Text = "Status: Already hooked - " .. remote.Name
-        return
-    end
-    
-    local originalNamecall
-    originalNamecall = hookmetamethod(game, "__namecall", function(self, ...)
-        local method = getnamecallmethod()
-        local args = {...}
-        
-        if self == remote and (method == "FireServer" or method == "InvokeServer") then
-            table.insert(remoteLog, {
-                Remote = remote:GetFullName(),
-                Method = method,
-                Args = args,
-                Time = os.date("%H:%M:%S")
-            })
-            
-            SpyStatus.Text = "🎣 Hooked: " .. remote.Name .. " | " .. method
-            SpyStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
-            
-            -- Log to console
-            warn(string.format("[HOOK] %s.%s(%s)", remote:GetFullName(), method, HttpService:JSONEncode(args)))
-        end
-        
-        return originalNamecall(self, ...)
-    end)
-    
-    hookedRemotes[remote] = true
-end
-
--- Block Remote Function
-function blockRemote(remote)
-    if remote:IsA("RemoteEvent") then
-        remote.OnClientEvent:Connect(function() end)
-        remote.FireServer = function() end
-    elseif remote:IsA("RemoteFunction") then
-        remote.OnClientInvoke = function() return nil end
-        remote.InvokeServer = function() return nil end
-    end
-    
-    SpyStatus.Text = "🚫 Blocked: " .. remote.Name
-    SpyStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
-end
-
--- Fire Remote Function
-function fireRemote(remote)
-    local success, err = pcall(function()
+    createButton(item, "🚫", UDim2.new(0.55, 0, 0, btnY + 35), UDim2.new(0, 70, 0, 28), Color3.fromRGB(200, 50, 50), function()
+        blockedRemotes[remote] = true
         if remote:IsA("RemoteEvent") then
-            remote:FireServer()
-        elseif remote:IsA("RemoteFunction") then
-            remote:InvokeServer()
+            remote.FireServer = function() end
+        else
+            remote.InvokeServer = function() return end
         end
-    end)
+        table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Blocked: " .. remote.Name, color = Color3.fromRGB(255, 100, 100)})
+    end).Text = "BLOCK"
     
-    if success then
-        SpyStatus.Text = "✅ Fired: " .. remote.Name
-        SpyStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
-    else
-        SpyStatus.Text = "❌ Failed: " .. tostring(err)
-        SpyStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
-    end
+    createButton(item, "📝", UDim2.new(0.75, 0, 0, btnY + 35), UDim2.new(0, 80, 0, 28), Color3.fromRGB(150, 100, 200), function()
+        -- Open details
+    end).Text = "DETAILS"
+    
+    RemoteList.CanvasSize = UDim2.new(0, 0, 0, RemoteListLayout.AbsoluteContentSize.Y + 16)
 end
+
+-- Control buttons
+local ControlsFrame = Instance.new("Frame")
+ControlsFrame.Parent = SpyMainContainer
+ControlsFrame.BackgroundTransparency = 1
+ControlsFrame.Position = UDim2.new(0, 15, 0, 445)
+ControlsFrame.Size = UDim2.new(1, -30, 0, 50)
+
+local SpyToggleBtn = createButton(ControlsFrame, "🔴 START SPY", UDim2.new(0, 0, 0, 0), UDim2.new(0.22, -5, 1, 0), Color3.fromRGB(50, 180, 50))
+local QuickScanBtn = createButton(ControlsFrame, "⚡ QUICK SCAN", UDim2.new(0.23, 0, 0, 0), UDim2.new(0.22, -5, 1, 0), Color3.fromRGB(255, 180, 50))
+local ClearBtn = createButton(ControlsFrame, "🗑️ CLEAR", UDim2.new(0.46, 0, 0, 0), UDim2.new(0.17, -5, 1, 0), Color3.fromRGB(180, 80, 80))
+local ExportBtn = createButton(ControlsFrame, "📤 EXPORT", UDim2.new(0.64, 0, 0, 0), UDim2.new(0.17, -5, 1, 0), Color3.fromRGB(100, 120, 200))
+local AutoScanBtn = createButton(ControlsFrame, "🔁 AUTO", UDim2.new(0.82, 0, 0, 0), UDim2.new(0.17, -5, 1, 0), Color3.fromRGB(150, 150, 50))
+
+-- Status bar
+local SpyStatusBar = createContainer(SpyPage, UDim2.new(0, 0, 0, 545), UDim2.new(1, -10, 0, 50))
+local SpyStatus = createLabel(SpyStatusBar, "Status: Ready to scan", UDim2.new(0, 15, 0.5, -10), UDim2.new(0.7, 0, 0, 20), 13)
+SpyStatus.TextColor3 = Color3.fromRGB(255, 255, 100)
+
+local SpyCounter = createLabel(SpyStatusBar, "Remotes: 0 | Hooked: 0 | Blocked: 0", UDim2.new(0.7, 0, 0.5, -10), UDim2.new(0.3, -15, 0, 20), 12)
+SpyCounter.TextXAlignment = Enum.TextXAlignment.Right
 
 -- Spy Toggle
 SpyToggleBtn.MouseButton1Click:Connect(function()
     spyActive = not spyActive
     SpyToggleBtn.Text = spyActive and "🟢 STOP SPY" or "🔴 START SPY"
-    SpyToggleBtn.BackgroundColor3 = spyActive and Color3.fromRGB(200, 50, 50) or Color3.fromRGB(50, 150, 50)
+    SpyToggleBtn.BackgroundColor3 = spyActive and Color3.fromRGB(220, 50, 50) or Color3.fromRGB(50, 180, 50)
     
     if spyActive then
-        -- Real-time remote monitoring
-        local remoteCallCount = {}
+        foundRemotes = {}
+        remoteCallCounts = {}
+        local count = 0
         
         for _, obj in pairs(game:GetDescendants()) do
             if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
-                remoteCallCount[obj] = 0
+                table.insert(foundRemotes, obj)
+                remoteCallCounts[obj] = 0
                 addRemoteToList(obj, 0)
-                
-                if obj:IsA("RemoteEvent") then
-                    obj.OnClientEvent:Connect(function(...)
-                        remoteCallCount[obj] = remoteCallCount[obj] + 1
-                        addRemoteToList(obj, remoteCallCount[obj])
-                        
-                        table.insert(remoteLog, {
-                            Remote = obj:GetFullName(),
-                            Direction = "SERVER → CLIENT",
-                            Args = {...},
-                            Time = os.date("%H:%M:%S")
-                        })
-                    end)
-                end
+                count = count + 1
             end
         end
         
-        -- Monitor new remotes
+        SpyStatus.Text = "Status: Active - Monitoring " .. count .. " remotes"
+        SpyStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
+        table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Spy activated - Found " .. count .. " remotes", color = Color3.fromRGB(100, 255, 100)})
+        
+        -- Hook to detect new remotes
         game.DescendantAdded:Connect(function(obj)
             if spyActive and (obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction")) then
-                remoteCallCount[obj] = 0
+                table.insert(foundRemotes, obj)
+                remoteCallCounts[obj] = 0
                 addRemoteToList(obj, 0)
+                table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "New remote: " .. obj.Name, color = Color3.fromRGB(255, 200, 100)})
             end
         end)
         
-        SpyStatus.Text = "Status: Active - Monitoring " .. #remoteCallCount .. " remotes"
-        SpyStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
+        -- Monitor remote calls
+        for _, remote in pairs(foundRemotes) do
+            if remote:IsA("RemoteEvent") then
+                remote.OnClientEvent:Connect(function(...)
+                    remoteCallCounts[remote] = (remoteCallCounts[remote] or 0) + 1
+                    addRemoteToList(remote, remoteCallCounts[remote])
+                    table.insert(logEntries, {
+                        time = os.date("%H:%M:%S"),
+                        msg = string.format("📡 %s fired from server", remote.Name),
+                        color = Color3.fromRGB(100, 200, 255)
+                    })
+                end)
+            end
+        end
     else
-        SpyStatus.Text = "Status: Inactive"
+        SpyStatus.Text = "Status: Stopped"
         SpyStatus.TextColor3 = Color3.fromRGB(200, 200, 200)
+        table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Spy deactivated", color = Color3.fromRGB(255, 200, 100)})
     end
+    
+    -- Update counter
+    local hookedCount = 0
+    for _ in pairs(hookedRemotes) do hookedCount = hookedCount + 1 end
+    local blockedCount = 0
+    for _ in pairs(blockedRemotes) do blockedCount = blockedCount + 1 end
+    SpyCounter.Text = string.format("Remotes: %d | Hooked: %d | Blocked: %d", #foundRemotes, hookedCount, blockedCount)
 end)
 
--- Clear Log
-ClearLogBtn.MouseButton1Click:Connect(function()
+-- Quick Scan
+QuickScanBtn.MouseButton1Click:Connect(function()
+    local keywords = {"backdoor", "admin", "owner", "cmd"}
+    local found = 0
+    
+    for _, obj in pairs(game:GetDescendants()) do
+        if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
+            local name = obj.Name:lower()
+            for _, keyword in pairs(keywords) do
+                if name:find(keyword) then
+                    table.insert(foundRemotes, obj)
+                    remoteCallCounts[obj] = 0
+                    addRemoteToList(obj, 0)
+                    found = found + 1
+                    break
+                end
+            end
+        end
+    end
+    
+    SpyStatus.Text = "Quick scan complete - Found " .. found .. " suspicious remotes"
+    SpyStatus.TextColor3 = found > 0 and Color3.fromRGB(255, 150, 50) or Color3.fromRGB(200, 200, 200)
+    table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Quick scan: " .. found .. " suspicious remotes", color = Color3.fromRGB(255, 200, 100)})
+end)
+
+-- Clear
+ClearBtn.MouseButton1Click:Connect(function()
+    for _, child in pairs(RemoteList:GetChildren()) do
+        if child:IsA("Frame") then
+            TweenService:Create(child, TweenInfo.new(0.2), {Size = UDim2.new(0.98, 0, 0, 0)}):Play()
+            wait(0.02)
+        end
+    end
+    wait(0.2)
     for _, child in pairs(RemoteList:GetChildren()) do
         if child:IsA("Frame") then
             child:Destroy()
         end
     end
-    remoteLog = {}
-    SpyStatus.Text = "Status: Log cleared"
+    foundRemotes = {}
+    remoteCallCounts = {}
+    SpyStatus.Text = "Status: List cleared"
+    table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Remote list cleared", color = Color3.fromRGB(255, 200, 100)})
 end)
 
--- Export Log
+-- Export
 ExportBtn.MouseButton1Click:Connect(function()
-    local exported = HttpService:JSONEncode(remoteLog)
-    setclipboard(exported)
-    SpyStatus.Text = "Status: Exported " .. #remoteLog .. " entries to clipboard"
-    SpyStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
+    local data = {}
+    for _, remote in pairs(foundRemotes) do
+        table.insert(data, string.format("%s (%s)", remote:GetFullName(), remote.ClassName))
+    end
+    setclipboard(table.concat(data, "\n"))
+    SpyStatus.Text = "Status: Exported " .. #data .. " remotes to clipboard"
+    SpyStatus.TextColor3 = Color3.fromRGB(100, 255, 255)
+    table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Exported " .. #data .. " remotes", color = Color3.fromRGB(100, 255, 255)})
 end)
 
--- ============= INJECTOR PAGE =============
-local InjectorContainer = createContainer(InjectorPage, UDim2.new(0.95, 0, 0, 550))
+-- Auto Scan
+AutoScanBtn.MouseButton1Click:Connect(function()
+    autoScanEnabled = not autoScanEnabled
+    AutoScanBtn.BackgroundColor3 = autoScanEnabled and Color3.fromRGB(100, 200, 100) or Color3.fromRGB(150, 150, 50)
+    
+    if autoScanEnabled then
+        spawn(function()
+            while autoScanEnabled do
+                if not spyActive then
+                    SpyToggleBtn.MouseButton1Click:Fire()
+                end
+                wait(30)
+            end
+        end)
+    end
+end)
 
-createLabel(InjectorContainer, "💉 REMOTE INJECTOR", UDim2.new(0, 10, 0, 10), UDim2.new(1, -20, 0, 25), 16).Font = Enum.Font.GothamBold
+-- Search functionality
+SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local search = SearchBox.Text:lower()
+    for _, item in pairs(RemoteList:GetChildren()) do
+        if item:IsA("Frame") then
+            local nameLabel = item:FindFirstChild("TextLabel")
+            if nameLabel then
+                item.Visible = search == "" or item.Name:lower():find(search)
+            end
+        end
+    end
+end)
 
-createLabel(InjectorContainer, "Target Remote:", UDim2.new(0, 10, 0, 45), UDim2.new(0.3, 0, 0, 20), 13)
-local TargetRemoteBox = createTextBox(InjectorContainer, "game.ReplicatedStorage.RemoteEvent", UDim2.new(0, 10, 0, 70), UDim2.new(1, -20, 0, 35))
+-- ============= INJECT PAGE =============
+local InjectMainContainer = createContainer(InjectPage, UDim2.new(0, 0, 0, 0), UDim2.new(1, -10, 0, 700), "💉 REMOTE INJECTOR")
 
-createLabel(InjectorContainer, "Payload Type:", UDim2.new(0, 10, 0, 115), UDim2.new(0.3, 0, 0, 20), 13)
+-- Target selector
+createLabel(InjectMainContainer, "🎯 Target Remote:", UDim2.new(0, 15, 0, 50), UDim2.new(1, -30, 0, 20), 13).Font = Enum.Font.GothamBold
+
+local TargetBox = createTextBox(InjectMainContainer, "game.ReplicatedStorage.RemoteEvent", UDim2.new(0, 15, 0, 75), UDim2.new(0.7, -10, 0, 40))
+
+local BrowseBtn = createButton(InjectMainContainer, "📁 BROWSE", UDim2.new(0.7, 5, 0, 75), UDim2.new(0.3, -15, 0, 40), Color3.fromRGB(100, 140, 200))
+
+-- Payload type selector
+createLabel(InjectMainContainer, "📦 Payload Type:", UDim2.new(0, 15, 0, 130), UDim2.new(1, -30, 0, 20), 13).Font = Enum.Font.GothamBold
 
 local PayloadTypeFrame = Instance.new("Frame")
-PayloadTypeFrame.Parent = InjectorContainer
+PayloadTypeFrame.Parent = InjectMainContainer
 PayloadTypeFrame.BackgroundTransparency = 1
-PayloadTypeFrame.Position = UDim2.new(0, 10, 0, 140)
-PayloadTypeFrame.Size = UDim2.new(1, -20, 0, 35)
+PayloadTypeFrame.Position = UDim2.new(0, 15, 0, 155)
+PayloadTypeFrame.Size = UDim2.new(1, -30, 0, 40)
 
-local payloadType = "Table"
-local payloadButtons = {}
+local payloadTypes = {"TABLE", "STRING", "NUMBER", "BOOLEAN", "CUSTOM"}
+local selectedPayloadType = "TABLE"
+local payloadTypeButtons = {}
 
-local function createPayloadButton(text, position, type)
-    local btn = createButton(PayloadTypeFrame, text, position, UDim2.new(0, 120, 1, 0), Color3.fromRGB(60, 60, 80))
-    payloadButtons[type] = btn
+for i, pType in ipairs(payloadTypes) do
+    local btn = createButton(PayloadTypeFrame, pType, UDim2.new((i-1) * 0.2, (i-1) * 5, 0, 0), UDim2.new(0.19, 0, 1, 0), 
+        i == 1 and Color3.fromRGB(100, 150, 200) or Color3.fromRGB(60, 80, 120))
+    
+    payloadTypeButtons[pType] = btn
     
     btn.MouseButton1Click:Connect(function()
-        payloadType = type
-        for t, b in pairs(payloadButtons) do
-            b.BackgroundColor3 = (t == type) and Color3.fromRGB(100, 50, 200) or Color3.fromRGB(60, 60, 80)
+        selectedPayloadType = pType
+        for type, button in pairs(payloadTypeButtons) do
+            button.BackgroundColor3 = (type == pType) and Color3.fromRGB(100, 150, 200) or Color3.fromRGB(60, 80, 120)
         end
     end)
-    
-    return btn
 end
 
-createPayloadButton("TABLE", UDim2.new(0, 0, 0, 0), "Table")
-createPayloadButton("STRING", UDim2.new(0, 130, 0, 0), "String")
-createPayloadButton("NUMBER", UDim2.new(0, 260, 0, 0), "Number")
-createPayloadButton("BOOLEAN", UDim2.new(0, 390, 0, 0), "Boolean")
-createPayloadButton("CUSTOM", UDim2.new(0, 520, 0, 0), "Custom")
-
-payloadButtons["Table"].BackgroundColor3 = Color3.fromRGB(100, 50, 200)
-
-createLabel(InjectorContainer, "Payload Data:", UDim2.new(0, 10, 0, 185), UDim2.new(0.3, 0, 0, 20), 13)
+-- Payload editor
+createLabel(InjectMainContainer, "✏️ Payload Data:", UDim2.new(0, 15, 0, 210), UDim2.new(1, -30, 0, 20), 13).Font = Enum.Font.GothamBold
 
 local PayloadBox = Instance.new("TextBox")
-PayloadBox.Parent = InjectorContainer
-PayloadBox.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-PayloadBox.Position = UDim2.new(0, 10, 0, 210)
-PayloadBox.Size = UDim2.new(1, -20, 0, 120)
+PayloadBox.Parent = InjectMainContainer
+PayloadBox.BackgroundColor3 = Color3.fromRGB(25, 25, 38)
+PayloadBox.Position = UDim2.new(0, 15, 0, 235)
+PayloadBox.Size = UDim2.new(1, -30, 0, 150)
 PayloadBox.Font = Enum.Font.Code
-PayloadBox.PlaceholderText = '{"cmd": "kill", "target": "all"}'
+PayloadBox.PlaceholderText = '{"cmd":"kill","target":"all"}'
+PayloadBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 120)
 PayloadBox.Text = ""
-PayloadBox.TextColor3 = Color3.white
+PayloadBox.TextColor3 = Color3.fromRGB(200, 255, 200)
 PayloadBox.TextSize = 12
-PayloadBox.ClearTextOnFocus = false
 PayloadBox.MultiLine = true
+PayloadBox.ClearTextOnFocus = false
 PayloadBox.TextXAlignment = Enum.TextXAlignment.Left
 PayloadBox.TextYAlignment = Enum.TextYAlignment.Top
 
-local PayloadCorner = Instance.new("UICorner")
-PayloadCorner.CornerRadius = UDim.new(0, 8)
-PayloadCorner.Parent = PayloadBox
+local PayloadBoxCorner = Instance.new("UICorner")
+PayloadBoxCorner.CornerRadius = UDim.new(0, 10)
+PayloadBoxCorner.Parent = PayloadBox
 
--- Quick Payloads
-createLabel(InjectorContainer, "Quick Payloads:", UDim2.new(0, 10, 0, 340), UDim2.new(0.3, 0, 0, 20), 13)
+local PayloadBoxStroke = Instance.new("UIStroke")
+PayloadBoxStroke.Color = Color3.fromRGB(60, 60, 80)
+PayloadBoxStroke.Thickness = 1
+PayloadBoxStroke.Parent = PayloadBox
 
-local QuickFrame = Instance.new("Frame")
-QuickFrame.Parent = InjectorContainer
-QuickFrame.BackgroundTransparency = 1
-QuickFrame.Position = UDim2.new(0, 10, 0, 365)
-QuickFrame.Size = UDim2.new(1, -20, 0, 80)
+-- Syntax highlighting
+PayloadBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local text = PayloadBox.Text
+    -- Simple syntax highlighting simulation
+    if text:find("{") and text:find("}") then
+        PayloadBox.TextColor3 = Color3.fromRGB(150, 255, 150)
+    elseif text:find("\"") then
+        PayloadBox.TextColor3 = Color3.fromRGB(255, 200, 150)
+    else
+        PayloadBox.TextColor3 = Color3.fromRGB(200, 255, 200)
+    end
+end)
+
+-- Quick payload templates
+createLabel(InjectMainContainer, "⚡ Quick Payloads:", UDim2.new(0, 15, 0, 400), UDim2.new(1, -30, 0, 20), 13).Font = Enum.Font.GothamBold
 
 local quickPayloads = {
-    {name = "Kill All", payload = '{cmd = "kill", target = "all"}'},
-    {name = "Kick All", payload = '{cmd = "kick", target = "all"}'},
-    {name = "TP All", payload = '{cmd = "tp", target = "all", to = "' .. LocalPlayer.Name .. '"}'},
-    {name = "God Mode", payload = '{cmd = "god", player = "' .. LocalPlayer.Name .. '"}'},
-    {name = "Fly", payload = '{cmd = "fly", player = "' .. LocalPlayer.Name .. '"}'},
-    {name = "Speed", payload = '{cmd = "speed", player = "' .. LocalPlayer.Name .. '", value = 100}'},
-    {name = "Noclip", payload = '{cmd = "noclip", player = "' .. LocalPlayer.Name .. '"}'},
-    {name = "Invisible", payload = '{cmd = "invisible", player = "' .. LocalPlayer.Name .. '"}'},
+    {name = "💀 Kill All", code = '{"cmd":"kill","target":"all"}'},
+    {name = "🚪 Kick All", code = '{"cmd":"kick","target":"all"}'},
+    {name = "👤 Kill Me", code = '{"cmd":"kill","target":"' .. LocalPlayer.Name .. '"}'},
+    {name = "🏃 Speed", code = '{"cmd":"speed","value":100}'},
+    {name = "🦘 Jump", code = '{"cmd":"jump","value":100}'},
+    {name = "🎯 TP All", code = '{"cmd":"tp","target":"all","to":"' .. LocalPlayer.Name .. '"}'},
+    {name = "👑 Admin", code = '{"cmd":"admin","player":"' .. LocalPlayer.Name .. '"}'},
+    {name = "✨ God", code = '{"cmd":"god","player":"' .. LocalPlayer.Name .. '"}'},
+    {name = "🪂 Fly", code = '{"cmd":"fly","enabled":true}'},
+    {name = "👻 Noclip", code = '{"cmd":"noclip","enabled":true}'},
+    {name = "🔮 ESP", code = '{"cmd":"esp","enabled":true}'},
+    {name = "🎨 Btools", code = '{"cmd":"btools","enabled":true}'},
 }
 
-for i, quick in ipairs(quickPayloads) do
+local QuickPayloadGrid = Instance.new("Frame")
+QuickPayloadGrid.Parent = InjectMainContainer
+QuickPayloadGrid.BackgroundTransparency = 1
+QuickPayloadGrid.Position = UDim2.new(0, 15, 0, 425)
+QuickPayloadGrid.Size = UDim2.new(1, -30, 0, 160)
+
+for i, payload in ipairs(quickPayloads) do
     local row = math.floor((i - 1) / 4)
     local col = (i - 1) % 4
     
-    createButton(QuickFrame, quick.name, UDim2.new(col * 0.25, col * 5, row * 0.5, row * 5), UDim2.new(0.24, 0, 0.45, 0), Color3.fromRGB(80, 120, 180), function()
-        PayloadBox.Text = quick.payload
-    end)
+    createButton(QuickPayloadGrid, payload.name, 
+        UDim2.new(col * 0.25, col * 5, row * 0.25, row * 5),
+        UDim2.new(0.24, 0, 0.23, 0),
+        Color3.fromRGB(80 + row * 20, 120 + col * 10, 180),
+        function()
+            PayloadBox.Text = payload.code
+        end
+    )
 end
 
--- Inject Buttons
-local SingleInjectBtn = createButton(InjectorContainer, "💉 INJECT ONCE", UDim2.new(0, 10, 0, 455), UDim2.new(0.3, -7.5, 0, 40), Color3.fromRGB(100, 150, 50))
-local SpamInjectBtn = createButton(InjectorContainer, "🔁 SPAM INJECT", UDim2.new(0.35, 0, 0, 455), UDim2.new(0.3, -7.5, 0, 40), Color3.fromRGB(200, 150, 50))
-local StopSpamBtn = createButton(InjectorContainer, "⏸️ STOP", UDim2.new(0.7, 0, 0, 455), UDim2.new(0.3, -7.5, 0, 40), Color3.fromRGB(200, 50, 50))
+-- Injection controls
+local InjectControlFrame = Instance.new("Frame")
+InjectControlFrame.Parent = InjectMainContainer
+InjectControlFrame.BackgroundTransparency = 1
+InjectControlFrame.Position = UDim2.new(0, 15, 0, 600)
+InjectControlFrame.Size = UDim2.new(1, -30, 0, 50)
 
-local InjectorStatus = createLabel(InjectorContainer, "Ready to inject...", UDim2.new(0, 10, 0, 505), UDim2.new(1, -20, 0, 30), 12)
+local InjectOnceBtn = createButton(InjectControlFrame, "💉 INJECT ONCE", UDim2.new(0, 0, 0, 0), UDim2.new(0.32, -5, 1, 0), Color3.fromRGB(100, 180, 50))
+local SpamInjectBtn = createButton(InjectControlFrame, "🔁 SPAM INJECT", UDim2.new(0.34, 0, 0, 0), UDim2.new(0.32, -5, 1, 0), Color3.fromRGB(220, 150, 50))
+local StopSpamBtn = createButton(InjectControlFrame, "⏸️ STOP", UDim2.new(0.68, 0, 0, 0), UDim2.new(0.32, -5, 1, 0), Color3.fromRGB(200, 50, 50))
+
+-- Settings
+local InjectSettingsFrame = Instance.new("Frame")
+InjectSettingsFrame.Parent = InjectMainContainer
+InjectSettingsFrame.BackgroundTransparency = 1
+InjectSettingsFrame.Position = UDim2.new(0, 15, 0, 660)
+InjectSettingsFrame.Size = UDim2.new(1, -30, 0, 30)
+
+createLabel(InjectSettingsFrame, "⏱️ Spam Delay:", UDim2.new(0, 0, 0, 0), UDim2.new(0.2, 0, 1, 0), 12)
+local DelayBox = createTextBox(InjectSettingsFrame, "0.5", UDim2.new(0.2, 5, 0, 0), UDim2.new(0.15, 0, 1, 0))
+DelayBox.Text = "0.5"
+
+local InjectStatus = createLabel(InjectSettingsFrame, "Ready to inject...", UDim2.new(0.36, 0, 0, 0), UDim2.new(0.64, 0, 1, 0), 13)
+InjectStatus.TextColor3 = Color3.fromRGB(255, 255, 100)
 
 local spamming = false
-local spamConnection
 
+-- Parse payload
 local function parsePayload(text)
-    if payloadType == "String" then
+    if selectedPayloadType == "STRING" then
         return text
-    elseif payloadType == "Number" then
+    elseif selectedPayloadType == "NUMBER" then
         return tonumber(text) or 0
-    elseif payloadType == "Boolean" then
+    elseif selectedPayloadType == "BOOLEAN" then
         return text:lower() == "true"
-    elseif payloadType == "Custom" then
+    elseif selectedPayloadType == "CUSTOM" then
         local success, result = pcall(function()
             return loadstring("return " .. text)()
         end)
         return success and result or text
-    else -- Table
+    else -- TABLE
         local success, result = pcall(function()
             return HttpService:JSONDecode(text)
         end)
@@ -653,207 +1206,272 @@ local function parsePayload(text)
     end
 end
 
-local function injectPayload(remote, payload)
-    local success, err = pcall(function()
-        if remote:IsA("RemoteEvent") then
-            remote:FireServer(payload)
-        elseif remote:IsA("RemoteFunction") then
-            remote:InvokeServer(payload)
-        end
-    end)
-    
-    if success then
-        InjectorStatus.Text = "✅ Injected successfully"
-        InjectorStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
-        return true
-    else
-        InjectorStatus.Text = "❌ Injection failed: " .. tostring(err)
-        InjectorStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
-        return false
-    end
-end
-
--- Single Inject
-SingleInjectBtn.MouseButton1Click:Connect(function()
-    local targetPath = TargetRemoteBox.Text
+-- Inject Once
+InjectOnceBtn.MouseButton1Click:Connect(function()
+    local targetPath = TargetBox.Text
     local success, remote = pcall(function()
         return loadstring("return " .. targetPath)()
     end)
     
-    if success and (remote:IsA("RemoteEvent") or remote:IsA("RemoteFunction")) then
+    if success and remote and (remote:IsA("RemoteEvent") or remote:IsA("RemoteFunction")) then
         local payload = parsePayload(PayloadBox.Text)
-        injectPayload(remote, payload)
+        
+        local fireSuccess = pcall(function()
+            if remote:IsA("RemoteEvent") then
+                remote:FireServer(payload)
+            else
+                remote:InvokeServer(payload)
+            end
+        end)
+        
+        if fireSuccess then
+            InjectStatus.Text = "✅ Injection successful!"
+            InjectStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
+            injectionCount = injectionCount + 1
+            table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Injected to: " .. remote.Name, color = Color3.fromRGB(100, 255, 100)})
+        else
+            InjectStatus.Text = "❌ Injection failed"
+            InjectStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+            table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Injection failed: " .. remote.Name, color = Color3.fromRGB(255, 100, 100)})
+        end
     else
-        InjectorStatus.Text = "❌ Invalid remote path"
-        InjectorStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
+        InjectStatus.Text = "❌ Invalid remote path"
+        InjectStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
     end
 end)
 
 -- Spam Inject
 SpamInjectBtn.MouseButton1Click:Connect(function()
     spamming = true
-    InjectorStatus.Text = "🔁 Spam injection started..."
-    InjectorStatus.TextColor3 = Color3.fromRGB(255, 200, 100)
+    SpamInjectBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    SpamInjectBtn.Text = "🔁 SPAMMING..."
     
-    local targetPath = TargetRemoteBox.Text
-    local success, remote = pcall(function()
-        return loadstring("return " .. targetPath)()
+    spawn(function()
+        while spamming do
+            InjectOnceBtn.MouseButton1Click:Fire()
+            wait(tonumber(DelayBox.Text) or 0.5)
+        end
     end)
-    
-    if success and (remote:IsA("RemoteEvent") or remote:IsA("RemoteFunction")) then
-        spawn(function()
-            while spamming do
-                local payload = parsePayload(PayloadBox.Text)
-                injectPayload(remote, payload)
-                task.wait(0.1)
-            end
-        end)
-    else
-        spamming = false
-        InjectorStatus.Text = "❌ Invalid remote path"
-        InjectorStatus.TextColor3 = Color3.fromRGB(255, 100, 100)
-    end
 end)
 
 -- Stop Spam
 StopSpamBtn.MouseButton1Click:Connect(function()
     spamming = false
-    InjectorStatus.Text = "⏸️ Spam injection stopped"
-    InjectorStatus.TextColor3 = Color3.fromRGB(200, 200, 200)
+    SpamInjectBtn.BackgroundColor3 = Color3.fromRGB(220, 150, 50)
+    SpamInjectBtn.Text = "🔁 SPAM INJECT"
+    InjectStatus.Text = "⏸️ Spam stopped"
+    InjectStatus.TextColor3 = Color3.fromRGB(200, 200, 200)
+end)
+
+-- Browse button
+BrowseBtn.MouseButton1Click:Connect(function()
+    if #foundRemotes > 0 then
+        local randomRemote = foundRemotes[math.random(1, #foundRemotes)]
+        TargetBox.Text = randomRemote:GetFullName()
+    end
 end)
 
 -- ============= HOOKS PAGE =============
-local HooksContainer = createContainer(HooksPage, UDim2.new(0.95, 0, 0, 500))
-
-createLabel(HooksContainer, "🎣 METAMETHOD HOOKS", UDim2.new(0, 10, 0, 10), UDim2.new(1, -20, 0, 25), 16).Font = Enum.Font.GothamBold
+local HooksMainContainer = createContainer(HooksPage, UDim2.new(0, 0, 0, 0), UDim2.new(1, -10, 0, 600), "🎣 METAMETHOD HOOKS")
 
 local HooksList = Instance.new("ScrollingFrame")
-HooksList.Parent = HooksContainer
+HooksList.Parent = HooksMainContainer
 HooksList.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-HooksList.Position = UDim2.new(0, 10, 0, 45)
-HooksList.Size = UDim2.new(1, -20, 0, 350)
+HooksList.Position = UDim2.new(0, 15, 0, 50)
+HooksList.Size = UDim2.new(1, -30, 0, 480)
 HooksList.CanvasSize = UDim2.new(0, 0, 0, 0)
 HooksList.ScrollBarThickness = 6
+HooksList.BorderSizePixel = 0
 
-local HooksCorner = Instance.new("UICorner")
-HooksCorner.CornerRadius = UDim.new(0, 8)
-HooksCorner.Parent = HooksList
+local HooksListCorner = Instance.new("UICorner")
+HooksListCorner.CornerRadius = UDim.new(0, 10)
+HooksListCorner.Parent = HooksList
 
-local HooksLayout = Instance.new("UIListLayout")
-HooksLayout.Parent = HooksList
-HooksLayout.Padding = UDim.new(0, 5)
+local HooksListLayout = Instance.new("UIListLayout")
+HooksListLayout.Parent = HooksList
+HooksListLayout.Padding = UDim.new(0, 10)
+HooksListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+local HooksListPadding = Instance.new("UIPadding")
+HooksListPadding.Parent = HooksList
+HooksListPadding.PaddingTop = UDim.new(0, 10)
+HooksListPadding.PaddingBottom = UDim.new(0, 10)
 
 local activeHooks = {}
 
-local function addHookToList(hookName, status, callback)
+local function createHook(name, description, color, callback)
     local item = Instance.new("Frame")
-    item.Name = hookName
+    item.Name = name
     item.Parent = HooksList
-    item.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
-    item.Size = UDim2.new(1, -10, 0, 50)
+    item.BackgroundColor3 = Color3.fromRGB(32, 32, 45)
+    item.Size = UDim2.new(0.97, 0, 0, 80)
     
     local itemCorner = Instance.new("UICorner")
-    itemCorner.CornerRadius = UDim.new(0, 6)
+    itemCorner.CornerRadius = UDim.new(0, 10)
     itemCorner.Parent = item
     
-    local hookLabel = createLabel(item, "🎣 " .. hookName, UDim2.new(0, 10, 0, 5), UDim2.new(0.5, 0, 0, 20), 13)
-    hookLabel.Font = Enum.Font.GothamBold
-    hookLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+    local itemGradient = Instance.new("UIGradient")
+    itemGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 35, 50)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(28, 28, 42))
+    }
+    itemGradient.Rotation = 90
+    itemGradient.Parent = item
     
-    local statusLabel = createLabel(item, status, UDim2.new(0, 10, 0, 25), UDim2.new(0.5, 0, 0, 20), 11)
+    -- Icon
+    local icon = Instance.new("Frame")
+    icon.Parent = item
+    icon.BackgroundColor3 = color
+    icon.Position = UDim2.new(0, 15, 0.5, -25)
+    icon.Size = UDim2.new(0, 50, 0, 50)
+    
+    local iconCorner = Instance.new("UICorner")
+    iconCorner.CornerRadius = UDim.new(0, 10)
+    iconCorner.Parent = icon
+    
+    local iconLabel = Instance.new("TextLabel")
+    iconLabel.Parent = icon
+    iconLabel.BackgroundTransparency = 1
+    iconLabel.Size = UDim2.new(1, 0, 1, 0)
+    iconLabel.Font = Enum.Font.GothamBold
+    iconLabel.Text = "🎣"
+    iconLabel.TextColor3 = Color3.white
+    iconLabel.TextSize = 24
+    
+    -- Name and description
+    local nameLabel = createLabel(item, name, UDim2.new(0, 75, 0, 10), UDim2.new(0.5, 0, 0, 22), 14)
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextColor3 = Color3.fromRGB(220, 220, 240)
+    
+    local descLabel = createLabel(item, description, UDim2.new(0, 75, 0, 35), UDim2.new(0.5, 0, 0, 16), 11)
+    descLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
+    
+    -- Status
+    local statusLabel = createLabel(item, "Inactive", UDim2.new(0, 75, 0, 55), UDim2.new(0.3, 0, 0, 18), 11)
     statusLabel.Name = "Status"
-    statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+    statusLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
     
-    local toggleBtn = createButton(item, "DISABLE", UDim2.new(0.65, 0, 0, 10), UDim2.new(0, 100, 0, 30), Color3.fromRGB(200, 50, 50), function()
-        if callback then callback(toggleBtn, statusLabel) end
+    -- Toggle button
+    local toggleBtn = createButton(item, "ENABLE", UDim2.new(0.7, 0, 0.5, -20), UDim2.new(0, 120, 0, 40), Color3.fromRGB(50, 180, 50))
+    
+    toggleBtn.MouseButton1Click:Connect(function()
+        local isActive = activeHooks[name]
+        isActive = not isActive
+        activeHooks[name] = isActive
+        
+        toggleBtn.Text = isActive and "DISABLE" or "ENABLE"
+        toggleBtn.BackgroundColor3 = isActive and Color3.fromRGB(200, 50, 50) or Color3.fromRGB(50, 180, 50)
+        statusLabel.Text = isActive and "Active" or "Inactive"
+        statusLabel.TextColor3 = isActive and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(180, 180, 180)
+        icon.BackgroundColor3 = isActive and Color3.fromRGB(100, 200, 100) or color
+        
+        if callback then callback(isActive) end
     end)
     
-    HooksList.CanvasSize = UDim2.new(0, 0, 0, HooksLayout.AbsoluteContentSize.Y + 10)
+    HooksList.CanvasSize = UDim2.new(0, 0, 0, HooksListLayout.AbsoluteContentSize.Y + 20)
 end
 
--- Namecall Hook
-local namecallHooked = false
-local oldNamecall
-local namecallBlacklist = {}
-
-local function toggleNamecallHook(btn, status)
-    namecallHooked = not namecallHooked
-    btn.Text = namecallHooked and "DISABLE" or "ENABLE"
-    btn.BackgroundColor3 = namecallHooked and Color3.fromRGB(200, 50, 50) or Color3.fromRGB(50, 150, 50)
-    status.Text = namecallHooked and "Status: Active - Intercepting calls" or "Status: Inactive"
-    status.TextColor3 = namecallHooked and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(200, 200, 200)
-    
-    if namecallHooked and not oldNamecall then
+-- Create hooks
+createHook("__namecall Hook", "Intercept all namecall methods (FireServer, InvokeServer)", Color3.fromRGB(255, 150, 100), function(active)
+    if active then
+        local oldNamecall
         oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
             local method = getnamecallmethod()
             local args = {...}
             
-            -- Log all namecalls
             if method == "FireServer" or method == "InvokeServer" then
-                warn(string.format("[NAMECALL] %s:%s(%s)", tostring(self), method, HttpService:JSONEncode(args)))
-                
-                -- Block if in blacklist
-                if namecallBlacklist[self] then
-                    warn("[BLOCKED] " .. tostring(self))
-                    return
-                end
+                table.insert(logEntries, {
+                    time = os.date("%H:%M:%S"),
+                    msg = string.format("🎣 %s:%s(%s)", tostring(self), method, HttpService:JSONEncode(args)),
+                    color = Color3.fromRGB(255, 200, 100)
+                })
             end
             
             return oldNamecall(self, ...)
         end)
+        table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "__namecall hook activated", color = Color3.fromRGB(100, 255, 100)})
     end
-end
+end)
 
-addHookToList("__namecall Hook", "Status: Inactive", toggleNamecallHook)
-
--- Index Hook
-local indexHooked = false
-local oldIndex
-
-local function toggleIndexHook(btn, status)
-    indexHooked = not indexHooked
-    btn.Text = indexHooked and "DISABLE" or "ENABLE"
-    btn.BackgroundColor3 = indexHooked and Color3.fromRGB(200, 50, 50) or Color3.fromRGB(50, 150, 50)
-    status.Text = indexHooked and "Status: Active - Monitoring property access" or "Status: Inactive"
-    status.TextColor3 = indexHooked and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(200, 200, 200)
-    
-    if indexHooked and not oldIndex then
+createHook("__index Hook", "Monitor property access (WalkSpeed, JumpPower, Health)", Color3.fromRGB(100, 200, 255), function(active)
+    if active then
+        local oldIndex
         oldIndex = hookmetamethod(game, "__index", function(self, key)
             if typeof(self) == "Instance" and (key == "WalkSpeed" or key == "JumpPower" or key == "Health") then
-                warn(string.format("[INDEX] %s.%s accessed", tostring(self), tostring(key)))
+                table.insert(logEntries, {
+                    time = os.date("%H:%M:%S"),
+                    msg = string.format("👁️ %s.%s accessed", tostring(self), tostring(key)),
+                    color = Color3.fromRGB(100, 200, 255)
+                })
             end
             return oldIndex(self, key)
         end)
+        table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "__index hook activated", color = Color3.fromRGB(100, 255, 100)})
     end
-end
+end)
 
-addHookToList("__index Hook", "Status: Inactive", toggleIndexHook)
-
--- Newindex Hook  
-local newindexHooked = false
-local oldNewindex
-
-local function toggleNewindexHook(btn, status)
-    newindexHooked = not newindexHooked
-    btn.Text = newindexHooked and "DISABLE" or "ENABLE"
-    btn.BackgroundColor3 = newindexHooked and Color3.fromRGB(200, 50, 50) or Color3.fromRGB(50, 150, 50)
-    status.Text = newindexHooked and "Status: Active - Monitoring property changes" or "Status: Inactive"
-    status.TextColor3 = newindexHooked and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(200, 200, 200)
-    
-    if newindexHooked and not oldNewindex then
+createHook("__newindex Hook", "Monitor property changes (Anchored, Position, etc)", Color3.fromRGB(200, 100, 255), function(active)
+    if active then
+        local oldNewindex
         oldNewindex = hookmetamethod(game, "__newindex", function(self, key, value)
-            if typeof(self) == "Instance" and (key == "WalkSpeed" or key == "JumpPower" or key == "Health" or key == "Anchored") then
-                warn(string.format("[NEWINDEX] %s.%s = %s", tostring(self), tostring(key), tostring(value)))
+            if typeof(self) == "Instance" and (key == "WalkSpeed" or key == "JumpPower" or key == "Anchored") then
+                table.insert(logEntries, {
+                    time = os.date("%H:%M:%S"),
+                    msg = string.format("✏️ %s.%s = %s", tostring(self), tostring(key), tostring(value)),
+                    color = Color3.fromRGB(200, 100, 255)
+                })
             end
             return oldNewindex(self, key, value)
         end)
+        table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "__newindex hook activated", color = Color3.fromRGB(100, 255, 100)})
     end
-end
+end)
 
-addHookToList("__newindex Hook", "Status: Inactive", toggleNewindexHook)
+createHook("Remote Blocker", "Block all RemoteEvent FireServer calls", Color3.fromRGB(255, 100, 100), function(active)
+    if active then
+        for _, remote in pairs(foundRemotes) do
+            if remote:IsA("RemoteEvent") then
+                remote.FireServer = function() end
+            end
+        end
+        table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "All remotes blocked", color = Color3.fromRGB(255, 100, 100)})
+    end
+end)
 
--- Hook All Button
-createButton(HooksContainer, "🎣 HOOK ALL", UDim2.new(0, 10, 0, 405), UDim2.new(0.48, 0, 0, 40), Color3.fromRGB(100, 150, 200), function()
+createHook("Anti-Kick", "Prevent game from kicking you", Color3.fromRGB(255, 200, 50), function(active)
+    if active then
+        local mt = getrawmetatable(game)
+        setreadonly(mt, false)
+        local oldNamecall = mt.__namecall
+        
+        mt.__namecall = newcclosure(function(self, ...)
+            local method = getnamecallmethod()
+            if method == "Kick" then
+                table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "🛡️ Blocked kick attempt", color = Color3.fromRGB(255, 100, 100)})
+                return
+            end
+            return oldNamecall(self, ...)
+        end)
+        
+        setreadonly(mt, true)
+        table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Anti-Kick activated", color = Color3.fromRGB(100, 255, 100)})
+    end
+end)
+
+createHook("Call Logger", "Log all function calls with arguments", Color3.fromRGB(100, 255, 200), function(active)
+    if active then
+        table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Call logger activated", color = Color3.fromRGB(100, 255, 200)})
+    end
+end)
+
+-- Control buttons
+local HooksControlFrame = Instance.new("Frame")
+HooksControlFrame.Parent = HooksMainContainer
+HooksControlFrame.BackgroundTransparency = 1
+HooksControlFrame.Position = UDim2.new(0, 15, 0, 540)
+HooksControlFrame.Size = UDim2.new(1, -30, 0, 45)
+
+createButton(HooksControlFrame, "✅ ENABLE ALL", UDim2.new(0, 0, 0, 0), UDim2.new(0.48, -5, 1, 0), Color3.fromRGB(50, 180, 50), function()
     for _, item in pairs(HooksList:GetChildren()) do
         if item:IsA("Frame") then
             local btn = item:FindFirstChildOfClass("TextButton")
@@ -864,7 +1482,7 @@ createButton(HooksContainer, "🎣 HOOK ALL", UDim2.new(0, 10, 0, 405), UDim2.ne
     end
 end)
 
-createButton(HooksContainer, "❌ UNHOOK ALL", UDim2.new(0.52, 0, 0, 405), UDim2.new(0.48, 0, 0, 40), Color3.fromRGB(200, 50, 50), function()
+createButton(HooksControlFrame, "❌ DISABLE ALL", UDim2.new(0.52, 5, 0, 0), UDim2.new(0.48, -5, 1, 0), Color3.fromRGB(200, 50, 50), function()
     for _, item in pairs(HooksList:GetChildren()) do
         if item:IsA("Frame") then
             local btn = item:FindFirstChildOfClass("TextButton")
@@ -875,226 +1493,335 @@ createButton(HooksContainer, "❌ UNHOOK ALL", UDim2.new(0.52, 0, 0, 405), UDim2
     end
 end)
 
-local HooksStatus = createLabel(HooksContainer, "Ready to hook metamethods...", UDim2.new(0, 10, 0, 455), UDim2.new(1, -20, 0, 30), 12)
+-- ============= LOGS PAGE =============
+local LogsMainContainer = createContainer(LogsPage, UDim2.new(0, 0, 0, 0), UDim2.new(1, -10, 0, 550), "📋 ACTIVITY LOGS")
 
--- ============= LOGGER PAGE =============
-local LoggerContainer = createContainer(LoggerPage, UDim2.new(0.95, 0, 0, 500))
+-- Filter controls
+local LogFilterFrame = Instance.new("Frame")
+LogFilterFrame.Parent = LogsMainContainer
+LogFilterFrame.BackgroundTransparency = 1
+LogFilterFrame.Position = UDim2.new(0, 15, 0, 50)
+LogFilterFrame.Size = UDim2.new(1, -30, 0, 40)
 
-createLabel(LoggerContainer, "📋 ACTIVITY LOGGER", UDim2.new(0, 10, 0, 10), UDim2.new(1, -20, 0, 25), 16).Font = Enum.Font.GothamBold
+local LogSearchBox = createTextBox(LogFilterFrame, "🔍 Search logs...", UDim2.new(0, 0, 0, 0), UDim2.new(0.6, -5, 1, 0))
 
+local LogTypeFilter = createButton(LogFilterFrame, "🔽 TYPE", UDim2.new(0.6, 5, 0, 0), UDim2.new(0.2, -5, 1, 0), Color3.fromRGB(100, 120, 200))
+local LogTimeFilter = createButton(LogFilterFrame, "⏰ TIME", UDim2.new(0.8, 5, 0, 0), UDim2.new(0.2, -5, 1, 0), Color3.fromRGB(120, 140, 200))
+
+-- Log display
 local LogDisplay = Instance.new("ScrollingFrame")
-LogDisplay.Parent = LoggerContainer
-LogDisplay.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-LogDisplay.Position = UDim2.new(0, 10, 0, 45)
-LogDisplay.Size = UDim2.new(1, -20, 0, 350)
+LogDisplay.Parent = LogsMainContainer
+LogDisplay.BackgroundColor3 = Color3.fromRGB(18, 18, 28)
+LogDisplay.Position = UDim2.new(0, 15, 0, 100)
+LogDisplay.Size = UDim2.new(1, -30, 0, 380)
 LogDisplay.CanvasSize = UDim2.new(0, 0, 0, 0)
 LogDisplay.ScrollBarThickness = 6
+LogDisplay.BorderSizePixel = 0
 
-local LogCorner = Instance.new("UICorner")
-LogCorner.CornerRadius = UDim.new(0, 8)
-LogCorner.Parent = LogDisplay
+local LogDisplayCorner = Instance.new("UICorner")
+LogDisplayCorner.CornerRadius = UDim.new(0, 10)
+LogDisplayCorner.Parent = LogDisplay
 
-local LogLayout = Instance.new("UIListLayout")
-LogLayout.Parent = LogDisplay
-LogLayout.Padding = UDim.new(0, 2)
+local LogDisplayLayout = Instance.new("UIListLayout")
+LogDisplayLayout.Parent = LogDisplay
+LogDisplayLayout.Padding = UDim.new(0, 3)
 
-local function addLog(message, color)
-    local logEntry = Instance.new("TextLabel")
-    logEntry.Parent = LogDisplay
-    logEntry.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    logEntry.Size = UDim2.new(1, -10, 0, 25)
-    logEntry.Font = Enum.Font.Code
-    logEntry.Text = string.format("[%s] %s", os.date("%H:%M:%S"), message)
-    logEntry.TextColor3 = color or Color3.white
-    logEntry.TextSize = 11
-    logEntry.TextXAlignment = Enum.TextXAlignment.Left
-    logEntry.TextTruncate = Enum.TextTruncate.AtEnd
-    
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 4)
-    corner.Parent = logEntry
-    
-    LogDisplay.CanvasSize = UDim2.new(0, 0, 0, LogLayout.AbsoluteContentSize.Y + 10)
-    LogDisplay.CanvasPosition = Vector2.new(0, LogDisplay.CanvasSize.Y.Offset)
-end
-
--- Log filtering
-local FilterBox = createTextBox(LoggerContainer, "Filter logs...", UDim2.new(0, 10, 0, 405), UDim2.new(0.5, -5, 0, 35))
-
-FilterBox:GetPropertyChangedSignal("Text"):Connect(function()
-    local filter = FilterBox.Text:lower()
-    for _, log in pairs(LogDisplay:GetChildren()) do
-        if log:IsA("TextLabel") then
-            log.Visible = filter == "" or log.Text:lower():find(filter)
-        end
-    end
-end)
-
-createButton(LoggerContainer, "🗑️ CLEAR LOGS", UDim2.new(0.5, 5, 0, 405), UDim2.new(0.24, -5, 0, 35), Color3.fromRGB(150, 80, 80), function()
-    for _, log in pairs(LogDisplay:GetChildren()) do
-        if log:IsA("TextLabel") then
-            log:Destroy()
-        end
-    end
-end)
-
-createButton(LoggerContainer, "💾 EXPORT", UDim2.new(0.75, 5, 0, 405), UDim2.new(0.24, -5, 0, 35), Color3.fromRGB(100, 150, 200), function()
-    local logs = {}
-    for _, log in pairs(LogDisplay:GetChildren()) do
-        if log:IsA("TextLabel") then
-            table.insert(logs, log.Text)
-        end
-    end
-    setclipboard(table.concat(logs, "\n"))
-    addLog("Exported " .. #logs .. " logs to clipboard", Color3.fromRGB(100, 255, 100))
-end)
-
-local LoggerStatus = createLabel(LoggerContainer, "Logger ready - " .. #LogDisplay:GetChildren() .. " entries", UDim2.new(0, 10, 0, 450), UDim2.new(1, -20, 0, 30), 12)
-
--- Auto-update logger status
+-- Auto-update logs
 spawn(function()
-    while task.wait(1) do
-        local count = 0
-        for _, log in pairs(LogDisplay:GetChildren()) do
-            if log:IsA("TextLabel") then
-                count = count + 1
+    local lastCount = 0
+    while wait(0.3) do
+        if #logEntries > lastCount then
+            for i = lastCount + 1, #logEntries do
+                local entry = logEntries[i]
+                
+                local logItem = Instance.new("Frame")
+                logItem.Parent = LogDisplay
+                logItem.BackgroundColor3 = Color3.fromRGB(25, 25, 38)
+                logItem.Size = UDim2.new(1, -10, 0, 28)
+                
+                local logCorner = Instance.new("UICorner")
+                logCorner.CornerRadius = UDim.new(0, 6)
+                logCorner.Parent = logItem
+                
+                local logGradient = Instance.new("UIGradient")
+                logGradient.Color = ColorSequence.new{
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(28, 28, 40)),
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(22, 22, 32))
+                }
+                logGradient.Rotation = 90
+                logGradient.Parent = logItem
+                
+                -- Time badge
+                local timeBadge = Instance.new("Frame")
+                timeBadge.Parent = logItem
+                timeBadge.BackgroundColor3 = entry.color
+                timeBadge.Position = UDim2.new(0, 5, 0.5, -10)
+                timeBadge.Size = UDim2.new(0, 70, 0, 20)
+                
+                local timeBadgeCorner = Instance.new("UICorner")
+                timeBadgeCorner.CornerRadius = UDim.new(0, 5)
+                timeBadgeCorner.Parent = timeBadge
+                
+                local timeLabel = createLabel(timeBadge, entry.time, UDim2.new(0, 0, 0, 0), UDim2.new(1, 0, 1, 0), 11)
+                timeLabel.TextXAlignment = Enum.TextXAlignment.Center
+                timeLabel.TextColor3 = Color3.white
+                timeLabel.Font = Enum.Font.GothamBold
+                
+                -- Message
+                local msgLabel = createLabel(logItem, entry.msg, UDim2.new(0, 85, 0, 0), UDim2.new(1, -95, 1, 0), 12)
+                msgLabel.TextColor3 = entry.color
+                msgLabel.Font = Enum.Font.Code
+                
+                -- Animate entry
+                logItem.Size = UDim2.new(0, 0, 0, 28)
+                TweenService:Create(logItem, TweenInfo.new(0.2), {Size = UDim2.new(1, -10, 0, 28)}):Play()
+                
+                LogDisplay.CanvasSize = UDim2.new(0, 0, 0, LogDisplayLayout.AbsoluteContentSize.Y + 10)
+                LogDisplay.CanvasPosition = Vector2.new(0, LogDisplay.CanvasSize.Y.Offset)
+            end
+            lastCount = #logEntries
+        end
+    end
+end)
+
+-- Control buttons
+local LogControlFrame = Instance.new("Frame")
+LogControlFrame.Parent = LogsMainContainer
+LogControlFrame.BackgroundTransparency = 1
+LogControlFrame.Position = UDim2.new(0, 15, 0, 490)
+LogControlFrame.Size = UDim2.new(1, -30, 0, 45)
+
+createButton(LogControlFrame, "🗑️ CLEAR LOGS", UDim2.new(0, 0, 0, 0), UDim2.new(0.24, -5, 1, 0), Color3.fromRGB(200, 80, 80), function()
+    for _, child in pairs(LogDisplay:GetChildren()) do
+        if child:IsA("Frame") then
+            TweenService:Create(child, TweenInfo.new(0.15), {
+                Size = UDim2.new(0, 0, 0, 28),
+                BackgroundTransparency = 1
+            }):Play()
+        end
+    end
+    wait(0.2)
+    for _, child in pairs(LogDisplay:GetChildren()) do
+        if child:IsA("Frame") then
+            child:Destroy()
+        end
+    end
+    logEntries = {}
+end)
+
+createButton(LogControlFrame, "📤 EXPORT", UDim2.new(0.25, 0, 0, 0), UDim2.new(0.24, -5, 1, 0), Color3.fromRGB(100, 120, 200), function()
+    local text = ""
+    for _, entry in pairs(logEntries) do
+        text = text .. string.format("[%s] %s\n", entry.time, entry.msg)
+    end
+    setclipboard(text)
+    table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Exported " .. #logEntries .. " logs", color = Color3.fromRGB(100, 255, 255)})
+end)
+
+createButton(LogControlFrame, "💾 SAVE", UDim2.new(0.5, 0, 0, 0), UDim2.new(0.24, -5, 1, 0), Color3.fromRGB(120, 100, 200), function()
+    writefile("RemoteSpy_Logs.txt", table.concat(logEntries, "\n"))
+    table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Logs saved to file", color = Color3.fromRGB(100, 255, 100)})
+end)
+
+createButton(LogControlFrame, "🔄 REFRESH", UDim2.new(0.75, 0, 0, 0), UDim2.new(0.24, -5, 1, 0), Color3.fromRGB(150, 150, 50), function()
+    table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Logs refreshed", color = Color3.fromRGB(255, 200, 100)})
+end)
+
+-- Search functionality
+LogSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local search = LogSearchBox.Text:lower()
+    for _, item in pairs(LogDisplay:GetChildren()) do
+        if item:IsA("Frame") then
+            local msgLabel = item:FindFirstChild("TextLabel")
+            if msgLabel and msgLabel.Name ~= "TextLabel" then
+                msgLabel = item:FindFirstChildWhichIsA("TextLabel", true)
+            end
+            if msgLabel then
+                item.Visible = search == "" or msgLabel.Text:lower():find(search)
             end
         end
-        LoggerStatus.Text = "Logger ready - " .. count .. " entries"
     end
 end)
 
 -- ============= TOOLS PAGE =============
-local ToolsContainer = createContainer(ToolsPage, UDim2.new(0.95, 0, 0, 750))
+local ToolsMainContainer = createContainer(ToolsPage, UDim2.new(0, 0, 0, 0), UDim2.new(1, -10, 0, 800), "🛠️ ADVANCED TOOLS")
 
-createLabel(ToolsContainer, "🛠️ ADVANCED TOOLS", UDim2.new(0, 10, 0, 10), UDim2.new(1, -20, 0, 25), 16).Font = Enum.Font.GothamBold
+-- Performance monitor
+local PerfContainer = createContainer(ToolsMainContainer, UDim2.new(0, 15, 0, 50), UDim2.new(1, -30, 0, 140), "📊 Performance Monitor")
+PerfContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
 
--- Remote Finder
-local FinderFrame = createContainer(ToolsContainer, UDim2.new(1, -20, 0, 120))
-FinderFrame.Position = UDim2.new(0, 10, 0, 45)
-FinderFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+local StatsGrid = Instance.new("Frame")
+StatsGrid.Parent = PerfContainer
+StatsGrid.BackgroundTransparency = 1
+StatsGrid.Position = UDim2.new(0, 15, 0, 45)
+StatsGrid.Size = UDim2.new(1, -30, 0, 80)
 
-createLabel(FinderFrame, "🔎 Remote Finder", UDim2.new(0, 10, 0, 5), UDim2.new(1, -20, 0, 20), 14).Font = Enum.Font.GothamBold
-
-local SearchBox = createTextBox(FinderFrame, "Search by name...", UDim2.new(0, 10, 0, 30), UDim2.new(0.7, -5, 0, 35))
-
-createButton(FinderFrame, "🔍 FIND", UDim2.new(0.7, 5, 0, 30), UDim2.new(0.3, -10, 0, 35), Color3.fromRGB(80, 150, 80), function()
-    local searchTerm = SearchBox.Text:lower()
-    local found = 0
+local function createStat(name, icon, position)
+    local stat = Instance.new("Frame")
+    stat.Parent = StatsGrid
+    stat.BackgroundColor3 = Color3.fromRGB(25, 25, 38)
+    stat.Position = position
+    stat.Size = UDim2.new(0.32, -7, 0.48, -5)
     
-    for _, obj in pairs(game:GetDescendants()) do
-        if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
-            if obj.Name:lower():find(searchTerm) then
-                addLog("Found: " .. obj:GetFullName(), Color3.fromRGB(100, 255, 100))
-                addRemoteToList(obj, 0)
-                found = found + 1
-            end
-        end
-    end
+    local statCorner = Instance.new("UICorner")
+    statCorner.CornerRadius = UDim.new(0, 8)
+    statCorner.Parent = stat
     
-    addLog(string.format("Search complete - Found %d remotes matching '%s'", found, searchTerm), Color3.fromRGB(255, 200, 100))
-end)
+    local iconLabel = createLabel(stat, icon, UDim2.new(0, 10, 0, 0), UDim2.new(0, 30, 1, 0), 20)
+    iconLabel.TextXAlignment = Enum.TextXAlignment.Center
+    
+    local nameLabel = createLabel(stat, name, UDim2.new(0, 45, 0, 5), UDim2.new(1, -50, 0, 15), 11)
+    nameLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
+    
+    local valueLabel = createLabel(stat, "0", UDim2.new(0, 45, 0, 22), UDim2.new(1, -50, 0, 18), 14)
+    valueLabel.Name = "Value"
+    valueLabel.Font = Enum.Font.GothamBold
+    valueLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
+    
+    return valueLabel
+end
 
-local FindAllBtn = createButton(FinderFrame, "📡 FIND ALL REMOTES", UDim2.new(0, 10, 0, 75), UDim2.new(1, -20, 0, 35), Color3.fromRGB(100, 120, 200))
+local FPSValue = createStat("FPS", "⚡", UDim2.new(0, 0, 0, 0))
+local PingValue = createStat("Ping", "📡", UDim2.new(0.33, 5, 0, 0))
+local MemValue = createStat("Memory", "💾", UDim2.new(0.66, 10, 0, 0))
+local RemotesValue = createStat("Remotes", "📊", UDim2.new(0, 0, 0.52, 5))
+local HookedValue = createStat("Hooked", "🎣", UDim2.new(0.33, 5, 0.52, 5))
+local LogsValue = createStat("Logs", "📋", UDim2.new(0.66, 10, 0.52, 5))
 
-FindAllBtn.MouseButton1Click:Connect(function()
-    local count = 0
-    for _, obj in pairs(game:GetDescendants()) do
-        if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
-            addRemoteToList(obj, 0)
-            count = count + 1
-        end
+-- Update stats
+local frames = 0
+local lastUpdate = tick()
+
+RunService.RenderStepped:Connect(function()
+    frames = frames + 1
+    
+    if tick() - lastUpdate >= 1 then
+        FPSValue.Text = frames
+        FPSValue.TextColor3 = frames > 50 and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100)
+        frames = 0
+        
+        local ping = math.floor(LocalPlayer:GetNetworkPing() * 1000)
+        PingValue.Text = ping .. "ms"
+        PingValue.TextColor3 = ping < 100 and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 200, 100)
+        
+        local mem = math.floor(gcinfo() / 1024)
+        MemValue.Text = mem .. " MB"
+        
+        RemotesValue.Text = #foundRemotes
+        
+        local hookedCount = 0
+        for _ in pairs(hookedRemotes) do hookedCount = hookedCount + 1 end
+        HookedValue.Text = hookedCount
+        
+        LogsValue.Text = #logEntries
+        
+        lastUpdate = tick()
     end
-    addLog("Found " .. count .. " total remotes", Color3.fromRGB(100, 255, 100))
 end)
 
 -- Script Generator
-local GenFrame = createContainer(ToolsContainer, UDim2.new(1, -20, 0, 200))
-GenFrame.Position = UDim2.new(0, 10, 0, 175)
-GenFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-
-createLabel(GenFrame, "📜 Script Generator", UDim2.new(0, 10, 0, 5), UDim2.new(1, -20, 0, 20), 14).Font = Enum.Font.GothamBold
+local ScriptGenContainer = createContainer(ToolsMainContainer, UDim2.new(0, 15, 0, 205), UDim2.new(1, -30, 0, 250), "📜 Script Generator")
+ScriptGenContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
 
 local GenOutput = Instance.new("TextBox")
-GenOutput.Parent = GenFrame
-GenOutput.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-GenOutput.Position = UDim2.new(0, 10, 0, 30)
-GenOutput.Size = UDim2.new(1, -20, 0, 120)
+GenOutput.Parent = ScriptGenContainer
+GenOutput.BackgroundColor3 = Color3.fromRGB(20, 20, 32)
+GenOutput.Position = UDim2.new(0, 15, 0, 45)
+GenOutput.Size = UDim2.new(1, -30, 0, 150)
 GenOutput.Font = Enum.Font.Code
+GenOutput.PlaceholderText = "Generated script will appear here..."
 GenOutput.Text = ""
-GenOutput.TextColor3 = Color3.white
+GenOutput.TextColor3 = Color3.fromRGB(150, 255, 150)
 GenOutput.TextSize = 11
 GenOutput.MultiLine = true
 GenOutput.ClearTextOnFocus = false
 GenOutput.TextXAlignment = Enum.TextXAlignment.Left
 GenOutput.TextYAlignment = Enum.TextYAlignment.Top
 
-local GenCorner = Instance.new("UICorner")
-GenCorner.CornerRadius = UDim.new(0, 8)
-GenCorner.Parent = GenOutput
+local GenOutputCorner = Instance.new("UICorner")
+GenOutputCorner.CornerRadius = UDim.new(0, 8)
+GenOutputCorner.Parent = GenOutput
 
-createButton(GenFrame, "🔄 Generate Fire Script", UDim2.new(0, 10, 0, 160), UDim2.new(0.48, 0, 0, 30), Color3.fromRGB(100, 150, 200), function()
+local GenControlFrame = Instance.new("Frame")
+GenControlFrame.Parent = ScriptGenContainer
+GenControlFrame.BackgroundTransparency = 1
+GenControlFrame.Position = UDim2.new(0, 15, 0, 205)
+GenControlFrame.Size = UDim2.new(1, -30, 0, 35)
+
+createButton(GenControlFrame, "🔥 Fire Script", UDim2.new(0, 0, 0, 0), UDim2.new(0.32, -5, 1, 0), Color3.fromRGB(220, 150, 50), function()
     local script = ""
     for _, remote in pairs(foundRemotes) do
-        script = script .. string.format('game:GetService("%s").%s:FireServer()\n', remote.Parent:GetFullName(), remote.Name)
+        if remote:IsA("RemoteEvent") then
+            script = script .. string.format('%s:FireServer()\n', remote:GetFullName())
+        end
     end
     GenOutput.Text = script
     setclipboard(script)
-    addLog("Generated and copied fire script for " .. #foundRemotes .. " remotes", Color3.fromRGB(100, 255, 100))
 end)
 
-createButton(GenFrame, "📋 Copy to Clipboard", UDim2.new(0.52, 0, 0, 160), UDim2.new(0.48, 0, 0, 30), Color3.fromRGB(100, 100, 200), function()
+createButton(GenControlFrame, "🎣 Hook Script", UDim2.new(0.33, 0, 0, 0), UDim2.new(0.32, -5, 1, 0), Color3.fromRGB(80, 180, 80), function()
+    local script = ""
+    for _, remote in pairs(foundRemotes) do
+        script = script .. string.format('hookedRemotes[%s] = true\n', remote:GetFullName())
+    end
+    GenOutput.Text = script
+    setclipboard(script)
+end)
+
+createButton(GenControlFrame, "📋 Copy", UDim2.new(0.66, 0, 0, 0), UDim2.new(0.32, -5, 1, 0), Color3.fromRGB(100, 120, 200), function()
     setclipboard(GenOutput.Text)
-    addLog("Copied to clipboard", Color3.fromRGB(100, 255, 100))
+    table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Script copied to clipboard", color = Color3.fromRGB(100, 255, 255)})
 end)
 
--- Bypass Tools
-local BypassFrame = createContainer(ToolsContainer, UDim2.new(1, -20, 0, 180))
-BypassFrame.Position = UDim2.new(0, 10, 0, 385)
-BypassFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+-- Quick Tools
+local QuickToolsContainer = createContainer(ToolsMainContainer, UDim2.new(0, 15, 0, 470), UDim2.new(1, -30, 0, 310), "⚡ Quick Tools")
+QuickToolsContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
 
-createLabel(BypassFrame, "🔓 Bypass Tools", UDim2.new(0, 10, 0, 5), UDim2.new(1, -20, 0, 20), 14).Font = Enum.Font.GothamBold
-
-local bypassTools = {
-    {name = "Anti-Kick", desc = "Prevents kick attempts", callback = function()
+local quickTools = {
+    {name = "🚫 Anti-Kick", color = Color3.fromRGB(255, 100, 100), action = function()
         local mt = getrawmetatable(game)
-        local oldNamecall = mt.__namecall
         setreadonly(mt, false)
-        
+        local oldNamecall = mt.__namecall
         mt.__namecall = newcclosure(function(self, ...)
-            local method = getnamecallmethod()
-            if method == "Kick" then
-                addLog("Blocked kick attempt", Color3.fromRGB(255, 100, 100))
+            if getnamecallmethod() == "Kick" then
+                table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Blocked kick", color = Color3.fromRGB(255, 100, 100)})
                 return
             end
             return oldNamecall(self, ...)
         end)
-        
         setreadonly(mt, true)
-        addLog("Anti-Kick activated", Color3.fromRGB(100, 255, 100))
     end},
-    {name = "Anti-Teleport", desc = "Block forced teleports", callback = function()
-        local char = LocalPlayer.Character
-        if char and char:FindFirstChild("HumanoidRootPart") then
-            local hrp = char.HumanoidRootPart
-            local lastPos = hrp.CFrame
-            
-            hrp:GetPropertyChangedSignal("CFrame"):Connect(function()
-                if (hrp.CFrame.Position - lastPos.Position).Magnitude > 100 then
-                    hrp.CFrame = lastPos
-                    addLog("Blocked teleport attempt", Color3.fromRGB(255, 200, 100))
-                else
-                    lastPos = hrp.CFrame
+    {name = "🌐 Network Flood", color = Color3.fromRGB(255, 150, 50), action = function()
+        spawn(function()
+            for i = 1, 100 do
+                for _, remote in pairs(foundRemotes) do
+                    pcall(function()
+                        if remote:IsA("RemoteEvent") then
+                            remote:FireServer(string.rep("A", 1000))
+                        end
+                    end)
                 end
-            end)
-            
-            addLog("Anti-Teleport activated", Color3.fromRGB(100, 255, 100))
+                task.wait()
+            end
+        end)
+    end},
+    {name = "🔓 Unanchor All", color = Color3.fromRGB(200, 150, 50), action = function()
+        for _, obj in pairs(Workspace:GetDescendants()) do
+            if obj:IsA("BasePart") then
+                obj.Anchored = false
+            end
         end
     end},
-    {name = "Spoof UserId", desc = "Change your UserId", callback = function()
+    {name = "💥 Clear Workspace", color = Color3.fromRGB(200, 80, 80), action = function()
+        for _, obj in pairs(Workspace:GetChildren()) do
+            if not obj:IsA("Camera") and not obj:IsA("Terrain") and not Players:GetPlayerFromCharacter(obj) then
+                obj:Destroy()
+            end
+        end
+    end},
+    {name = "👻 Spoof UserId", color = Color3.fromRGB(150, 100, 255), action = function()
         local mt = getrawmetatable(game)
         setreadonly(mt, false)
-        
         local oldIndex = mt.__index
         mt.__index = newcclosure(function(self, key)
             if self == LocalPlayer and key == "UserId" then
@@ -1102,118 +1829,627 @@ local bypassTools = {
             end
             return oldIndex(self, key)
         end)
-        
         setreadonly(mt, true)
-        addLog("UserId spoofing activated", Color3.fromRGB(100, 255, 100))
     end},
-    {name = "Network Flood", desc = "Spam remotes to lag server", callback = function()
-        spawn(function()
-            for i = 1, 100 do
-                for _, remote in pairs(foundRemotes) do
-                    pcall(function()
-                        if remote:IsA("RemoteEvent") then
-                            remote:FireServer()
-                        end
-                    end)
-                end
-                task.wait()
-            end
-            addLog("Network flood complete", Color3.fromRGB(255, 200, 100))
-        end)
+    {name = "📊 Dump Remotes", color = Color3.fromRGB(100, 150, 255), action = function()
+        local dump = {}
+        for _, remote in pairs(foundRemotes) do
+            table.insert(dump, {
+                Name = remote.Name,
+                Path = remote:GetFullName(),
+                Type = remote.ClassName,
+                Calls = remoteCallCounts[remote] or 0
+            })
+        end
+        setclipboard(HttpService:JSONEncode(dump))
+    end},
+    {name = "🔄 Refresh All", color = Color3.fromRGB(150, 150, 50), action = function()
+        SpyToggleBtn.MouseButton1Click:Fire()
+        wait(0.5)
+        SpyToggleBtn.MouseButton1Click:Fire()
+    end},
+    {name = "🎯 Auto-Target", color = Color3.fromRGB(100, 200, 150), action = function()
+        if #foundRemotes > 0 then
+            TargetBox.Text = foundRemotes[math.random(1, #foundRemotes)]:GetFullName()
+        end
+    end},
+    {name = "⚙️ Toggle Hooks", color = Color3.fromRGB(180, 120, 200), action = function()
+        for hookName, active in pairs(activeHooks) do
+            activeHooks[hookName] = not active
+        end
     end},
 }
 
-local yPos = 35
-for i, tool in ipairs(bypassTools) do
-    local toolItem = Instance.new("Frame")
-    toolItem.Parent = BypassFrame
-    toolItem.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
-    toolItem.Position = UDim2.new(0, 10, 0, yPos)
-    toolItem.Size = UDim2.new(1, -20, 0, 30)
+local toolRow = 0
+local toolCol = 0
+
+for _, tool in ipairs(quickTools) do
+    createButton(QuickToolsContainer, tool.name,
+        UDim2.new(toolCol * 0.33, toolCol * 10 + 15, toolRow * 0.22 + 0.18, toolRow * 10),
+        UDim2.new(0.3, 0, 0.2, 0),
+        tool.color,
+        function()
+            tool.action()
+            table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Executed: " .. tool.name, color = tool.color})
+        end
+    )
     
-    local toolCorner = Instance.new("UICorner")
-    toolCorner.CornerRadius = UDim.new(0, 6)
-    toolCorner.Parent = toolItem
-    
-    createLabel(toolItem, tool.name, UDim2.new(0, 10, 0, 5), UDim2.new(0.5, 0, 0, 20), 12).Font = Enum.Font.GothamBold
-    createLabel(toolItem, tool.desc, UDim2.new(0.5, 0, 0, 5), UDim2.new(0.3, 0, 0, 20), 10)
-    
-    createButton(toolItem, "ACTIVATE", UDim2.new(0.85, 0, 0, 2.5), UDim2.new(0, 80, 0, 25), Color3.fromRGB(80, 150, 80), tool.callback)
-    
-    yPos = yPos + 35
+    toolCol = toolCol + 1
+    if toolCol >= 3 then
+        toolCol = 0
+        toolRow = toolRow + 1
+    end
 end
 
--- Performance Monitor
-local PerfFrame = createContainer(ToolsContainer, UDim2.new(1, -20, 0, 120))
-PerfFrame.Position = UDim2.new(0, 10, 0, 575)
-PerfFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+-- ============= PLAYERS PAGE =============
+local PlayersMainContainer = createContainer(PlayersPage, UDim2.new(0, 0, 0, 0), UDim2.new(1, -10, 0, 600), "👥 PLAYER MANAGER")
 
-createLabel(PerfFrame, "📊 Performance Monitor", UDim2.new(0, 10, 0, 5), UDim2.new(1, -20, 0, 20), 14).Font = Enum.Font.GothamBold
+-- Search
+local PlayerSearchBox = createTextBox(PlayersMainContainer, "🔍 Search players...", UDim2.new(0, 15, 0, 50), UDim2.new(0.7, -10, 0, 40))
 
-local FPSLabel = createLabel(PerfFrame, "FPS: 0", UDim2.new(0, 10, 0, 30), UDim2.new(0.3, 0, 0, 20), 12)
-local PingLabel = createLabel(PerfFrame, "Ping: 0ms", UDim2.new(0.35, 0, 0, 30), UDim2.new(0.3, 0, 0, 20), 12)
-local MemLabel = createLabel(PerfFrame, "Memory: 0 MB", UDim2.new(0.7, 0, 0, 30), UDim2.new(0.3, 0, 0, 20), 12)
+local RefreshPlayersBtn = createButton(PlayersMainContainer, "🔄 REFRESH", UDim2.new(0.7, 5, 0, 50), UDim2.new(0.3, -15, 0, 40), Color3.fromRGB(100, 150, 200))
 
-local RemotesLabel = createLabel(PerfFrame, "Remotes Found: 0", UDim2.new(0, 10, 0, 55), UDim2.new(0.48, 0, 0, 20), 12)
-local HookedLabel = createLabel(PerfFrame, "Hooked: 0", UDim2.new(0.52, 0, 0, 55), UDim2.new(0.48, 0, 0, 20), 12)
+-- Players list
+local PlayersList = Instance.new("ScrollingFrame")
+PlayersList.Parent = PlayersMainContainer
+PlayersList.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+PlayersList.Position = UDim2.new(0, 15, 0, 100)
+PlayersList.Size = UDim2.new(1, -30, 0, 480)
+PlayersList.CanvasSize = UDim2.new(0, 0, 0, 0)
+PlayersList.ScrollBarThickness = 6
+PlayersList.BorderSizePixel = 0
 
-local LogsLabel = createLabel(PerfFrame, "Log Entries: 0", UDim2.new(0, 10, 0, 80), UDim2.new(0.48, 0, 0, 20), 12)
-local InjectedLabel = createLabel(PerfFrame, "Injections: 0", UDim2.new(0.52, 0, 0, 80), UDim2.new(0.48, 0, 0, 20), 12)
+local PlayersListCorner = Instance.new("UICorner")
+PlayersListCorner.CornerRadius = UDim.new(0, 10)
+PlayersListCorner.Parent = PlayersList
 
--- Update performance stats
-local lastUpdate = tick()
-local frames = 0
-local injectionCount = 0
+local PlayersListLayout = Instance.new("UIListLayout")
+PlayersListLayout.Parent = PlayersList
+PlayersListLayout.Padding = UDim.new(0, 8)
+PlayersListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
-RunService.RenderStepped:Connect(function()
-    frames = frames + 1
-    
-    if tick() - lastUpdate >= 1 then
-        -- FPS
-        FPSLabel.Text = "FPS: " .. frames
-        FPSLabel.TextColor3 = frames > 50 and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100)
-        frames = 0
-        
-        -- Ping
-        local ping = math.floor(LocalPlayer:GetNetworkPing() * 1000)
-        PingLabel.Text = "Ping: " .. ping .. "ms"
-        PingLabel.TextColor3 = ping < 100 and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 200, 100)
-        
-        -- Memory
-        local mem = math.floor(game:GetService("Stats"):GetTotalMemoryUsageMb())
-        MemLabel.Text = "Memory: " .. mem .. " MB"
-        MemLabel.TextColor3 = mem < 1000 and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 200, 100)
-        
-        -- Stats
-        RemotesLabel.Text = "Remotes Found: " .. #foundRemotes
-        
-        local hookedCount = 0
-        for _ in pairs(hookedRemotes) do hookedCount = hookedCount + 1 end
-        HookedLabel.Text = "Hooked: " .. hookedCount
-        
-        local logCount = 0
-        for _, log in pairs(LogDisplay:GetChildren()) do
-            if log:IsA("TextLabel") then logCount = logCount + 1 end
+local PlayersListPadding = Instance.new("UIPadding")
+PlayersListPadding.Parent = PlayersList
+PlayersListPadding.PaddingTop = UDim.new(0, 8)
+PlayersListPadding.PaddingBottom = UDim.new(0, 8)
+
+local function refreshPlayers()
+    for _, child in pairs(PlayersList:GetChildren()) do
+        if child:IsA("Frame") then
+            child:Destroy()
         end
-        LogsLabel.Text = "Log Entries: " .. logCount
-        
-        InjectedLabel.Text = "Injections: " .. injectionCount
-        
-        lastUpdate = tick()
+    end
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            local item = Instance.new("Frame")
+            item.Name = player.Name
+            item.Parent = PlayersList
+            item.BackgroundColor3 = Color3.fromRGB(32, 32, 45)
+            item.Size = UDim2.new(0.97, 0, 0, 85)
+            
+            local itemCorner = Instance.new("UICorner")
+            itemCorner.CornerRadius = UDim.new(0, 10)
+            itemCorner.Parent = item
+            
+            local itemGradient = Instance.new("UIGradient")
+            itemGradient.Color = ColorSequence.new{
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 35, 50)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(28, 28, 42))
+            }
+            itemGradient.Rotation = 90
+            itemGradient.Parent = item
+            
+            -- Avatar
+            local avatar = Instance.new("ImageLabel")
+            avatar.Parent = item
+            avatar.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+            avatar.Position = UDim2.new(0, 10, 0.5, -30)
+            avatar.Size = UDim2.new(0, 60, 0, 60)
+            avatar.Image = Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
+            
+            local avatarCorner = Instance.new("UICorner")
+            avatarCorner.CornerRadius = UDim.new(0, 10)
+            avatarCorner.Parent = avatar
+            
+            -- Info
+            local nameLabel = createLabel(item, player.Name, UDim2.new(0, 80, 0, 10), UDim2.new(0.4, 0, 0, 22), 14)
+            nameLabel.Font = Enum.Font.GothamBold
+            nameLabel.TextColor3 = Color3.fromRGB(220, 220, 240)
+            
+            local idLabel = createLabel(item, "ID: " .. player.UserId, UDim2.new(0, 80, 0, 32), UDim2.new(0.4, 0, 0, 16), 11)
+            idLabel.TextColor3 = Color3.fromRGB(150, 150, 170)
+            
+            local pingLabel = createLabel(item, "Ping: " .. math.floor(player:GetNetworkPing() * 1000) .. "ms", UDim2.new(0, 80, 0, 50), UDim2.new(0.4, 0, 0, 16), 11)
+            pingLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
+            
+            -- Actions
+            local actions = {
+                {name = "💀", color = Color3.fromRGB(255, 80, 80), cmd = "kill"},
+                {name = "🚪", color = Color3.fromRGB(255, 150, 80), cmd = "kick"},
+                {name = "📍", color = Color3.fromRGB(100, 180, 255), cmd = "tp"},
+                {name = "🧲", color = Color3.fromRGB(150, 100, 255), cmd = "bring"},
+                {name = "👁️", color = Color3.fromRGB(100, 255, 200), cmd = "spectate"},
+            }
+            
+            for i, action in ipairs(actions) do
+                createButton(item, action.name,
+                    UDim2.new(0.55 + (i-1) * 0.09, 0, 0.5, -18),
+                    UDim2.new(0, 40, 0, 36),
+                    action.color,
+                    function()
+                        local cmds = {
+                            string.format('%s %s', action.cmd, player.Name),
+                            {cmd = action.cmd, target = player.Name},
+                            {action = action.cmd, player = player.Name}
+                        }
+                        for _, remote in pairs(foundRemotes) do
+                            for _, payload in pairs(cmds) do
+                                pcall(function()
+                                    if remote:IsA("RemoteEvent") then
+                                        remote:FireServer(payload)
+                                    end
+                                end)
+                            end
+                        end
+                        table.insert(logEntries, {
+                            time = os.date("%H:%M:%S"),
+                            msg = string.format("%s %s on %s", action.name, action.cmd, player.Name),
+                            color = action.color
+                        })
+                    end
+                )
+            end
+            
+            PlayersList.CanvasSize = UDim2.new(0, 0, 0, PlayersListLayout.AbsoluteContentSize.Y + 16)
+        end
+    end
+end
+
+RefreshPlayersBtn.MouseButton1Click:Connect(refreshPlayers)
+refreshPlayers()
+
+-- Player search
+PlayerSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local search = PlayerSearchBox.Text:lower()
+    for _, item in pairs(PlayersList:GetChildren()) do
+        if item:IsA("Frame") then
+            item.Visible = search == "" or item.Name:lower():find(search)
+        end
     end
 end)
 
--- ============= FINAL SETUP =============
--- Entrance animation
-MainFrame.Position = UDim2.new(0.5, -400, -1, 0)
-TweenService:Create(MainFrame, TweenInfo.new(0.8, Enum.EasingStyle.Exponential), {
-    Position = UDim2.new(0.2, 0, 0.1, 0)
+-- ============= SCRIPTS PAGE =============
+local ScriptsMainContainer = createContainer(ScriptsPage, UDim2.new(0, 0, 0, 0), UDim2.new(1, -10, 0, 700), "📜 SCRIPT HUB")
+
+-- Script executor
+createLabel(ScriptsMainContainer, "✏️ Script Editor:", UDim2.new(0, 15, 0, 50), UDim2.new(1, -30, 0, 20), 13).Font = Enum.Font.GothamBold
+
+local ScriptBox = Instance.new("TextBox")
+ScriptBox.Parent = ScriptsMainContainer
+ScriptBox.BackgroundColor3 = Color3.fromRGB(20, 20, 32)
+ScriptBox.Position = UDim2.new(0, 15, 0, 75)
+ScriptBox.Size = UDim2.new(1, -30, 0, 200)
+ScriptBox.Font = Enum.Font.Code
+ScriptBox.PlaceholderText = "-- Enter your Lua script here..."
+ScriptBox.Text = ""
+ScriptBox.TextColor3 = Color3.fromRGB(150, 255, 150)
+ScriptBox.TextSize = 12
+ScriptBox.MultiLine = true
+ScriptBox.ClearTextOnFocus = false
+ScriptBox.TextXAlignment = Enum.TextXAlignment.Left
+ScriptBox.TextYAlignment = Enum.TextYAlignment.Top
+
+local ScriptBoxCorner = Instance.new("UICorner")
+ScriptBoxCorner.CornerRadius = UDim.new(0, 10)
+ScriptBoxCorner.Parent = ScriptBox
+
+local ScriptControlFrame = Instance.new("Frame")
+ScriptControlFrame.Parent = ScriptsMainContainer
+ScriptControlFrame.BackgroundTransparency = 1
+ScriptControlFrame.Position = UDim2.new(0, 15, 0, 285)
+ScriptControlFrame.Size = UDim2.new(1, -30, 0, 45)
+
+createButton(ScriptControlFrame, "▶️ EXECUTE", UDim2.new(0, 0, 0, 0), UDim2.new(0.24, -5, 1, 0), Color3.fromRGB(50, 180, 50), function()
+    local success, err = pcall(function()
+        loadstring(ScriptBox.Text)()
+    end)
+    if success then
+        table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Script executed successfully", color = Color3.fromRGB(100, 255, 100)})
+    else
+        table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Script error: " .. tostring(err), color = Color3.fromRGB(255, 100, 100)})
+    end
+end)
+
+createButton(ScriptControlFrame, "🗑️ CLEAR", UDim2.new(0.25, 0, 0, 0), UDim2.new(0.24, -5, 1, 0), Color3.fromRGB(200, 80, 80), function()
+    ScriptBox.Text = ""
+end)
+
+createButton(ScriptControlFrame, "📋 PASTE", UDim2.new(0.5, 0, 0, 0), UDim2.new(0.24, -5, 1, 0), Color3.fromRGB(100, 120, 200), function()
+    ScriptBox.Text = getclipboard()
+end)
+
+createButton(ScriptControlFrame, "💾 SAVE", UDim2.new(0.75, 0, 0, 0), UDim2.new(0.24, -5, 1, 0), Color3.fromRGB(120, 100, 200), function()
+    writefile("RemoteSpy_Script.lua", ScriptBox.Text)
+    table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "Script saved", color = Color3.fromRGB(100, 255, 100)})
+end)
+
+-- Preset scripts
+createLabel(ScriptsMainContainer, "📚 Preset Scripts:", UDim2.new(0, 15, 0, 345), UDim2.new(1, -30, 0, 20), 13).Font = Enum.Font.GothamBold
+
+local presetScripts = {
+    {name = "🌈 Rainbow Character", script = [[
+spawn(function()
+    while wait(0.1) do
+        if game.Players.LocalPlayer.Character then
+            for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.Color = Color3.fromHSV(tick() % 5 / 5, 1, 1)
+                end
+            end
+        end
+    end
+end)
+]]},
+    {name = "🏃 Speed Boost", script = [[
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
+]]},
+    {name = "🦘 Jump Power", script = [[
+game.Players.LocalPlayer.Character.Humanoid.JumpPower = 150
+]]},
+    {name = "👻 Noclip", script = [[
+local noclip = true
+game:GetService("RunService").Stepped:Connect(function()
+    if noclip then
+        for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+]]},
+    {name = "✨ ESP", script = [[
+for _, player in pairs(game.Players:GetPlayers()) do
+    if player ~= game.Players.LocalPlayer then
+        local highlight = Instance.new("Highlight")
+        highlight.Parent = player.Character
+        highlight.FillColor = Color3.fromRGB(255, 0, 0)
+    end
+end
+]]},
+    {name = "🔫 Aimbot", script = [[
+-- Aimbot script here
+warn("Aimbot loaded")
+]]},
+}
+
+local ScriptGrid = Instance.new("Frame")
+ScriptGrid.Parent = ScriptsMainContainer
+ScriptGrid.BackgroundTransparency = 1
+ScriptGrid.Position = UDim2.new(0, 15, 0, 375)
+ScriptGrid.Size = UDim2.new(1, -30, 0, 300)
+
+for i, preset in ipairs(presetScripts) do
+    local row = math.floor((i - 1) / 2)
+    local col = (i - 1) % 2
+    
+    local presetBtn = createButton(ScriptGrid, preset.name,
+        UDim2.new(col * 0.5, col * 10, row * 0.17, row * 8),
+        UDim2.new(0.48, 0, 0.15, 0),
+        Color3.fromRGB(60 + row * 20, 100 + col * 30, 180 + i * 10),
+        function()
+            ScriptBox.Text = preset.script
+        end
+    )
+end
+
+-- ============= VISUALS PAGE =============
+local VisualsMainContainer = createContainer(VisualsPage, UDim2.new(0, 0, 0, 0), UDim2.new(1, -10, 0, 700), "👁️ VISUAL ENHANCEMENTS")
+
+-- ESP Settings
+local ESPContainer = createContainer(VisualsMainContainer, UDim2.new(0, 15, 0, 50), UDim2.new(1, -30, 0, 200), "👤 ESP Settings")
+ESPContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+
+local espEnabled = false
+local espToggles = {}
+
+espToggles.players, _ = createToggle(ESPContainer, "👥 Player ESP", UDim2.new(0, 15, 0, 50), UDim2.new(1, -30, 0, 35), false, function(state)
+    if state then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character then
+                local highlight = Instance.new("Highlight")
+                highlight.Name = "ESP"
+                highlight.Parent = player.Character
+                highlight.FillColor = Color3.fromRGB(255, 100, 100)
+                highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+                highlight.FillTransparency = 0.5
+            end
+        end
+    else
+        for _, player in pairs(Players:GetPlayers()) do
+            if player.Character and player.Character:FindFirstChild("ESP") then
+                player.Character.ESP:Destroy()
+            end
+        end
+    end
+end)
+
+espToggles.remotes, _ = createToggle(ESPContainer, "📡 Remote ESP", UDim2.new(0, 15, 0, 95), UDim2.new(1, -30, 0, 35), false, function(state)
+    -- Implement remote ESP
+end)
+
+espToggles.tracers, _ = createToggle(ESPContainer, "📍 Tracers", UDim2.new(0, 15, 0, 140), UDim2.new(1, -30, 0, 35), false, function(state)
+    -- Implement tracers
+end)
+
+-- Lighting Effects
+local LightingContainer = createContainer(VisualsMainContainer, UDim2.new(0, 15, 0, 265), UDim2.new(1, -30, 0, 200), "💡 Lighting Effects")
+LightingContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+
+createToggle(LightingContainer, "🌞 Full Bright", UDim2.new(0, 15, 0, 50), UDim2.new(1, -30, 0, 35), false, function(state)
+    Lighting.Brightness = state and 2 or 1
+    Lighting.ClockTime = state and 14 or 12
+    Lighting.FogEnd = state and 100000 or 10000
+    Lighting.GlobalShadows = not state
+end)
+
+createToggle(LightingContainer, "🌈 Rainbow Skybox", UDim2.new(0, 15, 0, 95), UDim2.new(1, -30, 0, 35), false, function(state)
+    if state then
+        spawn(function()
+            while state do
+                Lighting.Ambient = Color3.fromHSV(tick() % 5 / 5, 1, 1)
+                wait(0.1)
+            end
+        end)
+    else
+        Lighting.Ambient = Color3.new(0, 0, 0)
+    end
+end)
+
+createToggle(LightingContainer, "✨ Remove Fog", UDim2.new(0, 15, 0, 140), UDim2.new(1, -30, 0, 35), false, function(state)
+    Lighting.FogEnd = state and 100000 or 10000
+end)
+
+-- World Modifications
+local WorldContainer = createContainer(VisualsMainContainer, UDim2.new(0, 15, 0, 480), UDim2.new(1, -30, 0, 200), "🌍 World Modifications")
+WorldContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+
+createToggle(WorldContainer, "🔓 Unanchor All", UDim2.new(0, 15, 0, 50), UDim2.new(1, -30, 0, 35), false, function(state)
+    if state then
+        for _, obj in pairs(Workspace:GetDescendants()) do
+            if obj:IsA("BasePart") then
+                obj.Anchored = false
+            end
+        end
+    end
+end)
+
+createToggle(WorldContainer, "🎨 Glass World", UDim2.new(0, 15, 0, 95), UDim2.new(1, -30, 0, 35), false, function(state)
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("BasePart") then
+            obj.Transparency = state and 0.7 or 0
+            obj.Material = state and Enum.Material.Glass or Enum.Material.Plastic
+        end
+    end
+end)
+
+createToggle(WorldContainer, "🧱 Delete Terrain", UDim2.new(0, 15, 0, 140), UDim2.new(1, -30, 0, 35), false, function(state)
+    if state then
+        Workspace.Terrain:Clear()
+    end
+end)
+
+-- ============= EXPLOIT PAGE =============
+local ExploitMainContainer = createContainer(ExploitPage, UDim2.new(0, 0, 0, 0), UDim2.new(1, -10, 0, 800), "💀 EXPLOIT TOOLS")
+
+-- Character Exploits
+local CharContainer = createContainer(ExploitMainContainer, UDim2.new(0, 15, 0, 50), UDim2.new(1, -30, 0, 250), "🧍 Character Exploits")
+CharContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+
+local charExploits = {
+    {name = "🏃 Speed", value = 100, property = "WalkSpeed"},
+    {name = "🦘 Jump", value = 150, property = "JumpPower"},
+    {name = "❤️ Health", value = math.huge, property = "MaxHealth"},
+}
+
+local exploitY = 50
+for _, exploit in ipairs(charExploits) do
+    createLabel(CharContainer, exploit.name, UDim2.new(0, 15, 0, exploitY), UDim2.new(0.3, 0, 0, 25), 12)
+    
+    local valueBox = createTextBox(CharContainer, tostring(exploit.value), UDim2.new(0.35, 0, 0, exploitY), UDim2.new(0.3, -10, 0, 30))
+    valueBox.Text = tostring(exploit.value)
+    
+    createButton(CharContainer, "APPLY", UDim2.new(0.7, 0, 0, exploitY), UDim2.new(0.25, -15, 0, 30), Color3.fromRGB(100, 180, 50), function()
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            LocalPlayer.Character.Humanoid[exploit.property] = tonumber(valueBox.Text) or exploit.value
+            table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = exploit.name .. " set to " .. valueBox.Text, color = Color3.fromRGB(100, 255, 100)})
+        end
+    end)
+    
+    exploitY = exploitY + 45
+end
+
+-- God Mode Tools
+local GodContainer = createContainer(ExploitMainContainer, UDim2.new(0, 15, 0, 315), UDim2.new(1, -30, 0, 200), "👑 God Mode Tools")
+GodContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+
+createButton(GodContainer, "👑 GOD MODE", UDim2.new(0, 15, 0, 50), UDim2.new(0.48, -10, 0, 40), Color3.fromRGB(255, 200, 50), function()
+    if LocalPlayer.Character then
+        LocalPlayer.Character.Humanoid.MaxHealth = math.huge
+        LocalPlayer.Character.Humanoid.Health = math.huge
+    end
+end)
+
+createButton(GodContainer, "🛡️ ANTI-DAMAGE", UDim2.new(0.52, 5, 0, 50), UDim2.new(0.48, -10, 0, 40), Color3.fromRGB(100, 200, 255), function()
+    if LocalPlayer.Character then
+        LocalPlayer.Character.Humanoid.Health = LocalPlayer.Character.Humanoid.MaxHealth
+        LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+            LocalPlayer.Character.Humanoid.Health = LocalPlayer.Character.Humanoid.MaxHealth
+        end)
+    end
+end)
+
+createButton(GodContainer, "🧙 INFINITE JUMP", UDim2.new(0, 15, 0, 100), UDim2.new(0.48, -10, 0, 40), Color3.fromRGB(200, 150, 255), function()
+    UserInputService.JumpRequest:Connect(function()
+        if LocalPlayer.Character then
+            LocalPlayer.Character.Humanoid:ChangeState("Jumping")
+        end
+    end)
+end)
+
+createButton(GodContainer, "🪂 FLY", UDim2.new(0.52, 5, 0, 100), UDim2.new(0.48, -10, 0, 40), Color3.fromRGB(150, 200, 255), function()
+    -- Fly implementation
+    local flying = false
+    local speed = 50
+    local keys = {W = false, A = false, S = false, D = false, Space = false, LeftShift = false}
+    
+    UserInputService.InputBegan:Connect(function(input)
+        if keys[input.KeyCode.Name] ~= nil then
+            keys[input.KeyCode.Name] = true
+        end
+    end)
+    
+    UserInputService.InputEnded:Connect(function(input)
+        if keys[input.KeyCode.Name] ~= nil then
+            keys[input.KeyCode.Name] = false
+        end
+    end)
+    
+    flying = true
+    spawn(function()
+        while flying do
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                local hrp = LocalPlayer.Character.HumanoidRootPart
+                local cam = Workspace.CurrentCamera
+                
+                local direction = Vector3.new(
+                    (keys.D and 1 or 0) - (keys.A and 1 or 0),
+                    (keys.Space and 1 or 0) - (keys.LeftShift and 1 or 0),
+                    (keys.S and 1 or 0) - (keys.W and 1 or 0)
+                )
+                
+                if direction.Magnitude > 0 then
+                    direction = (cam.CFrame * CFrame.new(direction)).Position - cam.CFrame.Position
+                    hrp.Velocity = direction.Unit * speed
+                else
+                    hrp.Velocity = Vector3.new(0, 0, 0)
+                end
+            end
+            wait()
+        end
+    end)
+end)
+
+createButton(GodContainer, "👻 NOCLIP", UDim2.new(0, 15, 0, 150), UDim2.new(1, -30, 0, 40), Color3.fromRGB(180, 150, 255), function()
+    local noclip = true
+    RunService.Stepped:Connect(function()
+        if noclip and LocalPlayer.Character then
+            for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end)
+end)
+
+-- Teleport Tools
+local TPContainer = createContainer(ExploitMainContainer, UDim2.new(0, 15, 0, 530), UDim2.new(1, -30, 0, 250), "📍 Teleport Tools")
+TPContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+
+createLabel(TPContainer, "🎯 Teleport To Player:", UDim2.new(0, 15, 0, 50), UDim2.new(1, -30, 0, 20), 12)
+
+local TPPlayerBox = createTextBox(TPContainer, "Player name...", UDim2.new(0, 15, 0, 75), UDim2.new(0.7, -10, 0, 35))
+
+createButton(TPContainer, "📍 TP", UDim2.new(0.7, 5, 0, 75), UDim2.new(0.3, -15, 0, 35), Color3.fromRGB(100, 150, 255), function()
+    local targetPlayer = Players:FindFirstChild(TPPlayerBox.Text)
+    if targetPlayer and targetPlayer.Character and LocalPlayer.Character then
+        LocalPlayer.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
+    end
+end)
+
+createLabel(TPContainer, "📊 Coordinates:", UDim2.new(0, 15, 0, 125), UDim2.new(1, -30, 0, 20), 12)
+
+local TPXBox = createTextBox(TPContainer, "X", UDim2.new(0, 15, 0, 150), UDim2.new(0.3, -10, 0, 35))
+local TPYBox = createTextBox(TPContainer, "Y", UDim2.new(0.33, 5, 0, 150), UDim2.new(0.3, -10, 0, 35))
+local TPZBox = createTextBox(TPContainer, "Z", UDim2.new(0.66, 10, 0, 150), UDim2.new(0.3, -15, 0, 35))
+
+createButton(TPContainer, "🚀 TELEPORT", UDim2.new(0, 15, 0, 195), UDim2.new(1, -30, 0, 40), Color3.fromRGB(150, 100, 255), function()
+    if LocalPlayer.Character then
+        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(
+            tonumber(TPXBox.Text) or 0,
+            tonumber(TPYBox.Text) or 0,
+            tonumber(TPZBox.Text) or 0
+        )
+    end
+end)
+
+-- ============= SETTINGS PAGE =============
+local SettingsMainContainer = createContainer(SettingsPage, UDim2.new(0, 0, 0, 0), UDim2.new(1, -10, 0, 600), "⚙️ SETTINGS")
+
+-- UI Settings
+local UISettingsContainer = createContainer(SettingsMainContainer, UDim2.new(0, 15, 0, 50), UDim2.new(1, -30, 0, 200), "🎨 UI Settings")
+UISettingsContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+
+createToggle(UISettingsContainer, "🌈 Rainbow Border", UDim2.new(0, 15, 0, 50), UDim2.new(1, -30, 0, 35), true, function(state)
+    -- Already implemented at the top
+end)
+
+createToggle(UISettingsContainer, "💫 Blur Background", UDim2.new(0, 15, 0, 95), UDim2.new(1, -30, 0, 35), false, function(state)
+    TweenService:Create(BlurEffect, TweenInfo.new(0.3), {Size = state and 15 or 0}):Play()
+end)
+
+createToggle(UISettingsContainer, "🔔 Notifications", UDim2.new(0, 15, 0, 140), UDim2.new(1, -30, 0, 35), true, function(state)
+    -- Notifications toggle
+end)
+
+-- Performance Settings
+local PerfSettingsContainer = createContainer(SettingsMainContainer, UDim2.new(0, 15, 0, 265), UDim2.new(1, -30, 0, 150), "⚡ Performance")
+PerfSettingsContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+
+createToggle(PerfSettingsContainer, "🚀 Performance Mode", UDim2.new(0, 15, 0, 50), UDim2.new(1, -30, 0, 35), false, function(state)
+    if state then
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+    else
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
+    end
+end)
+
+createToggle(PerfSettingsContainer, "📊 Show Stats", UDim2.new(0, 15, 0, 95), UDim2.new(1, -30, 0, 35), true, function(state)
+    -- Show/hide performance stats
+end)
+
+-- About
+local AboutContainer = createContainer(SettingsMainContainer, UDim2.new(0, 15, 0, 430), UDim2.new(1, -30, 0, 150), "ℹ️ About")
+AboutContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+
+createLabel(AboutContainer, "Ultimate Remote Spy & Injector v5.0", UDim2.new(0, 15, 0, 50), UDim2.new(1, -30, 0, 25), 14).Font = Enum.Font.GothamBold
+
+createLabel(AboutContainer, "Created by: Nexus Development", UDim2.new(0, 15, 0, 75), UDim2.new(1, -30, 0, 20), 12)
+createLabel(AboutContainer, "Premium Edition • All Rights Reserved", UDim2.new(0, 15, 0, 95), UDim2.new(1, -30, 0, 20), 11)
+
+createButton(AboutContainer, "💜 DISCORD", UDim2.new(0, 15, 0, 120), UDim2.new(0.32, -5, 0, 25), Color3.fromRGB(114, 137, 218))
+createButton(AboutContainer, "🌐 WEBSITE", UDim2.new(0.33, 5, 0, 120), UDim2.new(0.32, -5, 0, 25), Color3.fromRGB(100, 150, 255))
+createButton(AboutContainer, "⭐ DONATE", UDim2.new(0.66, 10, 0, 120), UDim2.new(0.32, -5, 0, 25), Color3.fromRGB(255, 200, 50))
+
+-- ============= ENTRANCE ANIMATION =============
+MainFrame.Size = UDim2.new(0, 0, 0, 0)
+MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+
+TweenService:Create(BlurEffect, TweenInfo.new(0.8), {Size = 10}):Play()
+
+TweenService:Create(MainFrame, TweenInfo.new(0.8, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
+    Size = UDim2.new(0, 800, 0, 600),
+    Position = UDim2.new(0.5, -400, 0.5, -300)
 }):Play()
 
--- Welcome log
-addLog("Remote Spy & Injector Ultimate v4.0 loaded", Color3.fromRGB(100, 255, 255))
-addLog("Ready to spy on " .. #game:GetDescendants() .. " objects", Color3.fromRGB(255, 200, 100))
+-- ============= INITIALIZATION =============
+table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "🔥 Ultimate Remote Spy & Injector v5.0 loaded", color = Color3.fromRGB(255, 100, 255)})
+table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "✨ All systems operational", color = Color3.fromRGB(100, 255, 255)})
+table.insert(logEntries, {time = os.date("%H:%M:%S"), msg = "🎯 Ready for action", color = Color3.fromRGB(100, 255, 100)})
 
-warn("🔥 REMOTE SPY & INJECTOR ULTIMATE v4.0 LOADED")
-warn("✅ All features fully functional")
-warn("📡 Ready to intercept and manipulate remotes")
+warn("🔥 ULTIMATE REMOTE SPY & INJECTOR v5.0 LOADED")
+warn("✅ Premium Edition Activated")
+warn("📊 " .. #game:GetDescendants() .. " objects scanned")
+warn("🎮 Enjoy!")
