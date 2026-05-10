@@ -1,0 +1,890 @@
+-- Backdoor Scanner Ultimate v3.0
+-- Educational purposes only - Use responsibly
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+
+-- Создание GUI
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local TabsFrame = Instance.new("Frame")
+local ContentFrame = Instance.new("Frame")
+
+-- Вкладки
+local ScanTab = Instance.new("TextButton")
+local ActionsTab = Instance.new("TextButton")
+local PlayersTab = Instance.new("TextButton")
+local SettingsTab = Instance.new("TextButton")
+
+-- Страницы контента
+local ScanPage = Instance.new("Frame")
+local ActionsPage = Instance.new("Frame")
+local PlayersPage = Instance.new("Frame")
+local SettingsPage = Instance.new("Frame")
+
+-- Настройка ScreenGui
+ScreenGui.Name = "BackdoorScannerUltimate"
+ScreenGui.Parent = CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- MainFrame
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Position = UDim2.new(0.25, 0, 0.15, 0)
+MainFrame.Size = UDim2.new(0, 600, 0, 550)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 12)
+MainCorner.Parent = MainFrame
+
+-- Градиент для MainFrame
+local Gradient = Instance.new("UIGradient")
+Gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 25, 40)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 25))
+}
+Gradient.Rotation = 45
+Gradient.Parent = MainFrame
+
+-- Title Bar
+Title.Name = "Title"
+Title.Parent = MainFrame
+Title.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+Title.Size = UDim2.new(1, 0, 0, 50)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "🔥 BACKDOOR SCANNER ULTIMATE v3.0"
+Title.TextColor3 = Color3.fromRGB(255, 100, 100)
+Title.TextSize = 20
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 12)
+TitleCorner.Parent = Title
+
+-- Close Button
+local CloseButton = Instance.new("TextButton")
+CloseButton.Parent = Title
+CloseButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+CloseButton.Position = UDim2.new(1, -40, 0, 10)
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.TextSize = 16
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(1, 0)
+CloseCorner.Parent = CloseButton
+
+-- Minimize Button
+local MinimizeButton = Instance.new("TextButton")
+MinimizeButton.Parent = Title
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(200, 150, 50)
+MinimizeButton.Position = UDim2.new(1, -75, 0, 10)
+MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
+MinimizeButton.Font = Enum.Font.GothamBold
+MinimizeButton.Text = "_"
+MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeButton.TextSize = 16
+
+local MinCorner = Instance.new("UICorner")
+MinCorner.CornerRadius = UDim.new(1, 0)
+MinCorner.Parent = MinimizeButton
+
+-- Tabs Frame
+TabsFrame.Name = "TabsFrame"
+TabsFrame.Parent = MainFrame
+TabsFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+TabsFrame.BorderSizePixel = 0
+TabsFrame.Position = UDim2.new(0, 0, 0, 55)
+TabsFrame.Size = UDim2.new(1, 0, 0, 45)
+
+-- Content Frame
+ContentFrame.Name = "ContentFrame"
+ContentFrame.Parent = MainFrame
+ContentFrame.BackgroundTransparency = 1
+ContentFrame.Position = UDim2.new(0, 0, 0, 100)
+ContentFrame.Size = UDim2.new(1, 0, 1, -100)
+
+-- Функция создания вкладки
+local function createTab(name, position, icon)
+    local tab = Instance.new("TextButton")
+    tab.Name = name .. "Tab"
+    tab.Parent = TabsFrame
+    tab.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+    tab.Position = UDim2.new(position * 0.25, 0, 0.1, 0)
+    tab.Size = UDim2.new(0.24, 0, 0.8, 0)
+    tab.Font = Enum.Font.GothamBold
+    tab.Text = icon .. " " .. name
+    tab.TextColor3 = Color3.fromRGB(180, 180, 180)
+    tab.TextSize = 14
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = tab
+    
+    return tab
+end
+
+-- Создание вкладок
+ScanTab = createTab("SCAN", 0, "🔍")
+ActionsTab = createTab("ACTIONS", 1, "⚡")
+PlayersTab = createTab("PLAYERS", 2, "👥")
+SettingsTab = createTab("SETTINGS", 3, "⚙️")
+
+-- Функция создания страницы
+local function createPage(name)
+    local page = Instance.new("ScrollingFrame")
+    page.Name = name .. "Page"
+    page.Parent = ContentFrame
+    page.BackgroundTransparency = 1
+    page.Size = UDim2.new(1, 0, 1, 0)
+    page.CanvasSize = UDim2.new(0, 0, 2, 0)
+    page.ScrollBarThickness = 6
+    page.Visible = false
+    
+    local layout = Instance.new("UIListLayout")
+    layout.Parent = page
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Padding = UDim.new(0, 8)
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    
+    return page
+end
+
+-- Создание страниц
+ScanPage = createPage("Scan")
+ActionsPage = createPage("Actions")
+PlayersPage = createPage("Players")
+SettingsPage = createPage("Settings")
+
+ScanPage.Visible = true
+
+-- Функция создания кнопки
+local function createButton(parent, text, position, size, color, callback)
+    local button = Instance.new("TextButton")
+    button.Parent = parent
+    button.BackgroundColor3 = color
+    button.Position = position
+    button.Size = size
+    button.Font = Enum.Font.GothamBold
+    button.Text = text
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.TextSize = 14
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = button
+    
+    button.MouseButton1Click:Connect(function()
+        -- Анимация нажатия
+        button.BackgroundColor3 = Color3.fromRGB(
+            color.R * 255 * 0.8,
+            color.G * 255 * 0.8,
+            color.B * 255 * 0.8
+        )
+        wait(0.1)
+        button.BackgroundColor3 = color
+        
+        if callback then callback() end
+    end)
+    
+    return button
+end
+
+-- Функция создания текстового поля
+local function createTextBox(parent, placeholder, position, size)
+    local textbox = Instance.new("TextBox")
+    textbox.Parent = parent
+    textbox.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+    textbox.Position = position
+    textbox.Size = size
+    textbox.Font = Enum.Font.Gotham
+    textbox.PlaceholderText = placeholder
+    textbox.Text = ""
+    textbox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textbox.TextSize = 13
+    textbox.ClearTextOnFocus = false
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = textbox
+    
+    return textbox
+end
+
+-- Функция создания метки
+local function createLabel(parent, text, position, size, textSize)
+    local label = Instance.new("TextLabel")
+    label.Parent = parent
+    label.BackgroundTransparency = 1
+    label.Position = position
+    label.Size = size
+    label.Font = Enum.Font.Gotham
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(200, 200, 200)
+    label.TextSize = textSize or 13
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    
+    return label
+end
+
+-- ============= SCAN PAGE =============
+local ScanResultsFrame = Instance.new("ScrollingFrame")
+ScanResultsFrame.Parent = ScanPage
+ScanResultsFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+ScanResultsFrame.Size = UDim2.new(0.95, 0, 0, 300)
+ScanResultsFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScanResultsFrame.ScrollBarThickness = 6
+
+local ScanResultsCorner = Instance.new("UICorner")
+ScanResultsCorner.CornerRadius = UDim.new(0, 8)
+ScanResultsCorner.Parent = ScanResultsFrame
+
+local ScanResultsLayout = Instance.new("UIListLayout")
+ScanResultsLayout.Parent = ScanResultsFrame
+ScanResultsLayout.Padding = UDim.new(0, 5)
+
+local ScanButton = createButton(ScanPage, "🔎 DEEP SCAN", UDim2.new(0.025, 0, 0, 310), UDim2.new(0.45, 0, 0, 40), Color3.fromRGB(50, 120, 200))
+local QuickScanButton = createButton(ScanPage, "⚡ QUICK SCAN", UDim2.new(0.525, 0, 0, 310), UDim2.new(0.45, 0, 0, 40), Color3.fromRGB(100, 150, 50))
+
+local ScanStatus = createLabel(ScanPage, "Ready to scan...", UDim2.new(0.025, 0, 0, 360), UDim2.new(0.95, 0, 0, 30), 12)
+
+-- ============= ACTIONS PAGE =============
+local ActionsContainer = Instance.new("Frame")
+ActionsContainer.Parent = ActionsPage
+ActionsContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+ActionsContainer.Size = UDim2.new(0.95, 0, 0, 450)
+
+local ActionsCorner = Instance.new("UICorner")
+ActionsCorner.CornerRadius = UDim.new(0, 8)
+ActionsCorner.Parent = ActionsContainer
+
+createLabel(ActionsContainer, "💀 PLAYER ACTIONS", UDim2.new(0.05, 0, 0, 10), UDim2.new(0.9, 0, 0, 25), 16)
+
+local KillAllBtn = createButton(ActionsContainer, "💀 Kill All Players", UDim2.new(0.05, 0, 0, 45), UDim2.new(0.42, 0, 0, 35), Color3.fromRGB(200, 50, 50))
+local KickAllBtn = createButton(ActionsContainer, "🚪 Kick All Players", UDim2.new(0.53, 0, 0, 45), UDim2.new(0.42, 0, 0, 35), Color3.fromRGB(200, 100, 50))
+
+local RespawnAllBtn = createButton(ActionsContainer, "🔄 Respawn All", UDim2.new(0.05, 0, 0, 90), UDim2.new(0.42, 0, 0, 35), Color3.fromRGB(100, 150, 200))
+local FreezeAllBtn = createButton(ActionsContainer, "❄️ Freeze All", UDim2.new(0.53, 0, 0, 90), UDim2.new(0.42, 0, 0, 35), Color3.fromRGB(100, 180, 220))
+
+local TeleportAllBtn = createButton(ActionsContainer, "📍 TP All to Me", UDim2.new(0.05, 0, 0, 135), UDim2.new(0.42, 0, 0, 35), Color3.fromRGB(150, 100, 200))
+local BringAllBtn = createButton(ActionsContainer, "🧲 Bring All", UDim2.new(0.53, 0, 0, 135), UDim2.new(0.42, 0, 0, 35), Color3.fromRGB(180, 120, 200))
+
+createLabel(ActionsContainer, "⚙️ SERVER ACTIONS", UDim2.new(0.05, 0, 0, 185), UDim2.new(0.9, 0, 0, 25), 16)
+
+local ClearWorkspaceBtn = createButton(ActionsContainer, "🗑️ Clear Workspace", UDim2.new(0.05, 0, 0, 220), UDim2.new(0.42, 0, 0, 35), Color3.fromRGB(150, 80, 80))
+local UnanchorAllBtn = createButton(ActionsContainer, "🔓 Unanchor All", UDim2.new(0.53, 0, 0, 220), UDim2.new(0.42, 0, 0, 35), Color3.fromRGB(180, 140, 60))
+
+local ExplodeAllBtn = createButton(ActionsContainer, "💥 Explode All", UDim2.new(0.05, 0, 0, 265), UDim2.new(0.42, 0, 0, 35), Color3.fromRGB(220, 100, 50))
+local SpamChatBtn = createButton(ActionsContainer, "💬 Spam Chat", UDim2.new(0.53, 0, 0, 265), UDim2.new(0.42, 0, 0, 35), Color3.fromRGB(100, 200, 150))
+
+createLabel(ActionsContainer, "🎮 CUSTOM COMMAND", UDim2.new(0.05, 0, 0, 315), UDim2.new(0.9, 0, 0, 20), 14)
+
+local CustomCmdBox = createTextBox(ActionsContainer, "Enter command...", UDim2.new(0.05, 0, 0, 340), UDim2.new(0.65, 0, 0, 35))
+local ExecuteCmdBtn = createButton(ActionsContainer, "▶️ RUN", UDim2.new(0.72, 0, 0, 340), UDim2.new(0.23, 0, 0, 35), Color3.fromRGB(80, 180, 80))
+
+local ActionStatus = createLabel(ActionsContainer, "Waiting for action...", UDim2.new(0.05, 0, 0, 390), UDim2.new(0.9, 0, 0, 30), 12)
+
+-- ============= PLAYERS PAGE =============
+local PlayerSearchBox = createTextBox(PlayersPage, "Search player...", UDim2.new(0.025, 0, 0, 5), UDim2.new(0.95, 0, 0, 35))
+
+local PlayersListFrame = Instance.new("ScrollingFrame")
+PlayersListFrame.Parent = PlayersPage
+PlayersListFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+PlayersListFrame.Position = UDim2.new(0.025, 0, 0, 50)
+PlayersListFrame.Size = UDim2.new(0.95, 0, 0, 350)
+PlayersListFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+PlayersListFrame.ScrollBarThickness = 6
+
+local PlayersCorner = Instance.new("UICorner")
+PlayersCorner.CornerRadius = UDim.new(0, 8)
+PlayersCorner.Parent = PlayersListFrame
+
+local PlayersLayout = Instance.new("UIListLayout")
+PlayersLayout.Parent = PlayersListFrame
+PlayersLayout.Padding = UDim.new(0, 5)
+
+local RefreshPlayersBtn = createButton(PlayersPage, "🔄 REFRESH PLAYERS", UDim2.new(0.025, 0, 0, 410), UDim2.new(0.95, 0, 0, 40), Color3.fromRGB(80, 150, 80))
+
+-- ============= SETTINGS PAGE =============
+local SettingsContainer = Instance.new("Frame")
+SettingsContainer.Parent = SettingsPage
+SettingsContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+SettingsContainer.Size = UDim2.new(0.95, 0, 0, 400)
+
+local SettingsCorner = Instance.new("UICorner")
+SettingsCorner.CornerRadius = UDim.new(0, 8)
+SettingsCorner.Parent = SettingsContainer
+
+createLabel(SettingsContainer, "🔧 SCANNER SETTINGS", UDim2.new(0.05, 0, 0, 10), UDim2.new(0.9, 0, 0, 25), 16)
+
+local AutoScanToggle = createButton(SettingsContainer, "❌ Auto-Scan: OFF", UDim2.new(0.05, 0, 0, 45), UDim2.new(0.9, 0, 0, 35), Color3.fromRGB(150, 50, 50))
+
+createLabel(SettingsContainer, "Delay (seconds):", UDim2.new(0.05, 0, 0, 90), UDim2.new(0.4, 0, 0, 25), 13)
+local DelayBox = createTextBox(SettingsContainer, "0.5", UDim2.new(0.5, 0, 0, 90), UDim2.new(0.45, 0, 0, 30))
+
+local VerboseToggle = createButton(SettingsContainer, "✅ Verbose Logging: ON", UDim2.new(0.05, 0, 0, 130), UDim2.new(0.9, 0, 0, 35), Color3.fromRGB(50, 150, 50))
+
+createLabel(SettingsContainer, "📊 STATISTICS", UDim2.new(0.05, 0, 0, 180), UDim2.new(0.9, 0, 0, 25), 16)
+
+local StatsLabel = createLabel(SettingsContainer, "Remotes Found: 0\nCommands Sent: 0\nSuccess Rate: 0%", UDim2.new(0.05, 0, 0, 210), UDim2.new(0.9, 0, 0, 70), 13)
+
+local ClearStatsBtn = createButton(SettingsContainer, "🗑️ Clear Statistics", UDim2.new(0.05, 0, 0, 290), UDim2.new(0.9, 0, 0, 35), Color3.fromRGB(150, 80, 80))
+
+local SaveSettingsBtn = createButton(SettingsContainer, "💾 Save Settings", UDim2.new(0.05, 0, 0, 335), UDim2.new(0.42, 0, 0, 35), Color3.fromRGB(80, 120, 200))
+local LoadSettingsBtn = createButton(SettingsContainer, "📂 Load Settings", UDim2.new(0.53, 0, 0, 335), UDim2.new(0.42, 0, 0, 35), Color3.fromRGB(100, 140, 180))
+
+-- ============= ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ =============
+local foundRemotes = {}
+local selectedPlayer = nil
+local autoScanEnabled = false
+local verboseLogging = true
+local commandsSent = 0
+local successfulCommands = 0
+
+-- ============= ФУНКЦИИ =============
+
+-- Обновление статуса
+local function updateStatus(label, text, color)
+    label.Text = text
+    label.TextColor3 = color or Color3.fromRGB(200, 200, 200)
+end
+
+-- Очистка результатов сканирования
+local function clearScanResults()
+    for _, child in pairs(ScanResultsFrame:GetChildren()) do
+        if child:IsA("Frame") or child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+    foundRemotes = {}
+end
+
+-- Создание элемента результата
+local function createScanResult(remote, index)
+    local ResultItem = Instance.new("Frame")
+    ResultItem.Parent = ScanResultsFrame
+    ResultItem.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+    ResultItem.Size = UDim2.new(1, -10, 0, 45)
+    
+    local ItemCorner = Instance.new("UICorner")
+    ItemCorner.CornerRadius = UDim.new(0, 6)
+    ItemCorner.Parent = ResultItem
+    
+    local NameLabel = Instance.new("TextLabel")
+    NameLabel.Parent = ResultItem
+    NameLabel.BackgroundTransparency = 1
+    NameLabel.Position = UDim2.new(0, 10, 0, 5)
+    NameLabel.Size = UDim2.new(0.6, 0, 0, 20)
+    NameLabel.Font = Enum.Font.GothamBold
+    NameLabel.Text = "📡 " .. remote.Name
+    NameLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+    NameLabel.TextSize = 12
+    NameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    
+    local PathLabel = Instance.new("TextLabel")
+    PathLabel.Parent = ResultItem
+    PathLabel.BackgroundTransparency = 1
+    PathLabel.Position = UDim2.new(0, 10, 0, 25)
+    PathLabel.Size = UDim2.new(0.6, 0, 0, 15)
+    PathLabel.Font = Enum.Font.Gotham
+    PathLabel.Text = remote:GetFullName()
+    PathLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+    PathLabel.TextSize = 9
+    PathLabel.TextXAlignment = Enum.TextXAlignment.Left
+    PathLabel.TextTruncate = Enum.TextTruncate.AtEnd
+    
+    local TestBtn = createButton(ResultItem, "TEST", UDim2.new(0.65, 0, 0, 7.5), UDim2.new(0, 60, 0, 30), Color3.fromRGB(80, 150, 80), function()
+        testRemote(remote)
+    end)
+    
+    local CopyBtn = createButton(ResultItem, "📋", UDim2.new(0.85, 0, 0, 7.5), UDim2.new(0, 30, 0, 30), Color3.fromRGB(100, 100, 150), function()
+        setclipboard(remote:GetFullName())
+        updateStatus(ScanStatus, "Copied: " .. remote.Name, Color3.fromRGB(100, 255, 100))
+    end)
+end
+
+-- Функция глубокого сканирования
+local function deepScan()
+    clearScanResults()
+    updateStatus(ScanStatus, "🔍 Deep scanning...", Color3.fromRGB(100, 150, 255))
+    
+    local suspiciousKeywords = {
+        "backdoor", "admin", "cmd", "execute", "require", 
+        "load", "owner", "creator", "hub", "script",
+        "remote", "event", "function", "server", "client",
+        "fire", "invoke", "control", "manage", "system"
+    }
+    
+    local count = 0
+    
+    for _, obj in pairs(game:GetDescendants()) do
+        if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
+            local name = obj.Name:lower()
+            local path = obj:GetFullName():lower()
+            
+            for _, keyword in pairs(suspiciousKeywords) do
+                if name:find(keyword) or path:find(keyword) then
+                    table.insert(foundRemotes, obj)
+                    createScanResult(obj, #foundRemotes)
+                    count = count + 1
+                    break
+                end
+            end
+        end
+    end
+    
+    ScanResultsFrame.CanvasSize = UDim2.new(0, 0, 0, #foundRemotes * 50)
+    
+    if count > 0 then
+        updateStatus(ScanStatus, "✅ Found " .. count .. " suspicious remotes!", Color3.fromRGB(100, 255, 100))
+    else
+        updateStatus(ScanStatus, "❌ No backdoors found", Color3.fromRGB(255, 100, 100))
+    end
+end
+
+-- Быстрое сканирование
+local function quickScan()
+    clearScanResults()
+    updateStatus(ScanStatus, "⚡ Quick scanning...", Color3.fromRGB(255, 200, 50))
+    
+    local count = 0
+    
+    for _, obj in pairs(game:GetDescendants()) do
+        if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
+            local name = obj.Name:lower()
+            
+            if name:find("backdoor") or name:find("admin") or name:find("cmd") then
+                table.insert(foundRemotes, obj)
+                createScanResult(obj, #foundRemotes)
+                count = count + 1
+            end
+        end
+    end
+    
+    ScanResultsFrame.CanvasSize = UDim2.new(0, 0, 0, #foundRemotes * 50)
+    updateStatus(ScanStatus, count > 0 and "✅ Found " .. count .. " remotes" or "❌ Nothing found", count > 0 and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100))
+end
+
+-- Тестирование remote
+function testRemote(remote)
+    updateStatus(ActionStatus, "Testing: " .. remote.Name, Color3.fromRGB(255, 200, 50))
+    
+    local testPayloads = {
+        "test",
+        {cmd = "test"},
+        {action = "test"},
+        {command = "test"},
+        {"test"}
+    }
+    
+    for _, payload in pairs(testPayloads) do
+        commandsSent = commandsSent + 1
+        pcall(function()
+            if remote:IsA("RemoteEvent") then
+                remote:FireServer(payload)
+            elseif remote:IsA("RemoteFunction") then
+                remote:InvokeServer(payload)
+            end
+        end)
+        wait(tonumber(DelayBox.Text) or 0.5)
+    end
+    
+    updateStatus(ActionStatus, "Test completed!", Color3.fromRGB(100, 255, 100))
+end
+
+-- Функция отправки команды всем remotes
+local function sendCommandToAll(commands)
+    local delay = tonumber(DelayBox.Text) or 0.5
+    
+    for _, remote in pairs(foundRemotes) do
+        for _, payload in pairs(commands) do
+            commandsSent = commandsSent + 1
+            local success = pcall(function()
+                if remote:IsA("RemoteEvent") then
+                    remote:FireServer(payload)
+                elseif remote:IsA("RemoteFunction") then
+                    remote:InvokeServer(payload)
+                end
+            end)
+            
+            if success then
+                successfulCommands = successfulCommands + 1
+            end
+            
+            if verboseLogging then
+                print(string.format("[%s] %s -> %s", success and "✓" or "✗", remote.Name, tostring(payload)))
+            end
+            
+            wait(delay)
+        end
+    end
+end
+
+-- Kill All
+KillAllBtn.MouseButton1Click:Connect(function()
+    updateStatus(ActionStatus, "💀 Killing all players...", Color3.fromRGB(255, 100, 100))
+    
+    local killCommands = {
+        "kill all",
+        {cmd = "kill", target = "all"},
+        {cmd = "kill", plr = "all"},
+        {action = "kill", players = "all"},
+        {command = "kill all"},
+        {"kill", "all"},
+        {Type = "Kill", Target = "All"},
+        {Action = "KillAll"},
+        ":kill all",
+        ";kill all"
+    }
+    
+    sendCommandToAll(killCommands)
+    updateStatus(ActionStatus, "Kill all commands sent!", Color3.fromRGB(150, 150, 150))
+end)
+
+-- Kick All
+KickAllBtn.MouseButton1Click:Connect(function()
+    updateStatus(ActionStatus, "🚪 Kicking all players...", Color3.fromRGB(255, 150, 100))
+    
+    local kickCommands = {
+        "kick all",
+        {cmd = "kick", target = "all"},
+        {cmd = "kick", plr = "all"},
+        {action = "kick", players = "all"},
+        {command = "kick all"},
+        {"kick", "all"},
+        {Type = "Kick", Target = "All"},
+        {Action = "KickAll"},
+        ":kick all",
+        ";kick all"
+    }
+    
+    sendCommandToAll(kickCommands)
+    updateStatus(ActionStatus, "Kick all commands sent!", Color3.fromRGB(150, 150, 150))
+end)
+
+-- Respawn All
+RespawnAllBtn.MouseButton1Click:Connect(function()
+    updateStatus(ActionStatus, "🔄 Respawning all...", Color3.fromRGB(100, 150, 200))
+    
+    local respawnCommands = {
+        "respawn all",
+        {cmd = "respawn", target = "all"},
+        {action = "respawn", players = "all"},
+        {command = "respawn all"},
+        ":respawn all"
+    }
+    
+    sendCommandToAll(respawnCommands)
+    updateStatus(ActionStatus, "Respawn commands sent!", Color3.fromRGB(150, 150, 150))
+end)
+
+-- Freeze All
+FreezeAllBtn.MouseButton1Click:Connect(function()
+    updateStatus(ActionStatus, "❄️ Freezing all...", Color3.fromRGB(100, 180, 220))
+    
+    local freezeCommands = {
+        "freeze all",
+        {cmd = "freeze", target = "all"},
+        {action = "freeze", players = "all"},
+        ":freeze all"
+    }
+    
+    sendCommandToAll(freezeCommands)
+    updateStatus(ActionStatus, "Freeze commands sent!", Color3.fromRGB(150, 150, 150))
+end)
+
+-- Teleport All
+TeleportAllBtn.MouseButton1Click:Connect(function()
+    updateStatus(ActionStatus, "📍 Teleporting all to you...", Color3.fromRGB(150, 100, 200))
+    
+    local tpCommands = {
+        {cmd = "tp", target = "all", destination = LocalPlayer.Name},
+        {action = "teleport", players = "all", to = LocalPlayer.Name},
+        "tp all me",
+        ":tp all me"
+    }
+    
+    sendCommandToAll(tpCommands)
+    updateStatus(ActionStatus, "TP commands sent!", Color3.fromRGB(150, 150, 150))
+end)
+
+-- Bring All
+BringAllBtn.MouseButton1Click:Connect(function()
+    updateStatus(ActionStatus, "🧲 Bringing all...", Color3.fromRGB(180, 120, 200))
+    
+    local bringCommands = {
+        "bring all",
+        {cmd = "bring", target = "all"},
+        {action = "bring", players = "all"},
+        ":bring all"
+    }
+    
+    sendCommandToAll(bringCommands)
+    updateStatus(ActionStatus, "Bring commands sent!", Color3.fromRGB(150, 150, 150))
+end)
+
+-- Clear Workspace
+ClearWorkspaceBtn.MouseButton1Click:Connect(function()
+    updateStatus(ActionStatus, "🗑️ Clearing workspace...", Color3.fromRGB(150, 80, 80))
+    
+    local clearCommands = {
+        "clear",
+        {cmd = "clear"},
+        {action = "clearworkspace"},
+        ":clear"
+    }
+    
+    sendCommandToAll(clearCommands)
+    updateStatus(ActionStatus, "Clear commands sent!", Color3.fromRGB(150, 150, 150))
+end)
+
+-- Unanchor All
+UnanchorAllBtn.MouseButton1Click:Connect(function()
+    updateStatus(ActionStatus, "🔓 Unanchoring all...", Color3.fromRGB(180, 140, 60))
+    
+    local unanchorCommands = {
+        "unanchor",
+        {cmd = "unanchor"},
+        {action = "unanchorall"},
+        ":unanchor"
+    }
+    
+    sendCommandToAll(unanchorCommands)
+    updateStatus(ActionStatus, "Unanchor commands sent!", Color3.fromRGB(150, 150, 150))
+end)
+
+-- Explode All
+ExplodeAllBtn.MouseButton1Click:Connect(function()
+    updateStatus(ActionStatus, "💥 Exploding all...", Color3.fromRGB(220, 100, 50))
+    
+    local explodeCommands = {
+        "explode all",
+        {cmd = "explode", target = "all"},
+        {action = "explode", players = "all"},
+        ":explode all"
+    }
+    
+    sendCommandToAll(explodeCommands)
+    updateStatus(ActionStatus, "Explode commands sent!", Color3.fromRGB(150, 150, 150))
+end)
+
+-- Spam Chat
+local spamming = false
+SpamChatBtn.MouseButton1Click:Connect(function()
+    spamming = not spamming
+    SpamChatBtn.Text = spamming and "⏸️ Stop Spam" or "💬 Spam Chat"
+    SpamChatBtn.BackgroundColor3 = spamming and Color3.fromRGB(200, 50, 50) or Color3.fromRGB(100, 200, 150)
+    
+    if spamming then
+        spawn(function()
+            while spamming do
+                local spamCommands = {
+                    {cmd = "chat", message = "Hacked by Backdoor Scanner!"},
+                    {action = "message", text = "Server compromised!"}
+                }
+                sendCommandToAll(spamCommands)
+                wait(1)
+            end
+        end)
+    end
+end)
+
+-- Execute Custom Command
+ExecuteCmdBtn.MouseButton1Click:Connect(function()
+    local customCmd = CustomCmdBox.Text
+    if customCmd ~= "" then
+        updateStatus(ActionStatus, "▶️ Executing: " .. customCmd, Color3.fromRGB(80, 180, 80))
+        
+        local customCommands = {
+            customCmd,
+            {cmd = customCmd},
+            {command = customCmd},
+            {action = customCmd}
+        }
+        
+        sendCommandToAll(customCommands)
+        updateStatus(ActionStatus, "Custom command executed!", Color3.fromRGB(150, 150, 150))
+    end
+end)
+
+-- Refresh Players
+local function refreshPlayersList()
+    for _, child in pairs(PlayersListFrame:GetChildren()) do
+        if child:IsA("Frame") then
+            child:Destroy()
+        end
+    end
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            local PlayerItem = Instance.new("Frame")
+            PlayerItem.Parent = PlayersListFrame
+            PlayerItem.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+            PlayerItem.Size = UDim2.new(1, -10, 0, 60)
+            
+            local ItemCorner = Instance.new("UICorner")
+            ItemCorner.CornerRadius = UDim.new(0, 6)
+            ItemCorner.Parent = PlayerItem
+            
+            local PlayerName = createLabel(PlayerItem, "👤 " .. player.Name, UDim2.new(0, 10, 0, 5), UDim2.new(0.6, 0, 0, 20), 13)
+            PlayerName.TextColor3 = Color3.fromRGB(255, 255, 255)
+            PlayerName.Font = Enum.Font.GothamBold
+            
+            local PlayerInfo = createLabel(PlayerItem, "ID: " .. player.UserId .. " | Ping: " .. math.floor(player:GetNetworkPing() * 1000) .. "ms", UDim2.new(0, 10, 0, 25), UDim2.new(0.6, 0, 0, 15), 10)
+            
+            local KillBtn = createButton(PlayerItem, "💀", UDim2.new(0.65, 0, 0, 5), UDim2.new(0, 40, 0, 25), Color3.fromRGB(200, 50, 50), function()
+                local killCmds = {
+                    {cmd = "kill", target = player.Name},
+                    "kill " .. player.Name,
+                    ":kill " .. player.Name
+                }
+                sendCommandToAll(killCmds)
+            end)
+            
+            local KickBtn = createButton(PlayerItem, "🚪", UDim2.new(0.78, 0, 0, 5), UDim2.new(0, 40, 0, 25), Color3.fromRGB(200, 100, 50), function()
+                local kickCmds = {
+                    {cmd = "kick", target = player.Name},
+                    "kick " .. player.Name,
+                    ":kick " .. player.Name
+                }
+                sendCommandToAll(kickCmds)
+            end)
+            
+            local TPBtn = createButton(PlayerItem, "📍", UDim2.new(0.65, 0, 0, 32), UDim2.new(0, 40, 0, 25), Color3.fromRGB(100, 150, 200), function()
+                local tpCmds = {
+                    {cmd = "tp", target = LocalPlayer.Name, destination = player.Name},
+                    "tp me " .. player.Name
+                }
+                sendCommandToAll(tpCmds)
+            end)
+            
+            local BringBtn = createButton(PlayerItem, "🧲", UDim2.new(0.78, 0, 0, 32), UDim2.new(0, 40, 0, 25), Color3.fromRGB(150, 100, 200), function()
+                local bringCmds = {
+                    {cmd = "bring", target = player.Name},
+                    "bring " .. player.Name
+                }
+                sendCommandToAll(bringCmds)
+            end)
+        end
+    end
+    
+    PlayersListFrame.CanvasSize = UDim2.new(0, 0, 0, (#Players:GetPlayers() - 1) * 65)
+end
+
+RefreshPlayersBtn.MouseButton1Click:Connect(refreshPlayersList)
+
+-- Auto-Scan Toggle
+AutoScanToggle.MouseButton1Click:Connect(function()
+    autoScanEnabled = not autoScanEnabled
+    AutoScanToggle.Text = autoScanEnabled and "✅ Auto-Scan: ON" or "❌ Auto-Scan: OFF"
+    AutoScanToggle.BackgroundColor3 = autoScanEnabled and Color3.fromRGB(50, 150, 50) or Color3.fromRGB(150, 50, 50)
+    
+    if autoScanEnabled then
+        spawn(function()
+            while autoScanEnabled do
+                deepScan()
+                wait(10)
+            end
+        end)
+    end
+end)
+
+-- Verbose Toggle
+VerboseToggle.MouseButton1Click:Connect(function()
+    verboseLogging = not verboseLogging
+    VerboseToggle.Text = verboseLogging and "✅ Verbose Logging: ON" or "❌ Verbose Logging: OFF"
+    VerboseToggle.BackgroundColor3 = verboseLogging and Color3.fromRGB(50, 150, 50) or Color3.fromRGB(150, 50, 50)
+end)
+
+-- Clear Statistics
+ClearStatsBtn.MouseButton1Click:Connect(function()
+    commandsSent = 0
+    successfulCommands = 0
+    StatsLabel.Text = "Remotes Found: 0\nCommands Sent: 0\nSuccess Rate: 0%"
+end)
+
+-- Update Stats
+spawn(function()
+    while wait(1) do
+        local successRate = commandsSent > 0 and math.floor((successfulCommands / commandsSent) * 100) or 0
+        StatsLabel.Text = string.format("Remotes Found: %d\nCommands Sent: %d\nSuccess Rate: %d%%", #foundRemotes, commandsSent, successRate)
+    end
+end)
+
+-- Tab Switching
+local function switchTab(tab, page)
+    -- Reset all tabs
+    for _, t in pairs({ScanTab, ActionsTab, PlayersTab, SettingsTab}) do
+        t.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+        t.TextColor3 = Color3.fromRGB(180, 180, 180)
+    end
+    
+    -- Hide all pages
+    for _, p in pairs({ScanPage, ActionsPage, PlayersPage, SettingsPage}) do
+        p.Visible = false
+    end
+    
+    -- Activate selected
+    tab.BackgroundColor3 = Color3.fromRGB(50, 120, 200)
+    tab.TextColor3 = Color3.fromRGB(255, 255, 255)
+    page.Visible = true
+end
+
+ScanTab.MouseButton1Click:Connect(function() switchTab(ScanTab, ScanPage) end)
+ActionsTab.MouseButton1Click:Connect(function() switchTab(ActionsTab, ActionsPage) end)
+PlayersTab.MouseButton1Click:Connect(function() 
+    switchTab(PlayersTab, PlayersPage)
+    refreshPlayersList()
+end)
+SettingsTab.MouseButton1Click:Connect(function() switchTab(SettingsTab, SettingsPage) end)
+
+-- Scan Buttons
+ScanButton.MouseButton1Click:Connect(deepScan)
+QuickScanButton.MouseButton1Click:Connect(quickScan)
+
+-- Close/Minimize
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+local minimized = false
+MinimizeButton.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    MainFrame:TweenSize(
+        minimized and UDim2.new(0, 600, 0, 50) or UDim2.new(0, 600, 0, 550),
+        "Out", "Quad", 0.3, true
+    )
+end)
+
+-- Entrance Animation
+MainFrame.Size = UDim2.new(0, 0, 0, 0)
+MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+MainFrame:TweenSizeAndPosition(
+    UDim2.new(0, 600, 0, 550),
+    UDim2.new(0.25, 0, 0.15, 0),
+    "Out", "Elastic", 0.8, true
+)
+
+-- Player Search
+PlayerSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local search = PlayerSearchBox.Text:lower()
+    for _, item in pairs(PlayersListFrame:GetChildren()) do
+        if item:IsA("Frame") then
+            local nameLabel = item:FindFirstChild("TextLabel")
+            if nameLabel then
+                item.Visible = nameLabel.Text:lower():find(search) ~= nil
+            end
+        end
+    end
+end)
+
+print("🔥 Backdoor Scanner Ultimate v3.0 loaded!")
+print("✅ All systems ready!")
