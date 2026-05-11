@@ -279,6 +279,13 @@ print("Anti-AFK Enabled!")
         Category = "Movement",
         Code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()'
     },
+    {
+        Name = "MM2 ARU-MM2",
+        Description = "MM2 CHEAT",
+        Icon = "*",
+        Category = "MURDER",
+        Code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/gameuio/ARUHACK/refs/heads/main/aru-mm2"))()'
+    },
 }
 
 -- ════════════════════════════════════════════════════════════════════════════════════
