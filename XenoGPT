@@ -1,0 +1,408 @@
+-- Unified Admin Hub (for Xeno)
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local VirtualUser = game:GetService("VirtualUser")
+local Camera = workspace.CurrentCamera
+
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local Humanoid = Character:WaitForChild("Humanoid")
+local HRP = Character:WaitForChild("HumanoidRootPart")
+
+-- states
+local flying, speedOn, noclipOn, infJumpOn = false, false, false, false
+local espOn, aimOn, followOn = false, false, false
+local selectedPlayer = nil
+local flySpeed, normalSpeed, fastSpeed = 90, 16, 75
+local bv, bg
+local espObjects = {}
+
+pcall(function() game.CoreGui.UnifiedHub:Destroy() end)
+
+-- anti-afk
+LocalPlayer.Idled:Connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+
+-- gui
+local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "UnifiedHub"
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 300, 0, 420)
+frame.Position = UDim2.new(0, 20, 0.2, 0)
+frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+frame.Active = true
+frame.Draggable = true
+frame.BorderSizePixel = 0
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1,0,0,35)
+title.BackgroundColor3 = Color3.fromRGB(20,20,20)
+title.Text = "ULTIMATE UNIFIED HUB"
+title.TextColor3 = Color3.new(1,1,1)
+title.TextScaled = true
+
+local function makeBtn(text, y)
+    local b = Instance.new("TextButton", frame)
+    b.Size = UDim2.new(0.42,0,0,30)
+    b.Position = UDim2.new((y % 2 == 0) and 0.07 or 0.52,0,0,45 + math.floor(y/2)*35)
+    b.BackgroundColor3 = Color3.fromRGB(80,0,0)
+    b.TextColor3 = Color3.new(1,1,1)
+    b.Text = text .. ": OFF"
+    return b
+end
+
+local buttons = {
+    Fly = makeBtn("Fly", 0),
+    Speed = makeBtn("Speed", 1),
+    Noclip = makeBtn("Noclip", 2),
+    InfJump = makeBtn("InfJump", 3),
+    ESP = makeBtn("ESP", 4),
+    Aim = makeBtn("Aim", 5),
+    Follow = makeBtn("Follow", 6),
+}
+
+local selectedLabel = Instance.new("TextLabel", frame)
+selectedLabel.Size = UDim2.new(0.86,0,0,28)
+selectedLabel.Position = UDim2.new(0.07,0,0,300)
+selectedLabel.BackgroundColor3 = Color3.fromRGB(45,45,45)
+selectedLabel.Text = "Selected: none"
+selectedLabel.TextColor3 = Color3.new(1,1,1)
+
+local scroll = Instance.new("ScrollingFrame", frame)
+scroll.Size = UDim2.new(0.86,0,0,70)
+scroll.Position = UDim2.new(0.07,0,0,335)
+scroll.BackgroundColor3 = Color3.fromRGB(40,40,40)
+scroll.ScrollBarThickness = 5
+local layout = Instance.new("UIListLayout", scroll)
+layout.Padding = UDim.new(0,4)
+
+local tpBtn = Instance.new("TextButton", frame)
+tpBtn.Size = UDim2.new(0.86,0,0,28)
+tpBtn.Position = UDim2.new(0.07,0,0,265)
+tpBtn.Text = "Teleport to selected"
+tpBtn.BackgroundColor3 = Color3.fromRGB(0,70,120)
+tpBtn.TextColor3 = Color3.new(1,1,1)
+
+local function setBtn(btn, name, state)
+    btn.Text = name .. ": " .. (state and "ON" or "OFF")
+    btn.BackgroundColor3 = state and Color3.fromRGB(0,120,0) or Color3.fromRGB(80,0,0)
+end
+
+-- player list
+local function refreshPlayers()
+    for _, c in ipairs(scroll:GetChildren()) do
+        if c:IsA("TextButton") then c:Destroy() end
+    end
+
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer then
+            local b = Instance.new("TextButton")
+            b.Size = UDim2.new(1,-5,0,25)
+            b.BackgroundColor3 = Color3.fromRGB(60,60,60)
+            b.TextColor3 = Color3.new(1,1,1)
+            b.Text = p.Name
+            b.Parent = scroll
+
+            b.MouseButton1Click:Connect(function()
+                selectedPlayer = p
+                selectedLabel.Text = "Selected: "..p.Name
+            end)
+        end
+    end
+
+    task.wait()
+    scroll.CanvasSize = UDim2.new(0,0,0,layout.AbsoluteContentSize.Y + 5)
+end
+
+refreshPlayers()
+Players.PlayerAdded:Connect(refreshPlayers)
+Players.PlayerRemoving:Connect(refreshPlayers)
+
+-- esp
+local function clearESP()
+    for _, v in pairs(espObjects) do
+        pcall(function() v:Destroy() end)
+    end
+    espObjects = {}
+end
+
+local function createESP(plr)
+    if plr == LocalPlayer or not plr.Character then return end
+    local head = plr.Character:FindFirstChild("Head")
+    if not head then return end
+
+    local bill = Instance.new("BillboardGui")
+    bill.Size = UDim2.new(0,100,0,30)
+    bill.Adornee = head
+    bill.AlwaysOnTop = true
+
+    local txt = Instance.new("TextLabel", bill)
+    txt.Size = UDim2.new(1,0,1,0)
+    txt.BackgroundTransparency = 1
+    txt.Text = plr.Name
+    txt.TextColor3 = Color3.new(1,0,0)
+    txt.TextScaled = true
+
+    bill.Parent = game.CoreGui
+    table.insert(espObjects, bill)
+end
+
+-- buttons
+buttons.Fly.MouseButton1Click:Connect(function()
+    flying = not flying
+    setBtn(buttons.Fly, "Fly", flying)
+    Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    HRP = Character:WaitForChild("HumanoidRootPart")
+
+    if flying then
+        bv = Instance.new("BodyVelocity", HRP)
+        bv.MaxForce = Vector3.new(9e9,9e9,9e9)
+        bg = Instance.new("BodyGyro", HRP)
+        bg.MaxTorque = Vector3.new(9e9,9e9,9e9)
+        bg.P = 9e4
+    else
+        if bv then bv:Destroy() end
+        if bg then bg:Destroy() end
+    end
+end)
+
+buttons.Speed.MouseButton1Click:Connect(function()
+    speedOn = not speedOn
+    Humanoid.WalkSpeed = speedOn and fastSpeed or normalSpeed
+    setBtn(buttons.Speed, "Speed", speedOn)
+end)
+
+buttons.Noclip.MouseButton1Click:Connect(function()
+    noclipOn = not noclipOn
+    setBtn(buttons.Noclip, "Noclip", noclipOn)
+end)
+
+buttons.InfJump.MouseButton1Click:Connect(function()
+    infJumpOn = not infJumpOn
+    setBtn(buttons.InfJump, "InfJump", infJumpOn)
+end)
+
+buttons.ESP.MouseButton1Click:Connect(function()
+    espOn = not espOn
+    setBtn(buttons.ESP, "ESP", espOn)
+    clearESP()
+    if espOn then
+        for _, p in ipairs(Players:GetPlayers()) do
+            createESP(p)
+        end
+    end
+end)
+
+buttons.Aim.MouseButton1Click:Connect(function()
+    aimOn = not aimOn
+    setBtn(buttons.Aim, "Aim", aimOn)
+end)
+
+buttons.Follow.MouseButton1Click:Connect(function()
+    followOn = not followOn
+    setBtn(buttons.Follow, "Follow", followOn)
+end)
+
+tpBtn.MouseButton1Click:Connect(function()
+    if selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        LocalPlayer.Character.HumanoidRootPart.CFrame =
+            selectedPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(3,0,0)
+    end
+end)
+
+UIS.JumpRequest:Connect(function()
+    if infJumpOn then
+        Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+end)
+
+-- loop
+RunService.RenderStepped:Connect(function()
+    Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    Humanoid = Character:FindFirstChildOfClass("Humanoid")
+    HRP = Character:FindFirstChild("HumanoidRootPart")
+    if not HRP then return end
+
+    if flying and bv and bg then
+        bv.Velocity = Camera.CFrame.LookVector * flySpeed
+        bg.CFrame = Camera.CFrame
+    end
+
+    if noclipOn then
+        for _, v in ipairs(Character:GetDescendants()) do
+            if v:IsA("BasePart") then v.CanCollide = false end
+        end
+    end
+
+    if selectedPlayer and selectedPlayer.Character then
+        local targetHRP = selectedPlayer.Character:FindFirstChild("HumanoidRootPart")
+        local head = selectedPlayer.Character:FindFirstChild("Head")
+
+        if aimOn and head then
+            Camera.CFrame = CFrame.new(Camera.CFrame.Position, head.Position)
+        end
+
+        if followOn and targetHRP then
+            HRP.CFrame = targetHRP.CFrame * CFrame.new(0,0,3)
+        end
+    end
+end)
+
+-- EXTRA 10 FUNCTIONS
+
+local extraFrame = frame
+extraFrame.Size = UDim2.new(0, 300, 0, 760)
+
+local states = {
+    superJump = false,
+    airWalk = false,
+    spin = false,
+    fullbright = false,
+    invisible = false,
+    clicktp = false,
+    fpsboost = false
+}
+
+local function addExtraButton(text, y)
+    local b = Instance.new("TextButton", extraFrame)
+    b.Size = UDim2.new(0.42,0,0,30)
+    b.Position = UDim2.new((y % 2 == 0) and 0.07 or 0.52,0,0,420 + math.floor(y/2)*35)
+    b.BackgroundColor3 = Color3.fromRGB(80,0,0)
+    b.TextColor3 = Color3.new(1,1,1)
+    b.Text = text .. ": OFF"
+    return b
+end
+
+local ex = {
+    SuperJump = addExtraButton("SuperJump", 0),
+    Sit = addExtraButton("Sit", 1),
+    Reset = addExtraButton("Reset", 2),
+    TPUp = addExtraButton("TP Up", 3),
+    AirWalk = addExtraButton("AirWalk", 4),
+    Spin = addExtraButton("Spin", 5),
+    Bright = addExtraButton("Bright", 6),
+    Invis = addExtraButton("Invisible", 7),
+    ClickTP = addExtraButton("ClickTP", 8),
+    FPS = addExtraButton("FPSBoost", 9)
+}
+
+local function toggleBtn(btn, name, state)
+    btn.Text = name .. ": " .. (state and "ON" or "OFF")
+    btn.BackgroundColor3 = state and Color3.fromRGB(0,120,0) or Color3.fromRGB(80,0,0)
+end
+
+ex.SuperJump.MouseButton1Click:Connect(function()
+    states.superJump = not states.superJump
+    toggleBtn(ex.SuperJump, "SuperJump", states.superJump)
+end)
+
+ex.Sit.MouseButton1Click:Connect(function()
+    if Humanoid then
+        Humanoid.Sit = true
+    end
+end)
+
+ex.Reset.MouseButton1Click:Connect(function()
+    if Character then
+        Character:BreakJoints()
+    end
+end)
+
+ex.TPUp.MouseButton1Click:Connect(function()
+    if HRP then
+        HRP.CFrame = HRP.CFrame + Vector3.new(0,50,0)
+    end
+end)
+
+ex.AirWalk.MouseButton1Click:Connect(function()
+    states.airWalk = not states.airWalk
+    toggleBtn(ex.AirWalk, "AirWalk", states.airWalk)
+end)
+
+ex.Spin.MouseButton1Click:Connect(function()
+    states.spin = not states.spin
+    toggleBtn(ex.Spin, "Spin", states.spin)
+end)
+
+ex.Bright.MouseButton1Click:Connect(function()
+    states.fullbright = not states.fullbright
+    toggleBtn(ex.Bright, "Bright", states.fullbright)
+    if states.fullbright then
+        game.Lighting.Brightness = 5
+        game.Lighting.ClockTime = 14
+        game.Lighting.FogEnd = 100000
+    end
+end)
+
+ex.Invis.MouseButton1Click:Connect(function()
+    states.invisible = not states.invisible
+    toggleBtn(ex.Invis, "Invisible", states.invisible)
+end)
+
+ex.ClickTP.MouseButton1Click:Connect(function()
+    states.clicktp = not states.clicktp
+    toggleBtn(ex.ClickTP, "ClickTP", states.clicktp)
+end)
+
+ex.FPS.MouseButton1Click:Connect(function()
+    states.fpsboost = not states.fpsboost
+    toggleBtn(ex.FPS, "FPSBoost", states.fpsboost)
+
+    if states.fpsboost then
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+        for _, v in ipairs(game:GetDescendants()) do
+            if v:IsA("BasePart") then
+                v.Material = Enum.Material.Plastic
+                v.Reflectance = 0
+            end
+        end
+    end
+end)
+
+UIS.InputBegan:Connect(function(input, gp)
+    if gp then return end
+
+    if states.clicktp and input.UserInputType == Enum.UserInputType.MouseButton1 then
+        local mouse = LocalPlayer:GetMouse()
+        if mouse.Hit and HRP then
+            HRP.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0,3,0))
+        end
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if not Character or not HRP then return end
+
+    if states.spin then
+        HRP.CFrame = HRP.CFrame * CFrame.Angles(0, math.rad(5), 0)
+    end
+
+    if states.invisible then
+        for _, v in ipairs(Character:GetDescendants()) do
+            if v:IsA("BasePart") then
+                v.Transparency = 0.65
+            end
+        end
+    end
+
+    if states.airWalk then
+        local p = Instance.new("Part")
+        p.Size = Vector3.new(6,1,6)
+        p.Anchored = true
+        p.Transparency = 1
+        p.CanCollide = true
+        p.Position = HRP.Position - Vector3.new(0,3,0)
+        p.Parent = workspace
+        game.Debris:AddItem(p, 0.15)
+    end
+end)
+
+UIS.JumpRequest:Connect(function()
+    if states.superJump and HRP then
+        HRP.Velocity = Vector3.new(HRP.Velocity.X, 120, HRP.Velocity.Z)
+    end
+end)
