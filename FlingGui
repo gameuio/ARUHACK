@@ -1,13 +1,20 @@
 --[[
     KILASIK's ULTIMATE FLING EXPLOIT
-    CHAOS EDITION v4.0
+    COMPLETE EDITION - ALL FEATURES COMBINED
     
-    NEW CHAOTIC FEATURES:
-    🌑 Black Hole Mode (Zone Attraction & Explosion)
-    🛡️ Bodyguard Bot (Auto-Defense)
+    ALL FEATURES:
+    ✨ Beautiful Frutiger Aero UI
+    🎯 Multi-Target Selection
+    🧲 Gravity Gun (Grab & Sling)
+    🌪️ Vortex Mode (Orbital Chaos)
+    👻 Ghost Step (No Collision)
+    🌑 Black Hole (Attraction Zone)
+    🛡️ Bodyguard (Auto Defense)
     🎯 Ragdoll Launcher (Object Weaponizer)
-    🏓 Ping-Pong Mode (Hyper Teleport)
-    ✨ Previous Features (Gravity Gun, Vortex, Ghost Step)
+    🏓 Ping-Pong (Hyper Teleport)
+    🎨 Premium Visual Effects
+    📊 Advanced Settings Panel
+    ⚙️ Full Customization
 ]]
 
 -- Services
@@ -101,7 +108,7 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.Parent = game:GetService("CoreGui")
 
 -- ============================================
--- TOGGLE BUTTON
+-- TOGGLE BUTTON (Frutiger Aero Style)
 -- ============================================
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Name = "ToggleButton"
@@ -217,12 +224,12 @@ AddCorners(NotificationBadge, 14)
 AddStroke(NotificationBadge, Color3.fromRGB(255, 255, 255), 2)
 
 -- ============================================
--- MAIN FRAME
+-- MAIN FRAME (Frutiger Aero Design)
 -- ============================================
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 500, 0, 680)
-MainFrame.Position = UDim2.new(0.5, -250, 0.5, -340)
+MainFrame.Size = UDim2.new(0, 520, 0, 720)
+MainFrame.Position = UDim2.new(0.5, -260, 0.5, -360)
 MainFrame.BackgroundColor3 = Color3.fromRGB(240, 250, 255)
 MainFrame.BackgroundTransparency = 0.1
 MainFrame.BorderSizePixel = 0
@@ -288,11 +295,607 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- ============================================
--- TITLE BAR
+-- ADVANCED SETTINGS FRAME
+-- ============================================
+local AdvancedFrame = Instance.new("Frame")
+AdvancedFrame.Name = "AdvancedFrame"
+AdvancedFrame.Size = UDim2.new(0, 400, 0, 600)
+AdvancedFrame.Position = UDim2.new(0.5, -200, 0.5, -300)
+AdvancedFrame.BackgroundColor3 = Color3.fromRGB(240, 250, 255)
+AdvancedFrame.BackgroundTransparency = 0.1
+AdvancedFrame.BorderSizePixel = 0
+AdvancedFrame.Active = true
+AdvancedFrame.ClipsDescendants = false
+AdvancedFrame.Visible = false
+AdvancedFrame.Parent = ScreenGui
+
+AddCorners(AdvancedFrame, 16)
+CreateShadow(AdvancedFrame)
+AddStroke(AdvancedFrame, Color3.fromRGB(100, 150, 255), 3)
+
+local AdvancedBG = AddGradient(AdvancedFrame, ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 240, 255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(240, 250, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 230, 255))
+})
+
+spawn(function()
+    while ScreenGui.Parent do
+        CreateTween(AdvancedBG, TweenInfo.new(4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
+            Rotation = 360
+        }):Play()
+        wait(4)
+    end
+end)
+
+local advDragging, advDragInput, advDragStart, advStartPos
+
+AdvancedFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        advDragging = true
+        advDragStart = input.Position
+        advStartPos = AdvancedFrame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                advDragging = false
+            end
+        end)
+    end
+end)
+
+AdvancedFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        advDragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == advDragInput and advDragging then
+        local delta = input.Position - advDragStart
+        AdvancedFrame.Position = UDim2.new(advStartPos.X.Scale, advStartPos.X.Offset + delta.X, advStartPos.Y.Scale, advStartPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Advanced Frame Title Bar
+local AdvTitleBar = Instance.new("Frame")
+AdvTitleBar.Name = "TitleBar"
+AdvTitleBar.Size = UDim2.new(1, 0, 0, 60)
+AdvTitleBar.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+AdvTitleBar.BackgroundTransparency = 0.2
+AdvTitleBar.BorderSizePixel = 0
+AdvTitleBar.Parent = AdvancedFrame
+
+AddCorners(AdvTitleBar, 16)
+AddGradient(AdvTitleBar, ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 220, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(80, 180, 255))
+})
+
+local AdvTitleGlass = Instance.new("Frame")
+AdvTitleGlass.Size = UDim2.new(1, 0, 0.5, 0)
+AdvTitleGlass.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+AdvTitleGlass.BackgroundTransparency = 0.8
+AdvTitleGlass.BorderSizePixel = 0
+AdvTitleGlass.Parent = AdvTitleBar
+AddCorners(AdvTitleGlass, 16)
+
+local AdvLogo = Instance.new("TextLabel")
+AdvLogo.Size = UDim2.new(0, 50, 0, 50)
+AdvLogo.Position = UDim2.new(0, 8, 0, 5)
+AdvLogo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+AdvLogo.BackgroundTransparency = 0.3
+AdvLogo.Text = "⚙️"
+AdvLogo.TextColor3 = Color3.fromRGB(255, 255, 255)
+AdvLogo.Font = Enum.Font.GothamBold
+AdvLogo.TextSize = 32
+AdvLogo.Parent = AdvTitleBar
+AddCorners(AdvLogo, 25)
+
+local AdvTitle = Instance.new("TextLabel")
+AdvTitle.Size = UDim2.new(1, -150, 0, 25)
+AdvTitle.Position = UDim2.new(0, 65, 0, 8)
+AdvTitle.BackgroundTransparency = 1
+AdvTitle.Text = "ADVANCED SETTINGS"
+AdvTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+AdvTitle.Font = Enum.Font.GothamBold
+AdvTitle.TextSize = 19
+AdvTitle.TextXAlignment = Enum.TextXAlignment.Left
+AdvTitle.TextStrokeTransparency = 0.8
+AdvTitle.Parent = AdvTitleBar
+
+local AdvSubtitle = Instance.new("TextLabel")
+AdvSubtitle.Size = UDim2.new(1, -150, 0, 18)
+AdvSubtitle.Position = UDim2.new(0, 65, 0, 32)
+AdvSubtitle.BackgroundTransparency = 1
+AdvSubtitle.Text = "Customize all parameters"
+AdvSubtitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+AdvSubtitle.Font = Enum.Font.Gotham
+AdvSubtitle.TextSize = 12
+AdvSubtitle.TextXAlignment = Enum.TextXAlignment.Left
+AdvSubtitle.TextTransparency = 0.2
+AdvSubtitle.Parent = AdvTitleBar
+
+local AdvCloseButton = Instance.new("TextButton")
+AdvCloseButton.Position = UDim2.new(1, -50, 0, 5)
+AdvCloseButton.Size = UDim2.new(0, 45, 0, 45)
+AdvCloseButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+AdvCloseButton.BackgroundTransparency = 0.3
+AdvCloseButton.BorderSizePixel = 0
+AdvCloseButton.Text = "✕"
+AdvCloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+AdvCloseButton.Font = Enum.Font.GothamBold
+AdvCloseButton.TextSize = 24
+AdvCloseButton.AutoButtonColor = false
+AdvCloseButton.Parent = AdvTitleBar
+AddCorners(AdvCloseButton, 22)
+
+AdvCloseButton.MouseEnter:Connect(function()
+    CreateTween(AdvCloseButton, TweenInfo.new(0.2), {BackgroundTransparency = 0, Size = UDim2.new(0, 48, 0, 48)}):Play()
+end)
+AdvCloseButton.MouseLeave:Connect(function()
+    CreateTween(AdvCloseButton, TweenInfo.new(0.2), {BackgroundTransparency = 0.3, Size = UDim2.new(0, 45, 0, 45)}):Play()
+end)
+
+-- Settings Container
+local SettingsContainer = Instance.new("ScrollingFrame")
+SettingsContainer.Position = UDim2.new(0, 15, 0, 70)
+SettingsContainer.Size = UDim2.new(1, -30, 1, -85)
+SettingsContainer.BackgroundTransparency = 1
+SettingsContainer.BorderSizePixel = 0
+SettingsContainer.ScrollBarThickness = 5
+SettingsContainer.ScrollBarImageColor3 = Color3.fromRGB(100, 200, 255)
+SettingsContainer.CanvasSize = UDim2.new(0, 0, 0, 1200)
+SettingsContainer.Parent = AdvancedFrame
+
+-- Settings Variables
+local Settings = {
+    FlingPower = 1,
+    FlingMode = "Normal",
+    AutoRespawn = false,
+    LoopFling = false,
+    AntiRagdoll = true,
+    TargetHighlight = true,
+    SpinSpeed = 100,
+    FlingDelay = 0.1,
+    OrbitMode = false,
+    OrbitSpeed = 5,
+    ShowBeams = true,
+    AutoTarget = false,
+    AutoTargetRadius = 50,
+    AntiTPBypass = false,
+    BlackHoleRadius = 25,
+    BlackHolePower = 100,
+    BodyguardDistance = 10,
+    SlingPower = 200,
+    VortexRadius = 20,
+    VortexSpeed = 5,
+    PingPongSpeed = 0.5,
+    GrabDistance = 10
+}
+
+local yPos = 10
+
+-- UI Creation Functions
+local function CreateSectionHeader(text, yPosition)
+    local header = Instance.new("Frame")
+    header.Position = UDim2.new(0, 0, 0, yPosition)
+    header.Size = UDim2.new(1, -10, 0, 35)
+    header.BackgroundColor3 = Color3.fromRGB(180, 230, 255)
+    header.BackgroundTransparency = 0.5
+    header.BorderSizePixel = 0
+    header.Parent = SettingsContainer
+    
+    AddCorners(header, 8)
+    AddStroke(header, Color3.fromRGB(150, 220, 255), 2)
+    
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, -15, 1, 0)
+    title.Position = UDim2.new(0, 10, 0, 0)
+    title.BackgroundTransparency = 1
+    title.Text = "📌 " .. text
+    title.TextColor3 = Color3.fromRGB(80, 180, 255)
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 14
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    title.Parent = header
+    
+    return yPosition + 45
+end
+
+local function CreateToggle(labelText, defaultValue, callback, yPosition)
+    local toggleFrame = Instance.new("Frame")
+    toggleFrame.Position = UDim2.new(0, 0, 0, yPosition)
+    toggleFrame.Size = UDim2.new(1, -10, 0, 40)
+    toggleFrame.BackgroundColor3 = Color3.fromRGB(220, 245, 255)
+    toggleFrame.BackgroundTransparency = 0.3
+    toggleFrame.BorderSizePixel = 0
+    toggleFrame.Parent = SettingsContainer
+    
+    AddCorners(toggleFrame, 8)
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -70, 1, 0)
+    label.Position = UDim2.new(0, 10, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = labelText
+    label.TextColor3 = Color3.fromRGB(80, 180, 255)
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 13
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = toggleFrame
+    
+    local toggleButton = Instance.new("TextButton")
+    toggleButton.Position = UDim2.new(1, -55, 0.5, -15)
+    toggleButton.Size = UDim2.new(0, 50, 0, 30)
+    toggleButton.BackgroundColor3 = defaultValue and Color3.fromRGB(100, 255, 150) or Color3.fromRGB(150, 150, 180)
+    toggleButton.BackgroundTransparency = 0.2
+    toggleButton.BorderSizePixel = 0
+    toggleButton.Text = ""
+    toggleButton.AutoButtonColor = false
+    toggleButton.Parent = toggleFrame
+    
+    AddCorners(toggleButton, 15)
+    
+    local toggleCircle = Instance.new("Frame")
+    toggleCircle.Size = UDim2.new(0, 24, 0, 24)
+    toggleCircle.Position = defaultValue and UDim2.new(1, -27, 0.5, -12) or UDim2.new(0, 3, 0.5, -12)
+    toggleCircle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    toggleCircle.BorderSizePixel = 0
+    toggleCircle.Parent = toggleButton
+    
+    AddCorners(toggleCircle, 12)
+    CreateShadow(toggleCircle)
+    
+    local isEnabled = defaultValue
+    
+    toggleButton.MouseButton1Click:Connect(function()
+        isEnabled = not isEnabled
+        
+        if isEnabled then
+            CreateTween(toggleButton, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(100, 255, 150)}):Play()
+            CreateTween(toggleCircle, TweenInfo.new(0.3), {Position = UDim2.new(1, -27, 0.5, -12)}):Play()
+        else
+            CreateTween(toggleButton, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(150, 150, 180)}):Play()
+            CreateTween(toggleCircle, TweenInfo.new(0.3), {Position = UDim2.new(0, 3, 0.5, -12)}):Play()
+        end
+        
+        callback(isEnabled)
+    end)
+    
+    return yPosition + 50
+end
+
+local function CreateSlider(labelText, minValue, maxValue, defaultValue, callback, yPosition)
+    local sliderFrame = Instance.new("Frame")
+    sliderFrame.Position = UDim2.new(0, 0, 0, yPosition)
+    sliderFrame.Size = UDim2.new(1, -10, 0, 65)
+    sliderFrame.BackgroundColor3 = Color3.fromRGB(220, 245, 255)
+    sliderFrame.BackgroundTransparency = 0.3
+    sliderFrame.BorderSizePixel = 0
+    sliderFrame.Parent = SettingsContainer
+    
+    AddCorners(sliderFrame, 8)
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -65, 0, 22)
+    label.Position = UDim2.new(0, 10, 0, 8)
+    label.BackgroundTransparency = 1
+    label.Text = labelText
+    label.TextColor3 = Color3.fromRGB(80, 180, 255)
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 13
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = sliderFrame
+    
+    local valueLabel = Instance.new("TextLabel")
+    valueLabel.Size = UDim2.new(0, 55, 0, 22)
+    valueLabel.Position = UDim2.new(1, -60, 0, 8)
+    valueLabel.BackgroundColor3 = Color3.fromRGB(180, 230, 255)
+    valueLabel.BackgroundTransparency = 0.5
+    valueLabel.BorderSizePixel = 0
+    valueLabel.Text = tostring(defaultValue)
+    valueLabel.TextColor3 = Color3.fromRGB(80, 180, 255)
+    valueLabel.Font = Enum.Font.GothamBold
+    valueLabel.TextSize = 13
+    valueLabel.Parent = sliderFrame
+    
+    AddCorners(valueLabel, 6)
+    
+    local sliderBar = Instance.new("Frame")
+    sliderBar.Position = UDim2.new(0, 10, 0, 40)
+    sliderBar.Size = UDim2.new(1, -20, 0, 16)
+    sliderBar.BackgroundColor3 = Color3.fromRGB(180, 230, 255)
+    sliderBar.BackgroundTransparency = 0.5
+    sliderBar.BorderSizePixel = 0
+    sliderBar.Parent = sliderFrame
+    
+    AddCorners(sliderBar, 8)
+    
+    local sliderFill = Instance.new("Frame")
+    sliderFill.Size = UDim2.new((defaultValue - minValue) / (maxValue - minValue), 0, 1, 0)
+    sliderFill.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+    sliderFill.BackgroundTransparency = 0.2
+    sliderFill.BorderSizePixel = 0
+    sliderFill.Parent = sliderBar
+    
+    AddCorners(sliderFill, 8)
+    AddGradient(sliderFill, ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 220, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 200, 255))
+    })
+    
+    local sliderButton = Instance.new("Frame")
+    sliderButton.Position = UDim2.new((defaultValue - minValue) / (maxValue - minValue), -10, 0.5, -10)
+    sliderButton.Size = UDim2.new(0, 20, 0, 20)
+    sliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    sliderButton.BorderSizePixel = 0
+    sliderButton.Parent = sliderBar
+    
+    AddCorners(sliderButton, 10)
+    CreateShadow(sliderButton)
+    
+    local currentValue = defaultValue
+    local draggingSlider = false
+    
+    local sliderHitbox = Instance.new("TextButton")
+    sliderHitbox.Size = UDim2.new(1, 0, 1, 0)
+    sliderHitbox.BackgroundTransparency = 1
+    sliderHitbox.Text = ""
+    sliderHitbox.ZIndex = 5
+    sliderHitbox.Parent = sliderBar
+    
+    local function updateSlider(input)
+        local mousePos = input.Position.X
+        local barPos = sliderBar.AbsolutePosition.X
+        local barSize = sliderBar.AbsoluteSize.X
+        
+        local percentage = math.clamp((mousePos - barPos) / barSize, 0, 1)
+        
+        if maxValue - minValue <= 10 then
+            currentValue = math.floor((minValue + (maxValue - minValue) * percentage) * 10) / 10
+        else
+            currentValue = math.floor(minValue + (maxValue - minValue) * percentage)
+        end
+        
+        sliderButton.Position = UDim2.new(percentage, -10, 0.5, -10)
+        sliderFill.Size = UDim2.new(percentage, 0, 1, 0)
+        valueLabel.Text = tostring(currentValue)
+        
+        callback(currentValue)
+    end
+    
+    sliderHitbox.MouseButton1Down:Connect(function()
+        draggingSlider = true
+        CreateTween(sliderButton, TweenInfo.new(0.1), {Size = UDim2.new(0, 24, 0, 24)}):Play()
+    end)
+    
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            if draggingSlider then
+                draggingSlider = false
+                CreateTween(sliderButton, TweenInfo.new(0.2), {Size = UDim2.new(0, 20, 0, 20)}):Play()
+            end
+        end
+    end)
+    
+    sliderHitbox.MouseMoved:Connect(function(x, y)
+        if draggingSlider then
+            updateSlider({Position = Vector2.new(x, y)})
+        end
+    end)
+    
+    sliderHitbox.MouseButton1Click:Connect(function()
+        local mouseLocation = UserInputService:GetMouseLocation()
+        updateSlider({Position = mouseLocation})
+    end)
+    
+    return yPosition + 75
+end
+
+local function CreateDropdown(labelText, options, defaultValue, callback, yPosition)
+    local dropFrame = Instance.new("Frame")
+    dropFrame.Position = UDim2.new(0, 0, 0, yPosition)
+    dropFrame.Size = UDim2.new(1, -10, 0, 40)
+    dropFrame.BackgroundColor3 = Color3.fromRGB(220, 245, 255)
+    dropFrame.BackgroundTransparency = 0.3
+    dropFrame.BorderSizePixel = 0
+    dropFrame.ClipsDescendants = false
+    dropFrame.ZIndex = 2
+    dropFrame.Parent = SettingsContainer
+    
+    AddCorners(dropFrame, 8)
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.45, 0, 1, 0)
+    label.Position = UDim2.new(0, 10, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = labelText
+    label.TextColor3 = Color3.fromRGB(80, 180, 255)
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 13
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = dropFrame
+    
+    local dropButton = Instance.new("TextButton")
+    dropButton.Position = UDim2.new(0.48, 0, 0.5, -16)
+    dropButton.Size = UDim2.new(0.5, 0, 0, 32)
+    dropButton.BackgroundColor3 = Color3.fromRGB(180, 230, 255)
+    dropButton.BackgroundTransparency = 0.5
+    dropButton.BorderSizePixel = 0
+    dropButton.Text = defaultValue .. " ▼"
+    dropButton.TextColor3 = Color3.fromRGB(80, 180, 255)
+    dropButton.Font = Enum.Font.GothamBold
+    dropButton.TextSize = 12
+    dropButton.AutoButtonColor = false
+    dropButton.ZIndex = 3
+    dropButton.Parent = dropFrame
+    
+    AddCorners(dropButton, 8)
+    
+    local dropList = Instance.new("Frame")
+    dropList.Position = UDim2.new(0.48, 0, 1, 5)
+    dropList.Size = UDim2.new(0.5, 0, 0, #options * 38)
+    dropList.BackgroundColor3 = Color3.fromRGB(200, 240, 255)
+    dropList.BackgroundTransparency = 0.2
+    dropList.BorderSizePixel = 0
+    dropList.Visible = false
+    dropList.ZIndex = 5
+    dropList.Parent = dropFrame
+    
+    AddCorners(dropList, 8)
+    CreateShadow(dropList)
+    AddStroke(dropList, Color3.fromRGB(150, 220, 255), 2)
+    
+    for i, option in ipairs(options) do
+        local optionButton = Instance.new("TextButton")
+        optionButton.Position = UDim2.new(0, 6, 0, (i - 1) * 38 + 6)
+        optionButton.Size = UDim2.new(1, -12, 0, 32)
+        optionButton.BackgroundColor3 = Color3.fromRGB(180, 230, 255)
+        optionButton.BackgroundTransparency = 0.5
+        optionButton.BorderSizePixel = 0
+        optionButton.Text = option
+        optionButton.TextColor3 = Color3.fromRGB(80, 180, 255)
+        optionButton.Font = Enum.Font.Gotham
+        optionButton.TextSize = 12
+        optionButton.AutoButtonColor = false
+        optionButton.ZIndex = 6
+        optionButton.Parent = dropList
+        
+        AddCorners(optionButton, 6)
+        
+        optionButton.MouseEnter:Connect(function()
+            CreateTween(optionButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(100, 200, 255), BackgroundTransparency = 0.2}):Play()
+        end)
+        
+        optionButton.MouseLeave:Connect(function()
+            CreateTween(optionButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(180, 230, 255), BackgroundTransparency = 0.5}):Play()
+        end)
+        
+        optionButton.MouseButton1Click:Connect(function()
+            dropButton.Text = option .. " ▼"
+            dropList.Visible = false
+            callback(option)
+        end)
+    end
+    
+    dropButton.MouseButton1Click:Connect(function()
+        dropList.Visible = not dropList.Visible
+    end)
+    
+    return yPosition + 50
+end
+
+-- Create Advanced Settings Sections
+yPos = CreateSectionHeader("FLING SETTINGS", yPos)
+
+yPos = CreateDropdown("Fling Mode", {"Normal", "Extreme", "Gentle", "Chaos", "Orbit"}, Settings.FlingMode, function(value)
+    Settings.FlingMode = value
+end, yPos)
+
+yPos = CreateSlider("Fling Power", 1, 10, Settings.FlingPower, function(value)
+    Settings.FlingPower = value
+end, yPos)
+
+yPos = CreateSlider("Spin Speed", 50, 200, Settings.SpinSpeed, function(value)
+    Settings.SpinSpeed = value
+end, yPos)
+
+yPos = CreateSlider("Fling Delay", 0, 1, Settings.FlingDelay, function(value)
+    Settings.FlingDelay = value
+end, yPos)
+
+yPos = CreateSectionHeader("ANTI-TP BYPASS", yPos)
+
+yPos = CreateToggle("Orbit Mode (Smooth Approach)", Settings.OrbitMode, function(value)
+    Settings.OrbitMode = value
+end, yPos)
+
+yPos = CreateSlider("Orbit Speed", 1, 10, Settings.OrbitSpeed, function(value)
+    Settings.OrbitSpeed = value
+end, yPos)
+
+yPos = CreateToggle("Anti-TP Bypass", Settings.AntiTPBypass, function(value)
+    Settings.AntiTPBypass = value
+end, yPos)
+
+yPos = CreateSectionHeader("AUTO-TARGET", yPos)
+
+yPos = CreateToggle("Auto-Target Enabled", Settings.AutoTarget, function(value)
+    Settings.AutoTarget = value
+end, yPos)
+
+yPos = CreateSlider("Auto-Target Radius", 10, 100, Settings.AutoTargetRadius, function(value)
+    Settings.AutoTargetRadius = value
+end, yPos)
+
+yPos = CreateSectionHeader("CHAOS MODES", yPos)
+
+yPos = CreateSlider("Black Hole Radius", 10, 50, Settings.BlackHoleRadius, function(value)
+    Settings.BlackHoleRadius = value
+end, yPos)
+
+yPos = CreateSlider("Black Hole Power", 50, 200, Settings.BlackHolePower, function(value)
+    Settings.BlackHolePower = value
+end, yPos)
+
+yPos = CreateSlider("Bodyguard Distance", 5, 20, Settings.BodyguardDistance, function(value)
+    Settings.BodyguardDistance = value
+end, yPos)
+
+yPos = CreateSlider("Sling Power", 100, 300, Settings.SlingPower, function(value)
+    Settings.SlingPower = value
+end, yPos)
+
+yPos = CreateSlider("Vortex Radius", 10, 40, Settings.VortexRadius, function(value)
+    Settings.VortexRadius = value
+end, yPos)
+
+yPos = CreateSlider("Vortex Speed", 1, 10, Settings.VortexSpeed, function(value)
+    Settings.VortexSpeed = value
+end, yPos)
+
+yPos = CreateSlider("Ping-Pong Speed", 0.1, 2, Settings.PingPongSpeed, function(value)
+    Settings.PingPongSpeed = value
+end, yPos)
+
+yPos = CreateSlider("Grab Distance", 5, 20, Settings.GrabDistance, function(value)
+    Settings.GrabDistance = value
+end, yPos)
+
+yPos = CreateSectionHeader("VISUALS", yPos)
+
+yPos = CreateToggle("Show Beams to Targets", Settings.ShowBeams, function(value)
+    Settings.ShowBeams = value
+end, yPos)
+
+yPos = CreateToggle("Target Highlight", Settings.TargetHighlight, function(value)
+    Settings.TargetHighlight = value
+end, yPos)
+
+yPos = CreateToggle("Anti Ragdoll", Settings.AntiRagdoll, function(value)
+    Settings.AntiRagdoll = value
+end, yPos)
+
+yPos = CreateSectionHeader("AUTOMATION", yPos)
+
+yPos = CreateToggle("Loop Fling", Settings.LoopFling, function(value)
+    Settings.LoopFling = value
+end, yPos)
+
+yPos = CreateToggle("Auto Respawn Targets", Settings.AutoRespawn, function(value)
+    Settings.AutoRespawn = value
+end, yPos)
+
+-- Update canvas size
+SettingsContainer.CanvasSize = UDim2.new(0, 0, 0, yPos + 20)
+
+-- ============================================
+-- TITLE BAR (Main Frame)
 -- ============================================
 local TitleBar = Instance.new("Frame")
 TitleBar.Name = "TitleBar"
-TitleBar.Size = UDim2.new(1, 0, 0, 60)
+TitleBar.Size = UDim2.new(1, 0, 0, 65)
 TitleBar.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
 TitleBar.BackgroundTransparency = 0.2
 TitleBar.BorderSizePixel = 0
@@ -313,93 +916,121 @@ TitleGlass.Parent = TitleBar
 AddCorners(TitleGlass, 16)
 
 local Logo = Instance.new("TextLabel")
-Logo.Size = UDim2.new(0, 50, 0, 50)
+Logo.Size = UDim2.new(0, 55, 0, 55)
 Logo.Position = UDim2.new(0, 8, 0, 5)
 Logo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Logo.BackgroundTransparency = 0.3
 Logo.Text = "🌌"
 Logo.TextColor3 = Color3.fromRGB(255, 255, 255)
 Logo.Font = Enum.Font.GothamBold
-Logo.TextSize = 32
+Logo.TextSize = 36
 Logo.Parent = TitleBar
-AddCorners(Logo, 25)
+AddCorners(Logo, 27)
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -150, 0, 25)
-Title.Position = UDim2.new(0, 65, 0, 8)
+Title.Size = UDim2.new(1, -180, 0, 28)
+Title.Position = UDim2.new(0, 70, 0, 10)
 Title.BackgroundTransparency = 1
-Title.Text = "KILASIK'S CHAOS FLING"
+Title.Text = "KILASIK'S COMPLETE FLING"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 19
+Title.TextSize = 20
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.TextStrokeTransparency = 0.8
 Title.Parent = TitleBar
 
 local Subtitle = Instance.new("TextLabel")
-Subtitle.Size = UDim2.new(1, -150, 0, 18)
-Subtitle.Position = UDim2.new(0, 65, 0, 32)
+Subtitle.Size = UDim2.new(1, -180, 0, 20)
+Subtitle.Position = UDim2.new(0, 70, 0, 36)
 Subtitle.BackgroundTransparency = 1
-Subtitle.Text = "Chaos Edition v4.0"
+Subtitle.Text = "Complete Edition - All Features"
 Subtitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 Subtitle.Font = Enum.Font.Gotham
-Subtitle.TextSize = 12
+Subtitle.TextSize = 13
 Subtitle.TextXAlignment = Enum.TextXAlignment.Left
 Subtitle.TextTransparency = 0.2
 Subtitle.Parent = TitleBar
 
+local SettingsButton = Instance.new("TextButton")
+SettingsButton.Position = UDim2.new(1, -105, 0, 10)
+SettingsButton.Size = UDim2.new(0, 48, 0, 48)
+SettingsButton.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
+SettingsButton.BackgroundTransparency = 0.3
+SettingsButton.BorderSizePixel = 0
+SettingsButton.Text = "⚙️"
+SettingsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SettingsButton.Font = Enum.Font.GothamBold
+SettingsButton.TextSize = 24
+SettingsButton.AutoButtonColor = false
+SettingsButton.Parent = TitleBar
+AddCorners(SettingsButton, 24)
+
+SettingsButton.MouseEnter:Connect(function()
+    CreateTween(SettingsButton, TweenInfo.new(0.2), {
+        BackgroundTransparency = 0,
+        Rotation = 90
+    }):Play()
+end)
+
+SettingsButton.MouseLeave:Connect(function()
+    CreateTween(SettingsButton, TweenInfo.new(0.2), {
+        BackgroundTransparency = 0.3,
+        Rotation = 0
+    }):Play()
+end)
+
 local CloseButton = Instance.new("TextButton")
-CloseButton.Position = UDim2.new(1, -50, 0, 5)
-CloseButton.Size = UDim2.new(0, 45, 0, 45)
+CloseButton.Position = UDim2.new(1, -50, 0, 10)
+CloseButton.Size = UDim2.new(0, 48, 0, 48)
 CloseButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
 CloseButton.BackgroundTransparency = 0.3
 CloseButton.BorderSizePixel = 0
 CloseButton.Text = "✕"
 CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 CloseButton.Font = Enum.Font.GothamBold
-CloseButton.TextSize = 24
+CloseButton.TextSize = 26
 CloseButton.AutoButtonColor = false
 CloseButton.Parent = TitleBar
-AddCorners(CloseButton, 22)
+AddCorners(CloseButton, 24)
 
 CloseButton.MouseEnter:Connect(function()
-    CreateTween(CloseButton, TweenInfo.new(0.2), {BackgroundTransparency = 0, Size = UDim2.new(0, 48, 0, 48)}):Play()
+    CreateTween(CloseButton, TweenInfo.new(0.2), {BackgroundTransparency = 0, Size = UDim2.new(0, 51, 0, 51)}):Play()
 end)
 CloseButton.MouseLeave:Connect(function()
-    CreateTween(CloseButton, TweenInfo.new(0.2), {BackgroundTransparency = 0.3, Size = UDim2.new(0, 45, 0, 45)}):Play()
+    CreateTween(CloseButton, TweenInfo.new(0.2), {BackgroundTransparency = 0.3, Size = UDim2.new(0, 48, 0, 48)}):Play()
 end)
 
 -- ============================================
 -- CHAOS MODES PANEL
 -- ============================================
 local ModesPanel = Instance.new("ScrollingFrame")
-ModesPanel.Position = UDim2.new(0, 15, 0, 75)
-ModesPanel.Size = UDim2.new(1, -30, 0, 280)
+ModesPanel.Position = UDim2.new(0, 15, 0, 80)
+ModesPanel.Size = UDim2.new(1, -30, 0, 300)
 ModesPanel.BackgroundColor3 = Color3.fromRGB(220, 245, 255)
 ModesPanel.BackgroundTransparency = 0.3
 ModesPanel.BorderSizePixel = 0
-ModesPanel.ScrollBarThickness = 4
+ModesPanel.ScrollBarThickness = 5
 ModesPanel.ScrollBarImageColor3 = Color3.fromRGB(100, 200, 255)
-ModesPanel.CanvasSize = UDim2.new(0, 0, 0, 380)
+ModesPanel.CanvasSize = UDim2.new(0, 0, 0, 420)
 ModesPanel.Parent = MainFrame
 AddCorners(ModesPanel, 12)
 AddStroke(ModesPanel, Color3.fromRGB(150, 220, 255), 2)
 
 local ModesTitle = Instance.new("TextLabel")
-ModesTitle.Size = UDim2.new(1, -20, 0, 30)
-ModesTitle.Position = UDim2.new(0, 10, 0, 5)
+ModesTitle.Size = UDim2.new(1, -20, 0, 32)
+ModesTitle.Position = UDim2.new(0, 12, 0, 8)
 ModesTitle.BackgroundTransparency = 1
-ModesTitle.Text = "🌟 CHAOS MODES"
+ModesTitle.Text = "🌟 ALL CHAOS MODES"
 ModesTitle.TextColor3 = Color3.fromRGB(80, 180, 255)
 ModesTitle.Font = Enum.Font.GothamBold
-ModesTitle.TextSize = 16
+ModesTitle.TextSize = 17
 ModesTitle.TextXAlignment = Enum.TextXAlignment.Left
 ModesTitle.Parent = ModesPanel
 
 local function CreateModeButton(text, icon, color, position, callback)
     local btn = Instance.new("TextButton")
     btn.Position = position
-    btn.Size = UDim2.new(0.48, 0, 0, 50)
+    btn.Size = UDim2.new(0.48, 0, 0, 54)
     btn.BackgroundColor3 = color
     btn.BackgroundTransparency = 0.2
     btn.BorderSizePixel = 0
@@ -409,7 +1040,7 @@ local function CreateModeButton(text, icon, color, position, callback)
     
     AddCorners(btn, 10)
     CreateShadow(btn)
-    AddStroke(btn, Color3.new(1, 1, 1), 2)
+    AddStroke(btn, Color3.fromRGB(255, 255, 255), 2)
     
     local glass = Instance.new("Frame")
     glass.Size = UDim2.new(1, 0, 0.4, 0)
@@ -420,34 +1051,34 @@ local function CreateModeButton(text, icon, color, position, callback)
     AddCorners(glass, 10)
     
     local iconLabel = Instance.new("TextLabel")
-    iconLabel.Size = UDim2.new(0, 45, 1, 0)
+    iconLabel.Size = UDim2.new(0, 48, 1, 0)
     iconLabel.BackgroundTransparency = 1
     iconLabel.Text = icon
     iconLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     iconLabel.Font = Enum.Font.GothamBold
-    iconLabel.TextSize = 26
+    iconLabel.TextSize = 28
     iconLabel.Parent = btn
     
     local textLabel = Instance.new("TextLabel")
-    textLabel.Size = UDim2.new(1, -50, 1, 0)
-    textLabel.Position = UDim2.new(0, 45, 0, 0)
+    textLabel.Size = UDim2.new(1, -53, 1, 0)
+    textLabel.Position = UDim2.new(0, 48, 0, 0)
     textLabel.BackgroundTransparency = 1
     textLabel.Text = text
     textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     textLabel.Font = Enum.Font.GothamBold
-    textLabel.TextSize = 12
+    textLabel.TextSize = 13
     textLabel.TextXAlignment = Enum.TextXAlignment.Left
     textLabel.TextStrokeTransparency = 0.8
     textLabel.TextWrapped = true
     textLabel.Parent = btn
     
     btn.MouseEnter:Connect(function()
-        CreateTween(btn, TweenInfo.new(0.2), {BackgroundTransparency = 0, Size = UDim2.new(0.48, 0, 0, 53)}):Play()
+        CreateTween(btn, TweenInfo.new(0.2), {BackgroundTransparency = 0, Size = UDim2.new(0.48, 0, 0, 57)}):Play()
         CreateTween(iconLabel, TweenInfo.new(0.2), {Rotation = 15}):Play()
     end)
     
     btn.MouseLeave:Connect(function()
-        CreateTween(btn, TweenInfo.new(0.2), {BackgroundTransparency = 0.2, Size = UDim2.new(0.48, 0, 0, 50)}):Play()
+        CreateTween(btn, TweenInfo.new(0.2), {BackgroundTransparency = 0.2, Size = UDim2.new(0.48, 0, 0, 54)}):Play()
         CreateTween(iconLabel, TweenInfo.new(0.2), {Rotation = 0}):Play()
     end)
     
@@ -456,67 +1087,87 @@ local function CreateModeButton(text, icon, color, position, callback)
     return btn
 end
 
--- Create Chaos Mode Buttons
-CreateModeButton("BLACK HOLE", "🌑", Color3.fromRGB(50, 50, 100), 
-    UDim2.new(0, 10, 0, 40), function() ToggleBlackHole() end)
+-- Create All Mode Buttons
+CreateModeButton("BLACK HOLE", "🌑", Color3.fromRGB(50, 50, 120), 
+    UDim2.new(0, 12, 0, 45), function() ToggleBlackHole() end)
 
 CreateModeButton("BODYGUARD", "🛡️", Color3.fromRGB(100, 150, 255), 
-    UDim2.new(0.52, 0, 0, 40), function() ToggleBodyguard() end)
+    UDim2.new(0.52, 0, 0, 45), function() ToggleBodyguard() end)
 
 CreateModeButton("RAGDOLL LAUNCHER", "🎯", Color3.fromRGB(255, 150, 50), 
-    UDim2.new(0, 10, 0, 95), function() ToggleRagdollLauncher() end)
+    UDim2.new(0, 12, 0, 105), function() ToggleRagdollLauncher() end)
 
 CreateModeButton("PING-PONG", "🏓", Color3.fromRGB(255, 100, 200), 
-    UDim2.new(0.52, 0, 0, 95), function() TogglePingPong() end)
+    UDim2.new(0.52, 0, 0, 105), function() TogglePingPong() end)
 
 CreateModeButton("GRAVITY GUN", "🧲", Color3.fromRGB(150, 100, 255), 
-    UDim2.new(0, 10, 0, 150), function() ToggleGravityGun() end)
+    UDim2.new(0, 12, 0, 165), function() ToggleGravityGun() end)
 
 CreateModeButton("VORTEX", "🌪️", Color3.fromRGB(100, 150, 255), 
-    UDim2.new(0.52, 0, 0, 150), function() ToggleVortex() end)
+    UDim2.new(0.52, 0, 0, 165), function() ToggleVortex() end)
 
 CreateModeButton("GHOST STEP", "👻", Color3.fromRGB(180, 100, 255), 
-    UDim2.new(0, 10, 0, 205), function() ToggleGhostStep() end)
+    UDim2.new(0, 12, 0, 225), function() ToggleGhostStep() end)
 
 CreateModeButton("AUTO-TARGET", "🎯", Color3.fromRGB(255, 150, 100), 
-    UDim2.new(0.52, 0, 0, 205), function() AutoTargetNearest() end)
+    UDim2.new(0.52, 0, 0, 225), function() AutoTargetNearest() end)
 
--- Ragdoll Launcher Panel (NEW)
+CreateModeButton("ORBIT MODE", "🔄", Color3.fromRGB(100, 200, 150), 
+    UDim2.new(0, 12, 0, 285), function() 
+        Settings.OrbitMode = not Settings.OrbitMode
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "🔄 Orbit Mode",
+            Text = Settings.OrbitMode and "ENABLED" or "DISABLED",
+            Duration = 2
+        })
+    end)
+
+CreateModeButton("LOOP FLING", "🔁", Color3.fromRGB(200, 100, 150), 
+    UDim2.new(0.52, 0, 0, 285), function()
+        Settings.LoopFling = not Settings.LoopFling
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "🔁 Loop Fling",
+            Text = Settings.LoopFling and "ENABLED" or "DISABLED",
+            Duration = 2
+        })
+    end)
+
+-- Ragdoll Launcher Panel
 local RagdollPanel = Instance.new("Frame")
-RagdollPanel.Position = UDim2.new(0, 10, 0, 265)
-RagdollPanel.Size = UDim2.new(1, -20, 0, 100)
+RagdollPanel.Position = UDim2.new(0, 12, 0, 350)
+RagdollPanel.Size = UDim2.new(1, -24, 0, 115)
 RagdollPanel.BackgroundColor3 = Color3.fromRGB(200, 230, 255)
 RagdollPanel.BackgroundTransparency = 0.5
 RagdollPanel.BorderSizePixel = 0
 RagdollPanel.Visible = false
 RagdollPanel.Parent = ModesPanel
-AddCorners(RagdollPanel, 8)
+AddCorners(RagdollPanel, 10)
 
 local RagdollTitle = Instance.new("TextLabel")
-RagdollTitle.Size = UDim2.new(1, -20, 0, 20)
-RagdollTitle.Position = UDim2.new(0, 10, 0, 5)
+RagdollTitle.Size = UDim2.new(1, -20, 0, 24)
+RagdollTitle.Position = UDim2.new(0, 12, 0, 8)
 RagdollTitle.BackgroundTransparency = 1
-RagdollTitle.Text = "🎯 AVAILABLE OBJECTS"
+RagdollTitle.Text = "🎯 AVAILABLE OBJECTS (Click to launch)"
 RagdollTitle.TextColor3 = Color3.fromRGB(80, 180, 255)
 RagdollTitle.Font = Enum.Font.GothamBold
-RagdollTitle.TextSize = 12
+RagdollTitle.TextSize = 13
 RagdollTitle.TextXAlignment = Enum.TextXAlignment.Left
 RagdollTitle.Parent = RagdollPanel
 
 local ObjectScroll = Instance.new("ScrollingFrame")
-ObjectScroll.Position = UDim2.new(0, 5, 0, 28)
-ObjectScroll.Size = UDim2.new(1, -10, 1, -33)
+ObjectScroll.Position = UDim2.new(0, 8, 0, 36)
+ObjectScroll.Size = UDim2.new(1, -16, 1, -42)
 ObjectScroll.BackgroundTransparency = 1
 ObjectScroll.BorderSizePixel = 0
-ObjectScroll.ScrollBarThickness = 3
+ObjectScroll.ScrollBarThickness = 4
 ObjectScroll.ScrollBarImageColor3 = Color3.fromRGB(100, 200, 255)
 ObjectScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 ObjectScroll.Parent = RagdollPanel
 
--- Status Bar & Other UI Elements (остальной код без изменений)
+-- Status Bar
 local StatusBar = Instance.new("Frame")
-StatusBar.Position = UDim2.new(0, 15, 0, 365)
-StatusBar.Size = UDim2.new(1, -30, 0, 50)
+StatusBar.Position = UDim2.new(0, 15, 0, 390)
+StatusBar.Size = UDim2.new(1, -30, 0, 54)
 StatusBar.BackgroundColor3 = Color3.fromRGB(220, 245, 255)
 StatusBar.BackgroundTransparency = 0.3
 StatusBar.BorderSizePixel = 0
@@ -525,31 +1176,31 @@ AddCorners(StatusBar, 10)
 AddStroke(StatusBar, Color3.fromRGB(150, 220, 255), 2)
 
 local StatusIcon = Instance.new("TextLabel")
-StatusIcon.Size = UDim2.new(0, 35, 0, 35)
-StatusIcon.Position = UDim2.new(0, 10, 0.5, -17)
+StatusIcon.Size = UDim2.new(0, 38, 0, 38)
+StatusIcon.Position = UDim2.new(0, 12, 0.5, -19)
 StatusIcon.BackgroundTransparency = 1
 StatusIcon.Text = "●"
 StatusIcon.TextColor3 = Color3.fromRGB(100, 255, 150)
 StatusIcon.Font = Enum.Font.GothamBold
-StatusIcon.TextSize = 28
+StatusIcon.TextSize = 32
 StatusIcon.Parent = StatusBar
 
 local StatusLabel = Instance.new("TextLabel")
-StatusLabel.Position = UDim2.new(0, 50, 0, 5)
-StatusLabel.Size = UDim2.new(1, -60, 0, 22)
+StatusLabel.Position = UDim2.new(0, 56, 0, 6)
+StatusLabel.Size = UDim2.new(1, -62, 0, 24)
 StatusLabel.BackgroundTransparency = 1
 StatusLabel.Text = "Ready for chaos"
 StatusLabel.TextColor3 = Color3.fromRGB(80, 180, 255)
 StatusLabel.Font = Enum.Font.GothamBold
-StatusLabel.TextSize = 16
+StatusLabel.TextSize = 17
 StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
 StatusLabel.Parent = StatusBar
 
 local StatusDetail = Instance.new("TextLabel")
-StatusDetail.Position = UDim2.new(0, 50, 0, 27)
-StatusDetail.Size = UDim2.new(1, -60, 0, 18)
+StatusDetail.Position = UDim2.new(0, 56, 0, 30)
+StatusDetail.Size = UDim2.new(1, -62, 0, 20)
 StatusDetail.BackgroundTransparency = 1
-StatusDetail.Text = "Select a chaos mode to begin"
+StatusDetail.Text = "Select chaos modes or targets"
 StatusDetail.TextColor3 = Color3.fromRGB(120, 200, 255)
 StatusDetail.Font = Enum.Font.Gotham
 StatusDetail.TextSize = 13
@@ -559,8 +1210,8 @@ StatusDetail.Parent = StatusBar
 
 -- Selection Frame
 local SelectionFrame = Instance.new("Frame")
-SelectionFrame.Position = UDim2.new(0, 15, 0, 425)
-SelectionFrame.Size = UDim2.new(1, -30, 0, 160)
+SelectionFrame.Position = UDim2.new(0, 15, 0, 454)
+SelectionFrame.Size = UDim2.new(1, -30, 0, 170)
 SelectionFrame.BackgroundColor3 = Color3.fromRGB(220, 245, 255)
 SelectionFrame.BackgroundTransparency = 0.3
 SelectionFrame.BorderSizePixel = 0
@@ -569,7 +1220,7 @@ AddCorners(SelectionFrame, 12)
 AddStroke(SelectionFrame, Color3.fromRGB(150, 220, 255), 2)
 
 local SelectionHeader = Instance.new("Frame")
-SelectionHeader.Size = UDim2.new(1, 0, 0, 35)
+SelectionHeader.Size = UDim2.new(1, 0, 0, 38)
 SelectionHeader.BackgroundColor3 = Color3.fromRGB(180, 230, 255)
 SelectionHeader.BackgroundTransparency = 0.5
 SelectionHeader.BorderSizePixel = 0
@@ -577,30 +1228,30 @@ SelectionHeader.Parent = SelectionFrame
 AddCorners(SelectionHeader, 12)
 
 local HeaderTitle = Instance.new("TextLabel")
-HeaderTitle.Size = UDim2.new(1, -20, 1, 0)
-HeaderTitle.Position = UDim2.new(0, 15, 0, 0)
+HeaderTitle.Size = UDim2.new(1, -24, 1, 0)
+HeaderTitle.Position = UDim2.new(0, 16, 0, 0)
 HeaderTitle.BackgroundTransparency = 1
 HeaderTitle.Text = "👥 TARGET SELECTION"
 HeaderTitle.TextColor3 = Color3.fromRGB(80, 180, 255)
 HeaderTitle.Font = Enum.Font.GothamBold
-HeaderTitle.TextSize = 14
+HeaderTitle.TextSize = 15
 HeaderTitle.TextXAlignment = Enum.TextXAlignment.Left
 HeaderTitle.Parent = SelectionHeader
 
 local PlayerScrollFrame = Instance.new("ScrollingFrame")
-PlayerScrollFrame.Position = UDim2.new(0, 8, 0, 40)
-PlayerScrollFrame.Size = UDim2.new(1, -16, 1, -45)
+PlayerScrollFrame.Position = UDim2.new(0, 10, 0, 43)
+PlayerScrollFrame.Size = UDim2.new(1, -20, 1, -48)
 PlayerScrollFrame.BackgroundTransparency = 1
 PlayerScrollFrame.BorderSizePixel = 0
-PlayerScrollFrame.ScrollBarThickness = 4
+PlayerScrollFrame.ScrollBarThickness = 5
 PlayerScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 200, 255)
 PlayerScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 PlayerScrollFrame.Parent = SelectionFrame
 
--- Quick Select + Action Buttons
+-- Quick Select Buttons
 local QuickSelectFrame = Instance.new("Frame")
-QuickSelectFrame.Position = UDim2.new(0, 15, 0, 595)
-QuickSelectFrame.Size = UDim2.new(1, -30, 0, 35)
+QuickSelectFrame.Position = UDim2.new(0, 15, 0, 634)
+QuickSelectFrame.Size = UDim2.new(1, -30, 0, 36)
 QuickSelectFrame.BackgroundTransparency = 1
 QuickSelectFrame.Parent = MainFrame
 
@@ -612,7 +1263,7 @@ SelectAllButton.BorderSizePixel = 0
 SelectAllButton.Text = "✓ SELECT ALL"
 SelectAllButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 SelectAllButton.Font = Enum.Font.GothamBold
-SelectAllButton.TextSize = 13
+SelectAllButton.TextSize = 14
 SelectAllButton.AutoButtonColor = false
 SelectAllButton.Parent = QuickSelectFrame
 AddCorners(SelectAllButton, 8)
@@ -627,7 +1278,7 @@ DeselectAllButton.BorderSizePixel = 0
 DeselectAllButton.Text = "✕ DESELECT ALL"
 DeselectAllButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 DeselectAllButton.Font = Enum.Font.GothamBold
-DeselectAllButton.TextSize = 13
+DeselectAllButton.TextSize = 14
 DeselectAllButton.AutoButtonColor = false
 DeselectAllButton.Parent = QuickSelectFrame
 AddCorners(DeselectAllButton, 8)
@@ -649,15 +1300,15 @@ end)
 
 -- Start/Stop Buttons
 local StartButton = Instance.new("TextButton")
-StartButton.Position = UDim2.new(0, 15, 0, 638)
-StartButton.Size = UDim2.new(0.48, 0, 0, 50)
+StartButton.Position = UDim2.new(0, 15, 0, 678)
+StartButton.Size = UDim2.new(0.48, 0, 0, 52)
 StartButton.BackgroundColor3 = Color3.fromRGB(100, 255, 150)
 StartButton.BackgroundTransparency = 0.2
 StartButton.BorderSizePixel = 0
 StartButton.Text = "▶ START FLING"
 StartButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 StartButton.Font = Enum.Font.GothamBold
-StartButton.TextSize = 17
+StartButton.TextSize = 18
 StartButton.AutoButtonColor = false
 StartButton.Parent = MainFrame
 AddCorners(StartButton, 10)
@@ -665,15 +1316,15 @@ CreateShadow(StartButton)
 AddStroke(StartButton, Color3.fromRGB(255, 255, 255), 2)
 
 local StopButton = Instance.new("TextButton")
-StopButton.Position = UDim2.new(0.52, 0, 0, 638)
-StopButton.Size = UDim2.new(0.48, -15, 0, 50)
+StopButton.Position = UDim2.new(0.52, 0, 0, 678)
+StopButton.Size = UDim2.new(0.48, -15, 0, 52)
 StopButton.BackgroundColor3 = Color3.fromRGB(255, 100, 150)
 StopButton.BackgroundTransparency = 0.2
 StopButton.BorderSizePixel = 0
 StopButton.Text = "■ STOP ALL"
 StopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 StopButton.Font = Enum.Font.GothamBold
-StopButton.TextSize = 17
+StopButton.TextSize = 18
 StopButton.AutoButtonColor = false
 StopButton.Parent = MainFrame
 AddCorners(StopButton, 10)
@@ -681,17 +1332,17 @@ CreateShadow(StopButton)
 AddStroke(StopButton, Color3.fromRGB(255, 255, 255), 2)
 
 StartButton.MouseEnter:Connect(function()
-    CreateTween(StartButton, TweenInfo.new(0.2), {BackgroundTransparency = 0, Size = UDim2.new(0.48, 0, 0, 53)}):Play()
+    CreateTween(StartButton, TweenInfo.new(0.2), {BackgroundTransparency = 0, Size = UDim2.new(0.48, 0, 0, 55)}):Play()
 end)
 StartButton.MouseLeave:Connect(function()
-    CreateTween(StartButton, TweenInfo.new(0.2), {BackgroundTransparency = 0.2, Size = UDim2.new(0.48, 0, 0, 50)}):Play()
+    CreateTween(StartButton, TweenInfo.new(0.2), {BackgroundTransparency = 0.2, Size = UDim2.new(0.48, 0, 0, 52)}):Play()
 end)
 
 StopButton.MouseEnter:Connect(function()
-    CreateTween(StopButton, TweenInfo.new(0.2), {BackgroundTransparency = 0, Size = UDim2.new(0.48, -15, 0, 53)}):Play()
+    CreateTween(StopButton, TweenInfo.new(0.2), {BackgroundTransparency = 0, Size = UDim2.new(0.48, -15, 0, 55)}):Play()
 end)
 StopButton.MouseLeave:Connect(function()
-    CreateTween(StopButton, TweenInfo.new(0.2), {BackgroundTransparency = 0.2, Size = UDim2.new(0.48, -15, 0, 50)}):Play()
+    CreateTween(StopButton, TweenInfo.new(0.2), {BackgroundTransparency = 0.2, Size = UDim2.new(0.48, -15, 0, 52)}):Play()
 end)
 
 -- ============================================
@@ -729,21 +1380,6 @@ local GhostConnection = nil
 
 getgenv().OldPos = nil
 getgenv().FPDH = workspace.FallenPartsDestroyHeight
-
-local Settings = {
-    ShowBeams = true,
-    TargetHighlight = true,
-    BlackHoleRadius = 25,
-    BlackHolePower = 100,
-    BodyguardDistance = 10,
-    SlingPower = 200,
-    VortexRadius = 20,
-    VortexSpeed = 5,
-    FlingPower = 1,
-    SpinSpeed = 100,
-    FlingDelay = 0.1,
-    PingPongSpeed = 0.5
-}
 
 spawn(function()
     while ScreenGui.Parent do
@@ -830,7 +1466,7 @@ local function GetNearestPlayer()
     
     local myPos = Player.Character.HumanoidRootPart.Position
     local nearestPlayer = nil
-    local shortestDistance = 100
+    local shortestDistance = Settings.AutoTargetRadius or 100
     
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= Player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
@@ -846,7 +1482,13 @@ local function GetNearestPlayer()
 end
 
 -- ============================================
--- NEW CHAOS FUNCTIONS
+-- CHAOS FUNCTIONS (Продолжение в следующем сообщении из-за лимита символов)
+-- ============================================
+
+-- Из-за лимита символов, я разделю скрипт. Продолжить с остальными функциями?
+
+-- ============================================
+-- CHAOS FUNCTIONS (ПРОДОЛЖЕНИЕ)
 -- ============================================
 
 -- 1. BLACK HOLE MODE
@@ -856,7 +1498,6 @@ function ToggleBlackHole()
     if BlackHoleActive then
         if not Player.Character or not Player.Character:FindFirstChild("HumanoidRootPart") then return end
         
-        -- Create black hole visual
         BlackHolePart = Instance.new("Part")
         BlackHolePart.Name = "BlackHole"
         BlackHolePart.Size = Vector3.new(Settings.BlackHoleRadius * 2, Settings.BlackHoleRadius * 2, Settings.BlackHoleRadius * 2)
@@ -869,7 +1510,6 @@ function ToggleBlackHole()
         BlackHolePart.CFrame = Player.Character.HumanoidRootPart.CFrame + Vector3.new(0, 10, 0)
         BlackHolePart.Parent = workspace
         
-        -- Add particles
         local particle = CreateAeroParticles(BlackHolePart, ColorSequence.new{
             ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 150)),
             ColorSequenceKeypoint.new(0.5, Color3.fromRGB(100, 100, 200)),
@@ -878,7 +1518,6 @@ function ToggleBlackHole()
         particle.Rate = 100
         particle.Speed = NumberRange.new(-10, -5)
         
-        -- Add glow
         local light = Instance.new("PointLight")
         light.Color = Color3.fromRGB(100, 100, 255)
         light.Brightness = 2
@@ -905,13 +1544,11 @@ function ToggleBlackHole()
                     local distance = (targetRoot.Position - blackHolePos).Magnitude
                     
                     if distance < Settings.BlackHoleRadius then
-                        -- Pull towards black hole
                         local direction = (blackHolePos - targetRoot.Position).Unit
                         local pullStrength = (1 - distance / Settings.BlackHoleRadius) * Settings.BlackHolePower
                         
                         targetRoot.Velocity = direction * pullStrength
                         
-                        -- If very close, explosion effect
                         if distance < 5 then
                             local explosionDirection = (targetRoot.Position - blackHolePos).Unit
                             targetRoot.Velocity = explosionDirection * 200
@@ -968,7 +1605,6 @@ function ToggleBodyguard()
                     local distance = (targetRoot.Position - myPos).Magnitude
                     
                     if distance < Settings.BodyguardDistance then
-                        -- Auto fling nearby players
                         local direction = (targetRoot.Position - myPos).Unit
                         targetRoot.Velocity = direction * 150
                         targetRoot.RotVelocity = Vector3.new(
@@ -977,7 +1613,6 @@ function ToggleBodyguard()
                             math.random(-30, 30)
                         )
                         
-                        -- Visual feedback
                         local explosion = Instance.new("Explosion")
                         explosion.Position = targetRoot.Position
                         explosion.BlastRadius = 0
@@ -1009,27 +1644,25 @@ function ToggleRagdollLauncher()
     RagdollPanel.Visible = RagdollLauncherActive
     
     if RagdollLauncherActive then
-        -- Scan for launchable objects
         LaunchableObjects = {}
         for _, obj in pairs(workspace:GetDescendants()) do
             if obj:IsA("BasePart") and obj:CanSetNetworkOwnership() and not obj.Anchored then
-                if obj.Size.Magnitude < 20 then -- Only reasonable sized objects
+                if obj.Size.Magnitude < 20 then
                     table.insert(LaunchableObjects, obj)
                 end
             end
         end
         
-        -- Populate object list
         for _, child in pairs(ObjectScroll:GetChildren()) do
             child:Destroy()
         end
         
         local yPos = 0
         for i, obj in ipairs(LaunchableObjects) do
-            if i > 20 then break end -- Limit to 20 objects
+            if i > 20 then break end
             
             local objButton = Instance.new("TextButton")
-            objButton.Size = UDim2.new(1, -10, 0, 25)
+            objButton.Size = UDim2.new(1, -10, 0, 28)
             objButton.Position = UDim2.new(0, 5, 0, yPos)
             objButton.BackgroundColor3 = Color3.fromRGB(180, 230, 255)
             objButton.BackgroundTransparency = 0.3
@@ -1037,12 +1670,20 @@ function ToggleRagdollLauncher()
             objButton.Text = obj.Name .. " (" .. math.floor(obj.Size.Magnitude) .. ")"
             objButton.TextColor3 = Color3.fromRGB(80, 180, 255)
             objButton.Font = Enum.Font.Gotham
-            objButton.TextSize = 10
+            objButton.TextSize = 11
             objButton.TextXAlignment = Enum.TextXAlignment.Left
             objButton.AutoButtonColor = false
             objButton.Parent = ObjectScroll
             
-            AddCorners(objButton, 4)
+            AddCorners(objButton, 5)
+            
+            objButton.MouseEnter:Connect(function()
+                CreateTween(objButton, TweenInfo.new(0.2), {BackgroundTransparency = 0.1}):Play()
+            end)
+            
+            objButton.MouseLeave:Connect(function()
+                CreateTween(objButton, TweenInfo.new(0.2), {BackgroundTransparency = 0.3}):Play()
+            end)
             
             objButton.MouseButton1Click:Connect(function()
                 local nearest = GetNearestPlayer()
@@ -1065,7 +1706,7 @@ function ToggleRagdollLauncher()
                 end
             end)
             
-            yPos = yPos + 28
+            yPos = yPos + 31
         end
         
         ObjectScroll.CanvasSize = UDim2.new(0, 0, 0, yPos)
@@ -1090,7 +1731,6 @@ function TogglePingPong()
     PingPongActive = not PingPongActive
     
     if PingPongActive then
-        -- Need to select 2 targets
         local count = 0
         PingPongTargets = {}
         
@@ -1130,7 +1770,6 @@ function TogglePingPong()
                 local targetPos = target.Character.HumanoidRootPart.Position
                 Player.Character.HumanoidRootPart.CFrame = CFrame.new(targetPos + Vector3.new(0, 5, 0))
                 
-                -- Visual effect
                 local explosion = Instance.new("Explosion")
                 explosion.Position = targetPos
                 explosion.BlastRadius = 5
@@ -1154,7 +1793,7 @@ function TogglePingPong()
     end
 end
 
--- Previous functions (Gravity Gun, Vortex, Ghost Step) - код остается прежним
+-- 5. GRAVITY GUN
 function ToggleGravityGun()
     if GrabbedPlayer then
         if GrabbedPlayer.Character and GrabbedPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -1183,6 +1822,8 @@ function ToggleGravityGun()
             GrabConnection:Disconnect()
             GrabConnection = nil
         end
+        
+        RemoveBeam("GrabbedPlayer")
         GrabbedPlayer = nil
         
     else
@@ -1211,7 +1852,7 @@ function ToggleGravityGun()
                 GrabConnection = RunService.Heartbeat:Connect(function()
                     if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
                         local myRoot = Player.Character.HumanoidRootPart
-                        local offset = myRoot.CFrame.LookVector * 10
+                        local offset = myRoot.CFrame.LookVector * Settings.GrabDistance
                         bp.Position = myRoot.Position + offset + Vector3.new(0, 2, 0)
                     else
                         if GrabConnection then
@@ -1232,6 +1873,7 @@ function ToggleGravityGun()
     end
 end
 
+-- 6. VORTEX MODE
 function ToggleVortex()
     VortexActive = not VortexActive
     
@@ -1289,6 +1931,7 @@ function ToggleVortex()
     end
 end
 
+-- 7. GHOST STEP
 function ToggleGhostStep()
     GhostStepActive = not GhostStepActive
     
@@ -1331,6 +1974,7 @@ function ToggleGhostStep()
     end
 end
 
+-- 8. AUTO-TARGET NEAREST
 function AutoTargetNearest()
     local nearestPlayer, distance = GetNearestPlayer()
     
@@ -1383,10 +2027,12 @@ function AutoTargetNearest()
     end
 end
 
--- Player Entry & Other Functions (код остается прежним с предыдущей версии)
+-- ============================================
+-- PLAYER ENTRY SYSTEM
+-- ============================================
 local function CreatePlayerEntry(player, yPosition)
     local PlayerEntry = Instance.new("Frame")
-    PlayerEntry.Size = UDim2.new(1, -10, 0, 35)
+    PlayerEntry.Size = UDim2.new(1, -10, 0, 38)
     PlayerEntry.Position = UDim2.new(0, 5, 0, yPosition)
     PlayerEntry.BackgroundColor3 = Color3.fromRGB(220, 245, 255)
     PlayerEntry.BackgroundTransparency = 0.3
@@ -1394,7 +2040,7 @@ local function CreatePlayerEntry(player, yPosition)
     PlayerEntry.ClipsDescendants = true
     PlayerEntry.Parent = PlayerScrollFrame
     
-    AddCorners(PlayerEntry, 6)
+    AddCorners(PlayerEntry, 7)
     AddStroke(PlayerEntry, Color3.fromRGB(150, 220, 255), 1)
     
     local HoverBG = Instance.new("Frame")
@@ -1404,17 +2050,17 @@ local function CreatePlayerEntry(player, yPosition)
     HoverBG.BorderSizePixel = 0
     HoverBG.ZIndex = 0
     HoverBG.Parent = PlayerEntry
-    AddCorners(HoverBG, 6)
+    AddCorners(HoverBG, 7)
     
     local CheckboxContainer = Instance.new("Frame")
-    CheckboxContainer.Size = UDim2.new(0, 26, 0, 26)
-    CheckboxContainer.Position = UDim2.new(0, 5, 0.5, -13)
+    CheckboxContainer.Size = UDim2.new(0, 28, 0, 28)
+    CheckboxContainer.Position = UDim2.new(0, 6, 0.5, -14)
     CheckboxContainer.BackgroundColor3 = Color3.fromRGB(200, 240, 255)
     CheckboxContainer.BackgroundTransparency = 0.3
     CheckboxContainer.BorderSizePixel = 0
     CheckboxContainer.Parent = PlayerEntry
     
-    AddCorners(CheckboxContainer, 6)
+    AddCorners(CheckboxContainer, 7)
     AddStroke(CheckboxContainer, Color3.fromRGB(150, 220, 255), 2)
     
     local Checkmark = Instance.new("TextLabel")
@@ -1422,29 +2068,61 @@ local function CreatePlayerEntry(player, yPosition)
     Checkmark.BackgroundTransparency = 1
     Checkmark.Text = "✓"
     Checkmark.TextColor3 = Color3.fromRGB(100, 255, 150)
-    Checkmark.TextSize = 18
+    Checkmark.TextSize = 20
     Checkmark.Font = Enum.Font.GothamBold
     Checkmark.Visible = SelectedTargets[player.Name] ~= nil
     Checkmark.TextTransparency = 1
     Checkmark.Parent = CheckboxContainer
     
     local Avatar = Instance.new("ImageLabel")
-    Avatar.Size = UDim2.new(0, 28, 0, 28)
-    Avatar.Position = UDim2.new(0, 36, 0.5, -14)
+    Avatar.Size = UDim2.new(0, 30, 0, 30)
+    Avatar.Position = UDim2.new(0, 40, 0.5, -15)
     Avatar.BackgroundColor3 = Color3.fromRGB(200, 240, 255)
     Avatar.BackgroundTransparency = 0.5
     Avatar.BorderSizePixel = 0
     Avatar.Image = Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
     Avatar.Parent = PlayerEntry
-    AddCorners(Avatar, 14)
+    AddCorners(Avatar, 15)
+    
+    local DistanceLabel = Instance.new("TextLabel")
+    DistanceLabel.Size = UDim2.new(0, 75, 0, 18)
+    DistanceLabel.Position = UDim2.new(1, -80, 0, 3)
+    DistanceLabel.BackgroundColor3 = Color3.fromRGB(180, 230, 255)
+    DistanceLabel.BackgroundTransparency = 0.5
+    DistanceLabel.BorderSizePixel = 0
+    DistanceLabel.Text = "-- studs"
+    DistanceLabel.TextColor3 = Color3.fromRGB(100, 180, 255)
+    DistanceLabel.Font = Enum.Font.GothamBold
+    DistanceLabel.TextSize = 10
+    DistanceLabel.Parent = PlayerEntry
+    AddCorners(DistanceLabel, 4)
+    
+    spawn(function()
+        while PlayerEntry.Parent do
+            if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") and 
+               player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local distance = math.floor((Player.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude)
+                DistanceLabel.Text = distance .. " studs"
+                
+                if distance < 20 then
+                    DistanceLabel.TextColor3 = Color3.fromRGB(100, 255, 150)
+                elseif distance < 50 then
+                    DistanceLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+                else
+                    DistanceLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+                end
+            end
+            wait(0.5)
+        end
+    end)
     
     local NameLabel = Instance.new("TextLabel")
-    NameLabel.Size = UDim2.new(1, -75, 1, 0)
-    NameLabel.Position = UDim2.new(0, 70, 0, 0)
+    NameLabel.Size = UDim2.new(1, -160, 1, 0)
+    NameLabel.Position = UDim2.new(0, 75, 0, 0)
     NameLabel.BackgroundTransparency = 1
     NameLabel.Text = player.Name
     NameLabel.TextColor3 = Color3.fromRGB(80, 180, 255)
-    NameLabel.TextSize = 12
+    NameLabel.TextSize = 13
     NameLabel.Font = Enum.Font.GothamBold
     NameLabel.TextXAlignment = Enum.TextXAlignment.Left
     NameLabel.Parent = PlayerEntry
@@ -1515,7 +2193,7 @@ local function RefreshPlayerList()
     for _, player in ipairs(PlayerList) do
         if player ~= Player then
             PlayerCheckboxes[player.Name] = CreatePlayerEntry(player, yPosition)
-            yPosition = yPosition + 40
+            yPosition = yPosition + 43
         end
     end
     
@@ -1556,7 +2234,7 @@ function UpdateStatus()
         if count > 0 then
             StatusDetail.Text = count .. " target(s) selected"
         else
-            StatusDetail.Text = "Select a chaos mode to begin"
+            StatusDetail.Text = "Select chaos modes or targets"
         end
         StatusIcon.TextColor3 = Color3.fromRGB(100, 255, 150)
     end
@@ -1598,7 +2276,40 @@ local function ToggleAllPlayers(select)
     UpdateStatus()
 end
 
+-- ============================================
+-- FLING SYSTEM
+-- ============================================
+local function OrbitToTarget(TargetPlayer)
+    if not Settings.OrbitMode then return false end
+    
+    local Character = Player.Character
+    local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+    local RootPart = Humanoid and Humanoid.RootPart
+    local TCharacter = TargetPlayer.Character
+    local TRootPart = TCharacter and TCharacter:FindFirstChild("HumanoidRootPart")
+    
+    if not RootPart or not TRootPart then return false end
+    
+    local targetPos = TRootPart.Position
+    local currentPos = RootPart.Position
+    local distance = (targetPos - currentPos).Magnitude
+    
+    if distance > 10 then
+        local direction = (targetPos - currentPos).Unit
+        local newPos = currentPos + direction * Settings.OrbitSpeed
+        
+        RootPart.CFrame = CFrame.new(newPos)
+        return true
+    end
+    
+    return false
+end
+
 local function SkidFling(TargetPlayer)
+    if Settings.OrbitMode and OrbitToTarget(TargetPlayer) then
+        wait(0.1)
+    end
+    
     local Character = Player.Character
     local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
     local RootPart = Humanoid and Humanoid.RootPart
@@ -1757,6 +2468,12 @@ local function StartFling()
             end
             
             UpdateStatus()
+            
+            if not Settings.LoopFling then
+                FlingActive = false
+                break
+            end
+            
             wait(0.5)
         end
     end)
@@ -1769,19 +2486,17 @@ local function StopFling()
     UpdateStatus()
     
     game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "🌌 All Stopped",
-        Text = "All chaos operations halted",
+        Title = "🌌 Fling Stopped",
+        Text = "All operations halted",
         Duration = 2
     })
     
     CreateTween(StartButton, TweenInfo.new(0.3), {BackgroundTransparency = 0.2}):Play()
 end
 
--- STOP ALL CHAOS MODES
-StopButton.MouseButton1Click:Connect(function()
+local function StopAllModes()
     StopFling()
     
-    -- Stop all modes
     if BlackHoleActive then ToggleBlackHole() end
     if BodyguardActive then ToggleBodyguard() end
     if RagdollLauncherActive then ToggleRagdollLauncher() end
@@ -1795,12 +2510,13 @@ StopButton.MouseButton1Click:Connect(function()
         Text = "All chaos modes deactivated!",
         Duration = 3
     })
-end)
+end
 
 -- ============================================
 -- TOGGLE FUNCTIONALITY
 -- ============================================
 local isGUIVisible = false
+local isAdvancedVisible = false
 
 local function ToggleGUI()
     isGUIVisible = not isGUIVisible
@@ -1808,8 +2524,8 @@ local function ToggleGUI()
     if isGUIVisible then
         MainFrame.Visible = true
         CreateTween(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Size = UDim2.new(0, 500, 0, 680),
-            Position = UDim2.new(0.5, -250, 0.5, -340)
+            Size = UDim2.new(0, 520, 0, 720),
+            Position = UDim2.new(0.5, -260, 0.5, -360)
         }):Play()
         CreateTween(ToggleIcon, TweenInfo.new(0.3), {Rotation = 180}):Play()
     else
@@ -1823,13 +2539,37 @@ local function ToggleGUI()
     end
 end
 
+local function ToggleAdvanced()
+    isAdvancedVisible = not isAdvancedVisible
+    
+    if isAdvancedVisible then
+        AdvancedFrame.Visible = true
+        CreateTween(AdvancedFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 400, 0, 600),
+            Position = UDim2.new(0.5, -200, 0.5, -300)
+        }):Play()
+    else
+        CreateTween(AdvancedFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            Size = UDim2.new(0, 0, 0, 0),
+            Position = UDim2.new(0.5, 0, 0.5, 0)
+        }):Play()
+        wait(0.4)
+        AdvancedFrame.Visible = false
+    end
+end
+
+-- ============================================
 -- CONNECTIONS
+-- ============================================
 ToggleButton.MouseButton1Click:Connect(ToggleGUI)
+SettingsButton.MouseButton1Click:Connect(ToggleAdvanced)
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed then
         if input.KeyCode == Enum.KeyCode.RightControl then
             ToggleGUI()
+        elseif input.KeyCode == Enum.KeyCode.RightShift then
+            ToggleAdvanced()
         elseif input.KeyCode == Enum.KeyCode.B then
             ToggleBlackHole()
         elseif input.KeyCode == Enum.KeyCode.N then
@@ -1844,16 +2584,19 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
             ToggleVortex()
         elseif input.KeyCode == Enum.KeyCode.H then
             ToggleGhostStep()
+        elseif input.KeyCode == Enum.KeyCode.T then
+            AutoTargetNearest()
         end
     end
 end)
 
 StartButton.MouseButton1Click:Connect(StartFling)
+StopButton.MouseButton1Click:Connect(StopAllModes)
 SelectAllButton.MouseButton1Click:Connect(function() ToggleAllPlayers(true) end)
 DeselectAllButton.MouseButton1Click:Connect(function() ToggleAllPlayers(false) end)
 
 CloseButton.MouseButton1Click:Connect(function()
-    StopFling()
+    StopAllModes()
     CreateTween(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
         Size = UDim2.new(0, 0, 0, 0),
         Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -1861,6 +2604,10 @@ CloseButton.MouseButton1Click:Connect(function()
     wait(0.4)
     MainFrame.Visible = false
     isGUIVisible = false
+end)
+
+AdvCloseButton.MouseButton1Click:Connect(function()
+    ToggleAdvanced()
 end)
 
 Players.PlayerAdded:Connect(RefreshPlayerList)
@@ -1877,12 +2624,15 @@ Players.PlayerRemoving:Connect(function(player)
     UpdateStatus()
 end)
 
+-- ============================================
+-- INITIALIZATION
+-- ============================================
 RefreshPlayerList()
 UpdateStatus()
 
 game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🌌 KILASIK'S CHAOS FLING",
-    Text = "Chaos Edition v4.0 Loaded!\n\nHotkeys:\nB = Black Hole\nN = Bodyguard\nM = Ragdoll\nP = Ping-Pong\nG = Gravity\nV = Vortex\nH = Ghost\nRight Ctrl = GUI",
+    Title = "🌌 KILASIK'S COMPLETE FLING",
+    Text = "All Features Loaded Successfully!\n\nHotkeys:\nRight Ctrl = Main GUI\nRight Shift = Settings\nB=BlackHole N=Bodyguard M=Ragdoll\nP=PingPong G=Gravity V=Vortex\nH=Ghost T=AutoTarget",
     Duration = 10
 })
 
